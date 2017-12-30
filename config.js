@@ -1,1 +1,0 @@
-exports.connectionString = "postgres://postgres:developer@localhost/treetracker";
