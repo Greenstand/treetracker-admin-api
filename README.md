@@ -1,2 +1,3 @@
 # treetracker-map-api
-# development-status
+
+API for web maps of tree plantings.
