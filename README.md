@@ -1,3 +1,6 @@
-# treetracker-map-api
+# treetracker-admin-api
 
-API for web maps of tree plantings.
+This API microservice is for access controlled CRUD for administrative access to treetracker data.
+
+This API is initially based off the treetracker-map-api repository
+
