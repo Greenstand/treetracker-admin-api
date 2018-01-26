@@ -101,7 +101,7 @@ const getUpdateTableQueryByTableIDCols = function(table, id, cols) {
   // Create another new array storing each set command there
   // and then assigning a number value for parameterized query there
   var set = [];
-  Object.keys(cols).forEach(function (key, i) {
+  Object.getOwnPropertyNames(cols).forEach(function (key, i) {
     set.push(key + ' = ($' + (i + 1) + ')'); 
   });
   query.push(set.join(', '));
