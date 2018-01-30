@@ -17,6 +17,13 @@ app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-
 app.use(bodyParser.json()); // parse application/json
 app.set('view engine','html');
 
+
+const noop = function(){}
+
+const isNotEmpty = function(val){
+    return (val!==null && val!==undefined);
+}
+
 const pool = new Pool({
 
   connectionString: conn.connectionString
@@ -93,24 +100,35 @@ const commitquery = function(client,cb)
 
 };
 
-const getUpdateTableQueryByTableIDCols = function(table, id, cols) {
+const getUpdateTableQueryByTableIDCols = function(table, id, cols, cbb) {
   // Setup static beginning of query with the table too
   var query = ['UPDATE ' + table];
   query.push('SET');
 
   // Create another new array storing each set command there
   // and then assigning a number value for parameterized query there
-  var set = [];
-  Object.getOwnPropertyNames(cols).forEach(function (key, i) {
-    set.push(key + ' = ($' + (i + 1) + ')'); 
-  });
-  query.push(set.join(', '));
+  var mySet = [];
 
-  // Add the WHERE statement to look up by id the 
-  query.push('WHERE id = ' + id );
+ 
+  const f1 = function(itm,idx,cb){
+            mySet.push(itm + ' = ($' + (idx + 1) + ')');
+            cb(); 
+  };
 
-  // Return a complete query string
-  return query.join(' ');
+  const f2 = function(err1){
+     if(err1)
+     {
+         console.error('Error async eachSeries loop 2_f2', err1.stack)
+     }
+     else
+     {
+        query.push(mySet.join(', '));
+        query.push('WHERE id = ' + id );
+        cbb(query.join(' '));
+     }
+  };
+
+  async.eachOfSeries(Object.getOwnPropertyNames(cols), f1, f2);
 }
 
 const getFormattedUTCTimeNow = function()
@@ -219,122 +237,124 @@ app.put('/trees', function(req, res){
   
         var treecols = 
 	{
-                "time_updated": time_updated,
-		"missing": missing,
-		"priority": priority,
-		"cause_of_death_id": cause_of_death_id,
-		"user_id": user_id,
-		"primary_location_id": primary_location_id,
-		"settings_id": settings_id,
-		"override_settings_id": override_settings_id,
-		"dead": dead,
-		"lat": lat,
-		"lon": lon
+                "time_updated": time_updated
                 
 	}
-
-
         
-        const updateTreeText = getUpdateTableQueryByTableIDCols("trees", id, treecols );
+	isNotEmpty(missing)  ? treecols["missing"] = missing : noop;
+	isNotEmpty(priority)  ? treecols["priority"] = priority : noop;
+	isNotEmpty(cause_of_death_id)  ? treecols["cause_of_death_id"] = cause_of_death_id : noop;
+	isNotEmpty(user_id)  ? treecols["user_id"] = user_id : noop;
+	isNotEmpty(primary_location_id)  ? treecols["primary_location_id"] = primary_location_id : noop;
+	isNotEmpty(settings_id)  ? treecols["settings_id"] = settings_id : noop;
+	isNotEmpty(override_settings_id)  ? treecols["override_settings_id"] = override_settings_id : noop;
+	isNotEmpty(dead)  ? treecols["dead"] = dead : noop;
+	isNotEmpty(lat)  ? treecols["lat"] = lat : noop;
+	isNotEmpty(lon)  ? treecols["lon"] = lon : noop;
         
 
-        var updateTreeValues = [];
-
-        //prefer Object.getOwnPropertyNames() over Object.keys() because:
-        //Object.getOwnPropertyNames() is more likely to guarantee that 
-        //JS-Object to ArrayofJS-Object_AllKeys conversion
-        //preserves JS Object keys creation order in the returned array
-
-        const updateTreeKeys = Object.getOwnPropertyNames(treecols);
-
-
-
-        //used in async.eachSeries call, the following function is the callback function
-        //the params are (some_custom_error) and it should usually be blank
-        //it is called with signature callback() when all elements finished iterating,
-        //or if "callback(some_custom_error)" was manually called 
-        //from the iteratee during iteration      
-
-        //BEGINNING of callback function
-        const updateTreeValuesReady = function(err)
+        const fn5 = function(updateTreeText)
         {
-            if(err)
-            {
-                console.error('Error async eachSeries loop 1', err.stack)
-            }
-            else
-            {
-               //console.log('updateTreeText');
-               //console.log(updateTreeText);
-               //console.log('updateTreeValues');
-               //console.log(updateTreeValues);
 
-
-               beginquery(crudclient, function(){
-                  issuequery(crudclient,updateTreeText,updateTreeValues,function(res1){
-                     commitquery(crudclient,function(){
-                            res.status(200).json({              
-                               data: res1
-                            });
-                     });
-                  });
-               });
-            }
-
-        }
-
-        //END of callback function
-
-
-
-        //used in async.eachSeries call, the following function is the iteratee function
-        //the iteratee function signature is (item, callback)
-        //see EACHSERIES FUNCTION CALL for more details  
-        //the async utility automatically populates "item" with the current item from collection
-        //and also automatically populates "callback" with something that is explained more
-        //in EACHSERIES FUNCTION CALL section     
-
-        //BEGINNING of iteratee function 
-        const turnTreecolsIntoArrayofValues = function (item, callback){ 
-            var treeValue = treecols[item];
-            updateTreeValues.push(treeValue);
-            callback(); 
-  
-        }
-         
-        //END of iteratee function
-
-
-
-        //The following turns "treecols" JS Object into an array of values for updateTreeValues
         
-        //EACHSERIES FUNCTION CALL
-        //Using async.eachSeries loops through each array (collection) item
-        //asynchronously yet sequentially.
-        //the params are (collection,iteratee,callback) and all three should be included
-        //collection is usually an array, iteratee and callback are usually functions
-        //iteratee function signature is (item, callback)
-        //callback function signature is (err) and err should be usually blank
-        //in this example, calling the "callback" parameter from within the iteratee function 
-        //does one of three things:
-           //1. If there are any remaining elements in the passed in array (collection)
-           //and callback is called like this: callback();
-           //it repeats this same iteratee function again 
-           //but this time, the "item" param contains the next item from the passed in array.        
-           //2. if there are no more items in array (collection)
-           //and callback is called like this: callback();
-           //the actual callback function is called, with the error parameter empty.
-           //3. Sometimes, even if there are still remaining items in the array (collection),
-           //but if anytime during iteration, this iteratee function calls 
-           //callback(some_custom_error) instead of just callback();
-           //then async utility jumps out of the iteratee immediately in this case, 
-           //and the callback is called immediately with the error parameter populated
-           //with some_custom_error
-        //
-        async.eachSeries(updateTreeKeys, turnTreecolsIntoArrayofValues, updateTreeValuesReady); 
-      
+
+			var updateTreeValues = [];
+
+			//prefer Object.getOwnPropertyNames() over Object.keys() because:
+			//Object.getOwnPropertyNames() is more likely to guarantee that 
+			//JS-Object to ArrayofJS-Object_AllKeys conversion
+			//preserves JS Object keys creation order in the returned array
+
+			const updateTreeKeys = Object.getOwnPropertyNames(treecols);
 
 
+
+			//used in async.eachSeries call, the following function is the callback function
+			//the params are (some_custom_error) and it should usually be blank
+			//it is called with signature callback() when all elements finished iterating,
+			//or if "callback(some_custom_error)" was manually called 
+			//from the iteratee during iteration      
+
+			//BEGINNING of callback function
+			const updateTreeValuesReady = function(err)
+			{
+				if(err)
+				{
+					console.error('Error async eachSeries loop 1', err.stack)
+				}
+				else
+				{
+				   //console.log('updateTreeText');
+				   //console.log(updateTreeText);
+				   //console.log('updateTreeValues');
+				   //console.log(updateTreeValues);
+
+
+				   beginquery(crudclient, function(){
+					  issuequery(crudclient,updateTreeText,updateTreeValues,function(res1){
+						 commitquery(crudclient,function(){
+								res.status(200).json({              
+								   data: res1
+								});
+						 });
+					  });
+				   });
+				}
+
+			}
+
+			//END of callback function
+
+
+
+			//used in async.eachSeries call, the following function is the iteratee function
+			//the iteratee function signature is (item, callback)
+			//see EACHSERIES FUNCTION CALL for more details  
+			//the async utility automatically populates "item" with the current item from collection
+			//and also automatically populates "callback" with something that is explained more
+			//in EACHSERIES FUNCTION CALL section     
+
+			//BEGINNING of iteratee function 
+			const turnTreecolsIntoArrayofValues = function (item, callback){ 
+				var treeValue = treecols[item];
+				updateTreeValues.push(treeValue);
+				callback(); 
+	  
+			}
+			 
+			//END of iteratee function
+
+
+
+			//The following turns "treecols" JS Object into an array of values for updateTreeValues
+			
+			//EACHSERIES FUNCTION CALL
+			//Using async.eachSeries loops through each array (collection) item
+			//asynchronously yet sequentially.
+			//the params are (collection,iteratee,callback) and all three should be included
+			//collection is usually an array, iteratee and callback are usually functions
+			//iteratee function signature is (item, callback)
+			//callback function signature is (err) and err should be usually blank
+			//in this example, calling the "callback" parameter from within the iteratee function 
+			//does one of three things:
+			   //1. If there are any remaining elements in the passed in array (collection)
+			   //and callback is called like this: callback();
+			   //it repeats this same iteratee function again 
+			   //but this time, the "item" param contains the next item from the passed in array.        
+			   //2. if there are no more items in array (collection)
+			   //and callback is called like this: callback();
+			   //the actual callback function is called, with the error parameter empty.
+			   //3. Sometimes, even if there are still remaining items in the array (collection),
+			   //but if anytime during iteration, this iteratee function calls 
+			   //callback(some_custom_error) instead of just callback();
+			   //then async utility jumps out of the iteratee immediately in this case, 
+			   //and the callback is called immediately with the error parameter populated
+			   //with some_custom_error
+			//
+			async.eachSeries(updateTreeKeys, turnTreecolsIntoArrayofValues, updateTreeValuesReady); 
+        }
+
+        getUpdateTableQueryByTableIDCols("trees", id, treecols, fn5);
 
 
 });
