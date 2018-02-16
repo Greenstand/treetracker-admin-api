@@ -24,10 +24,11 @@ const isNotEmpty = function(val){
     return (val!==null && val!==undefined);
 }
 
-const pool = new Pool({
+//2-15-2018 pool deprecated for this custom module, use crudpool instead
+//const pool = new Pool({
 
-  connectionString: conn.connectionString
-});
+  //connectionString: conn.connectionString
+//});
 
 const crudpool = new Pool({
 
@@ -361,31 +362,57 @@ app.put('/trees', function(req, res){
 
 
 app.get('/trees', function(req, res){   
-  console.log(req);
+  console.log(req.url);
 
-  let sql = "SELECT 'point' AS type, trees.* FROM trees";
-  let query = { 
-    text: sql
-  }
+  var sql = "SELECT 'point' AS type, trees.* FROM trees";
+  var values = []
+  var query = {}
+  
+
 
   if (req.query['zoom'] < 14) {
     let zoom = req.query['zoom'];
-    let sql = "SELECT 'cluster' AS type, ST_AsGeoJSON(ST_Centroid(clustered_locations)) centroid, ST_AsGeoJSON(ST_MinimumBoundingCircle(clustered_locations)) circle, ST_NumGeometries(clustered_locations) count FROM ( SELECT unnest(ST_ClusterWithin(estimated_geometric_location, $1)) clustered_locations from trees ) clusters";
+    sql = "SELECT 'cluster' AS type, ST_AsGeoJSON(ST_Centroid(clustered_locations)) centroid, ST_AsGeoJSON(ST_MinimumBoundingCircle(clustered_locations)) circle, ST_NumGeometries(clustered_locations) count FROM ( SELECT unnest(ST_ClusterWithin(estimated_geometric_location, $1)) clustered_locations from trees ) clusters";
+    values.push(zoom)  
+
+  }
+
+  if (req.query['user_id']) {
+     let user_id = req.query['user_id']
+     sql = sql + " WHERE user_id = " + user_id
+  }
+
+    
     query = {
       text : sql,
-      values : [.01]
+      values : values
     }
-  }
-  //ok for now and in this case only, 
-  //but do not use pool.query in general - 
-  //prefer to use client.query - 1-23-2018
-  pool.query(query)
-    .then(function(data){
-      res.status(200).json({              
-        data: data.rows
-      })
-    })
-  .catch(e => console.error(e.stack));
+    //console.log()
+///////////////////////////////////////////
+  //
+  ////ok for now and in this case only, 
+  ////but do not use pool.query in general - 
+  ////prefer to use client.query - 1-23-2018
+  ////pool.query(query)
+    ////.then(function(data){
+      ////res.status(200).json({              
+        ////data: data.rows
+      ////})
+    ////})
+  ////.catch(e => console.error(e.stack));
+////////////////////////////////////////////////
+  
+  //2-15-2018 using crudpool convention even for reading data
+
+   beginquery(crudclient, function(){
+      issuequery(crudclient,query.text,query.values,function(res1){
+         commitquery(crudclient,function(){
+                res.status(200).json({              
+                   data: res1.rows
+                });
+         });
+      });
+   });
 
 });
 
