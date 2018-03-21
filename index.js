@@ -196,7 +196,8 @@ app.post('/trees/create', function(req, res){
 });
 */
 
-app.delete('/trees', function(req, res){
+
+app.delete('/trees/realdelete', function(req, res){
    var id = req.body["id"];
    const deleteTreeText = "DELETE FROM trees WHERE id = $1";
    const deleteTreeValues = [id];
@@ -215,7 +216,9 @@ app.delete('/trees', function(req, res){
 });
 
 
-app.put('/trees', function(req, res){
+
+
+function z9(req, res){
 	var id = req.body["id"];
         //var time_created = req.body["time_created"];
         //var time_updated = req.body["time_updated"];
@@ -229,6 +232,8 @@ app.put('/trees', function(req, res){
         var dead = req.body["dead"];
 	var lat = req.body["lat"];
 	var lon = req.body["lon"];
+       var active = req.body ["active"]
+
         //var estimated_geometric_location = req.body["estimated_geometric_location"];
 	//var gps_accuracy = req.body["gps_accuracy"];
 
@@ -252,6 +257,12 @@ app.put('/trees', function(req, res){
 	isNotEmpty(dead)  ? treecols["dead"] = dead : noop;
 	isNotEmpty(lat)  ? treecols["lat"] = lat : noop;
 	isNotEmpty(lon)  ? treecols["lon"] = lon : noop;
+	isNotEmpty(active)  ? treecols["active"] = active : noop;
+
+        if (req.method == "DELETE")
+        {
+           treecols["active"] = false 
+        }
         
 
         const fn5 = function(updateTreeText)
@@ -358,17 +369,17 @@ app.put('/trees', function(req, res){
         getUpdateTableQueryByTableIDCols("trees", id, treecols, fn5);
 
 
-});
+}
 
 
-app.get('/trees', function(req, res){   
+function z10(req, res){   
   console.log(req.url);
 
-  var sql = "SELECT 'point' AS type, trees.* FROM trees";
+  var sql = "SELECT 'point' AS type, trees.* FROM trees WHERE ";
   var values = []
   var query = {}
   
-
+  var ainf = "active IS NOT FALSE"
 
   if (req.query['zoom'] < 14) {
     let zoom = req.query['zoom'];
@@ -379,9 +390,14 @@ app.get('/trees', function(req, res){
 
   if (req.query['user_id']) {
      let user_id = req.query['user_id']
-     sql = sql + " WHERE user_id = " + user_id
+     sql = sql + " user_id = " + user_id + " AND " + ainf
+  }
+  else
+  {
+     sql = sql + " " + ainf
   }
 
+  
     
     query = {
       text : sql,
@@ -414,7 +430,11 @@ app.get('/trees', function(req, res){
       });
    });
 
-});
+}
+
+app.put('/trees', z9);
+app.delete('/trees', z9);
+app.get('/trees', z10);
 
 app.listen(port,()=>{
   console.log('listening on port ' + port);
