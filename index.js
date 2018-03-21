@@ -5,7 +5,7 @@ var pg = require('pg');
 const { Pool, Client } = require('pg');
 var path = require('path');
 var app = express();
-var port = process.env.PORT || 3001;
+var port = process.env.NODE_PORT || 3000;
 var conn = require('./config');
 
 var async = require("async");
