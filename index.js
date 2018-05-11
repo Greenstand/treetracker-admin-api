@@ -370,6 +370,15 @@ app.get('/trees', function (req, res) {
     sql = sql + " WHERE user_id = " + user_id
   }
 
+  if (req.query['start_index']) {
+    let start_index = parseInt(req.query['start_index'])
+    sql = sql + " OFFSET " + (start_index - 1)
+  }
+
+  if (req.query['page_size']) {
+    let page_size = req.query['page_size']
+    sql = sql + " LIMIT " + page_size
+  }
 
   query = {
     text: sql,
