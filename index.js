@@ -15,13 +15,13 @@ var moment = require("moment");
 
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
-app.set('view engine','html');
+app.set('view engine', 'html');
 
 
-const noop = function(){}
+const noop = function () { }
 
-const isNotEmpty = function(val){
-  return (val!==null && val!==undefined);
+const isNotEmpty = function (val) {
+  return (val !== null && val !== undefined);
 }
 
 //2-15-2018 pool deprecated for this custom module, use crudpool instead
@@ -36,7 +36,7 @@ const crudpool = new Pool({
 });
 
 
-const shouldabort = (err,client) => {
+const shouldabort = (err, client) => {
   if (err) {
     console.error('Error in transaction', err.stack);
     client.query('ROLLBACK', (err2) => {
@@ -52,48 +52,43 @@ const shouldabort = (err,client) => {
 
 
 
-const connectpool = function(pool,cb){
-  pool.connect(function(err,client,done){
+const connectpool = function (pool, cb) {
+  pool.connect(function (err, client, done) {
     if (err) {
       console.error('Error in transaction', err.stack);
     }
-    else
-    {
+    else {
 
-      cb(client,done);
+      cb(client, done);
     }
 
   });
 };
 
 
-const beginquery = function(client,cb)
-{
+const beginquery = function (client, cb) {
   client.query('BEGIN', (err1) => {
-    if (shouldabort(err1,client)) return;
+    if (shouldabort(err1, client)) return;
     cb();
   })
 
 };
 
-const issuequery = function(client,querytext,queryvalues,cb)
-{
-  client.query(querytext,queryvalues, (err2, res) => {
-    if (shouldabort(err2,client)) return;
+const issuequery = function (client, querytext, queryvalues, cb) {
+  client.query(querytext, queryvalues, (err2, res) => {
+    if (shouldabort(err2, client)) return;
     cb(res);
   })
 
 };
 
 
-const commitquery = function(client,cb)
-{
+const commitquery = function (client, cb) {
   client.query('COMMIT', (err) => {
     if (err) {
       console.error('Error committing transaction', err.stack);
     }
-    else
-    {
+    else {
       cb();
     }
 
@@ -101,7 +96,7 @@ const commitquery = function(client,cb)
 
 };
 
-const getUpdateTableQueryByTableIDCols = function(table, id, cols, cbb) {
+const getUpdateTableQueryByTableIDCols = function (table, id, cols, cbb) {
   // Setup static beginning of query with the table too
   var query = ['UPDATE ' + table];
   query.push('SET');
@@ -111,20 +106,18 @@ const getUpdateTableQueryByTableIDCols = function(table, id, cols, cbb) {
   var mySet = [];
 
 
-  const f1 = function(itm,idx,cb){
+  const f1 = function (itm, idx, cb) {
     mySet.push(itm + ' = ($' + (idx + 1) + ')');
-    cb(); 
+    cb();
   };
 
-  const f2 = function(err1){
-    if(err1)
-    {
+  const f2 = function (err1) {
+    if (err1) {
       console.error('Error async eachSeries loop 2_f2', err1.stack)
     }
-    else
-    {
+    else {
       query.push(mySet.join(', '));
-      query.push('WHERE id = ' + id );
+      query.push('WHERE id = ' + id);
       cbb(query.join(' '));
     }
   };
@@ -132,8 +125,7 @@ const getUpdateTableQueryByTableIDCols = function(table, id, cols, cbb) {
   async.eachOfSeries(Object.getOwnPropertyNames(cols), f1, f2);
 }
 
-const getFormattedUTCTimeNow = function()
-{
+const getFormattedUTCTimeNow = function () {
 
   return moment.utc().format("YYYY-MM-DD HH:mm:ss+00");
 
@@ -155,7 +147,7 @@ const getFormattedUTCTimeNow = function()
 var crudclient = null;
 var crud_done = null;
 
-connectpool(crudpool,function(client,done){
+connectpool(crudpool, function (client, done) {
   crudclient = client;
   crud_done = done;
 });
@@ -196,15 +188,15 @@ app.post('/trees/create', function(req, res){
 });
 */
 
-app.delete('/trees', function(req, res){
+app.delete('/trees', function (req, res) {
   var id = req.body["id"];
   const deleteTreeText = "DELETE FROM trees WHERE id = $1";
   const deleteTreeValues = [id];
 
-  beginquery(crudclient, function(){
-    issuequery(crudclient,deleteTreeText,deleteTreeValues,function(res1){
-      commitquery(crudclient,function(){
-        res.status(200).json({              
+  beginquery(crudclient, function () {
+    issuequery(crudclient, deleteTreeText, deleteTreeValues, function (res1) {
+      commitquery(crudclient, function () {
+        res.status(200).json({
           data: res1
         });
       });
@@ -215,7 +207,7 @@ app.delete('/trees', function(req, res){
 });
 
 
-app.put('/trees', function(req, res){
+app.put('/trees', function (req, res) {
   var id = req.body["id"];
   //var time_created = req.body["time_created"];
   //var time_updated = req.body["time_updated"];
@@ -236,26 +228,25 @@ app.put('/trees', function(req, res){
   //console.log("time_updated");
   //console.log(time_updated);
 
-  var treecols = 
+  var treecols =
     {
       "time_updated": time_updated
 
     }
 
-  isNotEmpty(missing)  ? treecols["missing"] = missing : noop;
-  isNotEmpty(priority)  ? treecols["priority"] = priority : noop;
-  isNotEmpty(cause_of_death_id)  ? treecols["cause_of_death_id"] = cause_of_death_id : noop;
-  isNotEmpty(user_id)  ? treecols["user_id"] = user_id : noop;
-  isNotEmpty(primary_location_id)  ? treecols["primary_location_id"] = primary_location_id : noop;
-  isNotEmpty(settings_id)  ? treecols["settings_id"] = settings_id : noop;
-  isNotEmpty(override_settings_id)  ? treecols["override_settings_id"] = override_settings_id : noop;
-  isNotEmpty(dead)  ? treecols["dead"] = dead : noop;
-  isNotEmpty(lat)  ? treecols["lat"] = lat : noop;
-  isNotEmpty(lon)  ? treecols["lon"] = lon : noop;
+  isNotEmpty(missing) ? treecols["missing"] = missing : noop;
+  isNotEmpty(priority) ? treecols["priority"] = priority : noop;
+  isNotEmpty(cause_of_death_id) ? treecols["cause_of_death_id"] = cause_of_death_id : noop;
+  isNotEmpty(user_id) ? treecols["user_id"] = user_id : noop;
+  isNotEmpty(primary_location_id) ? treecols["primary_location_id"] = primary_location_id : noop;
+  isNotEmpty(settings_id) ? treecols["settings_id"] = settings_id : noop;
+  isNotEmpty(override_settings_id) ? treecols["override_settings_id"] = override_settings_id : noop;
+  isNotEmpty(dead) ? treecols["dead"] = dead : noop;
+  isNotEmpty(lat) ? treecols["lat"] = lat : noop;
+  isNotEmpty(lon) ? treecols["lon"] = lon : noop;
 
 
-  const fn5 = function(updateTreeText)
-  {
+  const fn5 = function (updateTreeText) {
 
 
 
@@ -277,24 +268,21 @@ app.put('/trees', function(req, res){
     //from the iteratee during iteration      
 
     //BEGINNING of callback function
-    const updateTreeValuesReady = function(err)
-    {
-      if(err)
-      {
+    const updateTreeValuesReady = function (err) {
+      if (err) {
         console.error('Error async eachSeries loop 1', err.stack)
       }
-      else
-      {
+      else {
         //console.log('updateTreeText');
         //console.log(updateTreeText);
         //console.log('updateTreeValues');
         //console.log(updateTreeValues);
 
 
-        beginquery(crudclient, function(){
-          issuequery(crudclient,updateTreeText,updateTreeValues,function(res1){
-            commitquery(crudclient,function(){
-              res.status(200).json({              
+        beginquery(crudclient, function () {
+          issuequery(crudclient, updateTreeText, updateTreeValues, function (res1) {
+            commitquery(crudclient, function () {
+              res.status(200).json({
                 data: res1
               });
             });
@@ -316,10 +304,10 @@ app.put('/trees', function(req, res){
     //in EACHSERIES FUNCTION CALL section     
 
     //BEGINNING of iteratee function 
-    const turnTreecolsIntoArrayofValues = function (item, callback){ 
+    const turnTreecolsIntoArrayofValues = function (item, callback) {
       var treeValue = treecols[item];
       updateTreeValues.push(treeValue);
-      callback(); 
+      callback();
 
     }
 
@@ -352,7 +340,7 @@ app.put('/trees', function(req, res){
     //and the callback is called immediately with the error parameter populated
     //with some_custom_error
     //
-    async.eachSeries(updateTreeKeys, turnTreecolsIntoArrayofValues, updateTreeValuesReady); 
+    async.eachSeries(updateTreeKeys, turnTreecolsIntoArrayofValues, updateTreeValuesReady);
   }
 
   getUpdateTableQueryByTableIDCols("trees", id, treecols, fn5);
@@ -361,7 +349,7 @@ app.put('/trees', function(req, res){
 });
 
 
-app.get('/trees', function(req, res){   
+app.get('/trees', function (req, res) {
   console.log(req.url);
 
   var sql = "SELECT 'point' AS type, trees.* FROM trees";
@@ -373,7 +361,7 @@ app.get('/trees', function(req, res){
   if (req.query['zoom'] < 14) {
     let zoom = req.query['zoom'];
     sql = "SELECT 'cluster' AS type, ST_AsGeoJSON(ST_Centroid(clustered_locations)) centroid, ST_AsGeoJSON(ST_MinimumBoundingCircle(clustered_locations)) circle, ST_NumGeometries(clustered_locations) count FROM ( SELECT unnest(ST_ClusterWithin(estimated_geometric_location, $1)) clustered_locations from trees ) clusters";
-    values.push(zoom)  
+    values.push(zoom)
 
   }
 
@@ -384,8 +372,8 @@ app.get('/trees', function(req, res){
 
 
   query = {
-    text : sql,
-    values : values
+    text: sql,
+    values: values
   }
   //console.log()
   ///////////////////////////////////////////
@@ -404,10 +392,10 @@ app.get('/trees', function(req, res){
 
   //2-15-2018 using crudpool convention even for reading data
 
-  beginquery(crudclient, function(){
-    issuequery(crudclient,query.text,query.values,function(res1){
-      commitquery(crudclient,function(){
-        res.status(200).json({              
+  beginquery(crudclient, function () {
+    issuequery(crudclient, query.text, query.values, function (res1) {
+      commitquery(crudclient, function () {
+        res.status(200).json({
           data: res1.rows
         });
       });
@@ -416,6 +404,6 @@ app.get('/trees', function(req, res){
 
 });
 
-app.listen(port,()=>{
+app.listen(port, () => {
   console.log('listening on port ' + port);
 });
