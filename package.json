@@ -1,20 +1,35 @@
 {
-  "name": "treetracker",
+  "name": "treetracker-admin-api-loopback",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "server/server.js",
+  "engines": {
+    "node": ">=4"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "lint": "eslint .",
+    "start": "node .",
+    "posttest": "npm run lint && nsp check"
+  },
   "dependencies": {
-    "async": "^2.6.0",
-    "body-parser": "^1.18.2",
-    "express": "^4.16.2",
-    "moment": "^2.20.1",
-    "morgan": "^1.9.0",
-    "pg": "^7.4.0"
-  }
+    "compression": "^1.0.3",
+    "cors": "^2.5.2",
+    "helmet": "^3.10.0",
+    "loopback": "^3.19.0",
+    "loopback-boot": "^2.6.5",
+    "loopback-component-explorer": "^6.0.0",
+    "loopback-connector-postgresql": "^2.9.0",
+    "serve-favicon": "^2.0.1",
+    "strong-error-handler": "^2.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "eslint-config-loopback": "^8.0.0",
+    "nsp": "^2.1.0"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "license": "UNLICENSED",
+  "description": "treetracker-admin-api-loopback"
 }

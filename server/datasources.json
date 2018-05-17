@@ -1,0 +1,16 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "treetracker": {
+    "host": "",
+    "port": 0,
+    "url": "",
+    "database": "",
+    "password": "",
+    "name": "",
+    "user": "",
+    "connector": "postgresql"
+  }
+}
