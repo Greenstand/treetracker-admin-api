@@ -1,0 +1,14 @@
+[Unit]
+Description=Treetracker Admin API
+Documentation=https://github.com/Greenstand
+After=network.target
+
+[Service]
+Environment=NODE_PORT=3002
+Type=simple
+User=root
+ExecStart=/usr/bin/node /root/treetracker-admin-api/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
