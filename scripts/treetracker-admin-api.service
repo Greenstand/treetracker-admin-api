@@ -5,9 +5,10 @@ After=network.target
 
 [Service]
 Environment=NODE_PORT=3002
+Environment=NODE_ENV=treetracker
 Type=simple
 User=root
-ExecStart=/usr/bin/node /root/treetracker-admin-api/index.js
+ExecStart=/usr/bin/node /root/treetracker-admin-api/server/server.js
 Restart=on-failure
 
 [Install]
