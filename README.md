@@ -11,6 +11,12 @@
 - Open terminal
 - Type `npm install`
 
+## Setup
+
+In `server` directory you will need to create a `datasources.json` file that will be used to reference the source of data for Loopback.
+
+Contact the project maintainer to learn more.
+
 ## Quick Start
 
 Run the following command to start the REST API.
