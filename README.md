@@ -1,3 +1,7 @@
+About this Repository:
+  This is the awesome API portion for the (admin panel)[https://github.com/Greenstand/treetracker-admin.]
+  Managed by the unbelievable @thiagodemellobueno
+  
 # treetracker-admin-api
 
   >  TreeTracker's Admin Panel RESTful API built with loopback.
