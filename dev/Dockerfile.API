@@ -3,12 +3,8 @@ FROM node:8.12-slim
 ENV DIR /opt/admin-api-server
 RUN mkdir -p ${DIR}/
 
-#COPY common/ ${DIR}/common
-#COPY server/ ${DIR}/server
-#COPY package*.json *.js ${DIR}/
-
 WORKDIR $DIR
-#RUN npm install
+
 RUN npm install supervisor -g
 
 ENTRYPOINT supervisor server/server.js
