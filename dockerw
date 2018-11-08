@@ -79,26 +79,6 @@ docker_clean() {
 }
 
 docker_run() {
-  if [ ! -f server/datasources.json ]; then
-    cat <<- EOF > ./server/datasources.json
-      {
-        "db": {
-          "name": "db",
-          "connector": "memory"
-        },
-        "treetracker": {
-          "host": "postgres",
-          "port": 5432,
-          "url": "",
-          "database": "db",
-          "password": "changeme",
-          "name": "test",
-          "user": "admin",
-          "connector": "postgresql"
-        }
-      }
-EOF
-  fi
   echo "Stopping containers"
   docker stop $CONTAINER_NAME
   docker rm $CONTAINER_NAME

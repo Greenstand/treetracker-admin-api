@@ -41,6 +41,13 @@ $ npm run lint
 To run docker on a local machine, you will have to install Docker first. Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM. Docker provides one for each OS by default.
 
 [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
+
+You can alternatively install Docker for Mac using homebrew, using the following command
+
+```
+$ brew cask install docker
+```
+
 [Docker for Windows](https://docs.docker.com/docker-for-windows/install/)
 
 To install on linux, you can run `sudo apt-get install -y docker-ce` but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
