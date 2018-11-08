@@ -1,5 +1,8 @@
-FROM nginx:latest
+FROM node:8.12-slim
 
-COPY container/nginx-treetracker-admin /etc/nginx/conf.d/default.conf 
+ENV DIR /opt/admin-web
+RUN mkdir -p ${DIR}/
 
-#COPY client/build /var/www/admin
+WORKDIR $DIR
+
+ENTRYPOINT npm start
