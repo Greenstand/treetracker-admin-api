@@ -1,0 +1,41 @@
+{
+  "name": "treetracker-admin",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^1.1.0",
+    "@material-ui/icons": "^1.1.0",
+    "@rematch/core": "^0.6.0",
+    "ajv": "^6.4.0",
+    "axios": "^0.18.0",
+    "dateformat": "^3.0.3",
+    "geocoder": "^0.2.3",
+    "i": "^0.3.6",
+    "import": "0.0.6",
+    "install": "^0.11.0",
+    "mdi-material-ui": "^5.1.1",
+    "mdi-svg": "^2.2.43",
+    "npm": "^6.1.0",
+    "prop-types": "^15.6.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.3.2",
+    "react-mdi": "^0.5.7",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.17",
+    "recompose": "^0.27.1",
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.2.0",
+    "styled-components": "^3.2.6",
+    "typeface-roboto": "0.0.54",
+    "underscore.string": "^3.3.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
