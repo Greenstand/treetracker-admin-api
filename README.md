@@ -57,7 +57,15 @@ Run the setup script.  This script installs node modules, builds docker containe
 ```
 
 
-You can now view the treetracker admin at http://localhost:8080
+You can now view the treetracker admin at http://localhost:8080.
+
+It may take a few seconds for the web and api servers to come up.  You can monitor them using the docker logs commands as:
+
+```
+docker logs -f treetracker-admin-web
+docker logs -f treetracker-admin-api
+
+```
 
 
 
