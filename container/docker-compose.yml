@@ -1,0 +1,21 @@
+version: '3'
+services:
+  reverse-proxy:
+    image: "treetracker-reverse-proxy:latest"
+    ports:
+      - "8080:80"
+    restart: always
+  treetracker-admin-web:
+    container_name: "treetracker-admin"
+    image: "treetracker-admin:latest"
+    restart: always
+    volumes:
+     - ../client/build:/var/www/admin
+  treetracker-admin-api:
+    container_name: "treetracker-admin-api"
+    image: "treetracker-admin-api:latest"
+    restart: always
+    ports:
+     - "3000:3000"
+    volumes:
+     - ../:/opt/admin-api-server
