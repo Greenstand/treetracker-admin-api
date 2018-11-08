@@ -39,16 +39,16 @@ server {
 	index index.html index.htm index.nginx-debian.html;
 
 	server_name _;
-        set $httpc  "http://";
-        set $ip "127.0.0.1";
-        set $lc "127.0.0.1";
+  set $httpc  "http://";
+  set $ip "127.0.0.1";
+  set $lc "127.0.0.1";
 
 
-        location ^~ /api {
-                rewrite ^/api/(.*)$ /$1$is_args$args; break;
-                proxy_pass "${httpc}${lc}:3001${uri}";
-                #try_files $uri $uri/ =404;
-        }
+  location ^~ /api {
+    rewrite ^/api/(.*)$ /$1$is_args$args; break;
+    proxy_pass "${httpc}${lc}:3001${uri}";
+#try_files $uri $uri/ =404;
+  }
 
 
 	location / {
