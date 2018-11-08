@@ -23,13 +23,17 @@ We provide a development environment through docker that can run on your local e
 ### Set Up Docker
 To run docker on a local machine, you will have to install Docker first. Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM. Docker provides one for each OS by default.
 
-[Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
-
-You can alternatively install Docker for Mac using homebrew, using the following command
+Install Docker for Mac using homebrew, using the following command
 
 ```
 $ brew cask install docker
 ```
+
+You can alternatively install Docker via:  [Docker for Mac] (https://docs.docker.com/docker-for-mac/install/)
+
+Once Docker is installed, lauch Docker from the Applications GUI.
+
+
 
 [Docker for Windows](https://docs.docker.com/docker-for-windows/install/)
 
