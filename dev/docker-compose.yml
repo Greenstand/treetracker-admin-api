@@ -6,8 +6,8 @@ services:
       - "8080:80"
     restart: always
   treetracker-admin-web:
-    container_name: "treetracker-admin"
-    image: "treetracker-admin:latest"
+    container_name: "treetracker-admin-web"
+    image: "treetracker-admin-web:latest"
     restart: always
     volumes:
      - ../client:/opt/admin-web
