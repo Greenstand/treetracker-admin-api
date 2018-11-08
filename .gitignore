@@ -18,5 +18,3 @@ coverage
 node_modules
 npm-debug.log
 server/datasources.json
-
-config.js
