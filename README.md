@@ -1,10 +1,7 @@
-About this Repository:
-  This is the awesome API portion for the (admin panel)[https://github.com/Greenstand/treetracker-admin.]
-  Managed by the unbelievable @thiagodemellobueno
-  
 # treetracker-admin-api
 
-  >  TreeTracker's Admin Panel RESTful API built with loopback.
+  >  TreeTracker's Admin Panel Frontend adn RESTful API built with loopback.
+  Managed by the unbelievable @thiagodemellobueno
 
 ## Requirements
 
@@ -17,27 +14,13 @@ About this Repository:
 
 ## Setup
 
-In `server` directory you will need to create a `datasources.json` file that will be used to reference the source of data for Loopback.
+In `server` directory you will need to create a `datasources.json` file that will be used to reference the source of data for Loopback.  Contact the project maintainer on Slack to request access to our development database. 
 
-Contact the project maintainer to learn more.
+## Development Environment Quick Start
 
+We provide a development environment through docker that can run on your local environment.
 
-## Quick Start
-
-Run the following command to start the REST API.
-
-```
-$ npm run start
-```
-
-Run the following command to run the linter.
-
-```
-$ npm run lint
-```
-
-## Docker Setup
-
+### Set Up Docker
 To run docker on a local machine, you will have to install Docker first. Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM. Docker provides one for each OS by default.
 
 [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
@@ -53,19 +36,65 @@ $ brew cask install docker
 To install on linux, you can run `sudo apt-get install -y docker-ce` but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
 
 
-### Dockerw script
+### Install, build docker containers and go
 
-Run `./dockerw build` to build the image of the mobile API locally using defaults, and to run the image use `./dockerw run`.
+Install Node (see Requirements above)
 
-To see what arguments can be passed, simply run `./dockerw`. In order to use something created in the `build` mode, you must specify the same arguments in the `run` mode or it will attempt to pull the image. There is also an `up` mode that can be used, to build and run in one command with the same arguments.
+Clone this repository
 
-There is a server/datasources.json file that is created if one does not exist, which is for connecting to the database. Please edit this to refer to any test databases you are using.
+```
+git clone git@github.com:Greenstand/treetracker-admin-api.git
+cd treetracker-admin-api
+```
 
-## Alternative setup for MS Windows (Works on Linux and Mac also)
+Run the setup script.  This script installs node modules, builds docker containers, and starts them
+```
+./dev/setup.sh
+```
+
+
+You can now view the treetracker admin at http://localhost:8080
+
+
+
+To stop the dev environment use
+
+```
+./dev/down.sh
+```
+
+To start the dev environment back up use
+
+```
+./dev/up.sh
+```
+
+
+Just edit as you normally would to view changes in your development environment.
+
+
+### Alternative setup for MS Windows (Works on Linux and Mac also)
 On Windows the easiest way to develop and debug Node.js applications is using Visual Studio Code.
 It comes with Node.js support out of the box.
 
 https://code.visualstudio.com/docs
+
+
+
+
+## Quick Start For API only development
+
+Run the following command to start the REST API.
+
+```
+$ npm run start
+```
+
+Run the following command to run the linter.
+
+```
+$ npm run lint
+```
 
 ## Credit
 -----------
