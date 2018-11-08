@@ -10,7 +10,7 @@ services:
     image: "treetracker-admin:latest"
     restart: always
     volumes:
-     - ../client/build:/var/www/admin
+     - ../client:/opt/admin-web
   treetracker-admin-api:
     container_name: "treetracker-admin-api"
     image: "treetracker-admin-api:latest"
