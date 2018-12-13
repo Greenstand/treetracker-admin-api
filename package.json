@@ -8,7 +8,6 @@
   "scripts": {
     "lint": "eslint .",
     "start": "node .",
-    "posttest": "npm run lint && nsp check",
     "test": "./node_modules/.bin/mocha test/**/*.test.js"
   },
   "dependencies": {
