@@ -1,5 +1,5 @@
 {
-  "name": "treetracker-admin-api-loopback",
+  "name": "treetracker-admin-loopback",
   "version": "1.0.0",
   "main": "server/server.js",
   "engines": {
@@ -31,5 +31,5 @@
     "url": ""
   },
   "license": "UNLICENSED",
-  "description": "treetracker-admin-api-loopback"
+  "description": "treetracker-admin-loopback"
 }

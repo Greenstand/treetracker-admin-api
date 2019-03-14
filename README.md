@@ -1,7 +1,7 @@
 # treetracker-admin
 This portion of the project is to process tree data. TreeTracker's Admin Panel Frontend and RESTful API built with loopback.
 
-See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more info on goals
+See [Wiki](https://github.com/Greenstand/treetracker-admin/wiki) for more info on goals
 
 See [Project Board](https://github.com/orgs/Greenstand/projects/6)
 
@@ -53,8 +53,8 @@ Install Node (see Requirements above)
 Clone this repository
 
 ```
-git clone git@github.com:Greenstand/treetracker-admin-api.git
-cd treetracker-admin-api
+git clone git@github.com:Greenstand/treetracker-admin.git
+cd treetracker-admin
 ```
 
 Run the setup script.  This script installs node modules, builds docker containers, and starts them
@@ -69,7 +69,7 @@ It may take a few seconds for the web and api servers to come up.  You can monit
 
 ```
 docker logs -f treetracker-admin-web
-docker logs -f treetracker-admin-api
+docker logs -f treetracker-admin
 
 ```
 

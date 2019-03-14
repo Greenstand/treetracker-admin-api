@@ -11,9 +11,9 @@ services:
     restart: always
     volumes:
      - ../client:/opt/admin-web
-  treetracker-admin-api:
-    container_name: "treetracker-admin-api"
-    image: "treetracker-admin-api:latest"
+  treetracker-admin:
+    container_name: "treetracker-admin"
+    image: "treetracker-admin:latest"
     restart: always
     ports:
      - "3000:3000"
