@@ -73,6 +73,7 @@ docker logs -f treetracker-admin-api
 
 ```
 
+The REST API documentation can be viewed and explored by visiting http://localhost:3000/explorer
 
 
 To stop the dev environment use
