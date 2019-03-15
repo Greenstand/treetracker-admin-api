@@ -1,7 +1,13 @@
-# treetracker-admin-api
+# treetracker-admin
+This portion of the project is to process tree data. TreeTracker's Admin Panel Frontend and RESTful API built with loopback.
 
-  >  TreeTracker's Admin Panel Frontend adn RESTful API built with loopback.
-  Managed by the unbelievable @thiagodemellobueno
+See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more info on goals
+
+See [Project Board](https://github.com/orgs/Greenstand/projects/6)
+
+See [Contributing to The Cause](https://github.com/Greenstand/Development-Overview#contributing-to-the-cause)
+
+Please add any missing content to this readme. 
 
 ## Requirements
 
@@ -67,6 +73,7 @@ docker logs -f treetracker-admin-api
 
 ```
 
+The REST API documentation can be viewed and explored by visiting http://localhost:3000/explorer
 
 
 To stop the dev environment use
