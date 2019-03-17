@@ -29,7 +29,9 @@ const styles = theme => ({
     width: '270px'
   },
   inactiveCol: {
-    cursor: 'pointer'
+    cursor: 'pointer',
+    width: '1%',
+    whiteSpace: 'no-wrap'
   },
   table: {
     minHeight: '100vh'
