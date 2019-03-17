@@ -31,7 +31,8 @@ const EnhancedTableHead = (props) => {
     { id: 'id', label: 'Id', sortable: true },
     { id: 'timeCreated', label: 'Creation', sortable: true },
     { id: 'timeUpdated', label: 'Updated', sortable: true },
-    { id: 'Location', label: 'Location' }
+    { id: 'Location', label: 'Location' },
+    { id: 'delete', label: 'Mark Inactive' }
   ]
 
   const handleSelectAll = () => {
@@ -56,7 +57,7 @@ const EnhancedTableHead = (props) => {
           />
         </TableCell>
         {columnData.map(column => {
-          if( column.sortable ) {
+          if (column.sortable) {
             return (
               <TableCell
                 className={classes.head}
@@ -73,7 +74,7 @@ const EnhancedTableHead = (props) => {
                   <TableSortLabel
                     active={orderBy === column.id}
                     direction={order}
-                    onClick={function(e){ handleSort(order, column.id) }}
+                    onClick={function (e) { handleSort(order, column.id) }}
                   >
                     {column.label}
                   </TableSortLabel>
@@ -108,7 +109,7 @@ const mapState = state => {
 
 const mapDispatch = dispatch => {
   return {
-    sortTrees: (order, orderBy) => dispatch.trees.sortTrees({order, orderBy})
+    sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order, orderBy })
   }
 }
 
