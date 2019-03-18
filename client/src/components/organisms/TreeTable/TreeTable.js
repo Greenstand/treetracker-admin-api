@@ -12,6 +12,7 @@ import dateFormat from 'dateformat'
 import Checkbox from '@material-ui/core/Checkbox'
 import Tooltip from '@material-ui/core/Tooltip'
 import Drawer from '@material-ui/core/Drawer';
+import Delete from '@material-ui/icons/Delete';
 
 import TreeDetails from '../TreeDetails/TreeDetails'
 import EnhancedTableHead from '../../molecules/EnhancedTableHead/EnhancedTableHead'
@@ -26,6 +27,11 @@ const styles = theme => ({
   },
   locationCol: {
     width: '270px'
+  },
+  inactiveCol: {
+    cursor: 'pointer',
+    width: '1%',
+    whiteSpace: 'no-wrap'
   },
   table: {
     minHeight: '100vh'
@@ -94,6 +100,21 @@ class TreeTable extends Component {
     });
   }
 
+  markInactive = (event, id) => {
+    event.stopPropagation();
+    this.props.markInactiveTree(id).then(
+      () => {
+        const payload = {
+          page: this.props.page,
+          rowsPerPage: this.props.rowsPerPage,
+          order: this.props.order,
+          orderBy: this.props.orderBy
+        }
+        this.props.getTreesAsync(payload)
+      }
+    );
+  }
+
   onPageChange = (event, page) => {
     this.props.getTreesAsync({ page: page, rowsPerPage: this.props.rowsPerPage })
   }
@@ -102,9 +123,7 @@ class TreeTable extends Component {
     this.props.getTreesAsync({ page: this.props.page, rowsPerPage: event.target.value })
   }
 
-  isSelected = (id) => {
-    this.props.selected.indexOf(id) !== -1
-  }
+  isSelected = (id) => this.props.selected.indexOf(id) !== -1
 
   render() {
     const { numSelected, classes, rowsPerPage, selected, order, orderBy, treesArray, getLocationName, treeCount, byId, tree } = this.props
@@ -112,7 +131,7 @@ class TreeTable extends Component {
       <div >
         <Table className={classes.tableBody}>
           {/*
-           State handling betweenn treetable and EnhancedTableHead are a non-reduxy right now
+           State handling between treetable and EnhancedTableHead are a non-reduxy right now
            We should probably fix that, but it's not a huge problem. Consistency though.
            */ }
           <EnhancedTableHead
@@ -128,10 +147,10 @@ class TreeTable extends Component {
               const isSelected = this.isSelected(tree.id)
               const location = true //byId[tree.id] ? byId[tree.id].location : false
               // this probably belongs elsewhere…
-              const city = ( location && location.city !== undefined )? `${location.city},` : ''
-              const country = ( location && location.country !== undefined )? `${location.country}` : ''
+              const city = (location && location.city !== undefined) ? `${location.city},` : ''
+              const country = (location && location.country !== undefined) ? `${location.country}` : ''
 
-              if(!location) getLocationName(tree.id, tree.lat, tree.lon)
+              if (!location) getLocationName(tree.id, tree.lat, tree.lon)
               return (
                 <TableRow
                   key={tree.id}
@@ -146,11 +165,12 @@ class TreeTable extends Component {
                   {location ? (
                     /* @Todo: I'd love to instead send a get request to the API, but we need auth stuff first... */
                     <Tooltip title={`${tree.lat} ${tree.lon}`}>
-                        <TableCell>{`${city} ${country}`}</TableCell>
+                      <TableCell>{`${city} ${country}`}</TableCell>
                     </Tooltip>
                   ) : (
-                    <TableCell>{`${Number(tree.lat).toPrecision(4)}, ${Number(tree.lon).toPrecision(4)}`}</TableCell>
-                  )}
+                      <TableCell>{`${Number(tree.lat).toPrecision(4)}, ${Number(tree.lon).toPrecision(4)}`}</TableCell>
+                    )}
+                  <TableCell className={classes.inactiveCol} onClick={(event) => this.markInactive(event, tree.id)}><Delete /></TableCell>
                 </TableRow>
               )
             })}
@@ -159,7 +179,7 @@ class TreeTable extends Component {
         <TablePagination
           className={classes.pagination}
           component="div"
-          count={treeCount/rowsPerPage}
+          count={treeCount / rowsPerPage}
           rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[25, 50, 75, 100, 250, 500]}
           page={this.props.page}
@@ -172,8 +192,8 @@ class TreeTable extends Component {
           onChangePage={this.onPageChange}
           onChangeRowsPerPage={this.onChangeRowsPerPage}
         />
-      <Drawer anchor="right" open={this.state.detailsPane} onClose={(event) => this.toggleDrawer(event, undefined)}>
-          <TreeDetails tree={tree}/>
+        <Drawer anchor="right" open={this.state.detailsPane} onClose={(event) => this.toggleDrawer(event, undefined)}>
+          <TreeDetails tree={tree} />
         </Drawer>
       </div>
     )
@@ -201,7 +221,8 @@ const mapState = state => {
 const mapDispatch = (dispatch) => ({
   getTreesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
   getLocationName: (id, lat, lon) => dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  getTreeAsync: (id) => dispatch.trees.getTreeAsync(id)
+  getTreeAsync: (id) => dispatch.trees.getTreeAsync(id),
+  markInactiveTree: (id) => dispatch.trees.markInactiveTree(id)
 })
 
 export default compose(
