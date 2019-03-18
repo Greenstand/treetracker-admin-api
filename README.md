@@ -53,8 +53,8 @@ Install Node (see Requirements above)
 Clone this repository
 
 ```
-git clone git@github.com:Greenstand/treetracker-admin-api.git
-cd treetracker-admin-api
+git clone git@github.com:Greenstand/treetracker-admin.git
+cd treetracker-admin
 ```
 
 Run the setup script.  This script installs node modules, builds docker containers, and starts them
