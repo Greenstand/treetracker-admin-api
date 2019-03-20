@@ -81,7 +81,6 @@ class AppDrawer extends Component {
 
   render() {
     const { isOpen, changeCurrentView, closeAppDrawer, currentView, classes, theme } = this.props
-    // console.log("| Appdrawer | render | currentView  » |", currentView )
     return(
       <Drawer
         variant="permanent"
@@ -100,7 +99,6 @@ class AppDrawer extends Component {
             return (
               <ListItem className={(!isOpen) ? classes.listItem : ''} key={item.id} button onClick={
                 function(e) {
-                  // console.log('navItemClicked »»', item.id)
                   changeCurrentView(item.id)
                 }
               }>

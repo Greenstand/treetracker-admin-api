@@ -10,14 +10,11 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
-
+//
 import AppDrawer from '../../molecules/AppDrawer/AppDrawer'
 import Trees from '../../biomes/Trees/Trees'
 import ImageScrubber from '../../biomes/ImageScrubber/ImageScrubber'
-
 import { drawerWidth } from '../../../common/variables'
-
-
 
 const styles = theme => ({
   root: {
@@ -88,7 +85,6 @@ const AppFrame = (props) => ({
 
   render() {
     const { classes, theme, toggleAppDrawer, appDrawer, currentView } = this.props
-    // console.log('| AppFrame | render | currentView » |', currentView)
     let tabContents
     if(currentView === 'trees') {
       tabContents = (
