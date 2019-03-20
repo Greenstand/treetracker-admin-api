@@ -15,7 +15,6 @@ import TreeTable from '../../organisms/TreeTable/TreeTable'
 const Trees = (props) => ({
 
   render() {
-    // console.log('| Tree | render | props » |', props)
     return (
       <div className="trees">
         <TableToolbar />
