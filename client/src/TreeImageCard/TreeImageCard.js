@@ -19,6 +19,7 @@ const styles = theme => ({
     color: '#f00'
   },
   card: {
+    cursor: 'pointer',
     margin: '0.5rem',
     border: '1px #dedede solid'
   },
@@ -38,11 +39,11 @@ class TreeImageCard extends Component {
   }
 
   render() {
-    const tree  = this.props.tree
-    const classes = this.props.classes
+    const { tree, classes, toggleSelection } = this.props
+    console.log("toggleSelection", toggleSelection, this.props, tree)
     return (
       <div className={classes.wrapper}>
-        <Card className={classes.card}>
+        <Card className={classes.card} onClick={function(e) { e.stopPropagation(); toggleSelection(tree.id) }}>
           <CardContent>
             <CardMedia
               className={classes.media}
@@ -62,14 +63,13 @@ class TreeImageCard extends Component {
   }
 }
 
-
-
 const mapDispatch = (dispatch) => ({
-  getLocationName: (id, lat, lon) => dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  // `Mark Inactive` (Deactivate tree will likely be mapped here look at models/trees.js ...)
+  toggleSelection: (id) => dispatch.imageScrubber.toggleSelection({ id: id })
+  // markTreeInactive:
+  // markTreeActive:
 })
 
 export default compose(
   withStyles(styles, { withTheme: true, name: 'TreeImageCard' }),
-  connect(mapDispatch)
+  connect(null, mapDispatch)
 )(TreeImageCard)

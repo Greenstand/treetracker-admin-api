@@ -9,13 +9,39 @@ import compose from 'recompose/compose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
-import TreeImageCard from '../../molecules/TreeImageCard/TreeImageCard'
-
-
+import Typography from '@material-ui/core/Typography'
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions'
+import CardContent from '@material-ui/core/CardContent'
+import CardMedia from '@material-ui/core/CardMedia'
+import Button from '@material-ui/core/Button' // replace with icons down the line
+import { selectedHighlightColor } from '../../../common/variables.js'
 const styles = theme => ({
   wrapper: {
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    padding: '2rem'
+  },
+  cardImg: {
+    width: '100%',
+    height: 'auto'
+  },
+  cardTitle: {
+    color: '#f00'
+  },
+  card: {
+    cursor: 'pointer',
+    margin: '0.5rem',
+    border: `2px #eee solid`
+  },
+  selected: {
+    border: `2px ${selectedHighlightColor} solid`
+  },
+  cardMedia: {
+    height: '12rem'
+  },
+  cardWrapper: {
+    width: '33.33%',
   }
 })
 
@@ -31,16 +57,34 @@ class ImageScrubber extends Component {
     this.props.getTreesWithImagesAsync(payload)
   }
 
-  handleSelection = (e) => {}
-
   render() {
-    const { numSelected, classes, rowsPerPage, selected, order, orderBy, treesArray, getLocationName, treeCount, byId, tree } = this.props
+    const { numSelected, classes, rowsPerPage, selected, order, orderBy, treesArray, getLocationName, treeCount, byId, tree, toggleSelection } = this.props
     return (
       <section className={classes.wrapper}>
         {this.props.treesArray.map(tree => {
           if (tree.imageUrl) {
             return (
-              <TreeImageCard tree={tree}></TreeImageCard>
+              <div className={classes.cardWrapper} key={tree.id}>
+                <Card id={`card_${tree.id}`} className={classes.card} onClick={function(e) {
+                    e.stopPropagation()
+                    document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
+                    toggleSelection(tree.id)
+                  }}>
+                  <CardContent>
+                    <CardMedia
+                      className={classes.cardMedia}
+                      image={tree.imageUrl}
+                    />
+                    <Typography className={classes.cardTitle} color="textSecondary" gutterBottom>
+                      Tree # {tree.id}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small">Delete</Button>
+                    <Button size="small">Open Tree in Trees View</Button>
+                  </CardActions>
+                </Card>
+              </div>
             )
           }
         })}
@@ -68,9 +112,10 @@ const mapState = state => {
 
 const mapDispatch = (dispatch) => ({
   getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
-  getLocationName: (id, lat, lon) => dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  markInactiveTree: (id) => dispatch.trees.markInactiveTree(id),
-  getTreeAsync: (id) => dispatch.trees.getTreeAsync(id)
+  getLocationName: (id, lat, lon) => dispatch.imageScrubber.getLocationName({ id: id, latitude: lat, longitude: lon }),
+  markInactiveTree: (id) => dispatch.imageScrubber.markTreeInactive(id),
+  getTreeAsync: (id) => dispatch.imageScrubber.getTreeAsync(id),
+  toggleSelection: (id) => dispatch.imageScrubber.toggleSelection({ id: id })
 })
 
 export default compose(
