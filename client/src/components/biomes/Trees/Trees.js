@@ -5,36 +5,35 @@ Trees is a contaier component (no visual representation of it's own and concerne
 handling the comms between the tree view components and the store/models)
 
 */
-import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import TableToolbar from '../../molecules/TableToolbar/TableToolbar'
-import TreeTable from '../../organisms/TreeTable/TreeTable'
+import TableToolbar from '../../molecules/TableToolbar/TableToolbar';
+import TreeTable from '../../organisms/TreeTable/TreeTable';
 
-const Trees = (props) => ({
-
+const Trees = props => ({
   render() {
     // console.log('| Tree | render | props » |', props)
     return (
       <div className="trees">
-        <TableToolbar />
         <TreeTable />
       </div>
-    )
+    );
   }
-})
+});
 
-const mapState = (state) => {
-  return { state: state }
-}
+const mapState = state => {
+  return { state: state };
+};
 
 const mapDispatch = dispatch => {
-  return {
-  }
-}
+  return {};
+};
 
-Trees.propTypes = {
-}
+Trees.propTypes = {};
 
-export default connect(mapState, mapDispatch)(Trees)
+export default connect(
+  mapState,
+  mapDispatch
+)(Trees);
