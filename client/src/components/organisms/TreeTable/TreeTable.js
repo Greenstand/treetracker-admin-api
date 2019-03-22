@@ -166,7 +166,7 @@ class TreeTable extends Component {
       }
     ];
     const options = {
-      filterType: 'checkbox',
+      filterType: 'dropdown',
       onRowClick: (_, rowMeta) => {
         const id = treesArray[rowMeta.dataIndex].id;
         this.toggleDrawer(id);
