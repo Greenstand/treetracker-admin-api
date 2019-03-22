@@ -185,7 +185,7 @@ class TreeTable extends Component {
     return (
       <React.Fragment>
         <MUIDataTable
-          title={'Employee List'}
+          title={'Trees'}
           data={this.props.treesArray}
           columns={columnData}
           options={options}
