@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import AppFrame from './components/environments/AppFrame/AppFrame'
+import AppFrame from './components/AppFrame/AppFrame'
 
 const theme = createMuiTheme({
   palette: {

@@ -51,7 +51,7 @@ const imageScrubber = {
     toggleActions(state) {
       return { actionNav: { isOpen: !state.isOpen } }
     },
-    openActioons(state) {
+    openActions(state) {
       return { actionNav: { isOpen: true } }
     },
     closeActions(state) {

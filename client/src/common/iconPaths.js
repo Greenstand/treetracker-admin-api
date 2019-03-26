@@ -1,5 +1,5 @@
 /*
-SVG Paths for atoms/Icon
+SVG Paths for /Icon
 See: https://blog.michaltakac.com/family-quest-day-4-dynamic-sidebarmenu-and-collapsing-sidebar-component-d6b07e4f4d7f
 Icon paths from: https://materialdesignicons.com/
 */

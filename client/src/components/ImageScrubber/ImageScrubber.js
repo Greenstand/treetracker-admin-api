@@ -1,9 +1,3 @@
-/*
-PictureScrubber
-
-A handy tool for quickly flagging bad images
-
-*/
 import React, { Component } from 'react'
 import compose from 'recompose/compose'
 import PropTypes from 'prop-types'
@@ -15,7 +9,7 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button' // replace with icons down the line
-import { selectedHighlightColor } from '../../../common/variables.js'
+import { selectedHighlightColor } from '../../common/variables.js'
 const styles = theme => ({
   wrapper: {
     display: 'flex',
@@ -58,36 +52,80 @@ class ImageScrubber extends Component {
   }
 
   render() {
-    const { numSelected, classes, rowsPerPage, selected, order, orderBy, treesArray, getLocationName, treeCount, byId, tree, toggleSelection } = this.props
+    const {
+      numSelected,
+      classes,
+      rowsPerPage,
+      selected,
+      order,
+      orderBy,
+      treesArray,
+      getLocationName,
+      treeCount,
+      byId,
+      tree,
+      toggleSelection
+    } = this.props
     return (
       <section className={classes.wrapper}>
         {this.props.treesArray.map(tree => {
           if (tree.imageUrl) {
             return (
-              <div className={classes.cardWrapper} key={tree.id}>
-                <Card id={`card_${tree.id}`} className={classes.card} onClick={function(e) {
-                    e.stopPropagation()
-                    document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
-                    toggleSelection(tree.id)
-                  }}>
+              <div
+                className={classes.cardWrapper}
+                key={tree.id}>
+                <Card id={`card_${tree.id}`}
+                  className={classes.card}
+                  onClick={
+                    function(e) {
+                      e.stopPropagation()
+                      document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
+                      toggleSelection(tree.id)
+                    }
+                  }>
                   <CardContent>
                     <CardMedia
                       className={classes.cardMedia}
                       image={tree.imageUrl}
                     />
-                    <Typography className={classes.cardTitle} color="textSecondary" gutterBottom>
-                      Tree # {tree.id}
+                    <Typography
+                      className={classes.cardTitle}
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      Tree# {tree.id}
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small">Delete</Button>
-                    <Button size="small">Open Tree in Trees View</Button>
+                    <Button
+                      size="small"
+                      onClick={
+                        function(e){
+                          // e.stopPropagation()
+                          alert("clicked tree id:" + tree.id)
+                        }
+                      }
+                    >
+                    Reject
+                    </Button>
+                    <Button 
+                      size="small"
+                      onClick={
+                        (e)=>{
+                          // e.stopPropagation()
+                          alert("clicked tree id:" + tree.id)
+                        }
+                      }
+                    >
+                    Approve
+                    </Button>
                   </CardActions>
                 </Card>
               </div>
             )
           }
-        })}
+        })
+        }
       </section>
     )
   }
