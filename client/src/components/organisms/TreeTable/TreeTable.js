@@ -1,25 +1,15 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import TablePagination from '@material-ui/core/TablePagination';
-import dateFormat from 'dateformat';
-import Checkbox from '@material-ui/core/Checkbox';
-import Tooltip from '@material-ui/core/Tooltip';
 import Drawer from '@material-ui/core/Drawer';
 
 import TreeDetails from '../TreeDetails/TreeDetails';
-import EnhancedTableHead from '../../molecules/EnhancedTableHead/EnhancedTableHead';
 
 // change 88 to unit spacing,
-const styles = theme => ({
+const styles = () => ({
   root: {
     position: 'relative',
     top: '88px',
@@ -48,41 +38,20 @@ class TreeTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      detailsPane: false
+      detailsPane: false,
+      page: 0
     };
-    this.onChangeRowsPerPage = this.onChangeRowsPerPage.bind(this);
   }
 
   componentDidMount() {
     const payload = {
-      page: this.props.page,
+      page: this.state.page,
       rowsPerPage: this.props.rowsPerPage,
       order: this.props.order,
       orderBy: this.props.orderBy
     };
     this.props.getTreesAsync(payload);
   }
-
-  handleSelection = e => {};
-
-  handleClick = (event, id) => {
-    const { selected } = this.state;
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    this.setState({ selected: newSelected });
-  };
 
   toggleDrawer = id => {
     console.log(id);
@@ -93,36 +62,27 @@ class TreeTable extends Component {
     });
   };
 
-  onPageChange = (event, page) => {
+  onPageChange = (page, rowsPerPage) => {
     this.props.getTreesAsync({
-      page: page,
-      rowsPerPage: this.props.rowsPerPage
+      page,
+      rowsPerPage
+    });
+    this.setState({
+      page
     });
   };
 
-  onChangeRowsPerPage = event => {
+  onChangeRowsPerPage = rowsPerPage => {
     this.props.getTreesAsync({
-      page: this.props.page,
-      rowsPerPage: event.target.value
+      page: this.state.page,
+      rowsPerPage
     });
   };
 
   isSelected = id => this.props.selected.indexOf(id) !== -1;
 
   render() {
-    const {
-      numSelected,
-      classes,
-      rowsPerPage,
-      selected,
-      order,
-      orderBy,
-      treesArray,
-      getLocationName,
-      treeCount,
-      byId,
-      tree
-    } = this.props;
+    const { treesArray, tree } = this.props;
     const columnData = [
       { name: 'id', label: 'Id', options: { sortable: true } },
       { name: 'timeCreated', label: 'Creation', options: { sortable: true } },
@@ -131,17 +91,8 @@ class TreeTable extends Component {
         label: 'Location',
         options: {
           sortable: false,
-          customBodyRender: (value, tableMeta, updateValue) => {
+          customBodyRender: () => {
             return <span>botched rendering func</span>;
-          }
-        }
-      },
-      {
-        label: 'Mark Inactive',
-        options: {
-          sortable: false,
-          customBodyRender: (value, tableMeta, updateValue) => {
-            return <Delete />;
           }
         }
       }
@@ -151,17 +102,24 @@ class TreeTable extends Component {
       onRowClick: (_, rowMeta) => {
         const id = treesArray[rowMeta.dataIndex].id;
         this.toggleDrawer(id);
-      }
-      /*serverSide: true,
+      },
+      serverSide: true,
+      count: 100, // changing to this.state.treeCount breaks pagination
+      page: this.state.page,
+      rowsPerPage: this.props.rowsPerPage,
+      rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
       onTableChange: (action, tableState) => {
-        const payload = {
-          page: this.props.page,
-          rowsPerPage: this.props.rowsPerPage,
-          order: this.props.order,
-          orderBy: this.props.orderBy
-        };
-        this.props.getTreesAsync(payload);
-      }*/
+        console.log(action, tableState); // TODO: remove
+
+        switch (action) {
+          case 'changePage':
+            this.onPageChange(tableState.page, tableState.rowsPerPage);
+            break;
+          case 'changeRowsPerPage':
+            this.onChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+        }
+      }
     };
     return (
       <React.Fragment>
