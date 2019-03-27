@@ -15,6 +15,7 @@
     "install": "^0.11.0",
     "mdi-material-ui": "^5.1.1",
     "mdi-svg": "^2.2.43",
+    "mui-datatables": "^2.0.0-beta.59",
     "npm": "^6.1.0",
     "prop-types": "^15.6.1",
     "react": "^16.0.0",
