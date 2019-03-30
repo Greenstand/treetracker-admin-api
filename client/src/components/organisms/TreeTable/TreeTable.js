@@ -79,7 +79,9 @@ class TreeTable extends Component {
     });
   };
 
-  isSelected = id => this.props.selected.indexOf(id) !== -1;
+  onSort = (column, ascending) => {
+    this.props.sortTrees(order, orderBy)
+  };
 
   render() {
     const { treesArray, tree } = this.props;
@@ -92,7 +94,7 @@ class TreeTable extends Component {
         options: {
           sortable: false,
           customBodyRender: () => {
-            return <span>botched rendering func</span>;
+            return <span>botched rendering func</span>; // TODO: replace
           }
         }
       }
@@ -104,7 +106,7 @@ class TreeTable extends Component {
         this.toggleDrawer(id);
       },
       serverSide: true,
-      count: 100, // changing to this.state.treeCount breaks pagination
+      count: this.props.treeCount,
       page: this.state.page,
       rowsPerPage: this.props.rowsPerPage,
       rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
@@ -117,6 +119,9 @@ class TreeTable extends Component {
             break;
           case 'changeRowsPerPage':
             this.onChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+          case 'sort':
+            this.onSort(tableState.activeColumn, tableState.announceText.includes('ascending'))
             break;
         }
       }
@@ -155,7 +160,8 @@ const mapState = state => {
     numSelected: state.trees.selected.length,
     byId: state.trees.byId,
     isOpen: state.trees.displayDrawer.isOpen,
-    tree: state.trees.tree
+    tree: state.trees.tree,
+    treeCount: state.trees.treeCount,
   };
 };
 
