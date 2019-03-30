@@ -9,7 +9,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import TableToolbar from '../../molecules/TableToolbar/TableToolbar';
 import TreeTable from '../../organisms/TreeTable/TreeTable';
 
 const Trees = props => ({
