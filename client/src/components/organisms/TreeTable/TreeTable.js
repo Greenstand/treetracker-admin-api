@@ -80,7 +80,7 @@ class TreeTable extends Component {
   };
 
   onSort = (column, ascending) => {
-    this.props.sortTrees(order, orderBy)
+    this.props.sortTrees(column, ascending);
   };
 
   render() {
