@@ -13,6 +13,7 @@
 .DS_Store
 .idea
 .project
+.vscode
 .strong-pm
 coverage
 node_modules

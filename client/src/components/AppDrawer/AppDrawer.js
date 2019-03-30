@@ -12,8 +12,8 @@ import ListItemText from '@material-ui/core/ListItemText'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import Icon from '../../atoms/Icon/Icon'
-import { drawerWidth } from '../../../common/variables'
+import Icon from '../Icon/Icon'
+import { drawerWidth } from '../../common/variables'
 
 const styles = (theme) => {
   let activeIcon = {
