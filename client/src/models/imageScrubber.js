@@ -49,18 +49,22 @@ const imageScrubber = {
       }
     },
     receiveStatus(state, payload) {
-      // state.trees.data.forEach(x => {
-      //   if (x.id === payload.id) {
-      //     x = payload
-      //   }
-      // });
-
-      return { ...state }
+      /**
+       NOTE: May need to get access to tree store to get the tree to update in the TreeTable - 03/31/19
+       // state.trees.data.forEach(x => {
+       //   if (x.id === payload.id) {
+       //     x.active = payload.active
+       //   }
+       // });
+       //
+       // return { ...state }
+      **/
+      return { ...state, payload }
     },
     toggleActions(state) {
       return { actionNav: { isOpen: !state.isOpen } }
     },
-    openActioons(state) {
+    openActions(state) {
       return { actionNav: { isOpen: true } }
     },
     closeActions(state) {
@@ -97,7 +101,9 @@ const imageScrubber = {
       const data = { "active": bool };
       Axios.patch(query, data)
         .then((res) => {
-          this.receiveStatus(res.data)
+          if (res.status === 200) {
+            this.receiveStatus(res.data)
+          }
         })
         .catch(err => console.error(`ERROR: FAILED TO RETRIEVE STATUS ${err}`))
     },

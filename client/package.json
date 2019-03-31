@@ -19,6 +19,7 @@
     "prop-types": "^15.6.1",
     "react": "^16.0.0",
     "react-dom": "^16.3.2",
+    "react-infinite": "^0.13.0",
     "react-mdi": "^0.5.7",
     "react-redux": "^5.0.7",
     "react-router": "^4.2.0",
