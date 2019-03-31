@@ -7,4 +7,5 @@ WORKDIR $DIR
 
 RUN npm install supervisor -g
 
-ENTRYPOINT supervisor server/server.js
+WORKDIR $DIR/server
+ENTRYPOINT supervisor server.js
