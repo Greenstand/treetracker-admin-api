@@ -14,7 +14,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import Drawer from '@material-ui/core/Drawer';
 
 import TreeDetails from '../TreeDetails/TreeDetails'
-import EnhancedTableHead from '../../molecules/EnhancedTableHead/EnhancedTableHead'
+import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead'
 
 // change 88 to unit spacing,
 const styles = theme => ({
@@ -103,7 +103,7 @@ class TreeTable extends Component {
   }
 
   isSelected = (id) => {
-    this.props.selected.indexOf(id) !== -1
+    return this.props.selected.indexOf(id) !== -1
   }
 
   render() {
