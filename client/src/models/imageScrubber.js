@@ -48,6 +48,15 @@ const imageScrubber = {
         return { ...state, byId }
       }
     },
+    receiveStatus(state, payload) {
+      // state.trees.data.forEach(x => {
+      //   if (x.id === payload.id) {
+      //     x = payload
+      //   }
+      // });
+
+      return { ...state }
+    },
     toggleActions(state) {
       return { actionNav: { isOpen: !state.isOpen } }
     },
@@ -83,13 +92,14 @@ const imageScrubber = {
         this.receiveLocation(null, { id: payload.id, address: 'cached' })
       }
     },
-    async markTreeInactive(id) {
+    async toggleTreeActive(id, bool) {
       const query = `${API_ROOT}/trees/${id}/`;
-      const data = { "active": false };
+      const data = { "active": bool };
       Axios.patch(query, data)
-        .then((response) => {
-          this.receiveStatus(response.status);
+        .then((res) => {
+          this.receiveStatus(res.data)
         })
+        .catch(err => console.error(`ERROR: FAILED TO RETRIEVE STATUS ${err}`))
     },
   }
 }
