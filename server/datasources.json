@@ -1,0 +1,14 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "treetracker": {
+    "host": "107.170.246.116",
+    "port": 5432,
+    "database": "treetracker",
+    "user" : "treetracker",
+    "password": "tr33dev",
+    "connector": "postgresql"
+  }
+}
