@@ -103,7 +103,7 @@ class TreeTable extends Component {
   }
 
   isSelected = (id) => {
-    this.props.selected.indexOf(id) !== -1
+    return this.props.selected.indexOf(id) !== -1
   }
 
   render() {
