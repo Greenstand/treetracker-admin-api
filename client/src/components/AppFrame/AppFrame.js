@@ -10,7 +10,8 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
-//
+
+import Infinite from 'react-infinite'
 import AppDrawer from '../AppDrawer/AppDrawer'
 import Trees from '../Trees/Trees'
 import ImageScrubber from '../ImageScrubber/ImageScrubber'
@@ -81,6 +82,11 @@ const styles = theme => ({
   }
 });
 
+const scroll = {
+  containerHeight: 200,
+  elementHeight: 40
+}
+
 const AppFrame = (props) => ({
 
   render() {
@@ -92,7 +98,9 @@ const AppFrame = (props) => ({
       )
     } else if(currentView === 'imageScrubber') {
       tabContents = (
-        <ImageScrubber />
+        <Infinite containerHeight={scroll.containerHeight} elementHeight={scroll.elementHeight}>
+          <ImageScrubber />
+        </Infinite>
       )
     }
     return (

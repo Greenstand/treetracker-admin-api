@@ -20,6 +20,7 @@
     "prop-types": "*",
     "react": "*",
     "react-dom": "*",
+    "react-infinite": "*",
     "react-mdi": "*",
     "react-redux": "*",
     "react-router": "*",
