@@ -51,12 +51,8 @@ const imageScrubber = {
     receiveStatus(state, payload) {
       /**
        NOTE: May need to get access to tree store to get the tree to update in the TreeTable - 03/31/19
-       // state.trees.data.forEach(x => {
-       //   if (x.id === payload.id) {
-       //     x.active = payload.active
-       //   }
-       // });
-       //
+       // let i = state.trees.data.indexOf(payload)
+       // state.trees.data[i].active = payload.active
        // return { ...state }
       **/
       return { ...state, payload }
@@ -96,9 +92,9 @@ const imageScrubber = {
         this.receiveLocation(null, { id: payload.id, address: 'cached' })
       }
     },
-    async toggleTreeActive(id, bool) {
+    async toggleTreeActive(id, isActive) {
       const query = `${API_ROOT}/trees/${id}/`;
-      const data = { "active": bool };
+      const data = { "active": isActive };
       Axios.patch(query, data)
         .then((res) => {
           if (res.status === 200) {

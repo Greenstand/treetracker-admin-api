@@ -51,11 +51,10 @@ class ImageScrubber extends Component {
     this.props.getTreesWithImagesAsync(payload)
   }
 
-  onStatusToggle = (e, id, bool) => {
+  onStatusToggle = (e, id, isActive) => {
     const { toggleTreeActive } = this.props;
     e.stopPropagation();
-    /** True Active || False Inactive **/
-    toggleTreeActive(id, bool);
+    toggleTreeActive(id, isActive);
   }
 
   render() {

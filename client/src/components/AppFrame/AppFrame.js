@@ -82,6 +82,11 @@ const styles = theme => ({
   }
 });
 
+const scroll = {
+  containerHeight: 200,
+  elementHeight: 40
+}
+
 const AppFrame = (props) => ({
 
   render() {
@@ -93,7 +98,7 @@ const AppFrame = (props) => ({
       )
     } else if(currentView === 'imageScrubber') {
       tabContents = (
-        <Infinite containerHeight={200} elementHeight={40}>
+        <Infinite containerHeight={scroll.containerHeight} elementHeight={scroll.elementHeight}>
           <ImageScrubber />
         </Infinite>
       )
