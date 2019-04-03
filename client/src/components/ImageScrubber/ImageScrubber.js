@@ -51,6 +51,12 @@ class ImageScrubber extends Component {
     this.props.getTreesWithImagesAsync(payload)
   }
 
+  onStatusToggle = (e, id, isActive) => {
+    const { toggleTreeActive } = this.props;
+    e.stopPropagation();
+    toggleTreeActive(id, isActive);
+  }
+
   render() {
     const {
       numSelected,
@@ -99,22 +105,14 @@ class ImageScrubber extends Component {
                   <CardActions>
                     <Button
                       size="small"
-                      onClick={
-                        function(e){
-                          // e.stopPropagation()
-                          alert("clicked tree id:" + tree.id)
-                        }
-                      }
+                      onClick={(e) => this.onStatusToggle(e, tree.id, true)}
                     >
                     Reject
                     </Button>
-                    <Button 
+                    <Button
                       size="small"
                       onClick={
-                        (e)=>{
-                          // e.stopPropagation()
-                          alert("clicked tree id:" + tree.id)
-                        }
+                        (e)=> this.onStatusToggle(e, tree.id, false)
                       }
                     >
                     Approve
@@ -151,7 +149,7 @@ const mapState = state => {
 const mapDispatch = (dispatch) => ({
   getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
   getLocationName: (id, lat, lon) => dispatch.imageScrubber.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  markInactiveTree: (id) => dispatch.imageScrubber.markTreeInactive(id),
+  toggleTreeActive: (id) => dispatch.imageScrubber.toggleTreeActive(id),
   getTreeAsync: (id) => dispatch.imageScrubber.getTreeAsync(id),
   toggleSelection: (id) => dispatch.imageScrubber.toggleSelection({ id: id })
 })
