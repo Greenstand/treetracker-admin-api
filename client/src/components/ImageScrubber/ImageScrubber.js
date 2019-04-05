@@ -9,7 +9,9 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button' // replace with icons down the line
+import Infinite from 'react-infinite'
 import { selectedHighlightColor } from '../../common/variables.js'
+
 const styles = theme => ({
   wrapper: {
     display: 'flex',
@@ -38,6 +40,11 @@ const styles = theme => ({
     width: '33.33%',
   }
 })
+
+const scroll = {
+  containerHeight: 1017,
+  elementHeight: 295
+}
 
 class ImageScrubber extends Component {
 
@@ -73,58 +80,66 @@ class ImageScrubber extends Component {
       toggleSelection
     } = this.props
     return (
-      <section className={classes.wrapper}>
-        {this.props.treesArray.map(tree => {
-          if (tree.imageUrl) {
-            return (
-              <div
-                className={classes.cardWrapper}
-                key={tree.id}>
-                <Card id={`card_${tree.id}`}
-                  className={classes.card}
-                  onClick={
-                    function(e) {
-                      e.stopPropagation()
-                      document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
-                      toggleSelection(tree.id)
-                    }
-                  }>
-                  <CardContent>
-                    <CardMedia
-                      className={classes.cardMedia}
-                      image={tree.imageUrl}
-                    />
-                    <Typography
-                      className={classes.cardTitle}
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      Tree# {tree.id}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      onClick={(e) => this.onStatusToggle(e, tree.id, true)}
-                    >
-                    Reject
-                    </Button>
-                    <Button
-                      size="small"
-                      onClick={
-                        (e)=> this.onStatusToggle(e, tree.id, false)
+      <Infinite
+          containerHeight={scroll.containerHeight}
+          elementHeight={scroll.elementHeight}
+          useWindowAsScrollContainer={true}
+          >
+        <div className={classes.wrapper}>
+          {this.props.treesArray.map(tree => {
+            if (tree.imageUrl) {
+              return (
+                <div
+                  className={classes.cardWrapper}
+                  key={tree.id}>
+                  <Card id={`card_${tree.id}`}
+                    className={classes.card}
+                    onClick={
+                      function(e) {
+                        e.stopPropagation()
+                        document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
+                        toggleSelection(tree.id)
                       }
-                    >
-                    Approve
-                    </Button>
-                  </CardActions>
-                </Card>
-              </div>
-            )
+                    }>
+                    <CardContent>
+                      <CardMedia
+                        className={classes.cardMedia}
+                        image={tree.imageUrl}
+                      />
+                      <Typography
+                        className={classes.cardTitle}
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        Tree# {tree.id}
+                      </Typography>
+                    </CardContent>
+                    <CardActions
+                      style={{'position': 'fix' }}
+                      >
+                      <Button
+                        size="small"
+                        onClick={(e) => this.onStatusToggle(e, tree.id, true)}
+                      >
+                      Reject
+                      </Button>
+                      <Button
+                        size="small"
+                        onClick={
+                          (e)=> this.onStatusToggle(e, tree.id, false)
+                        }
+                      >
+                      Approve
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </div>
+              )
+            }
+          })
           }
-        })
-        }
-      </section>
+        </div>
+      </Infinite>
     )
   }
 }
