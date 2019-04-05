@@ -7,7 +7,7 @@ See [Project Board](https://github.com/orgs/Greenstand/projects/6)
 
 See [Contributing to The Cause](https://github.com/Greenstand/Development-Overview#contributing-to-the-cause)
 
-Please add any missing content to this readme. 
+Please add any missing content to this readme.
 
 ## Requirements
 
@@ -22,7 +22,9 @@ Please add any missing content to this readme.
 
 ## Setup
 
-In `server` directory you will need to create a `datasources.json` file that will be used to reference the source of data for Loopback.  Contact the project maintainer on Slack to request access to our development database. 
+In `server/server/config` directory you will need to create a `datasources.json` file that will be used to reference the source of data for Loopback.
+
+Contact the project maintainer on Slack to request access to our development database. 
 
 ## Development Environment Quick Start
 
