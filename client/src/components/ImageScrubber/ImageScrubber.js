@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
-import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button' // replace with icons down the line
 import Infinite from 'react-infinite'
 
@@ -19,13 +18,6 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     padding: '2rem'
-  },
-  cardImg: {
-    width: '100%',
-    height: 'auto'
-  },
-  cardTitle: {
-    color: '#f00'
   },
   card: {
     cursor: 'pointer',
@@ -57,7 +49,19 @@ class ImageScrubber extends Component {
       order: this.props.order,
       orderBy: this.props.orderBy
     }
+
     this.props.getTreesWithImagesAsync(payload)
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.treesArray !== this.props.treesArray;
+  }
+
+  sortImages(e, orderBy, flag) {
+    e.preventDefault();
+    flag = !flag;
+    let order = (flag) ? 'asc' : 'desc';
+    this.props.sortTrees(order, orderBy)
   }
 
   render() {
@@ -75,23 +79,34 @@ class ImageScrubber extends Component {
       tree,
       toggleSelection
     } = this.props
+
     return (
-      <Infinite
-          containerHeight={scroll.containerHeight}
-          elementHeight={scroll.elementHeight}
-          useWindowAsScrollContainer={true}
-          >
+      <div>
         <div className={classes.wrapper}>
-          {this.props.treesArray.map(tree => {
-            if (tree.imageUrl) {
-              return (
-                <TreeImageCard tree={tree} />
-              )
-            }
-          })
-          }
+          <Card className={classes.card}>
+            <CardActions style={{ 'position': 'fix' }} >
+              <Button size="small" onClick={(e) => this.sortImages(e, 'id', !true)}>id</Button>
+              <Button size="small" onClick={(e) => this.sortImages(e, 'timeCreated', !true)}>updated</Button>
+            </CardActions>
+          </Card>
         </div>
-      </Infinite>
+        <Infinite
+            containerHeight={scroll.containerHeight}
+            elementHeight={scroll.elementHeight}
+            useWindowAsScrollContainer={true}
+            >
+          <div className={classes.wrapper}>
+            {this.props.treesArray.map(tree => {
+                if (tree.imageUrl) {
+                  return (
+                    <TreeImageCard key={tree.id} tree={tree} />
+                  )
+                }
+              })
+            }
+          </div>
+        </Infinite>
+      </div>
     )
   }
 }
@@ -117,6 +132,7 @@ const mapDispatch = (dispatch) => ({
   getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
   getLocationName: (id, lat, lon) => dispatch.imageScrubber.getLocationName({ id: id, latitude: lat, longitude: lon }),
   getTreeAsync: (id) => dispatch.imageScrubber.getTreeAsync(id),
+  sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order, orderBy })
 })
 
 export default compose(

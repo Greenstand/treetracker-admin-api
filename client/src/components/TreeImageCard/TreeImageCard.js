@@ -13,11 +13,6 @@ import Button from '@material-ui/core/Button'
 import { selectedHighlightColor } from '../../common/variables.js'
 
 const styles = theme => ({
-  wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    padding: '2rem'
-  },
   cardImg: {
     width: '100%',
     height: 'auto'
