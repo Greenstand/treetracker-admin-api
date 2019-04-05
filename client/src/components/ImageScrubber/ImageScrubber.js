@@ -10,7 +10,9 @@ import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button' // replace with icons down the line
 import Infinite from 'react-infinite'
+
 import { selectedHighlightColor } from '../../common/variables.js'
+import TreeImageCard from '../TreeImageCard/TreeImageCard'
 
 const styles = theme => ({
   wrapper: {
@@ -58,12 +60,6 @@ class ImageScrubber extends Component {
     this.props.getTreesWithImagesAsync(payload)
   }
 
-  onStatusToggle = (e, id, isActive) => {
-    const { toggleTreeActive } = this.props;
-    e.stopPropagation();
-    toggleTreeActive(id, isActive);
-  }
-
   render() {
     const {
       numSelected,
@@ -89,51 +85,7 @@ class ImageScrubber extends Component {
           {this.props.treesArray.map(tree => {
             if (tree.imageUrl) {
               return (
-                <div
-                  className={classes.cardWrapper}
-                  key={tree.id}>
-                  <Card id={`card_${tree.id}`}
-                    className={classes.card}
-                    onClick={
-                      function(e) {
-                        e.stopPropagation()
-                        document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
-                        toggleSelection(tree.id)
-                      }
-                    }>
-                    <CardContent>
-                      <CardMedia
-                        className={classes.cardMedia}
-                        image={tree.imageUrl}
-                      />
-                      <Typography
-                        className={classes.cardTitle}
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        Tree# {tree.id}
-                      </Typography>
-                    </CardContent>
-                    <CardActions
-                      style={{'position': 'fix' }}
-                      >
-                      <Button
-                        size="small"
-                        onClick={(e) => this.onStatusToggle(e, tree.id, true)}
-                      >
-                      Reject
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={
-                          (e)=> this.onStatusToggle(e, tree.id, false)
-                        }
-                      >
-                      Approve
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </div>
+                <TreeImageCard tree={tree} />
               )
             }
           })
@@ -164,9 +116,7 @@ const mapState = state => {
 const mapDispatch = (dispatch) => ({
   getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
   getLocationName: (id, lat, lon) => dispatch.imageScrubber.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  toggleTreeActive: (id) => dispatch.imageScrubber.toggleTreeActive(id),
   getTreeAsync: (id) => dispatch.imageScrubber.getTreeAsync(id),
-  toggleSelection: (id) => dispatch.imageScrubber.toggleSelection({ id: id })
 })
 
 export default compose(
