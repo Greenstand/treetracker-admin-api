@@ -102,6 +102,11 @@ class TreeImageCard extends Component {
   }
 }
 
+TreeImageCard.propTypes = {
+  tree: PropTypes.object.isRequired,
+  toggleSelection: PropTypes.func.isRequired
+}
+
 const mapDispatch = (dispatch) => ({
   toggleTreeActive: (id) => dispatch.imageScrubber.toggleTreeActive(id),
   toggleSelection: (id) => dispatch.imageScrubber.toggleSelection({ id: id })
