@@ -2,11 +2,14 @@ import React, { Component } from 'react'
 import compose from 'recompose/compose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import classNames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp'
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
 import Button from '@material-ui/core/Button' // replace with icons down the line
 import Infinite from 'react-infinite'
 
@@ -18,6 +21,13 @@ const styles = theme => ({
     display: 'flex',
     flexWrap: 'wrap',
     padding: '2rem'
+  },
+  filterHeader: {
+    position: 'fixed',
+    zIndex: 1000
+  },
+  filter: {
+    zIndex: 1001
   },
   card: {
     cursor: 'pointer',
@@ -43,25 +53,33 @@ const scroll = {
 class ImageScrubber extends Component {
 
   componentDidMount() {
+    this.getTreesWithImages();
+  }
+
+  getTreesWithImages(order, orderBy) {
     const payload = {
       page: this.props.page,
       rowsPerPage: this.props.rowsPerPage,
-      order: this.props.order,
-      orderBy: this.props.orderBy
+      order: order || this.props.order,
+      orderBy: orderBy || this.props.orderBy
     }
 
-    this.props.getTreesWithImagesAsync(payload)
+    return this.props.getTreesWithImagesAsync(payload)
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.treesArray !== this.props.treesArray;
+    if (nextProps.treesArray !== this.props.treesArray) {
+      return true;
+    };
+
+    return false;
   }
 
-  sortImages(e, orderBy, flag) {
+  sortImages(e, orderBy, order) {
     e.preventDefault();
-    flag = !flag;
-    let order = (flag) ? 'asc' : 'desc';
-    this.props.sortTrees(order, orderBy)
+    let newOrder = (order === 'asc') ? 'desc' : 'asc';
+    this.getTreesWithImages(newOrder, orderBy);
+
   }
 
   render() {
@@ -76,17 +94,25 @@ class ImageScrubber extends Component {
       getLocationName,
       treeCount,
       byId,
-      tree,
-      toggleSelection
+      tree
     } = this.props
+
+    const idArrow = (order === 'asc' && orderBy === 'id') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
+    const updatedArrow = (order === 'asc' && orderBy === 'timeCreated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
 
     return (
       <div>
         <div className={classes.wrapper}>
-          <Card className={classes.card}>
-            <CardActions style={{ 'position': 'fix' }} >
-              <Button size="small" onClick={(e) => this.sortImages(e, 'id', !true)}>id</Button>
-              <Button size="small" onClick={(e) => this.sortImages(e, 'timeCreated', !true)}>updated</Button>
+          <Card className={classNames(classes.card, classes.filterHeader)}>
+            <CardActions className={classes.filter}>
+              <Button size="small" onClick={(e) => this.sortImages(e, 'id', order)}>
+                id
+                {idArrow}
+              </Button>
+              <Button size="small" onClick={(e) => this.sortImages(e, 'timeCreated', order)}>
+                updated
+                {updatedArrow}
+              </Button>
             </CardActions>
           </Card>
         </div>
@@ -111,6 +137,17 @@ class ImageScrubber extends Component {
   }
 }
 
+ImageScrubber.propTypes = {
+  treesArray: PropTypes.array.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  selected: PropTypes.array.isRequired,
+  order: PropTypes.string.isRequired,
+  orderBy: PropTypes.string.isRequired,
+  numSelected: PropTypes.number.isRequired,
+  byId: PropTypes.object.isRequired,
+}
+
 const mapState = state => {
   const keys = Object.keys(state.trees.data)
   return {
@@ -123,8 +160,7 @@ const mapState = state => {
     order: state.trees.order,
     orderBy: state.trees.orderBy,
     numSelected: state.trees.selected.length,
-    byId: state.trees.byId,
-    tree: state.trees.tree
+    byId: state.trees.byId
   }
 }
 
