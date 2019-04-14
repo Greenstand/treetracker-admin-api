@@ -41,6 +41,7 @@ const EnhancedTableHead = (props) => {
   }
 
   const handleSort = (order, orderBy) => {
+    console.log('order:', order, 'orderBy:', orderBy);
     props.sortTrees(order, orderBy)
   }
 
