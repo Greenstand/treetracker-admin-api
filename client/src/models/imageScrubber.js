@@ -4,9 +4,10 @@ import { API_ROOT } from '../common/variables.js'
 
 const imageScrubber = {
   state: {
+    data: [],
     numSelected: 0,
     page: 0,
-    recordsPerPage: 99,
+    rowsPerPage: 9999,
     order: 'asc',
     orderBy: 'timeUpdated',
     selected: [],
@@ -17,6 +18,9 @@ const imageScrubber = {
   reducers: {
     getTree(state, tree) {
       return { ...state, tree };
+    },
+    getTrees(state, payload, { page, rowsPerPage, order, orderBy }) {
+      return { ...state, data: payload, page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy };
     },
     toggleSelection(state, payload) {
       const idIsInArray = state.selected.find(el => {

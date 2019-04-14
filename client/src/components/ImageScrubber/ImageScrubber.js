@@ -98,7 +98,7 @@ class ImageScrubber extends Component {
     } = this.props
 
     const idArrow = (order === 'asc' && orderBy === 'id') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
-    const updatedArrow = (order === 'asc' && orderBy === 'timeCreated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
+  const updatedArrow = (order === 'asc' && orderBy === 'timeUpdated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
 
     return (
       <div>
@@ -109,7 +109,7 @@ class ImageScrubber extends Component {
                 id
                 {idArrow}
               </Button>
-              <Button size="small" onClick={(e) => this.sortImages(e, 'timeCreated', order)}>
+              <Button size="small" onClick={(e) => this.sortImages(e, 'timeUpdated', order)}>
                 updated
                 {updatedArrow}
               </Button>
@@ -123,11 +123,9 @@ class ImageScrubber extends Component {
             >
           <div className={classes.wrapper}>
             {this.props.treesArray.map(tree => {
-                if (tree.imageUrl) {
-                  return (
-                    <TreeImageCard key={tree.id} tree={tree} />
-                  )
-                }
+                return (
+                  <TreeImageCard key={tree.id} tree={tree} />
+                )
               })
             }
           </div>
@@ -145,27 +143,27 @@ ImageScrubber.propTypes = {
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired,
   numSelected: PropTypes.number.isRequired,
-  byId: PropTypes.object.isRequired,
+  byId: PropTypes.object,
 }
 
 const mapState = state => {
   const keys = Object.keys(state.trees.data)
   return {
     treesArray: keys.map(id => ({
-      ...state.trees.data[id]
+      ...state.imageScrubber.data[id]
     })),
-    page: state.trees.page,
-    rowsPerPage: state.trees.rowsPerPage,
-    selected: state.trees.selected,
-    order: state.trees.order,
-    orderBy: state.trees.orderBy,
-    numSelected: state.trees.selected.length,
-    byId: state.trees.byId
+    page: state.imageScrubber.page,
+    rowsPerPage: state.imageScrubber.rowsPerPage,
+    selected: state.imageScrubber.selected,
+    order: state.imageScrubber.order,
+    orderBy: state.imageScrubber.orderBy,
+    numSelected: state.imageScrubber.selected.length,
+    byId: state.imageScrubber.byId
   }
 }
 
 const mapDispatch = (dispatch) => ({
-  getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
+  getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.imageScrubber.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
   getLocationName: (id, lat, lon) => dispatch.imageScrubber.getLocationName({ id: id, latitude: lat, longitude: lon }),
   getTreeAsync: (id) => dispatch.imageScrubber.getTreeAsync(id),
   sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order, orderBy })
