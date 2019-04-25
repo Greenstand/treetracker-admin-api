@@ -1,23 +1,15 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import compose from 'recompose/compose'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableRow from '@material-ui/core/TableRow'
-import TablePagination from '@material-ui/core/TablePagination'
-import dateFormat from 'dateformat'
-import Checkbox from '@material-ui/core/Checkbox'
-import Tooltip from '@material-ui/core/Tooltip'
+import React, { Component } from 'react';
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
+import { withStyles } from '@material-ui/core/styles';
+import MUIDataTable from 'mui-datatables';
+
 import Drawer from '@material-ui/core/Drawer';
 
-import TreeDetails from '../TreeDetails/TreeDetails'
-import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead'
+import TreeDetails from '../TreeDetails/TreeDetails';
 
 // change 88 to unit spacing,
-const styles = theme => ({
+const styles = () => ({
   root: {
     position: 'relative',
     top: '88px',
@@ -40,148 +32,122 @@ const styles = theme => ({
     backgroundColor: '#fff',
     boxShadow: '0 -2px 5px rgba(0,0,0,0.15)'
   }
-})
+});
 
 class TreeTable extends Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       detailsPane: false,
-    }
-    this.onChangeRowsPerPage = this.onChangeRowsPerPage.bind(this)
+      page: 0
+    };
   }
 
   componentDidMount() {
     const payload = {
-      page: this.props.page,
+      page: this.state.page,
       rowsPerPage: this.props.rowsPerPage,
       order: this.props.order,
       orderBy: this.props.orderBy
-    }
-    this.props.getTreesAsync(payload)
+    };
+    this.props.getTreesAsync(payload);
   }
 
-  handleSelection = (e) => {
-
-  }
-
-  handleClick = (event, id) => {
-    const { selected } = this.state
-    const selectedIndex = selected.indexOf(id)
-    let newSelected = []
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id)
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1))
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1))
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      )
-    }
-    this.setState({ selected: newSelected })
-  }
-
-  toggleDrawer = (event, id) => {
-    event.preventDefault();
-    if (id !== undefined) this.props.getTreeAsync(id);
+  toggleDrawer = id => {
+    console.log(id);
+    this.props.getTreeAsync(id);
     const { detailsPane } = this.state;
     this.setState({
       detailsPane: !detailsPane
     });
-  }
+  };
 
-  onPageChange = (event, page) => {
-    this.props.getTreesAsync({ page: page, rowsPerPage: this.props.rowsPerPage })
-  }
+  onPageChange = (page, rowsPerPage) => {
+    this.props.getTreesAsync({
+      page,
+      rowsPerPage
+    });
+    this.setState({
+      page
+    });
+  };
 
-  onChangeRowsPerPage = event => {
-    this.props.getTreesAsync({ page: this.props.page, rowsPerPage: event.target.value })
-  }
+  onChangeRowsPerPage = rowsPerPage => {
+    this.props.getTreesAsync({
+      page: this.state.page,
+      rowsPerPage
+    });
+  };
 
-  isSelected = (id) => {
-    return this.props.selected.indexOf(id) !== -1
-  }
+  onSort = (column, ascending) => {
+    this.props.sortTrees(column, ascending);
+  };
 
   render() {
-    const { numSelected, classes, rowsPerPage, selected, order, orderBy, treesArray, getLocationName, treeCount, byId, tree } = this.props
-    return (
-      <div >
-        <Table className={classes.tableBody}>
-          {/*
-           State handling betweenn treetable and EnhancedTableHead are a non-reduxy right now
-           We should probably fix that, but it's not a huge problem. Consistency though.
-           */ }
-          <EnhancedTableHead
-            numSelected={numSelected}
-            order={order}
-            orderBy={orderBy}
-            onSelectAllClick={this.handleSelectAllClick}
-            onRequestSort={this.handleRequestSort}
-            rowCount={rowsPerPage}
-          />
-          <TableBody className={classes.tableBody}>
-            {this.props.treesArray.map(tree => {
-              const isSelected = this.isSelected(tree.id)
-              const location = true //byId[tree.id] ? byId[tree.id].location : false
-              // this probably belongs elsewhere…
-              const city = ( location && location.city !== undefined )? `${location.city},` : ''
-              const country = ( location && location.country !== undefined )? `${location.country}` : ''
+    const { treesArray, tree } = this.props;
+    const columnData = [
+      { name: 'id', label: 'Id', options: { sortable: true } },
+      { name: 'timeCreated', label: 'Creation', options: { sortable: true } },
+      { name: 'timeUpdated', label: 'Updated', options: { sortable: true } },
+      {
+        label: 'Location',
+        options: {
+          sortable: false,
+          customBodyRender: () => {
+            return <span>botched rendering func</span>; // TODO: replace
+          }
+        }
+      }
+    ];
+    const options = {
+      filterType: 'dropdown',
+      onRowClick: (_, rowMeta) => {
+        const id = treesArray[rowMeta.dataIndex].id;
+        this.toggleDrawer(id);
+      },
+      serverSide: true,
+      count: this.props.treeCount,
+      page: this.state.page,
+      rowsPerPage: this.props.rowsPerPage,
+      rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
+      onTableChange: (action, tableState) => {
+        console.log(action, tableState); // TODO: remove
 
-              if(!location) getLocationName(tree.id, tree.lat, tree.lon)
-              return (
-                <TableRow
-                  key={tree.id}
-                  onClick={(event) => this.toggleDrawer(event, tree.id)}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox checked={isSelected} />
-                  </TableCell>
-                  <TableCell>{tree.id}</TableCell>
-                  <TableCell>{dateFormat(tree.timeCreated, 'mmm dd, yyyy h:MM TT')}</TableCell>
-                  <TableCell className={classes.locationCol}>{dateFormat(tree.timeUpdated, 'mmm dd, yyyy h:MM TT')}</TableCell>
-                  {location ? (
-                    /* @Todo: I'd love to instead send a get request to the API, but we need auth stuff first... */
-                    <Tooltip title={`${tree.lat} ${tree.lon}`}>
-                        <TableCell>{`${city} ${country}`}</TableCell>
-                    </Tooltip>
-                  ) : (
-                    <TableCell>{`${Number(tree.lat).toPrecision(4)}, ${Number(tree.lon).toPrecision(4)}`}</TableCell>
-                  )}
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-        <TablePagination
-          className={classes.pagination}
-          component="div"
-          count={treeCount/rowsPerPage}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[25, 50, 75, 100, 250, 500]}
-          page={this.props.page}
-          backIconButtonProps={{
-            'aria-label': 'Previous Page',
-          }}
-          nextIconButtonProps={{
-            'aria-label': 'Next Page',
-          }}
-          onChangePage={this.onPageChange}
-          onChangeRowsPerPage={this.onChangeRowsPerPage}
+        switch (action) {
+          case 'changePage':
+            this.onPageChange(tableState.page, tableState.rowsPerPage);
+            break;
+          case 'changeRowsPerPage':
+            this.onChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+          case 'sort':
+            this.onSort(tableState.activeColumn, tableState.announceText.includes('ascending'))
+            break;
+        }
+      }
+    };
+    return (
+      <React.Fragment>
+        <MUIDataTable
+          title={'Trees'}
+          data={this.props.treesArray}
+          columns={columnData}
+          options={options}
         />
-      <Drawer anchor="right" open={this.state.detailsPane} onClose={(event) => this.toggleDrawer(event, undefined)}>
-          <TreeDetails tree={tree}/>
+        <Drawer
+          anchor="right"
+          open={this.state.detailsPane}
+          onClose={event => this.toggleDrawer(event, undefined)}
+        >
+          <TreeDetails tree={tree} />
         </Drawer>
-      </div>
-    )
+      </React.Fragment>
+    );
   }
 }
 
 const mapState = state => {
-  const keys = Object.keys(state.trees.data)
+  const keys = Object.keys(state.trees.data);
   return {
     treesArray: keys.map(id => ({
       ...state.trees.data[id]
@@ -195,16 +161,27 @@ const mapState = state => {
     byId: state.trees.byId,
     isOpen: state.trees.displayDrawer.isOpen,
     tree: state.trees.tree,
-  }
-}
+    treeCount: state.trees.treeCount,
+  };
+};
 
-const mapDispatch = (dispatch) => ({
-  getTreesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
-  getLocationName: (id, lat, lon) => dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  getTreeAsync: (id) => dispatch.trees.getTreeAsync(id)
-})
+const mapDispatch = dispatch => ({
+  getTreesAsync: ({ page, rowsPerPage, order, orderBy }) =>
+    dispatch.trees.getTreesAsync({
+      page: page,
+      rowsPerPage: rowsPerPage,
+      order: order,
+      orderBy: orderBy
+    }),
+  getLocationName: (id, lat, lon) =>
+    dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
+  getTreeAsync: id => dispatch.trees.getTreeAsync(id)
+});
 
 export default compose(
   withStyles(styles, { withTheme: true, name: 'TreeTable' }),
-  connect(mapState, mapDispatch)
-)(TreeTable)
+  connect(
+    mapState,
+    mapDispatch
+  )
+)(TreeTable);

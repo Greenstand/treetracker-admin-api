@@ -15,6 +15,7 @@
     "import": "*",
     "install": "*",
     "mdi-material-ui": "*",
+    "mui-datatables": "*",
     "mdi-svg": "*",
     "npm": "*",
     "prop-types": "*",
