@@ -2,26 +2,32 @@ import React, { Component } from 'react'
 import compose from 'recompose/compose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import classNames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
-import CardMedia from '@material-ui/core/CardMedia'
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp'
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
 import Button from '@material-ui/core/Button' // replace with icons down the line
+import Infinite from 'react-infinite'
+
 import { selectedHighlightColor } from '../../common/variables.js'
+import TreeImageCard from '../TreeImageCard/TreeImageCard'
+
 const styles = theme => ({
   wrapper: {
     display: 'flex',
     flexWrap: 'wrap',
     padding: '2rem'
   },
-  cardImg: {
-    width: '100%',
-    height: 'auto'
+  filterHeader: {
+    position: 'fixed',
+    zIndex: 1000
   },
-  cardTitle: {
-    color: '#f00'
+  filter: {
+    zIndex: 1001
   },
   card: {
     cursor: 'pointer',
@@ -39,22 +45,41 @@ const styles = theme => ({
   }
 })
 
+const scroll = {
+  containerHeight: 1017,
+  elementHeight: 295
+}
+
 class ImageScrubber extends Component {
 
   componentDidMount() {
+    this.getTreesWithImages();
+  }
+
+  getTreesWithImages(order, orderBy) {
     const payload = {
       page: this.props.page,
       rowsPerPage: this.props.rowsPerPage,
-      order: this.props.order,
-      orderBy: this.props.orderBy
+      order: order || this.props.order,
+      orderBy: orderBy || this.props.orderBy
     }
-    this.props.getTreesWithImagesAsync(payload)
+
+    return this.props.getTreesWithImagesAsync(payload)
   }
 
-  onStatusToggle = (e, id, isActive) => {
-    const { toggleTreeActive } = this.props;
-    e.stopPropagation();
-    toggleTreeActive(id, isActive);
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.treesArray !== this.props.treesArray) {
+      return true;
+    };
+
+    return false;
+  }
+
+  sortImages(e, orderBy, order) {
+    e.preventDefault();
+    let newOrder = (order === 'asc') ? 'desc' : 'asc';
+    this.getTreesWithImages(newOrder, orderBy);
+
   }
 
   render() {
@@ -69,89 +94,79 @@ class ImageScrubber extends Component {
       getLocationName,
       treeCount,
       byId,
-      tree,
-      toggleSelection
+      tree
     } = this.props
+
+    const idArrow = (order === 'asc' && orderBy === 'id') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
+  const updatedArrow = (order === 'asc' && orderBy === 'timeUpdated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
+
     return (
-      <section className={classes.wrapper}>
-        {this.props.treesArray.map(tree => {
-          if (tree.imageUrl) {
-            return (
-              <div
-                className={classes.cardWrapper}
-                key={tree.id}>
-                <Card id={`card_${tree.id}`}
-                  className={classes.card}
-                  onClick={
-                    function(e) {
-                      e.stopPropagation()
-                      document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
-                      toggleSelection(tree.id)
-                    }
-                  }>
-                  <CardContent>
-                    <CardMedia
-                      className={classes.cardMedia}
-                      image={tree.imageUrl}
-                    />
-                    <Typography
-                      className={classes.cardTitle}
-                      color="textSecondary"
-                      gutterBottom
-                    >
-                      Tree# {tree.id}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      onClick={(e) => this.onStatusToggle(e, tree.id, true)}
-                    >
-                    Reject
-                    </Button>
-                    <Button
-                      size="small"
-                      onClick={
-                        (e)=> this.onStatusToggle(e, tree.id, false)
-                      }
-                    >
-                    Approve
-                    </Button>
-                  </CardActions>
-                </Card>
-              </div>
-            )
-          }
-        })
-        }
-      </section>
+      <div>
+        <div className={classes.wrapper}>
+          <Card className={classNames(classes.card, classes.filterHeader)}>
+            <CardActions className={classes.filter}>
+              <Button size="small" onClick={(e) => this.sortImages(e, 'id', order)}>
+                id
+                {idArrow}
+              </Button>
+              <Button size="small" onClick={(e) => this.sortImages(e, 'timeUpdated', order)}>
+                updated
+                {updatedArrow}
+              </Button>
+            </CardActions>
+          </Card>
+        </div>
+        <Infinite
+            containerHeight={scroll.containerHeight}
+            elementHeight={scroll.elementHeight}
+            useWindowAsScrollContainer={true}
+            >
+          <div className={classes.wrapper}>
+            {this.props.treesArray.map(tree => {
+                return (
+                  <TreeImageCard key={tree.id} tree={tree} />
+                )
+              })
+            }
+          </div>
+        </Infinite>
+      </div>
     )
   }
+}
+
+ImageScrubber.propTypes = {
+  treesArray: PropTypes.array.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  selected: PropTypes.array.isRequired,
+  order: PropTypes.string.isRequired,
+  orderBy: PropTypes.string.isRequired,
+  numSelected: PropTypes.number.isRequired,
+  byId: PropTypes.object,
 }
 
 const mapState = state => {
   const keys = Object.keys(state.trees.data)
   return {
     treesArray: keys.map(id => ({
-      ...state.trees.data[id]
+      ...state.imageScrubber.data[id]
     })),
-    page: state.trees.page,
-    rowsPerPage: state.trees.rowsPerPage,
-    selected: state.trees.selected,
-    order: state.trees.order,
-    orderBy: state.trees.orderBy,
-    numSelected: state.trees.selected.length,
-    byId: state.trees.byId,
-    tree: state.trees.tree
+    page: state.imageScrubber.page,
+    rowsPerPage: state.imageScrubber.rowsPerPage,
+    selected: state.imageScrubber.selected,
+    order: state.imageScrubber.order,
+    orderBy: state.imageScrubber.orderBy,
+    numSelected: state.imageScrubber.selected.length,
+    byId: state.imageScrubber.byId
   }
 }
 
 const mapDispatch = (dispatch) => ({
-  getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.trees.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
+  getTreesWithImagesAsync: ({ page, rowsPerPage, order, orderBy }) => dispatch.imageScrubber.getTreesWithImagesAsync({ page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }),
   getLocationName: (id, lat, lon) => dispatch.imageScrubber.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  toggleTreeActive: (id) => dispatch.imageScrubber.toggleTreeActive(id),
   getTreeAsync: (id) => dispatch.imageScrubber.getTreeAsync(id),
-  toggleSelection: (id) => dispatch.imageScrubber.toggleSelection({ id: id })
+  sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order, orderBy })
 })
 
 export default compose(
