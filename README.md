@@ -23,7 +23,7 @@ Please add any missing content to this readme.
  ```
 Once cloned type:
 ```bash
-cd treetracker-admin\server && touch server/config/datasources.json && npm install
+cd treetracker-admin/server && touch server/config/datasources.json && npm install
 ```
 
 ## Setup
