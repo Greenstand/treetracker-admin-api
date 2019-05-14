@@ -44,13 +44,15 @@ const styles = theme => ({
   }
 });
 
-const initialState = { treeImages: [] };
+const initialState = { treeImages: [], isLoading: false };
 
 function reducer(state, action) {
   let treeImages = {};
   switch (action.type) {
     case "loadTreeImages":
       return { ...state, treeImages: action.treeImages };
+    case "loadMoreTrees":
+      return { ...state, treeImages: [...state.treeImages, action.treeImages] };
     case "approveTreeImage":
       treeImages = state.treeImages.filter(
         treeImage => treeImage.id !== action.id
@@ -70,6 +72,7 @@ function TreeImageScrubber({ classes, ...props }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   let treeImages = state.treeImages;
+  let container = null;
 
   const onApproveTreeImageClick = (e, id) => {
     approveTreeImage(id)
@@ -93,11 +96,47 @@ function TreeImageScrubber({ classes, ...props }) {
       });
   };
 
+  const setIsLoading = loading => {
+    state.isLoading = loading;
+  };
+
+  const setContainerRef = el => {
+    container = el;
+  };
+
+  const loadMoreTrees = () => {
+    setIsLoading(true);
+    const pageParams = {
+      page: 1,
+      rowsPerPage: 5
+    };
+    getTreeImages(pageParams)
+      .then(result => {
+        dispatch("getMoreTrees");
+      })
+      .catch(error => {
+        alert("Couldn't load more Tree Images!");
+      });
+  };
+
+  const handleScroll = e => {
+    console.log(e);
+    if (
+      !state.isLoading &&
+      container &&
+      container.scrollTop !== container.offsetHeight
+    ) {
+      return;
+    }
+    loadMoreTrees();
+    console.log("Load more list items!");
+  };
+
   useEffect(() => {
     if (treeImages.length === 0) {
       const pageParams = {
         page: 0,
-        rowsPerPage: 60
+        rowsPerPage: 5
       };
       getTreeImages(pageParams)
         .then(result => {
@@ -108,48 +147,52 @@ function TreeImageScrubber({ classes, ...props }) {
           alert("Couldn't load any Tree Images!");
         });
     }
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
   }, []);
-  return (
-    <section className={classes.wrapper}>
-      {treeImages.map(tree => {
-        if (tree.imageUrl) {
-          return (
-            <div className={classes.cardWrapper} key={tree.id}>
-              <Card id={`card_${tree.id}`} className={classes.card}>
-                <CardContent>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    image={tree.imageUrl}
-                  />
-                  <Typography
-                    className={classes.cardTitle}
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    Tree# {tree.id}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={e => onRejectTreeImageClick(e, tree.id)}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={e => onApproveTreeImageClick(e, tree.id)}
-                  >
-                    Approve
-                  </Button>
-                </CardActions>
-              </Card>
-            </div>
-          );
-        }
-      })}
-    </section>
-  );
+
+  let treeImageItems = treeImages.map(tree => {
+    if (tree.imageUrl) {
+      return (
+        <div className={classes.cardWrapper} key={tree.id}>
+          <Card id={`card_${tree.id}`} className={classes.card}>
+            <CardContent>
+              <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
+              <Typography
+                className={classes.cardTitle}
+                color="textSecondary"
+                gutterBottom
+              >
+                Tree# {tree.id}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button
+                size="small"
+                onClick={e => onRejectTreeImageClick(e, tree.id)}
+              >
+                Reject
+              </Button>
+              <Button
+                size="small"
+                onClick={e => onApproveTreeImageClick(e, tree.id)}
+              >
+                Approve
+              </Button>
+            </CardActions>
+          </Card>
+        </div>
+      );
+    }
+  });
+
+  return <section className={classes.wrapper}>{treeImageItems}</section>;
 }
 
 export default compose(
