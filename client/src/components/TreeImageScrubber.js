@@ -19,7 +19,7 @@ const styles = theme => ({
   wrapper: {
     display: "flex",
     flexWrap: "wrap",
-    padding: "2rem"
+    padding: "2rem 2rem 4rem"
   },
   cardImg: {
     width: "100%",
@@ -44,15 +44,24 @@ const styles = theme => ({
   }
 });
 
-const initialState = { treeImages: [], isLoading: false };
+const initialState = {
+  treeImages: [],
+  isLoading: false,
+  pagesLoaded: -1,
+  noMoreTreeImagesToLoad: false,
+  pageSize: 60
+};
 
 function reducer(state, action) {
   let treeImages = {};
   switch (action.type) {
-    case "loadTreeImages":
-      return { ...state, treeImages: action.treeImages };
-    case "loadMoreTrees":
-      return { ...state, treeImages: [...state.treeImages, action.treeImages] };
+    case "loadMoreTreeImages":
+      let newTreeImages = [...state.treeImages, ...action.treeImages];
+      let newState = {
+        ...state,
+        treeImages: newTreeImages
+      };
+      return newState;
     case "approveTreeImage":
       treeImages = state.treeImages.filter(
         treeImage => treeImage.id !== action.id
@@ -68,11 +77,11 @@ function reducer(state, action) {
   }
 }
 
-function TreeImageScrubber({ classes, ...props }) {
+function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   let treeImages = state.treeImages;
-  let container = null;
+  let scrollContainerRef = null;
 
   const onApproveTreeImageClick = (e, id) => {
     approveTreeImage(id)
@@ -100,59 +109,52 @@ function TreeImageScrubber({ classes, ...props }) {
     state.isLoading = loading;
   };
 
-  const setContainerRef = el => {
-    container = el;
-  };
-
-  const loadMoreTrees = () => {
+  const loadMoreTreeImages = () => {
     setIsLoading(true);
+    const nextPage = state.pagesLoaded + 1;
     const pageParams = {
-      page: 1,
-      rowsPerPage: 5
+      page: nextPage,
+      rowsPerPage: state.pageSize
     };
     getTreeImages(pageParams)
       .then(result => {
-        dispatch("getMoreTrees");
+        setIsLoading(false);
+        state.pagesLoaded = nextPage;
+        dispatch({ type: "loadMoreTreeImages", treeImages: result });
       })
       .catch(error => {
-        alert("Couldn't load more Tree Images!");
+        // no more to load!
+        state.noMoreTreeImagesToLoad = true;
       });
   };
 
   const handleScroll = e => {
-    console.log(e);
     if (
-      !state.isLoading &&
-      container &&
-      container.scrollTop !== container.offsetHeight
+      state.isLoading ||
+      (scrollContainerRef &&
+        Math.floor(scrollContainerRef.scrollTop) !==
+          Math.floor(scrollContainerRef.scrollHeight) -
+            Math.floor(scrollContainerRef.offsetHeight))
     ) {
       return;
     }
-    loadMoreTrees();
-    console.log("Load more list items!");
+    loadMoreTreeImages();
   };
 
   useEffect(() => {
+    scrollContainerRef = getScrollContainerRef()
+      ? getScrollContainerRef()
+      : null;
     if (treeImages.length === 0) {
-      const pageParams = {
-        page: 0,
-        rowsPerPage: 5
-      };
-      getTreeImages(pageParams)
-        .then(result => {
-          dispatch({ type: "loadTreeImages", treeImages: result });
-        })
-        .catch(error => {
-          // pro error stuff here
-          alert("Couldn't load any Tree Images!");
-        });
+      loadMoreTreeImages();
     }
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
+
+    if (scrollContainerRef) {
+      scrollContainerRef.addEventListener("scroll", handleScroll);
     }
     return () => {
-      if (container) {
-        container.removeEventListener("scroll", handleScroll);
+      if (scrollContainerRef) {
+        scrollContainerRef.removeEventListener("scroll", handleScroll);
       }
     };
   }, []);
