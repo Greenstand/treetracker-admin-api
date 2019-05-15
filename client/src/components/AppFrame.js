@@ -83,6 +83,11 @@ const styles = theme => ({
 
 const AppFrame = props => ({
   render() {
+    let scrollContainerRef = null;
+    const getScrollContainerRef = () => scrollContainerRef;
+    const setScrollContainerRef = el => {
+      scrollContainerRef = el;
+    };
     const {
       classes,
       theme,
@@ -94,10 +99,12 @@ const AppFrame = props => ({
     if (currentView === "trees") {
       tabContents = <Trees />;
     } else if (currentView === "imageScrubber") {
-      tabContents = <TreeImageScrubber />;
+      tabContents = (
+        <TreeImageScrubber getScrollContainerRef={getScrollContainerRef} />
+      );
     }
     return (
-      <div className={classes.root}>
+      <div className={classes.root} ref={setScrollContainerRef}>
         <AppBar
           position="fixed"
           className={classNames(
