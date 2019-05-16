@@ -12,13 +12,19 @@ Please add any missing content to this readme.
 ## Requirements
 
 - Install Node
-   - on OSX , install git and type 'brew install git'
+   - on OSX , install git and type `brew install git`
    - on OSX, install [home brew](http://brew.sh/) and type `brew install node`
    - on Windows, use the installer available at [nodejs.org](http://nodejs.org/)
    - On OSX you can alleviate the need to run as sudo by [following John Papa's instructions](http://jpapa.me/nomoresudo)
 - Open terminal
-- Go to a folder where you would like to install the project. Then type the following 'git clone https://github.com/Greenstand/treetracker-admin.git'
-- Type `cd treetracker-admin\server && touch datasources.json && npm install`
+- Go to a folder where you would like to install the project. Then type the following:
+ ```bash
+ git clone https://github.com/Greenstand/treetracker-admin.git
+ ```
+Once cloned type:
+```bash
+cd treetracker-admin/server && touch server/config/datasources.json && npm install
+```
 
 ## Setup
 
