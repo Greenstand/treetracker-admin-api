@@ -19,7 +19,7 @@ const styles = theme => ({
   wrapper: {
     display: "flex",
     flexWrap: "wrap",
-    padding: "2rem"
+    padding: "2rem 2rem 4rem"
   },
   cardImg: {
     width: "100%",
@@ -44,13 +44,24 @@ const styles = theme => ({
   }
 });
 
-const initialState = { treeImages: [] };
+const initialState = {
+  treeImages: [],
+  isLoading: false,
+  pagesLoaded: -1,
+  noMoreTreeImagesToLoad: false,
+  pageSize: 60
+};
 
 function reducer(state, action) {
   let treeImages = {};
   switch (action.type) {
-    case "loadTreeImages":
-      return { ...state, treeImages: action.treeImages };
+    case "loadMoreTreeImages":
+      let newTreeImages = [...state.treeImages, ...action.treeImages];
+      let newState = {
+        ...state,
+        treeImages: newTreeImages
+      };
+      return newState;
     case "approveTreeImage":
       treeImages = state.treeImages.filter(
         treeImage => treeImage.id !== action.id
@@ -66,10 +77,11 @@ function reducer(state, action) {
   }
 }
 
-function TreeImageScrubber({ classes, ...props }) {
+function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   let treeImages = state.treeImages;
+  let scrollContainerRef = null;
 
   const onApproveTreeImageClick = (e, id) => {
     approveTreeImage(id)
@@ -93,63 +105,96 @@ function TreeImageScrubber({ classes, ...props }) {
       });
   };
 
-  useEffect(() => {
-    if (treeImages.length === 0) {
-      const pageParams = {
-        page: 0,
-        rowsPerPage: 60
-      };
-      getTreeImages(pageParams)
-        .then(result => {
-          dispatch({ type: "loadTreeImages", treeImages: result });
-        })
-        .catch(error => {
-          // pro error stuff here
-          alert("Couldn't load any Tree Images!");
-        });
+  const setIsLoading = loading => {
+    state.isLoading = loading;
+  };
+
+  const loadMoreTreeImages = () => {
+    setIsLoading(true);
+    const nextPage = state.pagesLoaded + 1;
+    const pageParams = {
+      page: nextPage,
+      rowsPerPage: state.pageSize
+    };
+    getTreeImages(pageParams)
+      .then(result => {
+        setIsLoading(false);
+        state.pagesLoaded = nextPage;
+        dispatch({ type: "loadMoreTreeImages", treeImages: result });
+      })
+      .catch(error => {
+        // no more to load!
+        state.noMoreTreeImagesToLoad = true;
+      });
+  };
+
+  const handleScroll = e => {
+    if (
+      state.isLoading ||
+      (scrollContainerRef &&
+        Math.floor(scrollContainerRef.scrollTop) !==
+          Math.floor(scrollContainerRef.scrollHeight) -
+            Math.floor(scrollContainerRef.offsetHeight))
+    ) {
+      return;
     }
+    loadMoreTreeImages();
+  };
+
+  useEffect(() => {
+    scrollContainerRef = getScrollContainerRef()
+      ? getScrollContainerRef()
+      : null;
+    if (treeImages.length === 0) {
+      loadMoreTreeImages();
+    }
+
+    if (scrollContainerRef) {
+      scrollContainerRef.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (scrollContainerRef) {
+        scrollContainerRef.removeEventListener("scroll", handleScroll);
+      }
+    };
   }, []);
-  return (
-    <section className={classes.wrapper}>
-      {treeImages.map(tree => {
-        if (tree.imageUrl) {
-          return (
-            <div className={classes.cardWrapper} key={tree.id}>
-              <Card id={`card_${tree.id}`} className={classes.card}>
-                <CardContent>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    image={tree.imageUrl}
-                  />
-                  <Typography
-                    className={classes.cardTitle}
-                    color="textSecondary"
-                    gutterBottom
-                  >
-                    Tree# {tree.id}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={e => onRejectTreeImageClick(e, tree.id)}
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={e => onApproveTreeImageClick(e, tree.id)}
-                  >
-                    Approve
-                  </Button>
-                </CardActions>
-              </Card>
-            </div>
-          );
-        }
-      })}
-    </section>
-  );
+
+  let treeImageItems = treeImages.map(tree => {
+    if (tree.imageUrl) {
+      return (
+        <div className={classes.cardWrapper} key={tree.id}>
+          <Card id={`card_${tree.id}`} className={classes.card}>
+            <CardContent>
+              <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
+              <Typography
+                className={classes.cardTitle}
+                color="textSecondary"
+                gutterBottom
+              >
+                Tree# {tree.id}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button
+                size="small"
+                onClick={e => onRejectTreeImageClick(e, tree.id)}
+              >
+                Reject
+              </Button>
+              <Button
+                size="small"
+                onClick={e => onApproveTreeImageClick(e, tree.id)}
+              >
+                Approve
+              </Button>
+            </CardActions>
+          </Card>
+        </div>
+      );
+    }
+  });
+
+  return <section className={classes.wrapper}>{treeImageItems}</section>;
 }
 
 export default compose(
