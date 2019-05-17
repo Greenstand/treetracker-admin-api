@@ -49,7 +49,7 @@ const initialState = {
   isLoading: false,
   pagesLoaded: -1,
   noMoreTreeImagesToLoad: false,
-  pageSize: 60
+  pageSize: 30
 };
 
 function reducer(state, action) {
@@ -78,7 +78,7 @@ function reducer(state, action) {
 }
 
 function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, { ...initialState });
 
   let treeImages = state.treeImages;
   let scrollContainerRef = null;
@@ -111,6 +111,7 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
 
   const loadMoreTreeImages = () => {
     setIsLoading(true);
+    console.log(state);
     const nextPage = state.pagesLoaded + 1;
     const pageParams = {
       page: nextPage,
@@ -146,6 +147,7 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
       ? getScrollContainerRef()
       : null;
     if (treeImages.length === 0) {
+      console.log("at 0 again!", state);
       loadMoreTreeImages();
     }
 
