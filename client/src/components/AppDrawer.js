@@ -62,14 +62,14 @@ const styles = theme => {
 
 const navItems = [
   {
-    label: "Trees",
-    id: "trees",
-    icon: "TREE"
-  },
-  {
     label: "Images",
     id: "imageScrubber",
     icon: "IMAGE_SEARCH"
+  },
+  {
+    label: "Trees",
+    id: "trees",
+    icon: "TREE"
   }
 ];
 
