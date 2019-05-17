@@ -1,26 +1,32 @@
-import { dispatch } from '@rematch/core'
+import { dispatch } from "@rematch/core";
 
 const appFrame = {
   state: {
-    currentView: 'trees',
+    currentView: "imageScrubber",
     appDrawer: {
-      'isOpen': false
+      isOpen: false
     }
   },
   reducers: {
     toggleAppDrawer(state) {
-      return { currentView: state.currentView, appDrawer: { isOpen: !state.isOpen }}
+      return {
+        currentView: state.currentView,
+        appDrawer: { isOpen: !state.isOpen }
+      };
     },
     openAppDrawer(state) {
-      return { currentView: state.currentView, appDrawer: { isOpen: true }}
+      return { currentView: state.currentView, appDrawer: { isOpen: true } };
     },
     closeAppDrawer(state) {
-      return { currentView: state.currentView, appDrawer: { isOpen: false }}
+      return { currentView: state.currentView, appDrawer: { isOpen: false } };
     },
     changeCurrentView(state, payload) {
-      return { currentView: payload.newView, appDrawer: { isOpen: state.isOpen } }
+      return {
+        currentView: payload.newView,
+        appDrawer: { isOpen: state.isOpen }
+      };
     }
   }
-}
+};
 
-export default appFrame
+export default appFrame;
