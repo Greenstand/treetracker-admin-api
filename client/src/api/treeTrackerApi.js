@@ -4,7 +4,7 @@ import { API_ROOT as baseUrl } from "../common/variables.js";
 export function getTreeImages({
   page,
   rowsPerPage,
-  orderBy = "id",
+  orderBy = "id DESC",
   order = "asc"
 }) {
   const query = `${baseUrl}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
