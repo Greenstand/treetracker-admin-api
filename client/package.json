@@ -9,14 +9,17 @@
     "axios": "*",
     "classnames": "*",
     "dateformat": "*",
+    "enzyme": "3.9.0",
     "prop-types": "*",
-    "react": "*",
+    "react": "16.8.6",
     "react-dom": "*",
     "react-infinite": "*",
     "react-redux": "*",
     "react-scripts": "*",
     "recompose": "*",
-    "typeface-roboto": "*"
+    "redux": "^4.0.1",
+    "typeface-roboto": "^0.0.54",
+    "typescript": "^3.5.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -29,5 +32,13 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "eslint": "5.16.0",
+    "eslint-config-standard": "12.0.0",
+    "eslint-plugin-import": "2.17.3",
+    "eslint-plugin-node": "9.1.0",
+    "eslint-plugin-promise": "4.1.1",
+    "eslint-plugin-standard": "4.0.0"
+  }
 }

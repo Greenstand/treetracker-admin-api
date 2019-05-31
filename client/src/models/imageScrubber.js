@@ -1,6 +1,5 @@
-import Axios from "axios";
+import Axios from 'axios';
 import { API_ROOT } from '../common/variables.js'
-
 
 const imageScrubber = {
   state: {
@@ -16,13 +15,13 @@ const imageScrubber = {
     }
   },
   reducers: {
-    getTree(state, tree) {
-      return { ...state, tree };
+    getTree (state, tree) {
+      return { ...state, tree }
     },
-    getTrees(state, payload, { page, rowsPerPage, order, orderBy }) {
-      return { ...state, data: payload, page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy };
+    getTrees (state, payload, { page, rowsPerPage, order, orderBy }) {
+      return { ...state, data: payload, page: page, rowsPerPage: rowsPerPage, order: order, orderBy: orderBy }
     },
-    toggleSelection(state, payload) {
+    toggleSelection (state, payload) {
       const idIsInArray = state.selected.find(el => {
         return el === payload.id
       })
@@ -36,13 +35,13 @@ const imageScrubber = {
         return { ...state, selected: newSelected }
       }
     },
-    addToSelection(state, payload, { id: id }) {
+    addToSelection (state, payload, { id }) {
       console.log('addToSelection')
     },
-    removeFromSelection(state, payload, { id: id }) {
-      console.log('removeFromSelection');
+    removeFromSelection (state, payload, { id }) {
+      console.log('removeFromSelection')
     },
-    receiveLocation(state, payload, { id, address }) {
+    receiveLocation (state, payload, { id, address }) {
       if (address === 'cached') {
         return state
       } else {
@@ -52,7 +51,7 @@ const imageScrubber = {
         return { ...state, byId }
       }
     },
-    receiveStatus(state, payload) {
+    receiveStatus (state, payload) {
       /**
        NOTE: May need to get access to tree store to get the tree to update in the TreeTable - 03/31/19
        // let i = state.trees.data.indexOf(payload)
@@ -61,25 +60,25 @@ const imageScrubber = {
       **/
       return { ...state, payload }
     },
-    toggleActions(state) {
+    toggleActions (state) {
       return { actionNav: { isOpen: !state.isOpen } }
     },
-    openActions(state) {
+    openActions (state) {
       return { actionNav: { isOpen: true } }
     },
-    closeActions(state) {
+    closeActions (state) {
       return { actionNav: { isOpen: false } }
     }
   },
   effects: {
-    async getTreesWithImagesAsync({ page, rowsPerPage, orderBy = 'id', order = 'asc' }) {
-      const query = `${API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page * rowsPerPage}&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true&field[imageURL]`;
+    async getTreesWithImagesAsync ({ page, rowsPerPage, orderBy = 'id', order = 'asc' }) {
+      const query = `${API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page * rowsPerPage}&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true&field[imageURL]`
       Axios.get(query)
         .then((response) => {
-          this.getTrees(response.data, { page: page, rowsPerPage: rowsPerPage, orderBy: orderBy, order: order });
+          this.getTrees(response.data, { page: page, rowsPerPage: rowsPerPage, orderBy: orderBy, order: order })
         })
     },
-    async getLocationName(payload, rootState) {
+    async getLocationName (payload, rootState) {
       if ((rootState.trees.byId[payload.id] &&
         rootState.trees.byId[payload.id].location &&
         rootState.trees.byId[payload.id].location.lat !== payload.lat &&
@@ -96,9 +95,9 @@ const imageScrubber = {
         this.receiveLocation(null, { id: payload.id, address: 'cached' })
       }
     },
-    async toggleTreeActive(id, isActive) {
-      const query = `${API_ROOT}/trees/${id}/`;
-      const data = { "active": isActive };
+    async toggleTreeActive (id, isActive) {
+      const query = `${API_ROOT}/trees/${id}/`
+      const data = { 'active': isActive }
       Axios.patch(query, data)
         .then((res) => {
           if (res.status === 200) {
@@ -106,7 +105,7 @@ const imageScrubber = {
           }
         })
         .catch(err => console.error(`ERROR: FAILED TO RETRIEVE STATUS ${err}`))
-    },
+    }
   }
 }
 

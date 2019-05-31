@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import compose from 'recompose/compose'
 import { connect } from 'react-redux'
@@ -22,7 +22,7 @@ const styles = (theme) => {
   }
   return ({
     hide: {
-      display: 'none',
+      display: 'none'
     },
     drawerPaper: {
       position: 'fixed',
@@ -32,8 +32,8 @@ const styles = (theme) => {
       width: drawerWidth,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
+        duration: theme.transitions.duration.enteringScreen
+      })
     },
     tabList: {
       paddingTop: theme.spacing.unit * 2
@@ -50,75 +50,72 @@ const styles = (theme) => {
       overflowX: 'hidden',
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
+        duration: theme.transitions.duration.leavingScreen
       }),
       width: theme.spacing.unit * 7,
       [theme.breakpoints.up('sm')]: {
-        width: theme.spacing.unit * 9,
-      },
+        width: theme.spacing.unit * 9
+      }
     }
   })
-};
-
-const navItems = [
-    {
-      label: 'Trees',
-      id: 'trees',
-      icon: 'TREE'
-    },
-    {
-      label: 'Images',
-      id: 'imageScrubber',
-      icon: 'IMAGE_SEARCH'
-    }
-]
-
-class AppDrawer extends Component {
-
-  componentDidMount() {
-    // this is where we may check in for logged in state and dispatch async calls for doing so
-  }
-
-  render() {
-    const { isOpen, changeCurrentView, closeAppDrawer, currentView, classes, theme } = this.props
-    return(
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: classNames(classes.drawerPaper, !isOpen && classes.drawerPaperClose),
-        }}
-        open={isOpen}
-      >
-        <div className={classes.toolbar}>
-          <IconButton onClick={closeAppDrawer()}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </div>
-        <List className={classes.tabList}>
-          {navItems.map(item => {
-            return (
-              <ListItem className={(!isOpen) ? classes.listItem : ''} key={item.id} button onClick={
-                function(e) {
-                  changeCurrentView(item.id)
-                }
-              }>
-                {isOpen && <ListItemText primary={item.label} />}
-                <IconButton
-                  color="inherit"
-                  aria-label="props.aria-label"
-                  className={classNames(classes.iconButton, (item.id === currentView) ? 'active' : '')}
-                >
-                  <Icon icon={item.icon} active={(item.id === currentView)}/>
-                </IconButton>
-              </ListItem>
-            )})
-          }
-        </List>
-      </Drawer>
-    )
-  }
 }
 
+const navItems = [
+  {
+    label: 'Trees',
+    id: 'trees',
+    icon: 'TREE'
+  },
+  {
+    label: 'Images',
+    id: 'imageScrubber',
+    icon: 'IMAGE_SEARCH'
+  }
+]
+
+const AppDrawer = (props) => {
+  useEffect(() => {
+    // this is where we may check in for logged in state and dispatch async calls for doing so
+  })
+
+  const { isOpen, changeCurrentView, closeAppDrawer, currentView, classes, theme } = props
+  return (
+    <Drawer
+      variant="permanent"
+      classes={{
+        paper: classNames(classes.drawerPaper, !isOpen && classes.drawerPaperClose)
+      }}
+      open={isOpen}
+    >
+      <div className={classes.toolbar}>
+        <IconButton onClick={closeAppDrawer()}>
+          {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+        </IconButton>
+      </div>
+      <List className={classes.tabList}>
+        {navItems.map(item => {
+          return (
+            <ListItem className={(!isOpen) ? classes.listItem : ''} key={item.id} button onClick={
+              function (e) {
+                changeCurrentView(item.id)
+              }
+            }>
+              {isOpen && <ListItemText primary={item.label} />}
+              <IconButton
+                color="inherit"
+                aria-label="props.aria-label"
+                className={classNames(classes.iconButton, (item.id === currentView) ? 'active' : '')}
+              >
+                <Icon icon={item.icon} active={(item.id === currentView)}/>
+              </IconButton>
+            </ListItem>
+          )
+        })
+        }
+      </List>
+    </Drawer>
+  )
+}
 
 const mapState = (state) => {
   return {
@@ -131,7 +128,7 @@ const mapDispatch = (dispatch) => {
   return {
     closeAppDrawer: () => dispatch.appFrame.closeAppDrawer,
     toggleAppDrawer: () => dispatch.appFrame.toggleAppDrawer,
-    changeCurrentView: (newView) => dispatch.appFrame.changeCurrentView({ newView: newView})
+    changeCurrentView: (newView) => dispatch.appFrame.changeCurrentView({ newView: newView })
   }
 }
 

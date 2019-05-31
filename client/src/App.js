@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import AppFrame from './components/AppFrame/AppFrame'
 
 const theme = createMuiTheme({
@@ -12,15 +12,14 @@ const theme = createMuiTheme({
 })
 
 class App extends Component {
-
-  componentDidMount() {
+  componentDidMount () {
     // in the future we want to maybe restore the users last filter set from the server
     // as well as deal with all the login state stuff.
     this.props.requestTreeCount()
   }
 
-  render() {
-    return(
+  render () {
+    return (
       <MuiThemeProvider theme={theme}>
         <AppFrame />
       </MuiThemeProvider>

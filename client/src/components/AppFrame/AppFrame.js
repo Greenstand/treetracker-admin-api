@@ -35,23 +35,23 @@ const styles = theme => ({
     backgroundColor: '#517147',
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+      duration: theme.transitions.duration.leavingScreen
+    })
   },
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   menuButton: {
     marginLeft: 12,
-    marginRight: 36,
+    marginRight: 36
   },
   hide: {
-    display: 'none',
+    display: 'none'
   },
   toolbar: {
     top: '120px',
@@ -60,7 +60,7 @@ const styles = theme => ({
     justifyContent: 'flex-end',
     padding: '0 8px',
     backgroundColor: '#eee',
-    ...theme.mixins.toolbar,
+    ...theme.mixins.toolbar
   },
   content: {
     flexGrow: 1,
@@ -68,7 +68,7 @@ const styles = theme => ({
     margin: 0,
     paddingTop: theme.spacing.unit * 8,
     paddingLeft: theme.spacing.unit * 8.25,
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.background.default
   },
   title: {
     fontFamily: 'Cabin Sketch',
@@ -79,50 +79,47 @@ const styles = theme => ({
     bottom: 0,
     left: 0
   }
-});
+})
 
-const AppFrame = (props) => ({
-
-  render() {
-    const { classes, theme, toggleAppDrawer, appDrawer, currentView } = this.props
-    let tabContents
-    if(currentView === 'trees') {
-      tabContents = (
-        <Trees />
-      )
-    } else if(currentView === 'imageScrubber') {
-      tabContents = (
-        <ImageScrubber />
-      )
-    }
-    return (
-      <div className={classes.root}>
-        <AppBar
-          position="fixed"
-          className={classNames(classes.appBar, appDrawer.isOpen && classes.appBarShift)}
-        >
-          <Toolbar disableGutters={!appDrawer.isOpen}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleAppDrawer()}
-              className={classNames(classes.menuButton, appDrawer.isOpen && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography className={classes.title} variant="title" color="inherit" noWrap>
-              TreeTracker Admin
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <AppDrawer />
-        <main className={classNames(classes.content, currentView)}>
-          {tabContents}
-        </main>
-      </div>
+const AppFrame = (props) => {
+  const { classes, theme, toggleAppDrawer, appDrawer, currentView } = props
+  let tabContents
+  if (currentView === 'trees') {
+    tabContents = (
+      <Trees />
+    )
+  } else if (currentView === 'imageScrubber') {
+    tabContents = (
+      <ImageScrubber />
     )
   }
-})
+  return (
+    <div className={classes.root}>
+      <AppBar
+        position="fixed"
+        className={classNames(classes.appBar, appDrawer.isOpen && classes.appBarShift)}
+      >
+        <Toolbar disableGutters={!appDrawer.isOpen}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={toggleAppDrawer()}
+            className={classNames(classes.menuButton, appDrawer.isOpen && classes.hide)}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography className={classes.title} variant="title" color="inherit" noWrap>
+            TreeTracker Admin
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <AppDrawer />
+      <main className={classNames(classes.content, currentView)}>
+        {tabContents}
+      </main>
+    </div>
+  )
+}
 
 const mapState = (state) => {
   return {
@@ -135,13 +132,13 @@ const mapDispatch = (dispatch) => {
   return {
     closeAppDrawer: () => dispatch.appFrame.closeAppDrawer,
     toggleAppDrawer: () => dispatch.appFrame.toggleAppDrawer,
-    changeCurrentView: ({currentView}) => dispatch.appFrame.changeCurrentView({currentView: currentView})
+    changeCurrentView: ({ currentView }) => dispatch.appFrame.changeCurrentView({ currentView: currentView })
   }
 }
 
 AppFrame.propTypes = {
   classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired
 }
 
 export default compose(

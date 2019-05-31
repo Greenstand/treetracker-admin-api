@@ -8,16 +8,16 @@ const appFrame = {
     }
   },
   reducers: {
-    toggleAppDrawer(state) {
-      return { currentView: state.currentView, appDrawer: { isOpen: !state.isOpen }}
+    toggleAppDrawer (state) {
+      return { currentView: state.currentView, appDrawer: { isOpen: !state.isOpen } }
     },
-    openAppDrawer(state) {
-      return { currentView: state.currentView, appDrawer: { isOpen: true }}
+    openAppDrawer (state) {
+      return { currentView: state.currentView, appDrawer: { isOpen: true } }
     },
-    closeAppDrawer(state) {
-      return { currentView: state.currentView, appDrawer: { isOpen: false }}
+    closeAppDrawer (state) {
+      return { currentView: state.currentView, appDrawer: { isOpen: false } }
     },
-    changeCurrentView(state, payload) {
+    changeCurrentView (state, payload) {
       return { currentView: payload.newView, appDrawer: { isOpen: state.isOpen } }
     }
   }

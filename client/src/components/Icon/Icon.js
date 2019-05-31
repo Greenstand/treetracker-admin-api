@@ -13,11 +13,11 @@ const styles = (theme) => ({
 
 const Icon = (props) => ({
 
-  render() {
+  render () {
     return (
-        <svg width='36' height='36' viewBox='0 0 24 24'>
-          <path className={(props.active) ? props.classes.active : props.classes.default } d={iconPaths[props.icon]}></path>
-        </svg>
+      <svg width='36' height='36' viewBox='0 0 24 24'>
+        <path className={(props.active) ? props.classes.active : props.classes.default } d={iconPaths[props.icon]}></path>
+      </svg>
     )
   }
 })
