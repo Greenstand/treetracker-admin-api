@@ -10,7 +10,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import Typography from '@material-ui/core/Typography'
-import FilterListIcon from '@material-ui/icons/FilterList';
+import FilterListIcon from '@material-ui/icons/FilterList'
 
 let TableToolbar = props => {
   const { selected, numSelected, classes } = props
@@ -18,7 +18,7 @@ let TableToolbar = props => {
   return (
     <Toolbar
       className={classNames(classes.root, {
-        [classes.highlight]: numSelected > 0,
+        [classes.highlight]: numSelected > 0
       })}
     >
       <div className={classes.title}>
@@ -49,14 +49,13 @@ let TableToolbar = props => {
         )}
       </div>
     </Toolbar>
-  );
-};
+  )
+}
 
 TableToolbar.propTypes = {
   classes: PropTypes.object.isRequired,
   numSelected: PropTypes.number.isRequired
-};
-
+}
 
 const styles = theme => ({
   root: {
@@ -69,7 +68,7 @@ const styles = theme => ({
   },
 
   tableWrapper: {
-    overflowX: 'auto',
+    overflowX: 'auto'
   }
 })
 

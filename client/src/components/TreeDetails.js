@@ -1,19 +1,18 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import compose from 'recompose/compose'
+import { connect } from 'react-redux'
 
 class TreeDetails extends Component {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
   }
 
-  render() {
-    let { tree } = this.props;
-    const treeImage = (tree.imageUrl !== null) ? <img className="tree-image" src={tree.imageUrl}></img> : null;
-    const isAlive = (tree.causeOfDeathId !== null) ? 'Dead' : 'Alive';
-    const treeMissing = (tree.missing) ? 'True' : 'False';
+  render () {
+    let { tree } = this.props
+    const treeImage = (tree.imageUrl !== null) ? <img className="tree-image" src={tree.imageUrl}></img> : null
+    const isAlive = (tree.causeOfDeathId !== null) ? 'Dead' : 'Alive'
+    const treeMissing = (tree.missing) ? 'True' : 'False'
     return (
       <div className="tree-panel">
         {treeImage}
@@ -28,8 +27,8 @@ class TreeDetails extends Component {
 const mapState = state => {
   const keys = Object.keys(state.trees.data)
   return {
-    tree: state.trees.tree,
+    tree: state.trees.tree
   }
 }
 
-export default TreeDetails;
+export default TreeDetails

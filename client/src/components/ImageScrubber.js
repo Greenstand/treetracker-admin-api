@@ -41,7 +41,7 @@ const styles = theme => ({
     height: '12rem'
   },
   cardWrapper: {
-    width: '33.33%',
+    width: '33.33%'
   }
 })
 
@@ -51,12 +51,11 @@ const scroll = {
 }
 
 class ImageScrubber extends Component {
-
-  componentDidMount() {
-    this.getTreesWithImages();
+  componentDidMount () {
+    this.getTreesWithImages()
   }
 
-  getTreesWithImages(order, orderBy) {
+  getTreesWithImages (order, orderBy) {
     const payload = {
       page: this.props.page,
       rowsPerPage: this.props.rowsPerPage,
@@ -67,22 +66,21 @@ class ImageScrubber extends Component {
     return this.props.getTreesWithImagesAsync(payload)
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     if (nextProps.treesArray !== this.props.treesArray) {
-      return true;
+      return true
     };
 
-    return false;
+    return false
   }
 
-  sortImages(e, orderBy, order) {
-    e.preventDefault();
-    let newOrder = (order === 'asc') ? 'desc' : 'asc';
-    this.getTreesWithImages(newOrder, orderBy);
-
+  sortImages (e, orderBy, order) {
+    e.preventDefault()
+    let newOrder = (order === 'asc') ? 'desc' : 'asc'
+    this.getTreesWithImages(newOrder, orderBy)
   }
 
-  render() {
+  render () {
     const {
       numSelected,
       classes,
@@ -97,8 +95,8 @@ class ImageScrubber extends Component {
       tree
     } = this.props
 
-    const idArrow = (order === 'asc' && orderBy === 'id') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
-  const updatedArrow = (order === 'asc' && orderBy === 'timeUpdated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
+    const idArrow = (order === 'asc' && orderBy === 'id') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
+    const updatedArrow = (order === 'asc' && orderBy === 'timeUpdated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
 
     return (
       <div>
@@ -117,16 +115,16 @@ class ImageScrubber extends Component {
           </Card>
         </div>
         <Infinite
-            containerHeight={scroll.containerHeight}
-            elementHeight={scroll.elementHeight}
-            useWindowAsScrollContainer={true}
-            >
+          containerHeight={scroll.containerHeight}
+          elementHeight={scroll.elementHeight}
+          useWindowAsScrollContainer={true}
+        >
           <div className={classes.wrapper}>
             {this.props.treesArray.map(tree => {
-                return (
-                  <TreeImageCard key={tree.id} tree={tree} />
-                )
-              })
+              return (
+                <TreeImageCard key={tree.id} tree={tree} />
+              )
+            })
             }
           </div>
         </Infinite>
@@ -143,7 +141,7 @@ ImageScrubber.propTypes = {
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired,
   numSelected: PropTypes.number.isRequired,
-  byId: PropTypes.object,
+  byId: PropTypes.object
 }
 
 const mapState = state => {
