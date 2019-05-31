@@ -1,39 +1,39 @@
-import React from "react";
-import PropTypes from "prop-types";
-import compose from "recompose/compose";
-import { connect } from "react-redux";
-import classNames from "classnames";
-import { withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
+import React from 'react'
+import PropTypes from 'prop-types'
+import compose from 'recompose/compose'
+import { connect } from 'react-redux'
+import classNames from 'classnames'
+import { withStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import Divider from '@material-ui/core/Divider'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
 
-import AppDrawer from "./AppDrawer";
-import Trees from "./Trees";
-import TreeImageScrubber from "./TreeImageScrubber";
-import { drawerWidth } from "../common/variables";
+import AppDrawer from './AppDrawer'
+import Trees from './Trees'
+import TreeImageScrubber from './TreeImageScrubber'
+import { drawerWidth } from '../common/variables'
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: "100vh",
+    height: '100vh',
     zIndex: 1,
-    overflow: "auto",
-    position: "relative",
-    display: "flex",
+    overflow: 'auto',
+    position: 'relative',
+    display: 'flex',
     padding: 0,
     margin: 0
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    position: "fixed",
+    position: 'fixed',
     top: 0,
     left: 0,
-    backgroundColor: "#517147",
-    transition: theme.transitions.create(["width", "margin"], {
+    backgroundColor: '#517147',
+    transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     })
@@ -41,7 +41,7 @@ const styles = theme => ({
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
+    transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
     })
@@ -51,15 +51,15 @@ const styles = theme => ({
     marginRight: 36
   },
   hide: {
-    display: "none"
+    display: 'none'
   },
   toolbar: {
-    top: "120px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    backgroundColor: "#eee",
+    top: '120px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 8px',
+    backgroundColor: '#eee',
     ...theme.mixins.toolbar
   },
   content: {
@@ -71,37 +71,37 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default
   },
   title: {
-    fontFamily: "Cabin Sketch",
-    fontSize: "1.75em"
+    fontFamily: 'Cabin Sketch',
+    fontSize: '1.75em'
   },
   tableToolbar: {
-    position: "fixed",
+    position: 'fixed',
     bottom: 0,
     left: 0
   }
-});
+})
 
 const AppFrame = props => ({
-  render() {
-    let scrollContainerRef = null;
-    const getScrollContainerRef = () => scrollContainerRef;
+  render () {
+    let scrollContainerRef = null
+    const getScrollContainerRef = () => scrollContainerRef
     const setScrollContainerRef = el => {
-      scrollContainerRef = el;
-    };
+      scrollContainerRef = el
+    }
     const {
       classes,
       theme,
       toggleAppDrawer,
       appDrawer,
       currentView
-    } = this.props;
-    let tabContents;
-    if (currentView === "trees") {
-      tabContents = <Trees />;
-    } else if (currentView === "imageScrubber") {
+    } = this.props
+    let tabContents
+    if (currentView === 'trees') {
+      tabContents = <Trees />
+    } else if (currentView === 'imageScrubber') {
       tabContents = (
         <TreeImageScrubber getScrollContainerRef={getScrollContainerRef} />
-      );
+      )
     }
     return (
       <div className={classes.root} ref={setScrollContainerRef}>
@@ -139,16 +139,16 @@ const AppFrame = props => ({
           {tabContents}
         </main>
       </div>
-    );
+    )
   }
-});
+})
 
 const mapState = state => {
   return {
     appDrawer: state.appFrame.appDrawer,
     currentView: state.appFrame.currentView
-  };
-};
+  }
+}
 
 const mapDispatch = dispatch => {
   return {
@@ -156,18 +156,18 @@ const mapDispatch = dispatch => {
     toggleAppDrawer: () => dispatch.appFrame.toggleAppDrawer,
     changeCurrentView: ({ currentView }) =>
       dispatch.appFrame.changeCurrentView({ currentView: currentView })
-  };
-};
+  }
+}
 
 AppFrame.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired
-};
+}
 
 export default compose(
-  withStyles(styles, { withTheme: true, name: "AppFrame" }),
+  withStyles(styles, { withTheme: true, name: 'AppFrame' }),
   connect(
     mapState,
     mapDispatch
   )
-)(AppFrame);
+)(AppFrame)
