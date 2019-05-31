@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import DeleteIcon from '@material-ui/icons/DeleteRounded';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import BottomNavigation from '@material-ui/core/BottomNavigation'
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
+import DeleteIcon from '@material-ui/icons/DeleteRounded'
 
 const styles = {
   root: {
@@ -23,8 +23,8 @@ class ImageScrubberActions extends Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { value } = this.state;
+    const { classes } = this.props
+    const { value } = this.state
 
     return (
       <BottomNavigation
@@ -43,4 +43,4 @@ ImageScrubberActions.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ImageScrubberActions);
+export default withStyles(styles)(ImageScrubberActions)
