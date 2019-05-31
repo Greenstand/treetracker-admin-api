@@ -32,74 +32,66 @@ const styles = theme => ({
     height: '12rem'
   },
   cardWrapper: {
-    width: '33.33%',
+    width: '33.33%'
   }
 })
 
-
-class TreeImageCard extends Component {
-
-  constructor(props) {
-    super(props)
+const TreeImageCard = props => {
+  const onStatusToggle = (e, id, isActive) => {
+    const { toggleTreeActive } = props
+    e.stopPropagation()
+    toggleTreeActive(id, isActive)
   }
 
-  onStatusToggle = (e, id, isActive) => {
-    const { toggleTreeActive } = this.props;
-    e.stopPropagation();
-    toggleTreeActive(id, isActive);
-  }
+  const { tree, classes, toggleSelection } = props
 
-  render() {
-    const { tree, classes, toggleSelection } = this.props
-
-    return (
-      <div
-        className={classes.cardWrapper}
-        key={tree.id}>
-        <Card id={`card_${tree.id}`}
-          className={classes.card}
-          onClick={
-            function(e) {
-              e.stopPropagation()
-              document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
-              toggleSelection(tree.id)
-            }
-          }>
-          <CardContent>
-            <CardMedia
-              className={classes.cardMedia}
-              image={tree.imageUrl}
-            />
-            <Typography
-              className={classes.cardTitle}
-              color="textSecondary"
-              gutterBottom
-            >
+  return (
+    <div
+      className={classes.cardWrapper}
+      key={tree.id}>
+      <Card id={`card_${tree.id}`}
+        className={classes.card}
+        onClick={
+          function (e) {
+            e.stopPropagation()
+            document.getElementById(`card_${tree.id}`).classList.toggle(classes.selected)
+            toggleSelection(tree.id)
+          }
+        }>
+        <CardContent>
+          <CardMedia
+            className={classes.cardMedia}
+            image={tree.imageUrl}
+          />
+          <Typography
+            className={classes.cardTitle}
+            color="textSecondary"
+            gutterBottom
+          >
               Tree# {tree.id}
-            </Typography>
-          </CardContent>
-          <CardActions
-            style={{'position': 'fix' }}
-            >
-            <Button
-              size="small"
-              onClick={(e) => this.onStatusToggle(e, tree.id, true)}
-            >
+          </Typography>
+        </CardContent>
+        <CardActions
+          style={{ 'position': 'fix' }}
+        >
+          <Button
+            size="small"
+            onClick={(e) => onStatusToggle(e, tree.id, true)}
+          >
             Reject
-            </Button>
-            <Button
-              size="small"
-              onClick={
-                (e)=> this.onStatusToggle(e, tree.id, false)
-              }
-            >
+          </Button>
+          <Button
+            size="small"
+            onClick={
+              (e) => onStatusToggle(e, tree.id, false)
+            }
+          >
             Approve
-            </Button>
-          </CardActions>
-        </Card>
-      </div>
-    )
-  }
+          </Button>
+        </CardActions>
+      </Card>
+    </div>
+  )
 }
 
 TreeImageCard.propTypes = {
