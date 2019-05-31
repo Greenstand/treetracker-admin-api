@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import Axios from 'axios'
 import { API_ROOT } from '../common/variables.js'
 
 const trees = {

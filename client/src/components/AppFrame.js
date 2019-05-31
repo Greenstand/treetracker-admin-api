@@ -108,7 +108,7 @@ const AppFrame = (props) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography className={classes.title} variant="title" color="inherit" noWrap>
+          <Typography className={classes.title} variant="h1" color="inherit" noWrap>
             TreeTracker Admin
           </Typography>
         </Toolbar>
