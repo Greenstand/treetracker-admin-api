@@ -52,7 +52,7 @@ const initialState = {
   pageSize: 30
 }
 
-function reducer (state, action) {
+const reducer = (state, action) => {
   let treeImages = {}
   switch (action.type) {
     case 'loadMoreTreeImages':
@@ -77,7 +77,7 @@ function reducer (state, action) {
   }
 }
 
-function TreeImageScrubber ({ classes, getScrollContainerRef, ...props }) {
+const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
   const [state, dispatch] = useReducer(reducer, { ...initialState })
 
   let treeImages = state.treeImages

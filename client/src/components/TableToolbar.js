@@ -12,7 +12,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import Typography from '@material-ui/core/Typography'
 import FilterListIcon from '@material-ui/icons/FilterList'
 
-let TableToolbar = props => {
+const TableToolbar = props => {
   const { selected, numSelected, classes } = props
   let counter = 0
   return (

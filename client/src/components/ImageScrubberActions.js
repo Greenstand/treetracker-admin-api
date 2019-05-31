@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
@@ -12,19 +12,16 @@ const styles = {
   }
 };
 
-class ImageScrubberActions extends Component {
+const ImageScrubberActions = props => {
+  const [value, setValue] = useState(0)
 
-  state = {
-    value: 0,
-  };
 
   handleChange = (event, value) => {
-    this.setState({ value });
+    setValue(value);
   };
 
-  render() {
-    const { classes } = this.props
-    const { value } = this.state
+    const { classes } = props
+    const { value } = state
 
     return (
       <BottomNavigation
@@ -36,7 +33,6 @@ class ImageScrubberActions extends Component {
         <BottomNavigationAction label="Mark Inactive" icon={<DeleteIcon />} />
       </BottomNavigation>
     );
-  }
 }
 
 ImageScrubberActions.propTypes = {
