@@ -13,8 +13,8 @@ import Checkbox from '@material-ui/core/Checkbox'
 import Tooltip from '@material-ui/core/Tooltip'
 import Drawer from '@material-ui/core/Drawer';
 
-import TreeDetails from '../TreeDetails/TreeDetails'
-import EnhancedTableHead from '../EnhancedTableHead/EnhancedTableHead'
+import TreeDetails from './TreeDetails'
+import EnhancedTableHead from './EnhancedTableHead'
 
 // change 88 to unit spacing,
 const styles = theme => ({

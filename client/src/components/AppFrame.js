@@ -11,10 +11,10 @@ import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 
-import AppDrawer from '../AppDrawer/AppDrawer'
-import Trees from '../Trees/Trees'
-import ImageScrubber from '../ImageScrubber/ImageScrubber'
-import { drawerWidth } from '../../common/variables'
+import AppDrawer from './AppDrawer'
+import Trees from './Trees'
+import ImageScrubber from './ImageScrubber'
+import { drawerWidth } from '../common/variables'
 
 const styles = theme => ({
   root: {

@@ -13,8 +13,8 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
 import Button from '@material-ui/core/Button' // replace with icons down the line
 import Infinite from 'react-infinite'
 
-import { selectedHighlightColor } from '../../common/variables.js'
-import TreeImageCard from '../TreeImageCard/TreeImageCard'
+import { selectedHighlightColor } from '../common/variables.js'
+import TreeImageCard from './TreeImageCard'
 
 const styles = theme => ({
   wrapper: {

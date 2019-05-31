@@ -9,8 +9,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import TableToolbar from '../TableToolbar/TableToolbar'
-import TreeTable from '../TreeTable/TreeTable'
+import TableToolbar from './TableToolbar'
+import TreeTable from './TreeTable'
 
 const Trees = (props) => ({
 
