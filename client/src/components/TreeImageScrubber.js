@@ -63,6 +63,12 @@ function reducer(state, action) {
         isLoading: action.isLoading
       };
       return newState;
+    case "noMoreTreeImages":
+      return {
+        ...state,
+        isLoading: false,
+        moreTreeImagesAvailable: false
+      };
     case "approveTreeImage":
       treeImages = state.treeImages.filter(
         treeImage => treeImage.id !== action.id
@@ -82,15 +88,12 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
   const [state, dispatch] = useReducer(reducer, { ...initialState });
 
   let treeImages = state.treeImages;
-  let scrollContainerRef = null;
+  let scrollContainerRef;
 
   const onApproveTreeImageClick = (e, id) => {
     approveTreeImage(id)
       .then(result => {
         dispatch({ type: "approveTreeImage", id });
-        if (needtoLoadMoreTreeImages()) {
-          // loadMoreTreeImages();
-        }
       })
       .catch(e => {
         // don't change the state if the server couldnt help us
@@ -102,9 +105,6 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
     rejectTreeImage(id)
       .then(result => {
         dispatch({ type: "rejectTreeImage", id });
-        if (needtoLoadMoreTreeImages()) {
-          // loadMoreTreeImages();
-        }
       })
       .catch(e => {
         // don't change the state if the server couldnt help us
@@ -139,7 +139,7 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
       })
       .catch(error => {
         // no more to load!
-        state.moreTreeImagesAvailable = false;
+        dispatch({ type: "noMoreTreeImages" });
       });
   };
 
@@ -156,7 +156,7 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
     loadMoreTreeImages();
   };
 
-  scrollContainerRef = getScrollContainerRef() ? getScrollContainerRef() : null;
+  scrollContainerRef = getScrollContainerRef();
   if (scrollContainerRef) {
     scrollContainerRef.addEventListener("scroll", handleScroll);
   }
