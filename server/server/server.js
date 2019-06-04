@@ -22,7 +22,6 @@ app.start = function() {
 // Sub-apps like REST API are mounted via boot scripts.
 boot(app, { dsRootDir: 'config/' }, function(err) {
   if (err) throw err;
-  console.log('ok');
 
   // start the server if `$ node server.js`
   if (require.main === module)

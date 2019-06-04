@@ -335,6 +335,21 @@
         "dataScale": null,
         "nullable": "YES"
       }
+    },
+    "approved": {
+      "type": "Boolean",
+      "required": false,
+      "length": null,
+      "precision": null,
+      "scale": null,
+      "postgresql": {
+        "columnName": "approved",
+        "dataType": "boolean",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      }
     }
   }
 }
