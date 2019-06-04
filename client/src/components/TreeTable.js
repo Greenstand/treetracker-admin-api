@@ -78,8 +78,8 @@ class TreeTable extends Component {
     });
   };
 
-  onSort = (column, ascending) => {
-    this.props.sortTrees(column, ascending);
+  onSort = (order, orderBy) => {
+    this.props.sortTrees(order, orderBy);
   };
 
   render() {
@@ -110,6 +110,7 @@ class TreeTable extends Component {
       rowsPerPage: this.props.rowsPerPage,
       rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
       onTableChange: (action, tableState) => {
+        console.log(tableState);
         switch (action) {
           case 'changePage':
             this.onPageChange(tableState.page, tableState.rowsPerPage);
@@ -118,8 +119,8 @@ class TreeTable extends Component {
             this.onChangeRowsPerPage(tableState.rowsPerPage);
             break;
           case 'sort':
-            const col = tableState.columns[tableState.activeColumn].name;
-            this.onSort(col, tableState.announceText.includes('ascending'));
+            const col = tableState.columns[tableState.activeColumn];
+            this.onSort(col.sortDirection === 'asc' ? 'desc' : 'asc', col.name);
             break;
         }
       }
@@ -174,8 +175,8 @@ const mapDispatch = dispatch => ({
   getLocationName: (id, lat, lon) =>
     dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
   getTreeAsync: id => dispatch.trees.getTreeAsync(id),
-  sortTrees: (column, ascending) =>
-    dispatch.trees.sortTrees({ orderBy: column, ascending: ascending })
+  sortTrees: (order, orderBy) =>
+    dispatch.trees.sortTrees({ order: order, orderBy: orderBy })
 });
 
 export default compose(

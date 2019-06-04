@@ -133,18 +133,18 @@ const trees = {
     },
     async showTree(id) {},
     async sortTrees(payload, rootState) {
-      const { page, rowsPerPage } = rootState.trees;
-      const order = payload.ascending ? 'asc' : 'desc';
+      const { page, rowsPerPage, order } = rootState.trees;
+      const newOrder = order === 'asc' ? 'desc' : 'asc';
       const query = `${API_ROOT}/trees?filter[order]=${
         payload.orderBy
-      } ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
+      } ${newOrder}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true`;
       Axios.get(query).then(response => {
         this.getTrees(response.data, {
           page: page,
           rowsPerPage: rowsPerPage,
           orderBy: payload.orderBy,
-          order: order
+          order: newOrder
         });
       });
     }
