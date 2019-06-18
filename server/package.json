@@ -14,9 +14,9 @@
     "compression": "^1.0.3",
     "cors": "^2.5.2",
     "helmet": "^3.10.0",
-    "loopback": "^3.19.0",
+    "loopback": "^3.25.1",
     "loopback-boot": "^2.6.5",
-    "loopback-component-explorer": "^6.0.0",
+    "loopback-component-explorer": "^6.4.0",
     "loopback-connector-postgresql": "^2.9.0",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^2.0.0"
@@ -27,7 +27,6 @@
     "eslint-config-loopback": "^8.0.0",
     "loopback-testing": "^1.4.0",
     "mocha": "^5.2.0",
-    "nsp": "^2.1.0",
     "sinon": "^7.1.1"
   },
   "repository": {
