@@ -21,10 +21,9 @@ const styles = theme => ({
   locationCol: {
     minWidth: '200px'
   }
-});
+})
 
 const EnhancedTableHead = (props) => {
-
   const { order, orderBy, rowCount, classes } = props
 
   const columnData = [
@@ -37,11 +36,10 @@ const EnhancedTableHead = (props) => {
 
   const handleSelectAll = () => {
     console.log('handleSelectAll')
-
   }
 
   const handleSort = (order, orderBy) => {
-    console.log('order:', order, 'orderBy:', orderBy);
+    console.log('order:', order, 'orderBy:', orderBy)
     props.sortTrees(order, orderBy)
   }
 
@@ -113,7 +111,6 @@ const mapDispatch = dispatch => {
     sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order, orderBy })
   }
 }
-
 
 export default compose(
   withStyles(styles, { withTheme: true, name: 'EnhancedTableHead' }),

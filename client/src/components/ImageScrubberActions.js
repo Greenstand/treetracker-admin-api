@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import DeleteIcon from '@material-ui/icons/DeleteRounded';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import BottomNavigation from '@material-ui/core/BottomNavigation'
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
+import DeleteIcon from '@material-ui/icons/DeleteRounded'
 
 const styles = {
   root: {
@@ -12,19 +12,16 @@ const styles = {
   }
 };
 
-class ImageScrubberActions extends Component {
+const ImageScrubberActions = props => {
+  const [value, setValue] = useState(0)
 
-  state = {
-    value: 0,
-  };
 
   handleChange = (event, value) => {
-    this.setState({ value });
+    setValue(value);
   };
 
-  render() {
-    const { classes } = this.props;
-    const { value } = this.state;
+    const { classes } = props
+    const { value } = state
 
     return (
       <BottomNavigation
@@ -36,11 +33,10 @@ class ImageScrubberActions extends Component {
         <BottomNavigationAction label="Mark Inactive" icon={<DeleteIcon />} />
       </BottomNavigation>
     );
-  }
 }
 
 ImageScrubberActions.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ImageScrubberActions);
+export default withStyles(styles)(ImageScrubberActions)

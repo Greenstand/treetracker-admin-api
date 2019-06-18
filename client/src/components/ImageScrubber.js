@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useEffect } from 'react'
 import compose from 'recompose/compose'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
@@ -41,7 +41,7 @@ const styles = theme => ({
     height: '12rem'
   },
   cardWrapper: {
-    width: '33.33%',
+    width: '33.33%'
   }
 })
 
@@ -50,89 +50,84 @@ const scroll = {
   elementHeight: 295
 }
 
-class ImageScrubber extends Component {
+const ImageScrubber = props => {
+  useEffect(() => {
+    getTreesWithImages()
+  })
 
-  componentDidMount() {
-    this.getTreesWithImages();
-  }
-
-  getTreesWithImages(order, orderBy) {
+  const getTreesWithImages = (order, orderBy) => {
     const payload = {
-      page: this.props.page,
-      rowsPerPage: this.props.rowsPerPage,
-      order: order || this.props.order,
-      orderBy: orderBy || this.props.orderBy
+      page: props.page,
+      rowsPerPage: props.rowsPerPage,
+      order: order || props.order,
+      orderBy: orderBy || props.orderBy
     }
 
-    return this.props.getTreesWithImagesAsync(payload)
+    return props.getTreesWithImagesAsync(payload)
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.treesArray !== this.props.treesArray) {
-      return true;
+  const shouldComponentUpdate = (nextProps, nextState) => {
+    if (nextProps.treesArray !== props.treesArray) {
+      return true
     };
 
-    return false;
+    return false
   }
 
-  sortImages(e, orderBy, order) {
-    e.preventDefault();
-    let newOrder = (order === 'asc') ? 'desc' : 'asc';
-    this.getTreesWithImages(newOrder, orderBy);
-
+  const sortImages = (e, orderBy, order) => {
+    e.preventDefault()
+    let newOrder = (order === 'asc') ? 'desc' : 'asc'
+    getTreesWithImages(newOrder, orderBy)
   }
 
-  render() {
-    const {
-      numSelected,
-      classes,
-      rowsPerPage,
-      selected,
-      order,
-      orderBy,
-      treesArray,
-      getLocationName,
-      treeCount,
-      byId,
-      tree
-    } = this.props
+  const {
+    numSelected,
+    classes,
+    rowsPerPage,
+    selected,
+    order,
+    orderBy,
+    treesArray,
+    getLocationName,
+    treeCount,
+    byId,
+    tree
+  } = props
 
-    const idArrow = (order === 'asc' && orderBy === 'id') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
-  const updatedArrow = (order === 'asc' && orderBy === 'timeUpdated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />;
+  const idArrow = (order === 'asc' && orderBy === 'id') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
+  const updatedArrow = (order === 'asc' && orderBy === 'timeUpdated') ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />
 
-    return (
-      <div>
-        <div className={classes.wrapper}>
-          <Card className={classNames(classes.card, classes.filterHeader)}>
-            <CardActions className={classes.filter}>
-              <Button size="small" onClick={(e) => this.sortImages(e, 'id', order)}>
-                id
-                {idArrow}
-              </Button>
-              <Button size="small" onClick={(e) => this.sortImages(e, 'timeUpdated', order)}>
-                updated
-                {updatedArrow}
-              </Button>
-            </CardActions>
-          </Card>
-        </div>
-        <Infinite
-            containerHeight={scroll.containerHeight}
-            elementHeight={scroll.elementHeight}
-            useWindowAsScrollContainer={true}
-            >
-          <div className={classes.wrapper}>
-            {this.props.treesArray.map(tree => {
-                return (
-                  <TreeImageCard key={tree.id} tree={tree} />
-                )
-              })
-            }
-          </div>
-        </Infinite>
+  return (
+    <div>
+      <div className={classes.wrapper}>
+        <Card className={classNames(classes.card, classes.filterHeader)}>
+          <CardActions className={classes.filter}>
+            <Button size="small" onClick={(e) => sortImages(e, 'id', order)}>
+              id
+              {idArrow}
+            </Button>
+            <Button size="small" onClick={(e) => sortImages(e, 'timeUpdated', order)}>
+              updated
+              {updatedArrow}
+            </Button>
+          </CardActions>
+        </Card>
       </div>
-    )
-  }
+      <Infinite
+        containerHeight={scroll.containerHeight}
+        elementHeight={scroll.elementHeight}
+        useWindowAsScrollContainer={true}
+      >
+        <div className={classes.wrapper}>
+          {props.treesArray.map(tree => {
+            return (
+              <TreeImageCard key={tree.id} tree={tree} />
+            )
+          })}
+        </div>
+      </Infinite>
+    </div>
+  )
 }
 
 ImageScrubber.propTypes = {
@@ -143,7 +138,7 @@ ImageScrubber.propTypes = {
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired,
   numSelected: PropTypes.number.isRequired,
-  byId: PropTypes.object,
+  byId: PropTypes.object
 }
 
 const mapState = state => {
