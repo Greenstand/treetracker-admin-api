@@ -1,0 +1,20 @@
+{
+  "name": "treetracker-admin",
+  "version": "1.0.0",
+  "description": "This portion of the project is to process tree data. TreeTracker's Admin Panel Frontend and RESTful API built with loopback.",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Greenstand/treetracker-admin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Greenstand/treetracker-admin/issues"
+  },
+  "homepage": "https://github.com/Greenstand/treetracker-admin#readme"
+}
