@@ -48,8 +48,8 @@ const initialState = {
   treeImages: [],
   isLoading: false,
   pagesLoaded: -1,
-  noMoreTreeImagesToLoad: false,
-  pageSize: 60
+  moreTreeImagesAvailable: true,
+  pageSize: 20
 };
 
 function reducer(state, action) {
@@ -59,9 +59,16 @@ function reducer(state, action) {
       let newTreeImages = [...state.treeImages, ...action.treeImages];
       let newState = {
         ...state,
-        treeImages: newTreeImages
+        treeImages: newTreeImages,
+        isLoading: action.isLoading
       };
       return newState;
+    case "noMoreTreeImages":
+      return {
+        ...state,
+        isLoading: false,
+        moreTreeImagesAvailable: false
+      };
     case "approveTreeImage":
       treeImages = state.treeImages.filter(
         treeImage => treeImage.id !== action.id
@@ -78,10 +85,10 @@ function reducer(state, action) {
 }
 
 function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, { ...initialState });
 
   let treeImages = state.treeImages;
-  let scrollContainerRef = null;
+  let scrollContainerRef;
 
   const onApproveTreeImageClick = (e, id) => {
     approveTreeImage(id)
@@ -109,7 +116,12 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
     state.isLoading = loading;
   };
 
+  const needtoLoadMoreTreeImages = () => {
+    return state.moreTreeImagesAvailable && treeImages.length < state.pageSize;
+  };
+
   const loadMoreTreeImages = () => {
+    if (state.isLoading || !state.moreTreeImagesAvailable) return;
     setIsLoading(true);
     const nextPage = state.pagesLoaded + 1;
     const pageParams = {
@@ -118,13 +130,16 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
     };
     getTreeImages(pageParams)
       .then(result => {
-        setIsLoading(false);
         state.pagesLoaded = nextPage;
-        dispatch({ type: "loadMoreTreeImages", treeImages: result });
+        dispatch({
+          type: "loadMoreTreeImages",
+          treeImages: result,
+          isLoading: false
+        });
       })
       .catch(error => {
         // no more to load!
-        state.noMoreTreeImagesToLoad = true;
+        dispatch({ type: "noMoreTreeImages" });
       });
   };
 
@@ -141,23 +156,22 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
     loadMoreTreeImages();
   };
 
+  scrollContainerRef = getScrollContainerRef();
+  if (scrollContainerRef) {
+    scrollContainerRef.addEventListener("scroll", handleScroll);
+  }
+
   useEffect(() => {
-    scrollContainerRef = getScrollContainerRef()
-      ? getScrollContainerRef()
-      : null;
-    if (treeImages.length === 0) {
+    if (needtoLoadMoreTreeImages()) {
       loadMoreTreeImages();
     }
 
-    if (scrollContainerRef) {
-      scrollContainerRef.addEventListener("scroll", handleScroll);
-    }
     return () => {
       if (scrollContainerRef) {
         scrollContainerRef.removeEventListener("scroll", handleScroll);
       }
     };
-  }, []);
+  }, [state]);
 
   let treeImageItems = treeImages.map(tree => {
     if (tree.imageUrl) {
@@ -166,22 +180,18 @@ function TreeImageScrubber({ classes, getScrollContainerRef, ...props }) {
           <Card id={`card_${tree.id}`} className={classes.card}>
             <CardContent>
               <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
-              <Typography
-                className={classes.cardTitle}
-                color="textSecondary"
-                gutterBottom
-              >
-                Tree# {tree.id}
-              </Typography>
+              <Typography gutterBottom>Tree# {tree.id}</Typography>
             </CardContent>
             <CardActions>
               <Button
+                color="secondary"
                 size="small"
                 onClick={e => onRejectTreeImageClick(e, tree.id)}
               >
                 Reject
               </Button>
               <Button
+                color="primary"
                 size="small"
                 onClick={e => onApproveTreeImageClick(e, tree.id)}
               >
