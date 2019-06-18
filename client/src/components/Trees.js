@@ -9,7 +9,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import TreeTable from '../../organisms/TreeTable/TreeTable';
+import TreeTable from './TreeTable';
 
 const Trees = props => ({
   render() {

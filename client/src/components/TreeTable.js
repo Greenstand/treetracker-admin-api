@@ -6,7 +6,7 @@ import MUIDataTable from 'mui-datatables';
 
 import Drawer from '@material-ui/core/Drawer';
 
-import TreeDetails from '../TreeDetails/TreeDetails';
+import TreeDetails from './TreeDetails.js';
 
 // change 88 to unit spacing,
 const styles = () => ({
@@ -54,7 +54,6 @@ class TreeTable extends Component {
   }
 
   toggleDrawer = id => {
-    console.log(id);
     this.props.getTreeAsync(id);
     const { detailsPane } = this.state;
     this.setState({
@@ -79,20 +78,20 @@ class TreeTable extends Component {
     });
   };
 
-  onSort = (column, ascending) => {
-    this.props.sortTrees(column, ascending);
+  onSort = (order, orderBy) => {
+    this.props.sortTrees(order, orderBy);
   };
 
   render() {
     const { treesArray, tree } = this.props;
     const columnData = [
-      { name: 'id', label: 'Id', options: { sortable: true } },
-      { name: 'timeCreated', label: 'Creation', options: { sortable: true } },
-      { name: 'timeUpdated', label: 'Updated', options: { sortable: true } },
+      { name: 'id', label: 'Id' },
+      { name: 'timeCreated', label: 'Creation' },
+      { name: 'timeUpdated', label: 'Updated' },
       {
         label: 'Location',
         options: {
-          sortable: false,
+          sort: false,
           customBodyRender: () => {
             return <span>botched rendering func</span>; // TODO: replace
           }
@@ -111,8 +110,7 @@ class TreeTable extends Component {
       rowsPerPage: this.props.rowsPerPage,
       rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
       onTableChange: (action, tableState) => {
-        console.log(action, tableState); // TODO: remove
-
+        console.log(tableState);
         switch (action) {
           case 'changePage':
             this.onPageChange(tableState.page, tableState.rowsPerPage);
@@ -121,7 +119,8 @@ class TreeTable extends Component {
             this.onChangeRowsPerPage(tableState.rowsPerPage);
             break;
           case 'sort':
-            this.onSort(tableState.activeColumn, tableState.announceText.includes('ascending'))
+            const col = tableState.columns[tableState.activeColumn];
+            this.onSort(col.sortDirection === 'asc' ? 'desc' : 'asc', col.name);
             break;
         }
       }
@@ -161,7 +160,7 @@ const mapState = state => {
     byId: state.trees.byId,
     isOpen: state.trees.displayDrawer.isOpen,
     tree: state.trees.tree,
-    treeCount: state.trees.treeCount,
+    treeCount: state.trees.treeCount
   };
 };
 
@@ -175,7 +174,9 @@ const mapDispatch = dispatch => ({
     }),
   getLocationName: (id, lat, lon) =>
     dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  getTreeAsync: id => dispatch.trees.getTreeAsync(id)
+  getTreeAsync: id => dispatch.trees.getTreeAsync(id),
+  sortTrees: (order, orderBy) =>
+    dispatch.trees.sortTrees({ order: order, orderBy: orderBy })
 });
 
 export default compose(
