@@ -1,4 +1,4 @@
-# treetracker-admin
+# Treetracer Admin Panel
 This portion of the project is to process tree data. TreeTracker's Admin Panel Frontend and RESTful API built with loopback.
 
 See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more info on goals
