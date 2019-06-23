@@ -130,20 +130,26 @@ $ npm run lint
 
 Useful scripts are contained in /dev/scripts.  Their uses are described here.  Scripts are run from the repository root as /dev/scripts/{script-name}.sh
 
-install.sh
+#### install.sh
+install or update npm modules for server and client projects
 
-build.sh
+#### build.sh
+build docker images
 
-up.sh
+#### up.sh
+bring up docker containers in docker as described by docker-compose.yml
 
-down.sh
+#### down.sh
+bring down docker containers
 
-logs-api.sh
+#### logs-api.sh
+show logs for api server
 
-logs-web.sh
+#### logs-web.sh
+show logs for React.js dev server
 
-docker-clear-images.sh
-
+#### docker-clear-images.sh
+clear out *all* docker images
 
 ## Credit
 -----------
