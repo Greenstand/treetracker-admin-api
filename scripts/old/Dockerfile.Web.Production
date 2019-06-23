@@ -1,5 +1,0 @@
-FROM nginx:latest
-
-COPY container/nginx-treetracker-admin /etc/nginx/conf.d/default.conf 
-
-#COPY client/build /var/www/admin

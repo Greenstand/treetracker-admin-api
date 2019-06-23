@@ -1,4 +1,0 @@
-FROM nginx:latest
-
-COPY dev/nginx-reverse-proxy-admin.conf /etc/nginx/nginx.conf
-
