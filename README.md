@@ -81,6 +81,7 @@ It may take a few seconds for the web and api servers to come up.  You can monit
 docker logs -f treetracker-admin-web
 docker logs -f treetracker-admin-api
 
+Also see *Scripts* below
 ```
 
 The REST API documentation can be viewed and explored by visiting http://localhost:3000/explorer
@@ -124,6 +125,25 @@ Run the following command to run the linter.
 ```
 $ npm run lint
 ```
+
+### Scripts
+
+Useful scripts are contained in /dev/scripts.  Their uses are described here.  Scripts are run from the repository root as /dev/scripts/{script-name}.sh
+
+install.sh
+
+build.sh
+
+up.sh
+
+down.sh
+
+logs-api.sh
+
+logs-web.sh
+
+docker-clear-images.sh
+
 
 ## Credit
 -----------
