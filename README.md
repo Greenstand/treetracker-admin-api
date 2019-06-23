@@ -90,13 +90,13 @@ The REST API documentation can be viewed and explored by visiting http://localho
 To stop the dev environment use
 
 ```
-./dev/down.sh
+./dev/scripts/down.sh
 ```
 
 To start the dev environment back up use
 
 ```
-./dev/up.sh
+./dev/scripts/up.sh
 ```
 
 
@@ -130,26 +130,19 @@ $ npm run lint
 
 Useful scripts are contained in /dev/scripts.  Their uses are described here.  Scripts are run from the repository root as /dev/scripts/{script-name}.sh
 
-#### install.sh
-install or update npm modules for server and client projects
+**install.sh** install or update npm modules for server and client projects
 
-#### build.sh
-build docker images
+**build.sh** build docker images
 
-#### up.sh
-bring up docker containers in docker as described by docker-compose.yml
+**up.sh** bring up docker containers in docker as described by docker-compose.yml
 
-#### down.sh
-bring down docker containers
+**down.sh** bring down docker containers
 
-#### logs-api.sh
-show logs for api server
+**logs-api.sh** show logs for api server
 
-#### logs-web.sh
-show logs for React.js dev server
+**logs-web.sh** show logs for React.js dev server
 
-#### docker-clear-images.sh
-clear out *all* docker images
+**docker-clear-images.sh** clear out *all* docker images
 
 ## Credit
 -----------
