@@ -54,6 +54,7 @@ export class TreesController {
   async find(
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
   ): Promise<Trees[]> {
+    console.log(filter);
     return await this.treesRepository.find(filter);
   }
 

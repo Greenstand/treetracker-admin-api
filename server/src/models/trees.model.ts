@@ -213,6 +213,14 @@ export class Trees extends Entity {
   })
   approved: Boolean;
 
+  @property({
+    type: String,
+    required: false,
+    length: 255,
+    postgresql: {"columnName":"status","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  status?: String;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
