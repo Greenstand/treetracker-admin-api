@@ -1,4 +1,5 @@
 import {BootMixin} from '@loopback/boot';
+import {RepositoryMixin} from '@loopback/repository';
 import {ApplicationConfig} from '@loopback/core';
 import {
   RestExplorerBindings,
@@ -7,9 +8,11 @@ import {
 import {RestApplication} from '@loopback/rest';
 import * as path from 'path';
 import {MySequence} from './sequence';
+import {TreesRepository} from './repositories';
 
-export class TreetrackerAdminApiApplication extends BootMixin(RestApplication) {
-  constructor(options: ApplicationConfig = {}) {
+
+export class TreetrackerAdminApiApplication extends BootMixin(RepositoryMixin(RestApplication)) {
+    constructor(options: ApplicationConfig = {}) {
     super(options);
 
     // Set up the custom sequence
@@ -32,7 +35,7 @@ export class TreetrackerAdminApiApplication extends BootMixin(RestApplication) {
         dirs: ['controllers'],
         extensions: ['.controller.js'],
         nested: true,
-      },
+      }
     };
   }
 }

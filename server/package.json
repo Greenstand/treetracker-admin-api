@@ -28,6 +28,7 @@
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",
     "start": "node .",
+    "start:dev": "nodemon --watch ./dist --inspect ./index.js",
     "prepublishOnly": "npm run test"
   },
   "repository": {
