@@ -23,14 +23,14 @@ Please add any missing content to this readme.
  ```
 Once cloned type:
 ```bash
-cd treetracker-admin/server && touch server/config/datasources.json && npm install
+cd treetracker-admin/server && touch src/datasources/treetracker.datasource.json && npm install
 ```
 
 ## Setup
 
-In `server/server/config` directory you will need to create a `datasources.json` file that will be used to reference the source of data for Loopback.
+In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
 
-Contact the project maintainer on Slack to request access to our development database. 
+**Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json.
 
 ## Development Environment Quick Start
 
