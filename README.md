@@ -9,7 +9,7 @@ See [Contributing to The Cause](https://github.com/Greenstand/Development-Overvi
 
 Please add any missing content to this readme.
 
-## Requirements
+## Setup
 
 - Install Node
    - on OSX , install git and type `brew install git`
@@ -26,11 +26,10 @@ Once cloned type:
 cd treetracker-admin/server && touch src/datasources/treetracker.datasource.json && npm install
 ```
 
-## Setup
-
 In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
 
 **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json.
+
 
 ## Development Environment Quick Start
 
