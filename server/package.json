@@ -28,7 +28,6 @@
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",
     "start": "node .",
-    "start:dev": "nodemon --watch ./dist --inspect ./index.js",
     "prepublishOnly": "npm run test"
   },
   "repository": {
@@ -66,5 +65,12 @@
     "eslint-plugin-eslint-plugin": "^2.1.0",
     "eslint-plugin-mocha": "^5.3.0",
     "typescript": "~3.5.2"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "exec": "npm start"
   }
 }

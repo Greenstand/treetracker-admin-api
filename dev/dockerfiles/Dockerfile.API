@@ -5,6 +5,6 @@ RUN mkdir -p ${DIR}/
 
 WORKDIR $DIR
 
-RUN npm install supervisor -g
+RUN npm install -g nodemon
 
-ENTRYPOINT supervisor index.js
+ENTRYPOINT nodemon
