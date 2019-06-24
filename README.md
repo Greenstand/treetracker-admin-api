@@ -143,6 +143,9 @@ Useful scripts are contained in /dev/scripts.  Their uses are described here.  S
 
 **docker-clear-images.sh** clear out *all* docker images
 
+**docker-remove-containers.sh** clear out *all* docker containers
+
+
 ## Credit
 -----------
 - [Loopback](https://loopback.io/doc/en/lb3/index.html)
