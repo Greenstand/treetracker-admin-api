@@ -1,4 +1,5 @@
 export async function handleResponse(response) {
+  if (response.status == 204) return {};
   if (response.ok) return response.json();
   if (response.status === 400) {
     // server-side validation error occurred.

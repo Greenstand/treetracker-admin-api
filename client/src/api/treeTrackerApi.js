@@ -19,7 +19,7 @@ export function approveTreeImage(id) {
   return fetch(query, {
     method: "PATCH",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ approved: true })
+    body: JSON.stringify({ id: id, approved: true })
   })
     .then(handleResponse)
     .catch(handleError);
@@ -30,7 +30,7 @@ export function rejectTreeImage(id) {
   return fetch(query, {
     method: "PATCH",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ active: false })
+    body: JSON.stringify({ id: id,  active: false })
   })
     .then(handleResponse)
     .catch(handleError);

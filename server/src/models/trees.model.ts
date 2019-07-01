@@ -4,7 +4,7 @@ import {Entity, model, property} from '@loopback/repository';
 export class Trees extends Entity {
   @property({
     type: Number,
-    required: true,
+    required: false,
     scale: 0,
     id: 1,
     postgresql: {"columnName":"id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
@@ -13,12 +13,14 @@ export class Trees extends Entity {
 
   @property({
     type: String,
+    required: false,
     postgresql: {"columnName":"time_created","dataType":"timestamp without time zone","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   timeCreated: String;
 
   @property({
     type: String,
+    required: false,
     postgresql: {"columnName":"time_updated","dataType":"timestamp without time zone","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   timeUpdated: String;
@@ -79,6 +81,7 @@ export class Trees extends Entity {
 
   @property({
     type: Number,
+    required: false,
     scale: 0,
     postgresql: {"columnName":"dead","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
   })
@@ -190,6 +193,7 @@ export class Trees extends Entity {
 
   @property({
     type: Boolean,
+    required: false,
     postgresql: {"columnName":"verified","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   verified: Boolean;
@@ -204,6 +208,7 @@ export class Trees extends Entity {
 
   @property({
     type: Boolean,
+    required: false,
     postgresql: {"columnName":"approved","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   approved: Boolean;
