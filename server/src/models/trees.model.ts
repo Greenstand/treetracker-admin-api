@@ -13,14 +13,12 @@ export class Trees extends Entity {
 
   @property({
     type: String,
-    required: true,
     postgresql: {"columnName":"time_created","dataType":"timestamp without time zone","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   timeCreated: String;
 
   @property({
     type: String,
-    required: true,
     postgresql: {"columnName":"time_updated","dataType":"timestamp without time zone","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   timeUpdated: String;
@@ -81,7 +79,6 @@ export class Trees extends Entity {
 
   @property({
     type: Number,
-    required: true,
     scale: 0,
     postgresql: {"columnName":"dead","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
   })
@@ -193,7 +190,6 @@ export class Trees extends Entity {
 
   @property({
     type: Boolean,
-    required: true,
     postgresql: {"columnName":"verified","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   verified: Boolean;
@@ -208,7 +204,6 @@ export class Trees extends Entity {
 
   @property({
     type: Boolean,
-    required: true,
     postgresql: {"columnName":"approved","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
   approved: Boolean;
