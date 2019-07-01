@@ -90,7 +90,7 @@ const trees = {
       });
     },
     async requestTreeCount(payload, rootState) {
-      Axios.get(`${API_ROOT}/Trees/count`).then(response => {
+      Axios.get(`${API_ROOT}/trees/count`).then(response => {
         const data = response.data;
         this.receiveTreeCount(data);
       });
