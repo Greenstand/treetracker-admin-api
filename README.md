@@ -135,6 +135,8 @@ Useful scripts are contained in /dev/scripts.  Their uses are described here.  S
 
 **up.sh** bring up docker containers in docker as described by docker-compose.yml
 
+**setup.sh** run install.sh, build.sh, and up.sh
+
 **down.sh** bring down docker containers
 
 **logs-api.sh** show logs for api server
