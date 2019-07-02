@@ -68,7 +68,7 @@ cd treetracker-admin
 
 Run the setup script.  This script installs node modules, builds docker containers, and starts them
 ```
-./dev/setup.sh
+./dev/scripts/setup.sh
 ```
 
 
