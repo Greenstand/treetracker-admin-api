@@ -3,6 +3,7 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
+import dateformat		from 'dateformat'
 
 import Drawer from '@material-ui/core/Drawer';
 
@@ -85,18 +86,46 @@ class TreeTable extends Component {
   render() {
     const { treesArray, tree } = this.props;
     const columnData = [
-      { name: 'id', label: 'Id' },
-      { name: 'timeCreated', label: 'Creation' },
-      { name: 'timeUpdated', label: 'Updated' },
-      {
-        label: 'Location',
-        options: {
-          sort: false,
-          customBodyRender: () => {
-            return <span>botched rendering func</span>; // TODO: replace
-          }
-        }
-      }
+      { name: 'id', label: 'Tree' },
+			{
+				name		: '',
+				label		: 'Planter',
+				options		: {
+					customBodyRender		: () => 'pending',
+				}
+			},
+			{
+				name		: '',
+				label		: 'Payment',
+				options		: {
+					customBodyRender		: () => 'pending',
+				},
+			},
+			{
+				name		: '',
+				label		: 'Country',
+				options		: {
+					customBodyRender		: () => 'pending',
+				},
+			},
+			{
+				name		: '',
+				label		: 'Specie',
+				options		: {
+					customBodyRender		: () => 'pending',
+				},
+			},
+			{
+				name		: 'status',
+				label		: 'Status',
+			},
+      { 
+				name: 'timeCreated', 
+				label: 'Created',
+				options		: {
+					customBodyRender		: v => `${dateformat(v, 'm/d/yyyy h:Mtt')}`,
+				},
+			},
     ];
     const options = {
       filterType: 'dropdown',

@@ -80,7 +80,7 @@ const trees = {
     },
     async getTreesAsync({ page, rowsPerPage, orderBy = 'id', order = 'asc' }) {
       const query = `${API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
-        rowsPerPage}&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true`;
+        rowsPerPage}&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true&&filter[where][active]=true`;
       Axios.get(query).then(response => {
         this.getTrees(response.data, {
           rowsPerPage: rowsPerPage,
