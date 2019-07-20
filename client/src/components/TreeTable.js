@@ -40,7 +40,9 @@ class TreeTable extends Component {
     super(props);
     this.state = {
       detailsPane: false,
-      page: 0
+      page: 0,
+			filter		: {
+			},
     };
   }
 
@@ -156,6 +158,20 @@ class TreeTable extends Component {
     };
     return (
       <React.Fragment>
+				<button
+					onClick={() => {
+						const payload = {
+							page: 0,
+							rowsPerPage: this.props.rowsPerPage,
+							order: this.props.order,
+							orderBy: this.props.orderBy,
+							filter		: {
+								id		: '61',
+							}
+						};
+						this.props.getTreesAsync(payload);
+					}}
+				>MEMEMEME2</button>
         <MUIDataTable
           title={'Trees'}
           data={this.props.treesArray}
@@ -194,12 +210,13 @@ const mapState = state => {
 };
 
 const mapDispatch = dispatch => ({
-  getTreesAsync: ({ page, rowsPerPage, order, orderBy }) =>
+  getTreesAsync: ({ page, rowsPerPage, order, orderBy , filter}) =>
     dispatch.trees.getTreesAsync({
       page: page,
       rowsPerPage: rowsPerPage,
       order: order,
-      orderBy: orderBy
+      orderBy: orderBy,
+      filter: filter,
     }),
   getLocationName: (id, lat, lon) =>
     dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
