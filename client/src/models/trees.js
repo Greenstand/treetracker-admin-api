@@ -84,7 +84,7 @@ const trees = {
 			console.error('filter:', filter)
       const query = `${API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true&&filter[where][active]=true` + 
-				Object.keys(filter||{}).map(key => `&filter[where][${key}]=${filter[key]}`).join()
+				(filter?filter.getBackloopString():'')
       Axios.get(query).then(response => {
         this.getTrees(response.data, {
           rowsPerPage: rowsPerPage,

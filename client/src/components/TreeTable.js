@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import dateformat		from 'dateformat'
+import Filter		from './Filter'
+import FilterModel		from '../models/Filter'
 
 import Drawer from '@material-ui/core/Drawer';
 
@@ -15,13 +17,20 @@ const styles = () => ({
     position: 'relative',
     top: '88px',
     paddingLeft: '70px',
-    overflowX: 'auto'
+    overflowX: 'auto',
   },
+	myTable		: {
+		/*width		: 900,*/
+		width		: 'calc(100% - 350px)',
+	},
   locationCol: {
     width: '270px'
   },
   table: {
-    minHeight: '100vh'
+    minHeight: '100vh',
+		'&:nth-child(2)': {
+			width: 20,
+		}
   },
   tableBody: {
     minHeight: '100vh'
@@ -41,8 +50,7 @@ class TreeTable extends Component {
     this.state = {
       detailsPane: false,
       page: 0,
-			filter		: {
-			},
+			filter		: new FilterModel(),
     };
   }
 
@@ -63,6 +71,20 @@ class TreeTable extends Component {
       detailsPane: !detailsPane
     });
   };
+
+	handleFilterSubmit = filter => {
+		this.setState({
+			//reset
+			page		: 0,
+			filter,
+		},() => {
+			this.props.getTreesAsync({
+				page		: 0,
+				rowsPerPage		: this.props.rowsPerPage,
+				filter,
+			});
+		})
+	}
 
   onPageChange = (page, rowsPerPage) => {
     this.props.getTreesAsync({
@@ -86,7 +108,7 @@ class TreeTable extends Component {
   };
 
   render() {
-    const { treesArray, tree } = this.props;
+    const { treesArray, tree , classes} = this.props;
     const columnData = [
       { name: 'id', label: 'Tree' },
 			{
@@ -158,25 +180,12 @@ class TreeTable extends Component {
     };
     return (
       <React.Fragment>
-				<button
-					onClick={() => {
-						const payload = {
-							page: 0,
-							rowsPerPage: this.props.rowsPerPage,
-							order: this.props.order,
-							orderBy: this.props.orderBy,
-							filter		: {
-								id		: '61',
-							}
-						};
-						this.props.getTreesAsync(payload);
-					}}
-				>MEMEMEME2</button>
         <MUIDataTable
           title={'Trees'}
           data={this.props.treesArray}
           columns={columnData}
           options={options}
+					className={classes.myTable}
         />
         <Drawer
           anchor="right"
@@ -185,6 +194,11 @@ class TreeTable extends Component {
         >
           <TreeDetails tree={tree} />
         </Drawer>
+				<Filter 
+					isOpen={true} 
+					onSubmit={this.handleFilterSubmit}
+					filter={this.state.filter}
+				/>
       </React.Fragment>
     );
   }

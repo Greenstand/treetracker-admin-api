@@ -139,7 +139,6 @@ const AppFrame = props => ({
         <main className={classNames(classes.content, currentView)}>
           {tabContents}
         </main>
-				<Filter />
       </div>
     )
   }
