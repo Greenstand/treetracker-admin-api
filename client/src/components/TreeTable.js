@@ -3,6 +3,9 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
+import dateformat		from 'dateformat'
+import Filter		from './Filter'
+import FilterModel		from '../models/Filter'
 
 import Drawer from '@material-ui/core/Drawer';
 
@@ -14,13 +17,20 @@ const styles = () => ({
     position: 'relative',
     top: '88px',
     paddingLeft: '70px',
-    overflowX: 'auto'
+    overflowX: 'auto',
   },
+	myTable		: {
+		/*width		: 900,*/
+		width		: 'calc(100% - 350px)',
+	},
   locationCol: {
     width: '270px'
   },
   table: {
-    minHeight: '100vh'
+    minHeight: '100vh',
+		'&:nth-child(2)': {
+			width: 20,
+		}
   },
   tableBody: {
     minHeight: '100vh'
@@ -39,7 +49,8 @@ class TreeTable extends Component {
     super(props);
     this.state = {
       detailsPane: false,
-      page: 0
+      page: 0,
+			filter		: new FilterModel(),
     };
   }
 
@@ -60,6 +71,20 @@ class TreeTable extends Component {
       detailsPane: !detailsPane
     });
   };
+
+	handleFilterSubmit = filter => {
+		this.setState({
+			//reset
+			page		: 0,
+			filter,
+		},() => {
+			this.props.getTreesAsync({
+				page		: 0,
+				rowsPerPage		: this.props.rowsPerPage,
+				filter,
+			});
+		})
+	}
 
   onPageChange = (page, rowsPerPage) => {
     this.props.getTreesAsync({
@@ -83,20 +108,48 @@ class TreeTable extends Component {
   };
 
   render() {
-    const { treesArray, tree } = this.props;
+    const { treesArray, tree , classes} = this.props;
     const columnData = [
-      { name: 'id', label: 'Id' },
-      { name: 'timeCreated', label: 'Creation' },
-      { name: 'timeUpdated', label: 'Updated' },
-      {
-        label: 'Location',
-        options: {
-          sort: false,
-          customBodyRender: () => {
-            return <span>botched rendering func</span>; // TODO: replace
-          }
-        }
-      }
+      { name: 'id', label: 'Tree' },
+			{
+				name		: '',
+				label		: 'Planter',
+				options		: {
+					customBodyRender		: () => 'pending',
+				}
+			},
+			{
+				name		: '',
+				label		: 'Payment',
+				options		: {
+					customBodyRender		: () => 'pending',
+				},
+			},
+			{
+				name		: '',
+				label		: 'Country',
+				options		: {
+					customBodyRender		: () => 'pending',
+				},
+			},
+			{
+				name		: '',
+				label		: 'Specie',
+				options		: {
+					customBodyRender		: () => 'pending',
+				},
+			},
+			{
+				name		: 'status',
+				label		: 'Status',
+			},
+      { 
+				name: 'timeCreated', 
+				label: 'Created',
+				options		: {
+					customBodyRender		: v => `${dateformat(v, 'm/d/yyyy h:Mtt')}`,
+				},
+			},
     ];
     const options = {
       filterType: 'dropdown',
@@ -132,6 +185,7 @@ class TreeTable extends Component {
           data={this.props.treesArray}
           columns={columnData}
           options={options}
+					className={classes.myTable}
         />
         <Drawer
           anchor="right"
@@ -140,6 +194,11 @@ class TreeTable extends Component {
         >
           <TreeDetails tree={tree} />
         </Drawer>
+				<Filter 
+					isOpen={true} 
+					onSubmit={this.handleFilterSubmit}
+					filter={this.state.filter}
+				/>
       </React.Fragment>
     );
   }
@@ -165,12 +224,13 @@ const mapState = state => {
 };
 
 const mapDispatch = dispatch => ({
-  getTreesAsync: ({ page, rowsPerPage, order, orderBy }) =>
+  getTreesAsync: ({ page, rowsPerPage, order, orderBy , filter}) =>
     dispatch.trees.getTreesAsync({
       page: page,
       rowsPerPage: rowsPerPage,
       order: order,
-      orderBy: orderBy
+      orderBy: orderBy,
+      filter: filter,
     }),
   getLocationName: (id, lat, lon) =>
     dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),

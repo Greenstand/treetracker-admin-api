@@ -15,6 +15,7 @@ import AppDrawer from './AppDrawer'
 import Trees from './Trees'
 import TreeImageScrubber from './TreeImageScrubber'
 import { drawerWidth } from '../common/variables'
+import Filter		from './Filter'
 
 const styles = theme => ({
   root: {
