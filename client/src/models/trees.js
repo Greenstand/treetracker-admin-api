@@ -9,7 +9,7 @@ const trees = {
     numSelected: 0,
     page: 0,
     rowsPerPage: 25,
-    order: 'asc',
+    order: 'desc',
     orderBy: 'id',
     allIds: [],
     byId: {},
@@ -65,7 +65,7 @@ const trees = {
       page,
       rowsPerPage,
       orderBy = 'id',
-      order = 'asc'
+      order = 'desc'
     }) {
       const query = `${API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true&field[imageURL]`;
