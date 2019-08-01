@@ -18,7 +18,7 @@ import OutlinedInput		from '@material-ui/core/OutlinedInput';
 import FilterModel		from '../models/Filter'
 import dateformat		from 'dateformat'
 
-export const drawWidth		= 330
+export const FILTER_WIDTH		= 330
 
 const styles = theme => {
 	return {
@@ -29,7 +29,7 @@ const styles = theme => {
 	},
 	drawerPaper: {
 		marginTop		: 64,
-		width: drawWidth,
+		width: FILTER_WIDTH,
 		paddingTop		: theme.spacing.unit * 3,
 		paddingLeft		: theme.spacing.unit * 2,
 		paddingRight		: theme.spacing.unit * 2,
@@ -49,14 +49,16 @@ const styles = theme => {
 function Filter(props){
 
 	const {classes, filter}		= props
-	console.error('filter:%o', filter)
+	//console.error('filter:%o', filter)
 	const dateStartDefault		= '1970-01-01'
 	const dateEndDefault		= `${dateformat(Date.now(), 'yyyy-mm-dd')}`
 	const [treeId, setTreeId]		= useState(filter.treeId)
 	const [status, setStatus]		= useState(filter.status)
+	const [approved, setApproved]		= useState(filter.approved)
+	const [active, setActive]		= useState(filter.active)
 	const [dateStart, setDateStart]		= useState(filter.dateStart || dateStartDefault)
 	const [dateEnd, setDateEnd]		= useState(filter.dateEnd || dateEndDefault)
-	console.error('the tree id:%d', treeId)
+	//console.error('the tree id:%d', treeId)
 
 	function handleDateStartChange(e){
 		setDateStart(e.target.value || dateStartDefault)
@@ -72,7 +74,13 @@ function Filter(props){
 		filter.status		= status
 		filter.dateStart		= dateStart
 		filter.dateEnd		= dateEnd
+		filter.approved		= approved
+		filter.active		= active
 		props.onSubmit && props.onSubmit(filter)
+	}
+
+	function handleCloseClick(){
+		props.onClose && props.onClose()
 	}
 
 	return (
@@ -103,6 +111,7 @@ function Filter(props){
 						classes={{
 							colorPrimary		: classes.close,
 						}}
+						onClick={handleCloseClick}
 					>
 						<IconClose/>
 					</IconButton>
@@ -139,6 +148,74 @@ function Filter(props){
 				onChange={e => setStatus(e.target.value === 'All'? '':e.target.value)}
 			>
 				{['All', 'Planted', 'Hole dug', 'Not a tree', 'Blurry'].map(name =>
+					<MenuItem
+						key={name}
+						value={name}
+					>
+						{name}
+					</MenuItem>
+				)} 
+			</TextField>
+			<TextField
+				select
+				variant='outlined'
+				label='APPROVED'
+				value={
+					approved === undefined ? 
+					'All' 
+					: 
+					approved === true? 
+						'true'
+						:
+						'false'}
+				margin='normal'
+				InputLabelProps={{
+					shrink: true,
+				}}
+				onChange={e => setApproved(
+					e.target.value === 'All'? 
+						undefined
+						:
+						e.target.value === 'true' ?
+							true
+							:
+							false)}
+			>
+				{['All', 'true', 'false', ].map(name =>
+					<MenuItem
+						key={name}
+						value={name}
+					>
+						{name}
+					</MenuItem>
+				)} 
+			</TextField>
+			<TextField
+				select
+				variant='outlined'
+				label='REJECTED'
+				value={
+					active === undefined ? 
+					'All' 
+					: 
+					active === true? 
+						'false'
+						:
+						'true'}
+				margin='normal'
+				InputLabelProps={{
+					shrink: true,
+				}}
+				onChange={e => setActive(
+					e.target.value === 'All'? 
+						undefined
+						:
+						e.target.value === 'true' ?
+							false
+							:
+							true)}
+			>
+				{['All', 'false', 'true', ].map(name =>
 					<MenuItem
 						key={name}
 						value={name}
