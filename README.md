@@ -14,15 +14,15 @@ Please add any missing content to this readme.
 ## Setup
 
 - Install Node
-   - on OSX , install git and type `brew install git`
-   - on OSX, install [home brew](http://brew.sh/) and type `brew install node`
-   - on Windows, use the installer available at [nodejs.org](http://nodejs.org/)
-   - On OSX you can alleviate the need to run as sudo by [following John Papa's instructions](http://jpapa.me/nomoresudo)
+- on OSX , install git and type `brew install git`
+- on OSX, install [home brew](http://brew.sh/) and type `brew install node`
+- on Windows, use the installer available at [nodejs.org](http://nodejs.org/)
+- On OSX you can alleviate the need to run as sudo by [following John Papa's instructions](http://jpapa.me/nomoresudo)
 - Open terminal
 - Go to a folder where you would like to install the project. Then type the following:
- ```bash
- git clone https://github.com/Greenstand/treetracker-admin.git
- ```
+```bash
+git clone https://github.com/Greenstand/treetracker-admin.git
+```
 - Once cloned type:
 ```bash
 cd treetracker-admin/server && touch src/datasources/treetracker.datasource.json && npm install
@@ -75,6 +75,8 @@ Run the setup script.  This script installs node modules, builds docker containe
 
 
 You can now view the treetracker admin at http://localhost:8080.
+
+*note: If you try to access the site on port 3001 you will recieve a CORS error* 
 
 It may take a few seconds for the web and api servers to come up.  You can monitor them using the docker logs commands as:
 
@@ -150,6 +152,65 @@ Useful scripts are contained in /dev/scripts.  Their uses are described here.  S
 **docker-remove-containers.sh** clear out *all* docker containers
 
 
+## Code style guide  
+
+**Indention** 2 Spaces for indentation
+
+**Semicolon** Use semicolons at the end of each line 
+
+**Characters** 80 characters per line
+
+**Quotes** Use single quotes unless you are writing JSON 
+
+```
+const foo = ‘bar’;
+```
+
+**Braces** Opening braces go on the same line as the statment 
+
+```
+If (true) {
+console.log(‘here’);
+}
+```
+
+**Variable declaration** Declare one Varable per statment
+
+```
+const  dog = [‘bark’,’woof’];
+let cat = [‘meow’,’sleep’]; 
+```
+
+**Variable, properties and function names** Use lowerCamelCase for variables, properties and function names
+
+```
+const adminUser =  db.query(‘SELECT * From users …’)
+```
+
+**Class names** Use UpperCamelCase for class names
+
+```
+console.log(‘woof’);
+} 
+```
+
+**Descriptive conditions**Make sure to to have a descriptive name that tells the use and meaning of the code
+
+```
+const  IsValidPassword = password.length >= 4 && /^(?=.*\d).{4,}$/.test(password);
+```
+
+**Object/Array creation**Use trailing commas and put short declarations on a single line. Only quote keys when your interpreter complains:
+
+```
+var a = ['hello', 'world'];
+var b = {
+good: 'code',
+'is generally': 'pretty',
+};
+```
+
 ## Credit
 -----------
 - [Loopback](https://loopback.io/doc/en/lb3/index.html)
+
