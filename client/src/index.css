@@ -1,4 +1,11 @@
-@import url('https://fonts.googleapis.com/css?family=Cabin+Sketch:400,700');
+/* to add Lato font, Thu Aug  8 17:01:21 CST 2019*/
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700|Cabin+Sketch:400,700');
+
+/*
+html {
+	font-size		: 20px;
+}
+*/
 
 body {
   margin: 0;

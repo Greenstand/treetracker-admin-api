@@ -151,6 +151,32 @@ Useful scripts are contained in /dev/scripts.  Their uses are described here.  S
 
 **docker-remove-containers.sh** clear out *all* docker containers
 
+## Guide for Material-UI
+
+We use Material-UI (4.0 currently) to build our UI.
+
+We made some custom by setting the theme of Material-UI to fit our UI design. The customized theme file is located at /client/src/components/common/theme.js. If you find components do not work as you expect, please check section: overrides and props in theme, we override some default styles and behaviors.
+
+We create some basic components, such as 'alert', 'confirm', 'form', feel free to pick what you want or copy the sample code. You can find them in our Storybook components gallery.
+
+You can also pick the typographies and colors as you want in Storybook -> MaterialUITheme -> theme/typography/palette.
+
+
+## Guide for Storybook
+
+We use Storybook to develop/test components independently.
+
+Run the following command to start Storybook:
+
+```
+npm run storybook
+```
+
+Visit this URL in the browser: http://localhost:9009
+
+All the stories are located at /client/src/stories/
+
+About more usage of Storybook, check [here](https://storybook.js.org/)
 
 ## Code style guide  
 
