@@ -170,7 +170,7 @@ const foo = ‘bar’;
 
 ```
 If (true) {
-console.log(‘here’);
+	console.log(‘here’);
 }
 ```
 
@@ -190,23 +190,26 @@ const adminUser =  db.query(‘SELECT * From users …’)
 **Class names** Use UpperCamelCase for class names
 
 ```
-console.log(‘woof’);
+class Dog {
+	bark(){
+		console.log(‘woof’);
+	}
 } 
 ```
 
-**Descriptive conditions**Make sure to to have a descriptive name that tells the use and meaning of the code
+**Descriptive conditions** Make sure to to have a descriptive name that tells the use and meaning of the code
 
 ```
 const  IsValidPassword = password.length >= 4 && /^(?=.*\d).{4,}$/.test(password);
 ```
 
-**Object/Array creation**Use trailing commas and put short declarations on a single line. Only quote keys when your interpreter complains:
+**Object/Array creation** Use trailing commas and put short declarations on a single line. Only quote keys when your interpreter complains:
 
 ```
 var a = ['hello', 'world'];
 var b = {
-good: 'code',
-'is generally': 'pretty',
+	good: 'code',
+	'is generally': 'pretty',
 };
 ```
 
