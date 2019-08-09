@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import Drawer from '@material-ui/core/Drawer';
 import compose from 'recompose/compose'
-import {withStyles} from '@material-ui/core/styles'
+import {withStyles} from '@material-ui/styles'
 import Grid		from '@material-ui/core/Grid'
 import IconButton		from '@material-ui/core/IconButton'
 import Button		from '@material-ui/core/Button'
@@ -17,6 +17,7 @@ import InputLabel		from '@material-ui/core/InputLabel';
 import OutlinedInput		from '@material-ui/core/OutlinedInput';
 import FilterModel		from '../models/Filter'
 import dateformat		from 'dateformat'
+import GSInputLabel		from './common/InputLabel';
 
 export const FILTER_WIDTH		= 330
 
@@ -28,7 +29,7 @@ const styles = theme => {
 		flexShrink: 0,
 	},
 	drawerPaper: {
-		marginTop		: 64,
+		//marginTop		: 64,
 		width: FILTER_WIDTH,
 		paddingTop		: theme.spacing.unit * 3,
 		paddingLeft		: theme.spacing.unit * 2,
@@ -101,8 +102,8 @@ function Filter(props){
 				justify='space-between'
 			>
 				<Grid item>
-					<Typography variant='h6'>
-						Filter
+					<Typography variant='h5'>
+						Filters
 					</Typography>
 				</Grid>
 				<Grid item>
@@ -124,24 +125,20 @@ function Filter(props){
 			>
 				Apply Filters
 			</Button>
+			<GSInputLabel text='Tree Id' />
 			<TextField
-				variant='outlined'
-				label='TREE ID'
 				placeholder='e.g. 80'
-				margin='normal'
 				InputLabelProps={{
 					shrink: true,
 				}}
 				value={treeId}
 				onChange={e => setTreeId(e.target.value)}
 			/>
+			<GSInputLabel text='Status' />
 			<TextField
 				select
-				variant='outlined'
-				label='STATUS'
 				placeholder='e.g. 80'
 				value={status ? status : 'All'}
-				margin='normal'
 				InputLabelProps={{
 					shrink: true,
 				}}
@@ -156,10 +153,9 @@ function Filter(props){
 					</MenuItem>
 				)} 
 			</TextField>
+			<GSInputLabel text='Approved' />
 			<TextField
 				select
-				variant='outlined'
-				label='APPROVED'
 				value={
 					approved === undefined ? 
 					'All' 
@@ -168,7 +164,6 @@ function Filter(props){
 						'true'
 						:
 						'false'}
-				margin='normal'
 				InputLabelProps={{
 					shrink: true,
 				}}
@@ -190,10 +185,9 @@ function Filter(props){
 					</MenuItem>
 				)} 
 			</TextField>
+			<GSInputLabel text='Rejected' />
 			<TextField
 				select
-				variant='outlined'
-				label='REJECTED'
 				value={
 					active === undefined ? 
 					'All' 
@@ -202,7 +196,6 @@ function Filter(props){
 						'false'
 						:
 						'true'}
-				margin='normal'
 				InputLabelProps={{
 					shrink: true,
 				}}
@@ -224,45 +217,34 @@ function Filter(props){
 					</MenuItem>
 				)} 
 			</TextField>
-			<FormControl
-				variant='outlined'
-				margin='normal'
+			<GSInputLabel text='Time created' />
+			<Grid 
+				container
+				justify='space-between'
 			>
-				<InputLabel
-					shrink={true}
-				>
-					TIME CREATED
-				</InputLabel>
-				<Grid 
-					container
-					justify='space-between'
-					style={{
-						marginTop: 19,
-					}}
-				>
-					<Grid item>
-						<OutlinedInput
-							type='date'
-							className={classes.dateInput}
-							value={dateStart}
-							onChange={handleDateStartChange}
-						/>
-					</Grid>
-					<Grid item>
-						<OutlinedInput
-							type='date'
-							className={classes.dateInput}
-							value={dateEnd}
-							onChange={handleDateEndChange}
-						/>
-					</Grid>
+				<Grid item>
+					<OutlinedInput
+						type='date'
+						className={classes.dateInput}
+						value={dateStart}
+						onChange={handleDateStartChange}
+					/>
 				</Grid>
-			</FormControl>
+				<Grid item>
+					<OutlinedInput
+						type='date'
+						className={classes.dateInput}
+						value={dateEnd}
+						onChange={handleDateEndChange}
+					/>
+				</Grid>
+			</Grid>
 			
 		</Drawer>
 	)
 }
 
-export default compose(
-  withStyles(styles, { withTheme: true, name: 'Filter' })
-)(Filter)
+//export default compose(
+//  withStyles(styles, { withTheme: true, name: 'Filter' })
+//)(Filter)
+export default withStyles(styles)(Filter)
