@@ -14,6 +14,9 @@ import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button' // replace with icons down the line
 import { selectedHighlightColor } from '../common/variables.js'
+import * as loglevel from 'loglevel'
+
+const log = loglevel.getLogger('../components/TreeImageScrubber')
 
 const styles = theme => ({
   wrapper: {
@@ -85,6 +88,7 @@ const reducer = (state, action) => {
 }
 
 const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
+	log.debug('render...')
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   let treeImages = state.treeImages;
   let scrollContainerRef;
