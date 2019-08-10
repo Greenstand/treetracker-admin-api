@@ -88,7 +88,7 @@ const reducer = (state, action) => {
 }
 
 const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
-	log.debug('render...')
+	log.debug('render TreeImageScrubber...')
   const [state, dispatch] = useReducer(reducer, { ...initialState })
   let treeImages = state.treeImages;
   let scrollContainerRef;
