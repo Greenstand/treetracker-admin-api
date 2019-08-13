@@ -155,14 +155,8 @@ Useful scripts are contained in /dev/scripts.  Their uses are described here.  S
 
 We use loglevel for logging, with some convention. Using loglevel, we will be able to open/close a single file's log by chaning the level of log on the fly, even in production env. For more information about loglevel, check [here](https://github.com/pimterry/loglevel).
 
-The default of log level is set in the enter file: /src/index.js
+The default of log level is set in the file: /src/init.js
 ```
-import * as log from 'loglevel';
-
-/*
- * set the global configuration for loglevel
- * it should be set as early as possible
- */
 log.setDefaultLevel('info');
 ```
 
