@@ -9,6 +9,7 @@ import {theme}		from '../App';
 import Typography		from '@material-ui/core/Typography';
 import {withTheme}		from '@material-ui/core/styles';
 import FilterModel		from '../models/Filter';
+import './progress';
 
 storiesOf('Welcome', module)
 	.add('Greenstand logo', 

@@ -1,10 +1,5 @@
 import React, { useEffect, useReducer } from 'react'
-import {
-  getTreeImages,
-  approveTreeImage,
-  rejectTreeImage
-} from '../api/treeTrackerApi'
-
+import {connect}		from 'react-redux'
 import compose from 'recompose/compose'
 import { withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
@@ -13,10 +8,13 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Button from '@material-ui/core/Button' // replace with icons down the line
-import { selectedHighlightColor } from '../common/variables.js'
-import * as loglevel from 'loglevel'
+import { selectedHighlightColor } from '../common/variables.js';
+import * as loglevel from 'loglevel';
+import Grid		from '@material-ui/core/Grid';
+import AppBar		from '@material-ui/core/AppBar';
+import LinearProgress		from '@material-ui/core/LinearProgress';
 
-const log = loglevel.getLogger('../components/TreeImageScrubber')
+const log = require('loglevel').getLogger('../components/TreeImageScrubber')
 
 const styles = theme => ({
   wrapper: {
@@ -47,168 +45,306 @@ const styles = theme => ({
   }
 })
 
-const initialState = {
-  treeImages: [],
-  isLoading: false,
-  pagesLoaded: -1,
-  moreTreeImagesAvailable: true,
-  pageSize: 20
-};
+//const initialState = {
+//  treeImages: [],
+//  isLoading: false,
+//  pagesLoaded: -1,
+//  moreTreeImagesAvailable: true,
+//  pageSize: 20
+//};
 
-const reducer = (state, action) => {
-  let treeImages = {}
-  switch (action.type) {
-    case 'loadMoreTreeImages':
-      let newTreeImages = [...state.treeImages, ...action.treeImages]
-      let newState = {
-        ...state,
-        treeImages: newTreeImages,
-        isLoading: action.isLoading
-      };
-      return newState;
-    case "noMoreTreeImages":
-      return {
-        ...state,
-        isLoading: false,
-        moreTreeImagesAvailable: false
-      };
-    case "approveTreeImage":
-      treeImages = state.treeImages.filter(
-        treeImage => treeImage.id !== action.id
-      )
-      return { ...state, treeImages: treeImages }
-    case 'rejectTreeImage':
-      treeImages = state.treeImages.filter(
-        treeImage => treeImage.id !== action.id
-      )
-      return { ...state, treeImages: treeImages }
-    default:
-      throw new Error('the actions got messed up, somehow!')
-  }
-}
+//const reducer = (state, action) => {
+//  let treeImages = {}
+//  switch (action.type) {
+//    case 'loadMoreTreeImages':
+//      let newTreeImages = [...state.treeImages, ...action.treeImages]
+//      let newState = {
+//        ...state,
+//        treeImages: newTreeImages,
+//        isLoading: action.isLoading
+//      };
+//      return newState;
+//    case "noMoreTreeImages":
+//      return {
+//        ...state,
+//        isLoading: false,
+//        moreTreeImagesAvailable: false
+//      };
+//    case "approveTreeImage":
+//      treeImages = state.treeImages.filter(
+//        treeImage => treeImage.id !== action.id
+//      )
+//      return { ...state, treeImages: treeImages }
+//    case 'rejectTreeImage':
+//      treeImages = state.treeImages.filter(
+//        treeImage => treeImage.id !== action.id
+//      )
+//      return { ...state, treeImages: treeImages }
+//    default:
+//      throw new Error('the actions got messed up, somehow!')
+//  }
+//}
 
 const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 	log.debug('render TreeImageScrubber...')
-  const [state, dispatch] = useReducer(reducer, { ...initialState })
-  let treeImages = state.treeImages;
-  let scrollContainerRef;
-  const onApproveTreeImageClick = (e, id) => {
-    approveTreeImage(id)
-      .then(result => {
-        dispatch({ type: 'approveTreeImage', id })
-      })
-      .catch(e => {
-        // don't change the state if the server couldnt help us
-        alert("Couldn't approve Tree Image: " + id + '!', e)
-      })
-  }
+	log.debug('complete:', props.verityState.approveAllComplete)
+	const [complete, setComplete]		= React.useState(0)
+  //const [state, dispatch] = useReducer(reducer, { ...initialState })
+  //let treeImages = state.treeImages;
+//  let scrollContainerRef;
+//  const onApproveTreeImageClick = (e, id) => {
+//    approveTreeImage(id)
+//      .then(result => {
+//        dispatch({ type: 'approveTreeImage', id })
+//      })
+//      .catch(e => {
+//        // don't change the state if the server couldnt help us
+//        alert("Couldn't approve Tree Image: " + id + '!', e)
+//      })
+//  }
 
-  const onRejectTreeImageClick = (e, id) => {
-    rejectTreeImage(id)
-      .then(result => {
-        dispatch({ type: 'rejectTreeImage', id })
-      })
-      .catch(e => {
-        // don't change the state if the server couldnt help us
-        alert("Couldn't reject Tree Image: " + id + '!', e)
-      })
-  }
+//  const onRejectTreeImageClick = (e, id) => {
+//    rejectTreeImage(id)
+//      .then(result => {
+//        dispatch({ type: 'rejectTreeImage', id })
+//      })
+//      .catch(e => {
+//        // don't change the state if the server couldnt help us
+//        alert("Couldn't reject Tree Image: " + id + '!', e)
+//      })
+//  }
 
-  const setIsLoading = loading => {
-    state.isLoading = loading
-  }
+//  const setIsLoading = loading => {
+//    state.isLoading = loading
+//  }
 
-  const needtoLoadMoreTreeImages = () => {
-    return state.moreTreeImagesAvailable && treeImages.length < state.pageSize;
-  };
+//  const needtoLoadMoreTreeImages = () => {
+//    return state.moreTreeImagesAvailable && treeImages.length < state.pageSize;
+//  };
 
-  const loadMoreTreeImages = () => {
-    if (state.isLoading || !state.moreTreeImagesAvailable) return;
-    setIsLoading(true);
-    const nextPage = state.pagesLoaded + 1;
-    const pageParams = {
-      page: nextPage,
-      rowsPerPage: state.pageSize
-    }
-    getTreeImages(pageParams)
-      .then(result => {
-        state.pagesLoaded = nextPage;
-        dispatch({
-          type: "loadMoreTreeImages",
-          treeImages: result,
-          isLoading: false
-        });
-      })
-      .catch(error => {
-        // no more to load!
-        dispatch({ type: "noMoreTreeImages" });
-      });
-  };
+//  const loadMoreTreeImages = () => {
+//    if (state.isLoading || !state.moreTreeImagesAvailable) return;
+//    setIsLoading(true);
+//    const nextPage = state.pagesLoaded + 1;
+//    const pageParams = {
+//      page: nextPage,
+//      rowsPerPage: state.pageSize
+//    }
+//    getTreeImages(pageParams)
+//      .then(result => {
+//        state.pagesLoaded = nextPage;
+//        dispatch({
+//          type: "loadMoreTreeImages",
+//          treeImages: result,
+//          isLoading: false
+//        });
+//      })
+//      .catch(error => {
+//        // no more to load!
+//        dispatch({ type: "noMoreTreeImages" });
+//      });
+//  };
 
-  const handleScroll = e => {
-    if (
-      state.isLoading ||
-      (scrollContainerRef &&
-        Math.floor(scrollContainerRef.scrollTop) !==
-          Math.floor(scrollContainerRef.scrollHeight) -
-            Math.floor(scrollContainerRef.offsetHeight))
-    ) {
-      return
-    }
-    loadMoreTreeImages()
-  }
+//  const handleScroll = e => {
+//    if (
+//      props.verityState.isLoading ||
+//      (scrollContainerRef &&
+//        Math.floor(scrollContainerRef.scrollTop) !==
+//          Math.floor(scrollContainerRef.scrollHeight) -
+//            Math.floor(scrollContainerRef.offsetHeight))
+//    ) {
+//      return
+//    }
+//    props.verityDispatch.loadMoreTreeImages()
+//  }
+//  scrollContainerRef = getScrollContainerRef();
+//  if (scrollContainerRef) {
+//    scrollContainerRef.addEventListener("scroll", handleScroll);
+//  }
 
-  scrollContainerRef = getScrollContainerRef();
-  if (scrollContainerRef) {
-    scrollContainerRef.addEventListener("scroll", handleScroll);
-  }
+//  useEffect(() => {
+//    if (needtoLoadMoreTreeImages()) {
+//      loadMoreTreeImages();
+//    }
+//
+//    return () => {
+//      if (scrollContainerRef) {
+//        scrollContainerRef.removeEventListener('scroll', handleScroll)
+//      }
+//    };
+//  }, [state]);
+	
+	/*
+	 * effect to load page when mounted
+	 */
+	useEffect(() => {
+		log.debug('mounted')
+		props.verityDispatch.loadMoreTreeImages();
+	}, [])
 
-  useEffect(() => {
-    if (needtoLoadMoreTreeImages()) {
-      loadMoreTreeImages();
-    }
+	/*
+	 * effect to set the scroll event
+	 */
+	useEffect(() => {
+		log.debug('verity state changed')
+		//move add listener to effect to let it refresh at every state change
+		let scrollContainerRef = getScrollContainerRef();
+		const handleScroll = e => {
+			if (
+				scrollContainerRef &&
+				Math.floor(scrollContainerRef.scrollTop) !==
+					Math.floor(scrollContainerRef.scrollHeight) -
+					Math.floor(scrollContainerRef.offsetHeight)
+			) {
+				return
+			}
+			props.verityDispatch.loadMoreTreeImages()
+		}
+		let isListenerAttached		= false
+		if (
+			scrollContainerRef &&
+			//should not listen scroll when loading
+			!props.verityState.isLoading
+		) {
+			log.debug('attaching listener')
+			scrollContainerRef.addEventListener("scroll", handleScroll);
+			isListenerAttached		= true
+		}else{
+			log.debug('do not attach listener')
+		}
 
-    return () => {
-      if (scrollContainerRef) {
-        scrollContainerRef.removeEventListener('scroll', handleScroll)
-      }
-    };
-  }, [state]);
+		return () => {
+			if (isListenerAttached) {
+				scrollContainerRef.removeEventListener('scroll', handleScroll)
+			}
+		}
+	}, [props.verityState])
 
-  let treeImageItems = treeImages.map(tree => {
+	useEffect(() => {
+		setComplete(props.verityState.approveAllComplete)
+	},[props.verityState.approveAllComplete])
+
+  let treeImageItems = props.verityState.treeImages.map(tree => {
     if (tree.imageUrl) {
       return (
-        <div className={classes.cardWrapper} key={tree.id}>
-          <Card id={`card_${tree.id}`} className={classes.card}>
-            <CardContent>
-              <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
-              <Typography gutterBottom>Tree# {tree.id}</Typography>
-            </CardContent>
-            <CardActions>
-              <Button
-                color="secondary"
-                size="small"
-                onClick={e => onRejectTreeImageClick(e, tree.id)}
-              >
-                Reject
-              </Button>
-              <Button
-                color="primary"
-                size="small"
-                onClick={e => onApproveTreeImageClick(e, tree.id)}
-              >
-                Approve
-              </Button>
-            </CardActions>
-          </Card>
-        </div>
+				<div className={classes.cardWrapper} key={tree.id}>
+					<Card id={`card_${tree.id}`} className={classes.card}>
+						<CardContent>
+							<CardMedia className={classes.cardMedia} image={tree.imageUrl} />
+							<Typography gutterBottom>Tree# {tree.id}</Typography>
+						</CardContent>
+						<CardActions>
+							<Button
+								color="secondary"
+								size="small"
+								onClick={e => props.verityDispatch.rejectTreeImage(tree.id)}
+							>
+								Reject
+							</Button>
+							<Button
+								color="primary"
+								size="small"
+								onClick={e => props.verityDispatch.approveTreeImage(tree.id)}
+							>
+								Approve
+							</Button>
+						</CardActions>
+					</Card>
+				</div>
       )
     }
   })
 
-  return <section className={classes.wrapper}>{treeImageItems}</section>
+  return (
+		<React.Fragment>
+			<Grid container>
+				<Grid 
+					item
+					style={{
+						width		: '100%',
+					}}
+				>
+					<Grid 
+						container
+						justify={'flex-end'}
+					>
+						<Grid 
+							item
+						>
+							{/*
+							<Button 
+								style={{
+									margin		: 15,
+								}}
+								variant='contained'
+								color='primary'
+								onClick={async () => {
+									if(window.confirm(
+										`Are you sure to approve these ${props.verityState.treeImages.length} trees?`
+									)){
+										await props.verityDispatch.approveAll()
+										log.debug('after approve all, reload page')
+										props.verityDispatch.loadMoreTreeImages()
+									}
+								}}>
+								Approve all
+							</Button>
+							*/}
+						</Grid>
+					</Grid>
+				</Grid>
+				<Grid 
+					item
+					style={{
+						width		: '100%',
+					}}
+				>
+					<section className={classes.wrapper}>{treeImageItems}</section>
+				</Grid>
+			</Grid>
+			{props.verityState.isApproveAllProcessing &&
+				<AppBar
+					position='fixed'
+					style={{
+						zIndex		: 10000,
+					}}
+				>
+					<LinearProgress
+						color='primary'
+						variant='determinate'
+						value={complete}
+					/>
+				</AppBar>
+			}
+			{props.verityState.isApproveAllProcessing &&
+				<div
+					style={{
+						position		: 'absolute',
+						top		: 0,
+						left		: 0,
+						backgroundColor		: 'black',
+						width		: '100%',
+						height		: '100vh',
+						opacity		: 0.5,
+					}}
+				>
+				</div>
+			}
+		</React.Fragment>
+	)
 }
 
 export default compose(
+	//redux
+	connect(
+		//state
+		state		=> ({
+			verityState		: state.verity,
+		}),
+		//dispatch
+		dispatch		=> ({
+			verityDispatch		: dispatch.verity,
+		}),
+	),
   withStyles(styles, { withTheme: true, name: 'ImageScrubber' })
-)(TreeImageScrubber)
+)(TreeImageScrubber) 

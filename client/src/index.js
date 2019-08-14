@@ -1,3 +1,4 @@
+import './init'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
@@ -8,11 +9,6 @@ import * as models from './models'
 import './index.css'
 import * as log from 'loglevel';
 
-/*
- * set the global configuration for loglevel
- * it should be set as early as possible
- */
-log.setDefaultLevel('info');
 log.info('init redux...');
 const store = init({ models });
 
