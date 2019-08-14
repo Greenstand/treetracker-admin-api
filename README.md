@@ -151,6 +151,31 @@ Useful scripts are contained in /dev/scripts.  Their uses are described here.  S
 
 **docker-remove-containers.sh** clear out *all* docker containers
 
+## How to log
+
+We use loglevel for logging, with some convention. Using loglevel, we will be able to open/close a single file's log by chaning the level of log on the fly, even in production env. For more information about loglevel, check [here](https://github.com/pimterry/loglevel).
+
+The default of log level is set in the file: /src/init.js
+```
+log.setDefaultLevel('info');
+```
+
+To use loglevel in js file, we recommend following this convention:
+
+```
+import * as loglevel from 'loglevel'
+
+const log = loglevel.getLogger('../components/TreeImageScrubber')
+
+... ...
+
+	log.debug('render TreeImageScrubber...')
+```
+
+The convention is: call the loglevel.getLogger() function with argument of 'the path to current file'. In above example, the js file is: /src/components/TreeImageScrumbber.js, so pass the path string: '../components/TreeImageScrubber' in, just like what we do in 'import' sentence, but the path just points to itself.
+
+Acturally, we can pass in any string, following this convention is just for a UNIQUE key for the log object, now we can set the log level in browser to open/close log. To do so, open DevTools -> application -> localstorage -> add a key: 'loglevel:[the path]' and value: [the log level] (e.g. loglevel:../components/TreeImageScrubber  ->  DEBUG )
+<img alt="snapshot" src="https://raw.githubusercontent.com/dadiorchen/treetracker-admin/master/client/loglevel.gif" width="600" >
 
 ## Code style guide  
 
