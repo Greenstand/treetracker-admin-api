@@ -1,3 +1,4 @@
+import '../init'
 import React, {useState} from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
@@ -10,6 +11,7 @@ import Typography		from '@material-ui/core/Typography';
 import {withTheme}		from '@material-ui/core/styles';
 import FilterModel		from '../models/Filter';
 import './progress';
+import './verity';
 
 storiesOf('Welcome', module)
 	.add('Greenstand logo', 

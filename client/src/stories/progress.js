@@ -70,6 +70,9 @@ function TestProgress(){
 				{isApproving &&
 					<AppBar
 						position='fixed'
+						style={{
+							zIndex		: 10000,
+						}}
 					>
 						<LinearProgress
 							color='primary'
@@ -78,7 +81,7 @@ function TestProgress(){
 						/>
 					</AppBar>
 				}
-				{isApproving &&
+				{false && isApproving &&
 					<div
 						style={{
 							position		: 'absolute',
@@ -92,6 +95,11 @@ function TestProgress(){
 					>
 
 					</div>
+				}
+				{isApproving && 
+					<Modal open={true}>
+						<div></div>
+					</Modal>
 				}
 			</div>
 		)

@@ -1,10 +1,8 @@
 import {init}		from '@rematch/core';
 import verity		from './verity';
 
-jest.mock('../api/treeTrackerApi')
-
 //mock the api
-const api		= require('../api/treeTrackerApi')
+const api		= require('../api/treeTrackerApi').default
 api.getTreeImages		= () => Promise.resolve([{
 		id		: '1',
 	}]);

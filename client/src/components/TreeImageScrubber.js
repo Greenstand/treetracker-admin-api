@@ -12,6 +12,7 @@ import { selectedHighlightColor } from '../common/variables.js';
 import * as loglevel from 'loglevel';
 import Grid		from '@material-ui/core/Grid';
 import AppBar		from '@material-ui/core/AppBar';
+import Modal		from '@material-ui/core/Modal';
 import LinearProgress		from '@material-ui/core/LinearProgress';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber')
@@ -271,7 +272,6 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 						<Grid 
 							item
 						>
-							{/*
 							<Button 
 								style={{
 									margin		: 15,
@@ -282,14 +282,16 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 									if(window.confirm(
 										`Are you sure to approve these ${props.verityState.treeImages.length} trees?`
 									)){
-										await props.verityDispatch.approveAll()
-										log.debug('after approve all, reload page')
-										props.verityDispatch.loadMoreTreeImages()
+										const result		= await props.verityDispatch.approveAll()
+										if(result){
+											props.verityDispatch.loadMoreTreeImages()
+										}else{
+											window.alert('sorry, failed to approve some picture')
+										}
 									}
 								}}>
 								Approve all
 							</Button>
-							*/}
 						</Grid>
 					</Grid>
 				</Grid>
@@ -317,18 +319,9 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 				</AppBar>
 			}
 			{props.verityState.isApproveAllProcessing &&
-				<div
-					style={{
-						position		: 'absolute',
-						top		: 0,
-						left		: 0,
-						backgroundColor		: 'black',
-						width		: '100%',
-						height		: '100vh',
-						opacity		: 0.5,
-					}}
-				>
-				</div>
+				<Modal open={true}>
+					<div></div>
+				</Modal>
 			}
 		</React.Fragment>
 	)

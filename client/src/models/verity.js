@@ -2,7 +2,7 @@
  * The model for verity page
  */
 import * as loglevel		from 'loglevel'
-import * as api		from '../api/treeTrackerApi'
+import api		from '../api/treeTrackerApi'
 
 const log		= loglevel.getLogger('../models/verity')
 
@@ -103,6 +103,7 @@ const verity = {
 			};
 			log.debug('load page with params:', pageParams)
 			const result		= await api.getTreeImages(pageParams)
+			log.debug('loaded trees:%d', result.length)
 			//verityState.pagesLoaded = nextPage;
 			this.appendTreeImages(result);
 			//restore loading status
@@ -122,26 +123,30 @@ const verity = {
 			const verityState		= state.verity;
 			const total		= verityState.treeImages.length;
 			log.debug('items:%d', verityState.treeImages.length);
-//			for(let treeImage of verityState.treeImages){
-//				log.trace('approve:%d', treeImage.id)
-//				await this.approveTreeImage(treeImage.id)
-//			}
-			for(let i = 0; i < verityState.treeImages.length; i++){
-				const treeImage		= verityState.treeImages[i]
-				log.trace('approve:%d', treeImage.id)
-				await this.approveTreeImage(treeImage.id)
-				this.setApproveAllComplete(100 * ((i + 1) / total))
-			}
-			//mock
-			for(let i = 0; i < verityState.treeImages.length; i++){
-				const treeImage		= verityState.treeImages[i]
-				await new Promise(r => {
-					setTimeout(() => {
-						this.approvedTreeImage(treeImage.id)
-						this.setApproveAllComplete(100 * ((i + 1) / total))
-						r(true)
-					}, 300)
-				})
+			try{
+				for(let i = 0; i < verityState.treeImages.length; i++){
+					const treeImage		= verityState.treeImages[i]
+					log.trace('approve:%d', treeImage.id)
+					await this.approveTreeImage(treeImage.id)
+					this.approvedTreeImage(treeImage.id)
+					this.setApproveAllComplete(100 * ((i + 1) / total))
+				}
+	//			//mock
+	//			for(let i = 0; i < verityState.treeImages.length; i++){
+	//				const treeImage		= verityState.treeImages[i]
+	//				await new Promise(r => {
+	//					setTimeout(() => {
+	//						this.approvedTreeImage(treeImage.id)
+	//						this.setApproveAllComplete(100 * ((i + 1) / total))
+	//						r(true)
+	//					}, 300)
+	//				})
+	//			}
+			}catch(e){
+				log.warn('get error:', e)
+				this.setLoading(false);
+				this.setApproveAllProcessing(false);
+				return false
 			}
 			//finished, set status flags
 			this.setLoading(false);
