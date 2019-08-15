@@ -20,8 +20,7 @@ const styles = () => ({
     overflowX: 'auto',
   },
 	myTable		: {
-		/*width		: 900,*/
-		width		: 'calc(100% - 350px)',
+		/*width		: 'calc(100% - 350px)',*/
 	},
   locationCol: {
     width: '270px'
@@ -194,11 +193,13 @@ class TreeTable extends Component {
         >
           <TreeDetails tree={tree} />
         </Drawer>
+				{/*
 				<Filter 
 					isOpen={true} 
 					onSubmit={this.handleFilterSubmit}
 					filter={this.state.filter}
 				/>
+				*/}
       </React.Fragment>
     );
   }

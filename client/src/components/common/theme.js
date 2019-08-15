@@ -102,6 +102,35 @@ export default createMuiTheme({
 				fontSize		: '.785rem',
 			},
 		},
+		/* No better way to adjust the table column width, so have to set css here*/
+		MUIDataTableHeadCell: {
+			root: {
+				'&:nth-child(1)': {
+					width: 20
+				},
+				'&:nth-child(2)': {
+					width: 30
+				},
+				'&:nth-child(3)': {
+					width: 30
+				},
+				'&:nth-child(4)': {
+					width: 30
+				},
+				'&:nth-child(5)': {
+					width: 30
+				},
+				'&:nth-child(6)': {
+					width: 30
+				},
+				'&:nth-child(7)': {
+					width: 30
+				},
+				'&:nth-child(8)': {
+					width: 200, 
+				},
+			}
+		}
 	},
 	props		: {
 		MuiButton		: {

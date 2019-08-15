@@ -30,10 +30,21 @@ const useStyles		= makeStyles(theme => ({
 			'& .MuiListItemIcon-root, & .MuiListItemText-primary'		: {
 				color		: theme.palette.primary.main,
 			},
+			'& .MuiListItemIcon-root'		: {
+				color		: theme.palette.primary.main,
+			},
 		},
 		borderTopRightRadius		: 25,
 		borderBottomRightRadius		: 25,
 		marginRight		: 35,
+		'&.Mui-selected'		: {
+			color		: theme.palette.primary.main,
+			fontWeight		: 400,
+			backgroundColor		: theme.palette.action.hover,
+		},
+		'&.Mui-selected .MuiListItemIcon-root'		: {
+			color		: theme.palette.primary.main,
+		},
 	},
 	listItemIcon		: {
 		minWidth		: 46,
@@ -45,34 +56,42 @@ const useStyles		= makeStyles(theme => ({
 	},
 }))
 
-export default function GSMenu(){
+const menus		= [
+	{
+		name		: 'Monitor',
+		icon		: IconShowChart,
+		disabled		: true,
+	},{
+		name		: 'Verify',
+		icon		: IconThumbsUpDown,
+		disabled		: false,
+	},{
+		name		: 'Trees',
+		icon		: IconNature,
+		disabled		: false,
+	},{
+		name		: 'Planters',
+		icon		: IconGroup,
+		disabled		: true,
+	},{
+		name		: 'Payments',
+		icon		: IconCompareArrows,
+		disabled		: true,
+	},{
+		name		: 'Settings',
+		icon		: IconSettings,
+		disabled		: true,
+	},{
+		name		: 'Account',
+		icon		: IconPermIdentity,
+		disabled		: true,
+	}
+]
+
+export default function GSMenu(props){
 	const classes		= useStyles()
 	const theme		= useTheme()
 	console.error('theme primary:', theme.palette.primary.light)
-	const menus		= [
-		{
-			name		: 'Monitor',
-			icon		: IconShowChart,
-		},{
-			name		: 'Verify',
-			icon		: IconThumbsUpDown,
-		},{
-			name		: 'Trees',
-			icon		: IconNature,
-		},{
-			name		: 'Planters',
-			icon		: IconGroup,
-		},{
-			name		: 'Payments',
-			icon		: IconCompareArrows,
-		},{
-			name		: 'Settings',
-			icon		: IconSettings,
-		},{
-			name		: 'Account',
-			icon		: IconPermIdentity,
-		}
-	]
 	return(
 			<Drawer
 				variant='permanent'
@@ -89,6 +108,9 @@ export default function GSMenu(){
 				{menus.map(item => (
 					<MenuItem
 						className={classes.menuItem}
+						selected={props.active === item.name}
+						onClick={() => props.onClick(item.name)}
+						disabled={item.disabled}
 					>
 						<ListItemIcon
 							className={classes.listItemIcon}
