@@ -42,9 +42,10 @@ const styles = theme => ({
     height: '12rem'
   },
   cardWrapper: {
-    width: '33.33%'
+    width: '33.33%',
   }
 })
+
 
 //const initialState = {
 //  treeImages: [],
