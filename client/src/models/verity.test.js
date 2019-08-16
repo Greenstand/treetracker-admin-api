@@ -2,19 +2,20 @@ import {init}		from '@rematch/core';
 import verity		from './verity';
 import Filter		from './Filter';
 
-//mock the api
-const api		= require('../api/treeTrackerApi').default
-api.getTreeImages		= jest.fn(() => Promise.resolve([{
-		id		: '1',
-	}]));
-api.approveTreeImage		= () => Promise.resolve(true);
-api.rejectTreeImage		= () => Promise.resolve(true);
 
 describe('verity', () => {
 	//{{{
 	let store
+	let api
 
 	beforeEach(() => {
+		//mock the api
+		api		= require('../api/treeTrackerApi').default
+		api.getTreeImages		= jest.fn(() => Promise.resolve([{
+				id		: '1',
+			}]));
+		api.approveTreeImage		= () => Promise.resolve(true);
+		api.rejectTreeImage		= () => Promise.resolve(true);
 		store		= init({
 			models		: {
 				verity,
@@ -35,6 +36,12 @@ describe('verity', () => {
 
 		it('should get some trees', () => {
 			expect(store.getState().verity.treeImages).toHaveLength(1)
+		})
+
+		it('should call api with param: skip = 0', () => {
+			expect(api.getTreeImages.mock.calls[0][0]).toMatchObject({
+				skip		: 0,
+			})
 		})
 
 		it('by default, should call tree api with filter: approve=false, active=true', () => {
@@ -92,6 +99,21 @@ describe('verity', () => {
 				expect(store.getState().verity.pagesLoaded).toBe(-1)
 			})
 
+			//}}}
+		})
+
+		describe('loadMoreTreeImages() load second page', () => {
+			//{{{
+			beforeEach(async () => {
+				api.getTreeImages.mockClear()
+				await store.dispatch.verity.loadMoreTreeImages();
+			})
+
+			it('should call api with param: skip = 1', () => {
+				expect(api.getTreeImages.mock.calls[0][0]).toMatchObject({
+					skip		: 1,
+				})
+			})
 			//}}}
 		})
 

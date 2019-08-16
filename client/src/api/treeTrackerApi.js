@@ -3,7 +3,7 @@ import { API_ROOT as baseUrl } from "../common/variables.js";
 
 export default {
 	getTreeImages({
-		page,
+		skip,
 		rowsPerPage,
 		orderBy = "id",
 		order = "desc",
@@ -13,7 +13,7 @@ export default {
 		const query = `${baseUrl}/trees?` + 
 			`filter[order]=${orderBy} ${order}&` + 
 			`filter[limit]=${rowsPerPage}&` + 
-			`filter[skip]=${page * rowsPerPage}&` + 
+			`filter[skip]=${skip}&` + 
 			`filter[fields][imageUrl]=true&` + 
 			`filter[fields][lat]=true&` + 
 			`filter[fields][lon]=true&` + 

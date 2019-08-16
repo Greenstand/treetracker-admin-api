@@ -120,7 +120,11 @@ const verity = {
 			this.setLoading(true)
 			const nextPage = verityState.pagesLoaded + 1;
 			const pageParams = {
-				page: nextPage,
+				//page: nextPage,
+				//REVISE Fri Aug 16 10:56:34 CST 2019
+				//change the api to use skip parameter directly, because there is a 
+				//bug to use page as param
+				skip		: verityState.treeImages.length,
 				rowsPerPage: verityState.pageSize,
 				filter		: verityState.filter,
 			};

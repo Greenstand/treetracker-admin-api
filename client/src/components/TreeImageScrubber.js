@@ -47,6 +47,7 @@ const styles = theme => ({
   },
   cardWrapper: {
     width: '33.33%',
+		minWidth		: 200,
   }
 })
 
