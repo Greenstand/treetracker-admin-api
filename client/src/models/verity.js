@@ -3,6 +3,7 @@
  */
 import * as loglevel		from 'loglevel'
 import api		from '../api/treeTrackerApi'
+import FilterModel		from './Filter';
 
 const log		= loglevel.getLogger('../models/verity')
 
@@ -16,6 +17,13 @@ const verity = {
 		pagesLoaded		: -1,
 		moreTreeImagesAvailable		: true,
 		pageSize		: 20,
+		/*
+		 * The default value means: image not approved yet, and not rejected yet too
+		 */
+		filter		: new FilterModel({
+			approved		: false,
+			active		: true,
+		}),
 	},
 	reducers		: {
 		appendTreeImages(state, treeImages){
@@ -46,6 +54,12 @@ const verity = {
 				pagesLoaded,
 			}
 		},
+		setFilter(state, filter){
+			return {
+				...state,
+				filter
+			}
+		},
 		setApproveAllComplete(state, approveAllComplete){
 			return {
 				...state,
@@ -64,7 +78,15 @@ const verity = {
       )
       return { ...state, treeImages: treeImages }
 		},
-
+		//to reset the page status, load from beginning
+		reset(state){
+			return {
+				...state,
+				treeImages		: [],
+				pagesLoaded		: -1,
+				moreTreeImagesAvailable		: true,
+			}
+		},
 	},
 	effects		: {
 		/*
@@ -99,7 +121,8 @@ const verity = {
 			const nextPage = verityState.pagesLoaded + 1;
 			const pageParams = {
 				page: nextPage,
-				rowsPerPage: verityState.pageSize
+				rowsPerPage: verityState.pageSize,
+				filter		: verityState.filter,
 			};
 			log.debug('load page with params:', pageParams)
 			const result		= await api.getTreeImages(pageParams)
@@ -155,6 +178,17 @@ const verity = {
 			this.setPagesLoaded(-1);
 			this.setApproveAllComplete(0);
 			return true;
+			//}}}
+		},
+		/*
+		 * trigger when user submit filter form
+		 */
+		async updateFilter(filter){
+			//{{{
+			this.setFilter(filter)
+			this.reset()
+			//clear all stuff
+			await this.loadMoreTreeImages()
 			//}}}
 		},
 	},

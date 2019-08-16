@@ -1,11 +1,12 @@
 import {init}		from '@rematch/core';
 import verity		from './verity';
+import Filter		from './Filter';
 
 //mock the api
 const api		= require('../api/treeTrackerApi').default
-api.getTreeImages		= () => Promise.resolve([{
+api.getTreeImages		= jest.fn(() => Promise.resolve([{
 		id		: '1',
-	}]);
+	}]));
 api.approveTreeImage		= () => Promise.resolve(true);
 api.rejectTreeImage		= () => Promise.resolve(true);
 
@@ -34,6 +35,15 @@ describe('verity', () => {
 
 		it('should get some trees', () => {
 			expect(store.getState().verity.treeImages).toHaveLength(1)
+		})
+
+		it('by default, should call tree api with filter: approve=false, active=true', () => {
+			expect(api.getTreeImages.mock.calls[0][0]).toMatchObject({
+				filter		: {
+					approved		: false,
+					active		: true,
+				},
+			})
 		})
 
 		describe('approveTreeImage(1)', () => {
@@ -82,6 +92,28 @@ describe('verity', () => {
 				expect(store.getState().verity.pagesLoaded).toBe(-1)
 			})
 
+			//}}}
+		})
+
+		describe('updateFilter({approved:false, active:false}) test filter', () =>{
+			//{{{
+			beforeEach(async () => {
+				//clear
+				api.getTreeImages.mockClear();
+				const filter		= new Filter();
+				filter.approved		= false;
+				filter.active		= false;
+				await store.dispatch.verity.updateFilter(filter);
+			})
+
+			it('after updateFilter, should call load trees with filter(approved:false, active:false)', () => {
+				expect(api.getTreeImages.mock.calls[0][0]).toMatchObject({
+					filter		: {
+						approved		: false,
+						active		: false,
+					},
+				})
+			})
 			//}}}
 		})
 

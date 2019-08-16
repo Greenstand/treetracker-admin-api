@@ -14,6 +14,10 @@ import Grid		from '@material-ui/core/Grid';
 import AppBar		from '@material-ui/core/AppBar';
 import Modal		from '@material-ui/core/Modal';
 import LinearProgress		from '@material-ui/core/LinearProgress';
+import Filter, {FILTER_WIDTH}		from './Filter'
+import FilterModel		from '../models/Filter'
+import IconFilter		from '@material-ui/icons/FilterList'
+import IconButton		from '@material-ui/core/IconButton'
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber')
 
@@ -91,6 +95,7 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 	log.debug('render TreeImageScrubber...')
 	log.debug('complete:', props.verityState.approveAllComplete)
 	const [complete, setComplete]		= React.useState(0)
+	const [isFilterShown, setFilterShown]		= React.useState(false)
   //const [state, dispatch] = useReducer(reducer, { ...initialState })
   //let treeImages = state.treeImages;
 //  let scrollContainerRef;
@@ -240,6 +245,7 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 								color="secondary"
 								size="small"
 								onClick={e => props.verityDispatch.rejectTreeImage(tree.id)}
+								disabled={tree.active === false}
 							>
 								Reject
 							</Button>
@@ -247,6 +253,7 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 								color="primary"
 								size="small"
 								onClick={e => props.verityDispatch.approveTreeImage(tree.id)}
+								disabled={tree.approved === true}
 							>
 								Approve
 							</Button>
@@ -257,52 +264,95 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
     }
   })
 
+	function handleFilterClick(){
+		//{{{
+		if(isFilterShown){
+			setFilterShown(false)
+		}else{
+			setFilterShown(true)
+		}
+		//}}}
+	}
+
   return (
 		<React.Fragment>
 			<Grid container>
-				<Grid 
-					item
+				<Grid item 
 					style={{
-						width		: '100%',
+						width		: isFilterShown ? `calc(100% - 72px - ${FILTER_WIDTH}px`: undefined,
 					}}
 				>
-					<Grid 
-						container
-						justify={'flex-end'}
-					>
+					<Grid container>
 						<Grid 
 							item
+							style={{
+								width		: '100%',
+							}}
 						>
-							<Button 
-								style={{
-									margin		: 15,
-								}}
-								variant='contained'
-								color='primary'
-								onClick={async () => {
-									if(window.confirm(
-										`Are you sure to approve these ${props.verityState.treeImages.length} trees?`
-									)){
-										const result		= await props.verityDispatch.approveAll()
-										if(result){
-											props.verityDispatch.loadMoreTreeImages()
-										}else{
-											window.alert('sorry, failed to approve some picture')
-										}
-									}
-								}}>
-								Approve all
-							</Button>
+							<Grid 
+								container
+								justify={'flex-end'}
+							>
+								<Grid 
+									item
+								>
+									{/*
+									<Button 
+										style={{
+											margin		: 15,
+										}}
+										variant='contained'
+										color='primary'
+										onClick={async () => {
+											if(window.confirm(
+												`Are you sure to approve these ${props.verityState.treeImages.length} trees?`
+											)){
+												const result		= await props.verityDispatch.approveAll()
+												if(result){
+													props.verityDispatch.loadMoreTreeImages()
+												}else{
+													window.alert('sorry, failed to approve some picture')
+												}
+											}
+										}}>
+										Approve all
+									</Button>
+									*/}
+									<IconButton
+										onClick={handleFilterClick}
+										style={{
+											marginTop		: 8,
+											marginRight		: 8,
+										}}
+									>
+										<IconFilter/>
+									</IconButton>
+								</Grid>
+							</Grid>
+						</Grid>
+						<Grid 
+							item
+							style={{
+								width		: '100%',
+							}}
+						>
+							<section className={classes.wrapper}>{treeImageItems}</section>
 						</Grid>
 					</Grid>
 				</Grid>
-				<Grid 
-					item
+				<Grid item 
 					style={{
-						width		: '100%',
+						width		: `${FILTER_WIDTH}px`,
 					}}
 				>
-					<section className={classes.wrapper}>{treeImageItems}</section>
+					<Filter 
+						isOpen={isFilterShown} 
+						onSubmit={(filter) => {
+							props.verityDispatch.updateFilter(filter)
+						}}
+						filter={props.verityState.filter}
+						onClose={handleFilterClick}
+					/>
 				</Grid>
 			</Grid>
 			{props.verityState.isApproveAllProcessing &&
