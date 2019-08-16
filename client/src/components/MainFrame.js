@@ -94,7 +94,7 @@ function SimpleTable() {
   );
 }
 export default function(){
-	const [menuName, setMenuName]		= React.useState('Verify')
+	const [menuName, setMenuName]		= React.useState(/* default menu */'Verify')
 	const refContainer		= React.useRef()
 
 	function handleMenuClick(menuName){
@@ -109,7 +109,11 @@ export default function(){
 					onClick={handleMenuClick}
 				/>
 			</Grid>
-			<Grid item>
+			<Grid item
+				style={{
+					width		: '100%',
+				}}
+			>
 				<Grid 
 					container
 					ref={refContainer}

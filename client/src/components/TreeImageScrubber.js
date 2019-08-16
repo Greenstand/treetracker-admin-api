@@ -14,10 +14,12 @@ import Grid		from '@material-ui/core/Grid';
 import AppBar		from '@material-ui/core/AppBar';
 import Modal		from '@material-ui/core/Modal';
 import LinearProgress		from '@material-ui/core/LinearProgress';
-import Filter, {FILTER_WIDTH}		from './Filter'
-import FilterModel		from '../models/Filter'
-import IconFilter		from '@material-ui/icons/FilterList'
-import IconButton		from '@material-ui/core/IconButton'
+import Filter, {FILTER_WIDTH}		from './Filter';
+import FilterModel		from '../models/Filter';
+import IconFilter		from '@material-ui/icons/FilterList';
+import IconButton		from '@material-ui/core/IconButton';
+import {MENU_WIDTH}		from './common/Menu';
+import Box		from '@material-ui/core/Box';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber')
 
@@ -25,7 +27,7 @@ const styles = theme => ({
   wrapper: {
     display: 'flex',
     flexWrap: 'wrap',
-    padding: '2rem 2rem 4rem'
+    padding: theme.spacing(2, 16, 16, 16),
   },
   cardImg: {
     width: '100%',
@@ -37,7 +39,7 @@ const styles = theme => ({
   card: {
     cursor: 'pointer',
     margin: '0.5rem',
-    border: `2px #eee solid`
+    //border: `2px #eee solid`
   },
   selected: {
     border: `2px ${selectedHighlightColor} solid`
@@ -47,140 +49,17 @@ const styles = theme => ({
   },
   cardWrapper: {
     width: '33.33%',
-		minWidth		: 200,
-  }
+		minWidth		: 300,
+  },
+	title		: {
+		padding		: theme.spacing(2, 16),
+	},
 })
-
-
-//const initialState = {
-//  treeImages: [],
-//  isLoading: false,
-//  pagesLoaded: -1,
-//  moreTreeImagesAvailable: true,
-//  pageSize: 20
-//};
-
-//const reducer = (state, action) => {
-//  let treeImages = {}
-//  switch (action.type) {
-//    case 'loadMoreTreeImages':
-//      let newTreeImages = [...state.treeImages, ...action.treeImages]
-//      let newState = {
-//        ...state,
-//        treeImages: newTreeImages,
-//        isLoading: action.isLoading
-//      };
-//      return newState;
-//    case "noMoreTreeImages":
-//      return {
-//        ...state,
-//        isLoading: false,
-//        moreTreeImagesAvailable: false
-//      };
-//    case "approveTreeImage":
-//      treeImages = state.treeImages.filter(
-//        treeImage => treeImage.id !== action.id
-//      )
-//      return { ...state, treeImages: treeImages }
-//    case 'rejectTreeImage':
-//      treeImages = state.treeImages.filter(
-//        treeImage => treeImage.id !== action.id
-//      )
-//      return { ...state, treeImages: treeImages }
-//    default:
-//      throw new Error('the actions got messed up, somehow!')
-//  }
-//}
-
 const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 	log.debug('render TreeImageScrubber...')
 	log.debug('complete:', props.verityState.approveAllComplete)
 	const [complete, setComplete]		= React.useState(0)
 	const [isFilterShown, setFilterShown]		= React.useState(false)
-  //const [state, dispatch] = useReducer(reducer, { ...initialState })
-  //let treeImages = state.treeImages;
-//  let scrollContainerRef;
-//  const onApproveTreeImageClick = (e, id) => {
-//    approveTreeImage(id)
-//      .then(result => {
-//        dispatch({ type: 'approveTreeImage', id })
-//      })
-//      .catch(e => {
-//        // don't change the state if the server couldnt help us
-//        alert("Couldn't approve Tree Image: " + id + '!', e)
-//      })
-//  }
-
-//  const onRejectTreeImageClick = (e, id) => {
-//    rejectTreeImage(id)
-//      .then(result => {
-//        dispatch({ type: 'rejectTreeImage', id })
-//      })
-//      .catch(e => {
-//        // don't change the state if the server couldnt help us
-//        alert("Couldn't reject Tree Image: " + id + '!', e)
-//      })
-//  }
-
-//  const setIsLoading = loading => {
-//    state.isLoading = loading
-//  }
-
-//  const needtoLoadMoreTreeImages = () => {
-//    return state.moreTreeImagesAvailable && treeImages.length < state.pageSize;
-//  };
-
-//  const loadMoreTreeImages = () => {
-//    if (state.isLoading || !state.moreTreeImagesAvailable) return;
-//    setIsLoading(true);
-//    const nextPage = state.pagesLoaded + 1;
-//    const pageParams = {
-//      page: nextPage,
-//      rowsPerPage: state.pageSize
-//    }
-//    getTreeImages(pageParams)
-//      .then(result => {
-//        state.pagesLoaded = nextPage;
-//        dispatch({
-//          type: "loadMoreTreeImages",
-//          treeImages: result,
-//          isLoading: false
-//        });
-//      })
-//      .catch(error => {
-//        // no more to load!
-//        dispatch({ type: "noMoreTreeImages" });
-//      });
-//  };
-
-//  const handleScroll = e => {
-//    if (
-//      props.verityState.isLoading ||
-//      (scrollContainerRef &&
-//        Math.floor(scrollContainerRef.scrollTop) !==
-//          Math.floor(scrollContainerRef.scrollHeight) -
-//            Math.floor(scrollContainerRef.offsetHeight))
-//    ) {
-//      return
-//    }
-//    props.verityDispatch.loadMoreTreeImages()
-//  }
-//  scrollContainerRef = getScrollContainerRef();
-//  if (scrollContainerRef) {
-//    scrollContainerRef.addEventListener("scroll", handleScroll);
-//  }
-
-//  useEffect(() => {
-//    if (needtoLoadMoreTreeImages()) {
-//      loadMoreTreeImages();
-//    }
-//
-//    return () => {
-//      if (scrollContainerRef) {
-//        scrollContainerRef.removeEventListener('scroll', handleScroll)
-//      }
-//    };
-//  }, [state]);
 	
 	/*
 	 * effect to load page when mounted
@@ -228,6 +107,7 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 		}
 	}, [props.verityState])
 
+	/* to display progress */
 	useEffect(() => {
 		setComplete(props.verityState.approveAllComplete)
 	},[props.verityState.approveAllComplete])
@@ -236,10 +116,10 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
     if (tree.imageUrl) {
       return (
 				<div className={classes.cardWrapper} key={tree.id}>
-					<Card id={`card_${tree.id}`} className={classes.card}>
+					<Card id={`card_${tree.id}`} className={classes.card} elevation={3} >
 						<CardContent>
 							<CardMedia className={classes.cardMedia} image={tree.imageUrl} />
-							<Typography gutterBottom>Tree# {tree.id}</Typography>
+							<Typography variant='body2' gutterBottom>Tree# {tree.id}</Typography>
 						</CardContent>
 						<CardActions>
 							<Button
@@ -280,7 +160,10 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 			<Grid container>
 				<Grid item 
 					style={{
-						width		: isFilterShown ? `calc(100% - 72px - ${FILTER_WIDTH}px`: undefined,
+						width		: isFilterShown ? 
+							`calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px`
+							: 
+							'100%',
 					}}
 				>
 					<Grid container>
@@ -292,8 +175,18 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 						>
 							<Grid 
 								container
-								justify={'flex-end'}
+								justify={'space-between'}
+								className={classes.title}
 							>
+								<Grid item>
+									<Typography variant='h5' 
+										style={{
+											paddingTop		: 20,
+										}}
+									>
+										trees to verify
+									</Typography>
+								</Grid>
 								<Grid 
 									item
 								>
@@ -323,7 +216,7 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 										onClick={handleFilterClick}
 										style={{
 											marginTop		: 8,
-											marginRight		: 8,
+											marginRight		: 16,
 										}}
 									>
 										<IconFilter/>

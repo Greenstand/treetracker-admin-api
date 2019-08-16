@@ -16,11 +16,13 @@ import Box		from '@material-ui/core/Box';
 import {useTheme, }		from '@material-ui/styles';
 import IconLogo		from '../IconLogo';
 
+export const MENU_WIDTH		= 232
+
 const useStyles		= makeStyles(theme => ({
 	drawer		: {
 	},
 	drawerPaper		: {
-		width		: 232,
+		width		: MENU_WIDTH,
 		position		: 'inherit',
 		height		: '100vh',
 	},

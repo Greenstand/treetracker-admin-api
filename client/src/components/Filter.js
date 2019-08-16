@@ -29,7 +29,6 @@ const styles = theme => {
 		flexShrink: 0,
 	},
 	drawerPaper: {
-		//marginTop		: 64,
 		width: FILTER_WIDTH,
 		paddingTop		: theme.spacing.unit * 3,
 		paddingLeft		: theme.spacing.unit * 2,
