@@ -125,7 +125,20 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 							<Button
 								color="secondary"
 								size="small"
-								onClick={e => props.verityDispatch.rejectTreeImage(tree.id)}
+								onClick={e => {
+									props.verityDispatch.rejectTreeImage(tree.id)
+										.then(() => {
+											//when finished, check if the list is empty, if true,
+											//load more tree
+											//why 1? because it is old state in hook
+											if(props.verityState.treeImages.length === 1){
+												log.debug('empty, load more')
+												props.verityDispatch.loadMoreTreeImages();
+											}else{
+												log.trace('not empty')
+											}
+										})
+								}}
 								disabled={tree.active === false}
 							>
 								Reject
@@ -133,7 +146,20 @@ const TreeImageScrubber = ({ classes, getScrollContainerRef, ...props }) => {
 							<Button
 								color="primary"
 								size="small"
-								onClick={e => props.verityDispatch.approveTreeImage(tree.id)}
+								onClick={e => {
+									props.verityDispatch.approveTreeImage(tree.id)
+										.then(() => {
+											//when finished, check if the list is empty, if true,
+											//load more tree
+											//why 1? because it is old state in hook
+											if(props.verityState.treeImages.length === 1){
+												log.debug('empty, load more')
+												props.verityDispatch.loadMoreTreeImages();
+											}else{
+												log.trace('not empty', props.verityState.treeImages.length)
+											}
+										})
+								}}
 								disabled={tree.approved === true}
 							>
 								Approve

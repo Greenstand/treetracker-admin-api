@@ -93,7 +93,6 @@ const menus		= [
 export default function GSMenu(props){
 	const classes		= useStyles()
 	const theme		= useTheme()
-	console.error('theme primary:', theme.palette.primary.light)
 	return(
 			<Drawer
 				variant='permanent'
