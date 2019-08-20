@@ -178,6 +178,7 @@ The convention is: call the loglevel.getLogger() function with argument of 'the 
 Acturally, we can pass in any string, following this convention is just for a UNIQUE key for the log object, now we can set the log level in browser to open/close log. To do so, open DevTools -> application -> localstorage -> add a key: 'loglevel:[the path]' and value: [the log level] (e.g. loglevel:../components/TreeImageScrubber  ->  DEBUG )
 <img alt="snapshot" src="https://raw.githubusercontent.com/dadiorchen/treetracker-admin/master/client/loglevel.gif" width="600" >
 
+
 ## Guide for Material-UI
 
 We use Material-UI (4.0 currently) to build our UI.
@@ -205,6 +206,10 @@ All the stories are located at /client/src/stories/
 
 About more usage of Storybook, check [here](https://storybook.js.org/)
 
+## About Redux/Rematch
+We use Rematch, it is a simple shell on Redux. Contrast to vanilla Redux, Rematch has fewer boilerplate code. Check [here](https://github.com/rematch/rematch) for more detail.
+
+[Here](remathTutorial.md) is a simple tutorial for people who is not familiar with Redux/Rematch.
 
 ## Code style guide  
 
