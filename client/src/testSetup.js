@@ -3,4 +3,4 @@
  */
 import * as loglevel		from 'loglevel';
 
-loglevel.setDefaultLevel('debug')
+loglevel.setDefaultLevel('trace')

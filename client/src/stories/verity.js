@@ -5,8 +5,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Modal from '@material-ui/core/Modal';
 import TreeImageScrubber		from '../components/TreeImageScrubber';
 import verity		from '../models/verity';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import {theme}		from '../App';
+import {ThemeProvider, useTheme, }		from '@material-ui/styles';
+import theme		from '../components/common/theme';
 import { Provider } from 'react-redux'
 import { init } from '@rematch/core'
 import * as models from '../models'
@@ -24,7 +24,7 @@ function TestVerity(){
 		<Provider
 			store={store}
 		>
-			<MuiThemeProvider theme={theme}>
+			<ThemeProvider theme={theme}>
 				<div
 					ref={refContainer}
 					style={{
@@ -37,7 +37,7 @@ function TestVerity(){
 						getScrollContainerRef={getContainerRef}
 					/>
 				</div>
-			</MuiThemeProvider>
+			</ThemeProvider>
 		</Provider>
 	)
 }
