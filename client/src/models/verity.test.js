@@ -11,16 +11,20 @@ describe('verity', () => {
 	let store
 	let api
 
+	beforeEach(() => {
+		//mock the api
+		api		= require('../api/treeTrackerApi').default
+		api.getTreeImages		= jest.fn(() => Promise.resolve([{
+				id		: '1',
+			}]));
+		api.approveTreeImage		= () => Promise.resolve(true);
+		api.rejectTreeImage		= () => Promise.resolve(true);
+		api.undoTreeImage		= () => Promise.resolve(true);
+	})
+
 	describe('with a default store', () => {
 		//{{{
 		beforeEach(() => {
-			//mock the api
-			api		= require('../api/treeTrackerApi').default
-			api.getTreeImages		= jest.fn(() => Promise.resolve([{
-					id		: '1',
-				}]));
-			api.approveTreeImage		= () => Promise.resolve(true);
-			api.rejectTreeImage		= () => Promise.resolve(true);
 			store		= init({
 				models		: {
 					verity,
@@ -133,13 +137,14 @@ describe('verity', () => {
 	describe('a store with 10 trees', () => {
 		//{{{
 		beforeEach(() => {
+			//9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 			const verityInit		= {
 				state		: {
 					...verity.state,
 					treeImages		: Array.from(new Array(10)).map((e, i) => {
 						return {
-							id		: i,
-							imageUrl		: 'http://' + i,
+							id		: (9 - i),
+							imageUrl		: 'http://' + (9 - i),
 						}
 					}),
 				},
@@ -183,45 +188,49 @@ describe('verity', () => {
 			//}}}
 		})
 
-		describe('clickTree(2)', () => {
+		describe('clickTree(7)', () => {
 			//{{{
 			beforeEach(() => {
-				store.dispatch.verity.clickTree({treeId:2})
+				//9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+				store.dispatch.verity.clickTree({treeId:7})
 			})
 
-			it('treeImagesSelected should be [2]', () => {
+			it('treeImagesSelected should be [7]', () => {
 				expect(store.getState().verity.treeImagesSelected).toMatchObject(
-					[2]
+					[7]
 				)
 			})
 
-			it('treeImageAnchor should be 2', () => {
-				expect(store.getState().verity.treeImageAnchor).toBe(2)
+			it('treeImageAnchor should be 7', () => {
+				expect(store.getState().verity.treeImageAnchor).toBe(7)
 			})
 
-			describe('clickTree(4)', () => {
+			describe('clickTree(5)', () => {
 				//{{{
 				beforeEach(() => {
-					store.dispatch.verity.clickTree({treeId:4})
+					//9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+					store.dispatch.verity.clickTree({treeId:5})
 				})
 
-				it('treeImagesSelected should be [4]', () => {
+				it('treeImagesSelected should be [5]', () => {
 					expect(store.getState().verity.treeImagesSelected).toMatchObject(
-						[4]
+						[5]
 					)
 				})
 				//}}}
 			})
 
-			describe('clickTree(4, isShift)', () => {
+			describe('clickTree(5, isShift)', () => {
 				//{{{
 				beforeEach(() => {
-					store.dispatch.verity.clickTree({treeId:4, isShift:true})
+					//9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+					store.dispatch.verity.clickTree({treeId:5, isShift:true})
 				})
 
-				it('treeImagesSelected should be [2,3,4]', () => {
+				it('treeImagesSelected should be [7, 6, 5]', () => {
+					//9, 8, [7, 6, 5], 4, 3, 2, 1, 0
 					expect(store.getState().verity.treeImagesSelected).toMatchObject(
-						[2,3,4]
+						[7, 6, 5]
 					)
 				})
 
@@ -243,18 +252,40 @@ describe('verity', () => {
 						expect(store.getState().verity.pagesLoaded).toBe(-1)
 					})
 
+					it('after approveAll, should get an undo list', () => {
+						expect(store.getState().verity.treeImagesUndo).toHaveLength(3)
+					})
+
+					describe('undoAll()', () => {
+						//{{{
+						beforeEach(async () => {
+							await store.dispatch.verity.undoAll()
+						})
+
+						it('tree list should restore to 10', () => {
+							expect(store.getState().verity.treeImages).toHaveLength(10)
+						})
+
+						it('tree list order should be correct', () => {
+							expect(store.getState().verity.treeImages.map(tree => tree.id)).toMatchObject(
+								[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+							)
+						})
+						//}}}
+					})
+
 					//}}}
 				})
 
-				describe('clickTree(0, isShift)', () => {
+				describe('clickTree(9, isShift)', () => {
 					//{{{
 					beforeEach(() => {
-						store.dispatch.verity.clickTree({treeId:0, isShift:true})
+						store.dispatch.verity.clickTree({treeId:9, isShift:true})
 					})
 
-					it('treeImagesSelected should be [0,1,2]', () => {
+					it('treeImagesSelected should be [9,8,7]', () => {
 						expect(store.getState().verity.treeImagesSelected).toMatchObject(
-							[0, 1, 2]
+							[9, 8, 7]
 						)
 					})
 					//}}}

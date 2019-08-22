@@ -36,7 +36,7 @@ export default createMuiTheme({
 			lightVery		: '#F9FCF4',
     },
 		action		: {
-			active		: 'rgba(0, 0, 0, .34)',
+			active		: 'rgba(135, 195, 46, .64)',
 			hover		: 'rgba(135, 195, 46, .08)',
 			selected		: 'rgba(135, 195, 46, .14)',
 		},

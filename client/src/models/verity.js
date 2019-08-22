@@ -21,6 +21,12 @@ const verity = {
 		 * the whole range
 		 */
 		treeImageAnchor		: undefined,
+		/*
+		 * When approved a lot of trees, put them in this array, so could undo the
+		 * approving action
+		 * Note, the element of this array is tree object, not tree id
+		 */
+		treeImagesUndo		: [],
 		isLoading		: false,
 		isApproveAllProcessing		: false,
 		//cal the complete of progress (0-100)
@@ -105,6 +111,23 @@ const verity = {
 				treeImagesSelected,
 			}
 		},
+		undoedTreeImage(state, treeId){
+			/*
+			 * put the tree back, from undo list, sort by date
+			 */
+			const treeUndo		= state.treeImagesUndo.reduce((a,c) => 
+				(c.id === treeId ? c:a))
+			const treeImagesUndo		= state.treeImagesUndo.filter(tree => 
+				tree.id !== treeId)
+			const treeImages		= [...state.treeImages, treeUndo].sort((a,b) => 
+				(b.id - a.id)
+			)
+			return {
+				...state,
+				treeImages,
+				treeImagesUndo,
+			}
+		},
 		//to reset the page status, load from beginning
 		reset(state){
 			return {
@@ -151,6 +174,11 @@ const verity = {
 			this.rejectedTreeImage(id)
 			return true
 		},
+		async undoTreeImage(id){
+			await api.undoTreeImage(id)
+			this.undoedTreeImage(id)
+			return true
+		},
 		/*
 		 * To load more trees into the list
 		 */
@@ -195,6 +223,9 @@ const verity = {
 			this.setApproveAllProcessing(true);
 			const verityState		= state.verity;
 			const total		= verityState.treeImagesSelected.length;
+			const undo		= verityState.treeImages.filter(tree => 
+				verityState.treeImagesSelected.some(id => id === tree.id)
+			)
 			log.debug('items:%d', verityState.treeImages.length);
 			try{
 				for(let i = 0; i < verityState.treeImagesSelected.length; i++){
@@ -208,7 +239,44 @@ const verity = {
 					}, undefined)
 					log.trace('approve:%d', treeImage.id)
 					await this.approveTreeImage(treeImage.id)
-					this.approvedTreeImage(treeImage.id)
+					this.setApproveAllComplete(100 * ((i + 1) / total))
+				}
+			}catch(e){
+				log.warn('get error:', e)
+				this.setLoading(false);
+				this.setApproveAllProcessing(false);
+				return false
+			}
+			//push to undo list
+			this.set({
+				treeImagesUndo		: undo,
+			})
+			//finished, set status flags
+			this.setLoading(false);
+			this.setApproveAllProcessing(false);
+			//reset
+			this.setPagesLoaded(-1);
+			this.setApproveAllComplete(0);
+			this.resetSelection();
+			return true;
+			//}}}
+		},
+		/*
+		 * To undo all approved trees
+		 */
+		async undoAll(payload, state){
+			//{{{
+			log.debug('undo with state:', state)
+			this.setLoading(true);
+			this.setApproveAllProcessing(true);
+			const verityState		= state.verity;
+			const total		= verityState.treeImagesUndo.length;
+			log.debug('items:%d', verityState.treeImages.length);
+			try{
+				for(let i = 0; i < verityState.treeImagesUndo.length; i++){
+					const treeImage		= verityState.treeImagesUndo[i]
+					log.trace('undo:%d', treeImage.id)
+					await this.undoTreeImage(treeImage.id)
 					this.setApproveAllComplete(100 * ((i + 1) / total))
 				}
 			}catch(e){

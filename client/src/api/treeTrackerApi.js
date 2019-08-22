@@ -60,5 +60,22 @@ export default {
 		})
 			.then(handleResponse)
 			.catch(handleError);
+	},
+	/* 
+	 * to rollback from a wrong approving
+	 */
+	undoTreeImage(id) {
+		const query = `${baseUrl}/trees/${id}`;
+		return fetch(query, {
+			method: "PATCH",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ 
+				id: id,  
+				active: true ,
+				approved		: false,
+			})
+		})
+			.then(handleResponse)
+			.catch(handleError);
 	}
 }

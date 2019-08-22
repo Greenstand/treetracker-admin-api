@@ -47,20 +47,21 @@ storiesOf('verity', module)
 			//mock the api
 			api.getTreeImages		= (() => {
 				let counter		= 0
-				let id		= 0
+				let id		= 100
 				return function(){
 					switch(counter++){
 						case 0:{
 							return Promise.resolve(Array.from(new Array(6)).map((e,i) => ({
-									id		: id++ ,
+									id		: id-- ,
 									imageUrl		: 'http://xxx',
+									i
 							})))
 							break;
 						}
 						case 1:{
 							//last page
 							return Promise.resolve(Array.from(new Array(5)).map((e,i) => ({
-									id		: id++ ,
+									id		: id-- ,
 									imageUrl		: 'http://xxx',
 							})))
 						}
@@ -71,11 +72,9 @@ storiesOf('verity', module)
 					}
 				}
 			})()
-
 			api.approveTreeImage		= () => new Promise(r => setTimeout(() => r(true), 500))
-
 			api.rejectTreeImage		= () => new Promise(r => setTimeout(() => r(true), 500))
-
+			api.undoTreeImage		= () => new Promise(r => setTimeout(() => r(true), 500))
 			return (
 				<TestVerity/>
 			)

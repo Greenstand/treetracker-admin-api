@@ -23,6 +23,7 @@ import {MENU_WIDTH}		from './common/Menu';
 import Box		from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Snackbar from '@material-ui/core/Snackbar';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber')
 
@@ -63,7 +64,14 @@ const useStyles = makeStyles(theme => ({
 	title		: {
 		padding		: theme.spacing(2, 16),
 	},
+	snackbar		: {
+		bottom		: 20,
+	},
+	snackbarContent		: {
+		backgroundColor		: theme.palette.action.active,
+	},
 }))
+
 const TreeImageScrubber = ({getScrollContainerRef, ...props }) => {
 	log.debug('render TreeImageScrubber...')
 	log.debug('complete:', props.verityState.approveAllComplete)
@@ -366,6 +374,35 @@ const TreeImageScrubber = ({getScrollContainerRef, ...props }) => {
 				<Modal open={true}>
 					<div></div>
 				</Modal>
+			}
+			{!props.verityState.isApproveAllProcessing &&
+					props.verityState.treeImagesUndo.length > 0 &&
+				<Snackbar
+					open
+					autoHideDuration={15000}
+					ContentProps={{
+						className		: classes.snackbarContent,
+						'aria-describedby': 'snackbar-fab-message-id',
+					}}
+					message={
+						<span id="snackbar-fab-message-id">
+							You have approved {props.verityState.treeImagesUndo.length} trees
+						</span>
+					}
+					color='primary'
+					action={
+						<Button 
+							color="inherit" size="small"
+							onClick={async () => {
+								const result		= await props.verityDispatch.undoAll()
+								log.log('finished')
+							}}
+						>
+							Undo
+						</Button>
+					}
+					className={classes.snackbar}
+				/>
 			}
 		</React.Fragment>
 	)
