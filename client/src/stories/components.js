@@ -39,6 +39,7 @@ import confirm		from '../components/common/confirm';
 import alert		from '../components/common/alert';
 import notification		from '../components/common/notification';
 import Inspector from 'react-inspector';
+import TreeImage		from '../components/TreeImage';
 
 storiesOf('Form', module)
 	.add('InputLabel', () => 
@@ -359,3 +360,31 @@ storiesOf('MainFrame', module)
 			</Grid>
 		</ThemeProvider>
 	)
+
+function TestTreeImage(){
+	return (
+		<ThemeProvider theme={themeNew} >
+			<Box p={10}>
+				<TreeImage/>
+			</Box>
+		</ThemeProvider>
+	)
+}
+
+function TestTreeImageList(){
+	return (
+		<ThemeProvider theme={themeNew} >
+			<Grid spacing={4} container>
+				{Array.from(new Array(20)).map((e,i) => 
+					<Grid item>
+						<TreeImage/>
+					</Grid>
+				)}
+			</Grid>
+		</ThemeProvider>
+	)
+}
+
+storiesOf('tree', module)
+	.add('image', () => <TestTreeImage/>)
+	.add('imageList', () => <TestTreeImageList/>)
