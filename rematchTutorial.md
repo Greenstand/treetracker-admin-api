@@ -8,7 +8,7 @@ Some points in this tutorial might be somewhat subjective; if you have any sugge
 
 Redux brings many benefits, one of them is that Redux gives us a universal and simple way to let components communicate with each other. For example, say we have a web app, to build all functionality on it, we created a component tree, see the picture:
 
-<img alt="figure for redux" src="https://raw.githubusercontent.com/dadiorchen/treetracker-admin/master/client/figure-redux.png" width="600" >
+<img alt="figure for redux" src="https://raw.githubusercontent.com/Greenstand/treetracker-admin/infrastructure/rebuild/figure_redux.png" width="600" >
 
 The first one is 'R', it is also the root component. So, if component A wants to communicate with B (say click a button on A to let component B show or hide something), if we use an original way to do so, the pass of the function-call will be a nightmare, see the 'Raw' section in the picture.
 
@@ -613,7 +613,7 @@ With this approach, we can:
 
 * Separate logic code and presentation code, by doing so, we make the component code pretty simple, as you see, the new TreeImageScrubber.js is less complicated than before. 
 
-* We can test the model by writing unit test code, so, we can test almost all the core code/logic about this tree list functionality. Also, we will get benefit from it for future maintenance and bug fixing.
+* We can test the model by writing unit test code, so, we can test almost all the core code/logic about this tree list functionality. Also, we will get benefit from it for future maintenance and bug fixing. Below is a example to test model.js .
 
 <details>
 <summary>
@@ -685,6 +685,10 @@ describe('verity', () => {
 ```
 
 </details>
+
+And we can also test the component using Storybook, please check our Storybook test for this component. 
+
+<img alt='storybook example' src='https://raw.githubusercontent.com/Greenstand/treetracker-admin/infrastructure/rebuild/figure_storybook.png' width='600' >
 
 That's it, hope you enjoy coding with Rematch/Redux.
 

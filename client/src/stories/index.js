@@ -16,10 +16,10 @@ import FilterModel		from '../models/Filter';
 /*
  * Import other stories
  */
-import './progress';
-import './verity';
 import './common';
 import './components';
+import './verity';
+import './tests';
 
 
 

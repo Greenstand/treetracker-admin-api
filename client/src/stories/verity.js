@@ -29,7 +29,7 @@ function TestVerity(){
 					ref={refContainer}
 					style={{
 						width		: '100%',
-						height		: 400,
+						height		: 600,
 						overflow		: 'scroll',
 					}}
 				>

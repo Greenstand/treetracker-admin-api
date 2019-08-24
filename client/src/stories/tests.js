@@ -5,7 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Modal from '@material-ui/core/Modal';
 import * as loglevel		from 'loglevel';
 
-const log		= loglevel.getLogger('../stories/progress')
+const log		= loglevel.getLogger('../stories/tests')
 
 function TestProgress(){
 		const count		= 100
@@ -159,7 +159,7 @@ function TestProgress(){
 		)
 }
 
-storiesOf('Progress', module)
+storiesOf('tests', module)
 	.add('progress', () => 
 		<TestProgress/>
 	)

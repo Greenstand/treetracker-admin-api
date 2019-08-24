@@ -179,7 +179,7 @@ Acturally, we can pass in any string, following this convention is just for a UN
 <img alt="snapshot" src="https://raw.githubusercontent.com/dadiorchen/treetracker-admin/master/client/loglevel.gif" width="600" >
 
 
-## Guide for Material-UI
+## About Material-UI
 
 We use Material-UI (4.0 currently) to build our UI.
 
@@ -190,7 +190,7 @@ We create some basic components, such as 'alert', 'confirm', 'form', feel free t
 You can also pick the typographies and colors as you want in Storybook -> MaterialUITheme -> theme/typography/palette.
 
 
-## Guide for Storybook
+## About Storybook
 
 We use Storybook to develop/test components independently.
 
@@ -207,9 +207,13 @@ All the stories are located at /client/src/stories/
 About more usage of Storybook, check [here](https://storybook.js.org/)
 
 ## About Redux/Rematch
-We use Rematch, it is a simple shell on Redux. Contrast to vanilla Redux, Rematch has fewer boilerplate code. Check [here](https://github.com/rematch/rematch) for more detail.
+We use Rematch, it is a simple shell on Redux. Contrast to vanilla Redux, 
+Rematch has fewer boilerplate code. 
+Check [here](https://github.com/rematch/rematch) for more detail.
 
-[Here](remathTutorial.md) is a simple tutorial for people who is not familiar with Redux/Rematch.
+If you are not familiar with Redux/Rematch, please check our [simple tutorial](rematchTutorial.md), 
+there is a REAL example about how to convert a original React component to a 
+Redux-connected component, and how to test it.
 
 ## Code style guide  
 
