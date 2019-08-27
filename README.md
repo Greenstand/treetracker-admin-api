@@ -8,7 +8,6 @@ See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more in
 
 See [Contributing to The Cause](https://github.com/Greenstand/Development-Overview#contributing-to-the-cause)
 
-Add
 Please add any missing content to this readme.
 
 ## Setup
