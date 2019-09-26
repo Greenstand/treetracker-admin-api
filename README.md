@@ -8,7 +8,6 @@ See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more in
 
 See [Contributing to The Cause](https://github.com/Greenstand/Development-Overview#contributing-to-the-cause)
 
-Add
 Please add any missing content to this readme.
 
 ## Setup
@@ -40,6 +39,7 @@ We provide a development environment through docker that can run on your local e
 ### Set Up Docker
 To run docker on a local machine, you will have to install Docker first. Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM. Docker provides one for each OS by default.
 
+#### Mac
 Install Docker for Mac using homebrew, using the following command
 
 ```
@@ -50,9 +50,16 @@ You can alternatively install Docker via:  [Docker for Mac] (https://docs.docker
 
 Once Docker is installed, lauch Docker from the Applications GUI.
 
+#### Windows
 
+For most versions of Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/install/)
+For some older versions or Win10 Home: [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/). At least on one machine, to get this to work, when you get to the step to do QuickStart terminal script, instead, run:
+```
+docker-machine create default --virtualbox-no-vtx-check
+```
+then re-run the QuickStart terminal script.
 
-[Docker for Windows](https://docs.docker.com/docker-for-windows/install/)
+#### Linux
 
 To install on linux, you can run `sudo apt-get install -y docker-ce` but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
 
