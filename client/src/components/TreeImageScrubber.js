@@ -268,6 +268,7 @@ const TreeImageScrubber = ({getScrollContainerRef, ...props }) => {
 								<Grid 
 									item
 								>
+									{/* close select all function 
 									<FormControlLabel 
 										control={
 											<Checkbox 
@@ -287,6 +288,7 @@ const TreeImageScrubber = ({getScrollContainerRef, ...props }) => {
 										} 
 										label="Select All" 
 									/>
+									*/}
 									<Button 
 										style={{
 											margin		: 15,
