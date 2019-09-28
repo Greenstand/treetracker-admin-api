@@ -1,6 +1,6 @@
 import Filter		from './Filter'
 
-describe('Filter', () => {
+describe('Filter, with initial values about this filter object', () => {
 	let filter
 	
 	beforeEach(() => {
@@ -11,6 +11,9 @@ describe('Filter', () => {
 		filter.dateEnd		= '2019-07-30'
 		filter.approved		= true
 		filter.active		= true
+		filter.userId		= '1'
+		filter.deviceId		= '1'
+		filter.planterIdentifier		= '1'
 	})
 
 	it('getBackloopString() should be: ', () => {
@@ -38,6 +41,66 @@ describe('Filter', () => {
 			expect(filter.getBackloopString().indexOf('&filter[where][approved]=false') >= 0).toBe(true)
 		})
 
+		//}}}
+	})
+
+	it('getBackloopString() should match: userId=1', () => {
+		expect(filter.getBackloopString().indexOf('&filter[where][userId]=1') >= 0).toBe(true)
+	})
+
+	it('getBackloopString() should match: deviceId=1', () => {
+		expect(filter.getBackloopString().indexOf('&filter[where][deviceId]=1') >= 0).toBe(true)
+	})
+
+	it('getBackloopString() should match: planterIdentifier=1', () => {
+		expect(filter.getBackloopString().indexOf('&filter[where][planterIdentifier]=1') >= 0).toBe(true)
+	})
+
+	describe('set treeId = ""', () => {
+		//{{{
+		beforeEach(() => {
+			filter.treeId		= ''
+		})
+
+		it('backloop string should not match any [id]', () => {
+			expect(filter.getBackloopString().indexOf('[id]') < 0).toBe(true)
+		})
+		//}}}
+	})
+
+	describe('set userId = ""', () => {
+		//{{{
+		beforeEach(() => {
+			filter.userId		= ''
+		})
+
+		it('backloop string should not match any userId', () => {
+			expect(filter.getBackloopString().indexOf('userId') < 0).toBe(true)
+		})
+		//}}}
+	})
+
+	describe('set deviceId = ""', () => {
+		//{{{
+		beforeEach(() => {
+			filter.deviceId		= ''
+		})
+
+		it('backloop string should not match any deviceId', () => {
+			expect(filter.getBackloopString().indexOf('deviceId') < 0).toBe(true)
+		})
+		//}}}
+	})
+
+	describe('set planterIdentifier = ""', () => {
+		//{{{
+		beforeEach(() => {
+			filter.planterIdentifier		= ''
+		})
+
+		it('backloop string should not match any planterIdentifier', () => {
+			expect(filter.getBackloopString().indexOf('planterIdentifier') < 0).toBe(true)
+		})
 		//}}}
 	})
 

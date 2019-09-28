@@ -22,6 +22,9 @@ export default {
 			`filter[fields][timeUpdated]=true&` + 
 			`filter[fields][active]=true&` + 
 			`filter[fields][approved]=true&` +
+			`filter[fields][userId]=true&` +
+			`filter[fields][deviceId]=true&` +
+			`filter[fields][planterIdentifier]=true&` +
 			`field[imageURL]` + 
 			//the filter query
 			filter.getBackloopString();

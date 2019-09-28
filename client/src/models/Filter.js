@@ -9,6 +9,9 @@ export default class Filter{
 	dateEnd
 	approved
 	active
+	userId
+	deviceId
+	planterIdentifier
 
 	constructor(options){
 		Object.assign(this, options)
@@ -40,6 +43,18 @@ export default class Filter{
 
 		if(this.active !== undefined){
 			result		+= `&filter[where][active]=${this.active}`
+		}
+
+		if(this.userId !== undefined && this.userId.length > 0){
+			result		+= `&filter[where][userId]=${this.userId}`
+		}
+
+		if(this.deviceId !== undefined && this.deviceId.length > 0){
+			result		+= `&filter[where][deviceId]=${this.deviceId}`
+		}
+
+		if(this.planterIdentifier !== undefined && this.planterIdentifier.length > 0){
+			result		+= `&filter[where][planterIdentifier]=${this.planterIdentifier}`
 		}
 
 		return result
