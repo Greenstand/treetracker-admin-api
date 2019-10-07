@@ -16,8 +16,11 @@ import Input		from '@material-ui/core/Input';
 import InputLabel		from '@material-ui/core/InputLabel';
 import OutlinedInput		from '@material-ui/core/OutlinedInput';
 import FilterModel		from '../models/Filter'
-import dateformat		from 'dateformat'
+import dateformat		from 'dateformat';
+import moment from 'moment';
 import GSInputLabel		from './common/InputLabel';
+import DateSelector from './DateSelector'
+
 
 export const FILTER_WIDTH		= 330
 
@@ -48,7 +51,8 @@ function Filter(props){
 
 	const {classes, filter}		= props
 	//console.error('filter:%o', filter)
-	const dateStartDefault		= '1970-01-01'
+	// the date defaults may not be needed 
+	const dateStartDefault		= `${moment().subtract(10, 'days').calendar()}`
 	const dateEndDefault		= `${dateformat(Date.now(), 'yyyy-mm-dd')}`
 	const [treeId, setTreeId]		= useState(filter.treeId)
 	const [userId, setUserId]		= useState(filter.userId)
@@ -253,20 +257,10 @@ function Filter(props){
 				justify='space-between'
 			>
 				<Grid item>
-					<OutlinedInput
-						type='date'
-						className={classes.dateInput}
-						value={dateStart}
-						onChange={handleDateStartChange}
-					/>
+					<DateSelector/>
 				</Grid>
 				<Grid item>
-					<OutlinedInput
-						type='date'
-						className={classes.dateInput}
-						value={dateEnd}
-						onChange={handleDateEndChange}
-					/>
+					<DateSelector/>
 				</Grid>
 			</Grid>
 			
