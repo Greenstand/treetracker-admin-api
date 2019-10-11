@@ -61,17 +61,19 @@ function Filter(props){
 	const [status, setStatus]		= useState(filter.status)
 	const [approved, setApproved]		= useState(filter.approved)
 	const [active, setActive]		= useState(filter.active)
-	const [dateStart, setDateStart]		= useState(filter.dateStart || dateStartDefault)
-	const [dateEnd, setDateEnd]		= useState(filter.dateEnd || dateEndDefault)
+	const [dateStart, handleStartDate]		= useState(dateStartDefault || new Date())
+	const [dateEnd, handleEndDate]		= useState(dateEndDefault || new Date())
+    // const [selectedDate, handleDateChange] = useState(new Date());
+
 	//console.error('the tree id:%d', treeId)
 
-	function handleDateStartChange(e){
-		setDateStart(e.target.value || dateStartDefault)
-	}
+	// function handleDateStartChange(e){
+	// 	setDateStart(e.target.value || dateStartDefault)
+	// }
 
-	function handleDateEndChange(e){
-		setDateEnd(e.target.value || dateEndDefault)
-	}
+	// function handleDateEndChange(e){
+	// 	setDateEnd(e.target.value || dateEndDefault)
+	// }
 
 	function handleSubmit(){
 		const filter		= new FilterModel()
@@ -257,10 +259,16 @@ function Filter(props){
 				justify='space-between'
 			>
 				<Grid item>
-					<DateSelector/>
+					<DateSelector
+					dateValue = {dateStart}
+					dateOnChange = {handleStartDate}
+					/>
 				</Grid>
 				<Grid item>
-					<DateSelector/>
+					<DateSelector
+					dateValue = {dateEnd}
+					dateOnChange={handleEndDate}
+					/>
 				</Grid>
 			</Grid>
 			
