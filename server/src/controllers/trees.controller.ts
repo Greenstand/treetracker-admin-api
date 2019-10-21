@@ -54,7 +54,7 @@ export class TreesController {
   async find(
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
   ): Promise<Trees[]> {
-    console.log(filter);
+    console.log(filter, filter?filter.where:null);
     return await this.treesRepository.find(filter);
   }
 
@@ -70,6 +70,30 @@ export class TreesController {
     return await this.treesRepository.findById(id);
   }
 
+  // this route is for finding trees within a radius of a lat/lon point
+  @get('/trees/near', {
+    responses: {
+      '200': {
+        description: 'Find trees near this tree',
+        content: {
+        'application/json': {
+          schema: {type: 'array', items: {'x-ts-type': Trees}},
+        },
+        },
+      },
+    },
+  })
+  async near(@param.query.number('lat') lat :number, 
+             @param.query.number('lon') lon :number,
+             @param.query.number('radius') radius? :number,
+             @param.query.number('limit') limit? :number) : Promise<Trees[]> {
+    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}) LIMIT ${limit?limit:null}`;
+    console.log(`near query: ${query}`);
+    return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
+    //return <Promise<Trees[]>> await this.treesRepository.execute("SELECT lat,lon FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(-3.269201666666667, 36.62356166666667), 100)", [])
+  }
+  // execute commands for postgress seen here: https://github.com/strongloop/loopback-connector-postgresql/blob/master/lib/postgresql.js
+  
   @patch('/trees/{id}', {
     responses: {
       '204': {
