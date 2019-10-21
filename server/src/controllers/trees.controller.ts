@@ -72,11 +72,10 @@ export class TreesController {
 
   // this route is for finding trees within a radius of a lat/lon point
   // issues:
-  // - i'd rather have this as part of api to just /trees, maybe if you add it in the where clause?
-  // - i'd rather have the default values show up in the api, but when I tried putting the default after : it failed
+  // - i'd rather have this as part of api to just /trees, maybe if you add a where clause?
   // - is it better to have the params as a single object or is it fine to have them separate as they are now?
   // - could/should i just reuse the filter object for the limit? fyi, it was really slow without a limit
-  // - how do i add documentation to the radius param to say it is in meters?
+  // good test point: 6.5769, 3.27488
   @get('/trees/near', {
     responses: {
       '200': {
@@ -91,12 +90,26 @@ export class TreesController {
   })
   async near(@param.query.number('lat') lat :number, 
              @param.query.number('lon') lon :number,
-             @param.query.number('radius') radius? :number,
-             @param.query.number('limit') limit? :number) : Promise<Trees[]> {
-    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}) LIMIT ${limit?limit:null}`;
+             //@param.query.number('radius') radius? :number,
+             @param({
+              name: 'radius',
+              in: 'query',
+              required: false,
+              schema: {type: 'number'},
+              description: 'measured in meters (default: 100 meters)'
+             }) radius :number,
+             //@param.query.number('limit') limit? :number
+             @param({
+              name: 'limit',
+              in: 'query',
+              required: false,
+              schema: {type: 'number'},
+              description: 'default is 100'
+             }) limit :number,
+             ) : Promise<Trees[]> {
+    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
     console.log(`near query: ${query}`);
     return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
-    //return <Promise<Trees[]>> await this.treesRepository.execute("SELECT lat,lon FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(-3.269201666666667, 36.62356166666667), 100)", [])
   }
   // execute commands for postgress seen here: https://github.com/strongloop/loopback-connector-postgresql/blob/master/lib/postgresql.js
   
