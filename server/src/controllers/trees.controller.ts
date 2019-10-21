@@ -71,10 +71,16 @@ export class TreesController {
   }
 
   // this route is for finding trees within a radius of a lat/lon point
+  // issues:
+  // - i'd rather have this as part of api to just /trees, maybe if you add it in the where clause?
+  // - i'd rather have the default values show up in the api, but when I tried putting the default after : it failed
+  // - is it better to have the params as a single object or is it fine to have them separate as they are now?
+  // - could/should i just reuse the filter object for the limit? fyi, it was really slow without a limit
+  // - how do i add documentation to the radius param to say it is in meters?
   @get('/trees/near', {
     responses: {
       '200': {
-        description: 'Find trees near this tree',
+        description: 'Find trees near a lat/lon with a radius in meters',
         content: {
         'application/json': {
           schema: {type: 'array', items: {'x-ts-type': Trees}},
