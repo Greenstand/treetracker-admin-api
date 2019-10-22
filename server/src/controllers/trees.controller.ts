@@ -71,11 +71,7 @@ export class TreesController {
   }
 
   // this route is for finding trees within a radius of a lat/lon point
-  // issues:
-  // - i'd rather have this as part of api to just /trees, maybe if you add a where clause?
-  // - is it better to have the params as a single object or is it fine to have them separate as they are now?
-  // - could/should i just reuse the filter object for the limit? fyi, it was really slow without a limit
-  // good test point: 6.5769, 3.27488
+  // execute commands for postgress seen here: https://github.com/strongloop/loopback-connector-postgresql/blob/master/lib/postgresql.js
   @get('/trees/near', {
     responses: {
       '200': {
@@ -90,7 +86,6 @@ export class TreesController {
   })
   async near(@param.query.number('lat') lat :number, 
              @param.query.number('lon') lon :number,
-             //@param.query.number('radius') radius? :number,
              @param({
               name: 'radius',
               in: 'query',
@@ -98,7 +93,6 @@ export class TreesController {
               schema: {type: 'number'},
               description: 'measured in meters (default: 100 meters)'
              }) radius :number,
-             //@param.query.number('limit') limit? :number
              @param({
               name: 'limit',
               in: 'query',
@@ -111,7 +105,6 @@ export class TreesController {
     console.log(`near query: ${query}`);
     return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
   }
-  // execute commands for postgress seen here: https://github.com/strongloop/loopback-connector-postgresql/blob/master/lib/postgresql.js
   
   @patch('/trees/{id}', {
     responses: {
