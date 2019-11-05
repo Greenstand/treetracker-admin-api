@@ -61,6 +61,8 @@ docker-machine create default --virtualbox-no-vtx-check
 ```
 then re-run the QuickStart terminal script.
 
+NOTE: if you use Docker Toolbox, check the IP address in the output of the QuickStart terminal script. You will use this IP address later instead of localhost.
+
 #### Linux
 
 To install on linux, you can run `sudo apt-get install -y docker-ce` but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
@@ -85,6 +87,8 @@ Run the setup script.  This script installs node modules, builds docker containe
 You can now view the treetracker admin at http://localhost:8080.
 
 *note: If you try to access the site on port 3001 you will recieve a CORS error*
+
+*note: If you used Docker Toolbox, you may need to use the IP address it reported, such as http://192.168.99.100:8080*
 
 It may take a few seconds for the web and api servers to come up.  You can monitor them using the docker logs commands as:
 
