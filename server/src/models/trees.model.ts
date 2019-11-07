@@ -98,14 +98,6 @@ export class Trees extends Entity {
   @property({
     type: String,
     required: false,
-    length: 200,
-    postgresql: {"columnName":"photo_url","dataType":"character varying","dataLength":200,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
-  })
-  photoUrl?: String;
-
-  @property({
-    type: String,
-    required: false,
     postgresql: {"columnName":"image_url","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
   })
   imageUrl?: String;
