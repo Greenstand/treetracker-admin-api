@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'users'}}})
-export class Users extends Entity {
+@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'planter'}}})
+export class Planter extends Entity {
   @property({
     type: Number,
     required: true,
@@ -75,13 +75,13 @@ export class Users extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<Users>) {
+  constructor(data?: Partial<Planter>) {
     super(data);
   }
 }
 
-export interface UsersRelations {
+export interface PlanterRelations {
   // describe navigational properties here
 }
 
-export type UsersWithRelations = Users & UsersRelations;
+export type PlanterWithRelations = Planter & PlanterRelations;

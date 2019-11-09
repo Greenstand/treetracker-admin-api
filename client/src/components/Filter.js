@@ -51,7 +51,7 @@ function Filter(props){
 	const dateStartDefault		= '1970-01-01'
 	const dateEndDefault		= `${dateformat(Date.now(), 'yyyy-mm-dd')}`
 	const [treeId, setTreeId]		= useState(filter.treeId)
-	const [userId, setUserId]		= useState(filter.userId)
+	const [planterId, setPlanterId]		= useState(filter.planterId)
 	const [deviceId, setDeviceId]		= useState(filter.deviceId)
 	const [planterIdentifier, setPlanterIdentifier]		= useState(filter.planterIdentifier)
 	const [status, setStatus]		= useState(filter.status)
@@ -72,7 +72,7 @@ function Filter(props){
 	function handleSubmit(){
 		const filter		= new FilterModel()
 		filter.treeId		= treeId
-		filter.userId		= userId
+		filter.planterId		= planterId
 		filter.deviceId		= deviceId
 		filter.planterIdentifier		= planterIdentifier
 		filter.status		= status
@@ -137,14 +137,14 @@ function Filter(props){
 				value={treeId}
 				onChange={e => setTreeId(e.target.value)}
 			/>
-			<GSInputLabel text='User Id' />
+			<GSInputLabel text='Planter Id' />
 			<TextField
-				placeholder='user id'
+				placeholder='planter id'
 				InputLabelProps={{
 					shrink: true,
 				}}
-				value={userId}
-				onChange={e => setUserId(e.target.value)}
+				value={planterId}
+				onChange={e => setPlanterId(e.target.value)}
 			/>
 			<GSInputLabel text='Device Id' />
 			<TextField

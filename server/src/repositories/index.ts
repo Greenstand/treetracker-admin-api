@@ -1,2 +1,2 @@
 export * from './trees.repository';
-export * from './users.repository';
+export * from './planter.repository';

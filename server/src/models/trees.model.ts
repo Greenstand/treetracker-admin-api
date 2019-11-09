@@ -51,9 +51,9 @@ export class Trees extends Entity {
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"user_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+    postgresql: {"columnName":"planter_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
   })
-  userId?: Number;
+  planterId?: Number;
 
   @property({
     type: Number,
