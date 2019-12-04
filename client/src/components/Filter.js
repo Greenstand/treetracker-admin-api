@@ -68,6 +68,19 @@ function Filter (props) {
     setDateEnd(e.target.value || dateEndDefault)
   }
 
+  function handleClear () {
+    const filter = new FilterModel()
+    filter.treeId	= ''
+    filter.status	= ''
+    filter.dateStart = ''
+    filter.dateEnd = ''
+    props.onSubmit && props.onSubmit(filter)
+    setTreeId('')
+    setStatus('All')
+    setDateStart(dateStartDefault)
+    setDateEnd(dateEndDefault)
+  }
+
   function handleSubmit () {
     const filter		= new FilterModel()
     filter.treeId		= treeId
@@ -76,10 +89,6 @@ function Filter (props) {
     filter.dateEnd		= dateEnd
     props.onSubmit && props.onSubmit(filter)
   }
-
-  function handleClear () {
-		setTreeId('')
-	}
 
   return (
     <Drawer
@@ -124,7 +133,7 @@ function Filter (props) {
       <Button
         variant='outlined'
         color='primary'
-        onclick={handleClear}
+        onClick={handleClear}
       >
         Clear Filters
       </Button>
@@ -158,7 +167,7 @@ function Filter (props) {
           >
             {name}
           </MenuItem>
-        )} 
+        )}
       </TextField>
       <FormControl
         variant='outlined'
@@ -169,7 +178,7 @@ function Filter (props) {
         >
 					TIME CREATED
         </InputLabel>
-        <Grid 
+        <Grid
           container
           justify='space-between'
           style={{
