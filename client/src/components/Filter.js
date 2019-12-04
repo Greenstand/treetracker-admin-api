@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-/* eslint-disable no-tabs */
 import React, {useState} from 'react'
 import Drawer from '@material-ui/core/Drawer';
 import compose from 'recompose/compose'
