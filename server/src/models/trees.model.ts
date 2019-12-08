@@ -47,13 +47,15 @@ export class Trees extends Entity {
   })
   causeOfDeathId?: Number;
 
+	//Sun Dec  8 16:09:12 CST 2019
+	//change from user_id to planter_id 
   @property({
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"user_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+    postgresql: {"columnName":"planter_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
   })
-  userId?: Number;
+  planterId?: Number;
 
   @property({
     type: Number,

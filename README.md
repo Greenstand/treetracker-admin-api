@@ -161,7 +161,70 @@ Useful scripts are contained in /dev/scripts. Their uses are described here. Scr
 **docker-remove-containers.sh** clear out *all* docker containers
 
 
-## Code style guide
+## How to log
+
+We use loglevel for logging, with some convention. Using loglevel, we will be able to open/close a single file's log by chaning the level of log on the fly, even in production env. For more information about loglevel, check [here](https://github.com/pimterry/loglevel).
+
+The default of log level is set in the file: /src/init.js
+```
+log.setDefaultLevel('info');
+```
+
+To use loglevel in js file, we recommend following this convention:
+
+```
+import * as loglevel from 'loglevel'
+
+const log = loglevel.getLogger('../components/TreeImageScrubber')
+
+... ...
+
+	log.debug('render TreeImageScrubber...')
+```
+
+The convention is: call the loglevel.getLogger() function with argument of 'the path to current file'. In above example, the js file is: /src/components/TreeImageScrumbber.js, so pass the path string: '../components/TreeImageScrubber' in, just like what we do in 'import' sentence, but the path just points to itself.
+
+Acturally, we can pass in any string, following this convention is just for a UNIQUE key for the log object, now we can set the log level in browser to open/close log. To do so, open DevTools -> application -> localstorage -> add a key: 'loglevel:[the path]' and value: [the log level] (e.g. loglevel:../components/TreeImageScrubber  ->  DEBUG )
+<img alt="snapshot" src="https://raw.githubusercontent.com/dadiorchen/treetracker-admin/master/client/loglevel.gif" width="600" >
+
+
+## About Material-UI
+
+We use Material-UI (4.0 currently) to build our UI.
+
+We made some custom by setting the theme of Material-UI to fit our UI design. The customized theme file is located at /client/src/components/common/theme.js. If you find components do not work as you expect, please check section: overrides and props in theme, we override some default styles and behaviors.
+
+We create some basic components, such as 'alert', 'confirm', 'form', feel free to pick what you want or copy the sample code. You can find them in our Storybook components gallery.
+
+You can also pick the typographies and colors as you want in Storybook -> MaterialUITheme -> theme/typography/palette.
+
+
+## About Storybook
+
+We use Storybook to develop/test components independently.
+
+Run the following command to start Storybook:
+
+```
+npm run storybook
+```
+
+Visit this URL in the browser: http://localhost:9009
+
+All the stories are located at /client/src/stories/
+
+About more usage of Storybook, check [here](https://storybook.js.org/)
+
+## About Redux/Rematch
+We use Rematch, it is a simple shell on Redux. Contrast to vanilla Redux, 
+Rematch has fewer boilerplate code. 
+Check [here](https://github.com/rematch/rematch) for more detail.
+
+If you are not familiar with Redux/Rematch, please check our [simple tutorial](rematchTutorial.md), 
+there is a REAL example about how to convert a original React component to a 
+Redux-connected component, and how to test it.
+
+## Code style guide  
 
 **Indention** 2 Spaces for indentation
 
