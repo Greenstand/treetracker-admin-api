@@ -11,7 +11,7 @@ describe('Filter, with initial values about this filter object', () => {
 		filter.dateEnd		= '2019-07-30'
 		filter.approved		= true
 		filter.active		= true
-		filter.userId		= '1'
+		filter.planterId		= '1'
 		filter.deviceId		= '1'
 		filter.planterIdentifier		= '1'
 	})
@@ -44,8 +44,8 @@ describe('Filter, with initial values about this filter object', () => {
 		//}}}
 	})
 
-	it('getBackloopString() should match: userId=1', () => {
-		expect(filter.getBackloopString().indexOf('&filter[where][userId]=1') >= 0).toBe(true)
+	it('getBackloopString() should match: planterId=1', () => {
+		expect(filter.getBackloopString().indexOf('&filter[where][planterId]=1') >= 0).toBe(true)
 	})
 
 	it('getBackloopString() should match: deviceId=1', () => {
@@ -68,14 +68,14 @@ describe('Filter, with initial values about this filter object', () => {
 		//}}}
 	})
 
-	describe('set userId = ""', () => {
+	describe('set planterId = ""', () => {
 		//{{{
 		beforeEach(() => {
-			filter.userId		= ''
+			filter.planterId		= ''
 		})
 
-		it('backloop string should not match any userId', () => {
-			expect(filter.getBackloopString().indexOf('userId') < 0).toBe(true)
+		it('backloop string should not match any planterId', () => {
+			expect(filter.getBackloopString().indexOf('planterId') < 0).toBe(true)
 		})
 		//}}}
 	})

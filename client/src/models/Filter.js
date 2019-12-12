@@ -9,7 +9,7 @@ export default class Filter{
 	dateEnd
 	approved
 	active
-	userId
+	planterId
 	deviceId
 	planterIdentifier
 
@@ -45,8 +45,8 @@ export default class Filter{
 			result		+= `&filter[where][active]=${this.active}`
 		}
 
-		if(this.userId !== undefined && this.userId.length > 0){
-			result		+= `&filter[where][userId]=${this.userId}`
+		if(this.planterId !== undefined && this.planterId.length > 0){
+			result		+= `&filter[where][planterId]=${this.planterId}`
 		}
 
 		if(this.deviceId !== undefined && this.deviceId.length > 0){

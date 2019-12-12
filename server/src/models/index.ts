@@ -1,2 +1,2 @@
 export * from './trees.model';
-export * from './users.model';
+export * from './planter.model';
