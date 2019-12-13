@@ -164,6 +164,8 @@ const TreeImageScrubber = ({getScrollContainerRef, ...props }) => {
 						>
 							<CardMedia className={classes.cardMedia} image={tree.imageUrl} />
 							<Typography variant='body2' gutterBottom>Tree# {tree.id}</Typography>
+							<Typography variant='body2' gutterBottom>Planter# {tree.planterId}</Typography>
+							<Typography variant='body2' gutterBottom>Device# {tree.deviceId}</Typography>
 						</CardContent>
 						<CardActions>
 							<Button
