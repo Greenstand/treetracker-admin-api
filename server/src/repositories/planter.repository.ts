@@ -1,16 +1,16 @@
 import {DefaultCrudRepository} from '@loopback/repository';
-import {Users, UsersRelations} from '../models';
+import {Planter, PlanterRelations} from '../models';
 import {TreetrackerDataSource} from '../datasources';
 import {inject} from '@loopback/core';
 
-export class UsersRepository extends DefaultCrudRepository<
-  Users,
-  typeof Users.prototype.id,
-  UsersRelations
+export class PlanterRepository extends DefaultCrudRepository<
+  Planter,
+  typeof Planter.prototype.id,
+  PlanterRelations
 > {
   constructor(
     @inject('datasources.treetracker') dataSource: TreetrackerDataSource,
   ) {
-    super(Users, dataSource);
+    super(Planter, dataSource);
   }
 }

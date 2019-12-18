@@ -5,6 +5,11 @@ import React		from 'react'
 
 export default function IconLogo(){
 	return (
-		<img src={require('./images/logo.png')} />
+		<img 
+			style={{
+				maxWidth		: 149,
+				maxHeight		: 32,
+			}}
+			src={require('./images/logo.png')} />
 	)
 }

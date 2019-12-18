@@ -14,9 +14,7 @@ import TreeTable from './TreeTable';
 const Trees = props => ({
   render () {
     return (
-      <div className="trees">
-        <TreeTable />
-      </div>
+			<TreeTable />
     )
   }
 })

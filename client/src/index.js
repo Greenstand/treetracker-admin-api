@@ -1,3 +1,4 @@
+import './init'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
@@ -6,8 +7,10 @@ import 'typeface-roboto'
 import { init } from '@rematch/core'
 import * as models from './models'
 import './index.css'
+import * as log from 'loglevel';
 
-const store = init({ models })
+log.info('init redux...');
+const store = init({ models });
 
 ReactDOM.render(
   <Provider store={store}>

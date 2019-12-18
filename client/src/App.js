@@ -1,46 +1,8 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import AppFrame from './components/AppFrame'
-
-export const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#517147'
-    }
-  },
-	/* No better way to adjust the table column width, so have to set css here*/
-	overrides: {
-    MUIDataTableHeadCell: {
-      root: {
-        '&:nth-child(1)': {
-          width: 20
-        },
-        '&:nth-child(2)': {
-          width: 30
-        },
-        '&:nth-child(3)': {
-          width: 30
-        },
-        '&:nth-child(4)': {
-          width: 30
-        },
-        '&:nth-child(5)': {
-          width: 30
-        },
-        '&:nth-child(6)': {
-          width: 30
-        },
-        '&:nth-child(7)': {
-          width: 30
-        },
-        '&:nth-child(8)': {
-          width: 200, 
-        },
-      }
-    }
-  }
-})
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import {ThemeProvider}		from '@material-ui/styles';
+import MainFrame		from './components/MainFrame';
+import theme		from './components/common/theme';
 
 class App extends Component {
   componentDidMount () {
@@ -51,9 +13,9 @@ class App extends Component {
 
   render () {
     return (
-      <MuiThemeProvider theme={theme}>
-        <AppFrame />
-      </MuiThemeProvider>
+      <ThemeProvider theme={theme}>
+        <MainFrame />
+      </ThemeProvider>
     )
   }
 }

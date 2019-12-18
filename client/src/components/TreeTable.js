@@ -3,9 +3,10 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
-import dateformat		from 'dateformat'
-import Filter		from './Filter'
-import FilterModel		from '../models/Filter'
+import dateformat		from 'dateformat';
+import Filter, {FILTER_WIDTH}		from './Filter';
+import FilterModel		from '../models/Filter';
+import {MENU_WIDTH}		from './common/Menu';
 
 import Drawer from '@material-ui/core/Drawer';
 
@@ -20,8 +21,7 @@ const styles = () => ({
     overflowX: 'auto',
   },
 	myTable		: {
-		/*width		: 900,*/
-		width		: 'calc(100% - 350px)',
+		width		: `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px)`,
 	},
   locationCol: {
     width: '270px'
