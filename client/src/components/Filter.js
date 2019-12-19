@@ -44,16 +44,7 @@ const styles = theme => {
 	},
 }}
 
-function Filter (props) {
-  const { classes, filter }		= props
-  console.error('filter:%o', filter)
-  const dateStartDefault		= '1970-01-01'
-  const dateEndDefault		= `${dateformat(Date.now(), 'yyyy-mm-dd')}`
-  const [treeId, setTreeId]		= useState(filter.treeId)
-  const [status, setStatus]		= useState(filter.status)
-  const [dateStart, setDateStart]		= useState(filter.dateStart || dateStartDefault)
-  const [dateEnd, setDateEnd]		= useState(filter.dateEnd || dateEndDefault)
-  console.error('the tree id:%d', treeId)
+function Filter(props){
 
 	const {classes, filter}		= props
 	//console.error('filter:%o', filter)
@@ -70,22 +61,27 @@ function Filter (props) {
 	const [dateEnd, setDateEnd]		= useState(filter.dateEnd || dateEndDefault)
 	//console.error('the tree id:%d', treeId)
 
-  function handleDateEndChange (e) {
-    setDateEnd(e.target.value || dateEndDefault)
-  }
+	function handleDateStartChange(e){
+		setDateStart(e.target.value || dateStartDefault)
+	}
 
-  function handleClear () {
-    const filter = new FilterModel()
-    filter.treeId	= ''
-    filter.status	= ''
-    filter.dateStart = ''
-    filter.dateEnd = ''
-    props.onSubmit && props.onSubmit(filter)
-    setTreeId('')
-    setStatus('All')
-    setDateStart(dateStartDefault)
-    setDateEnd(dateEndDefault)
-  }
+	function handleDateEndChange(e){
+		setDateEnd(e.target.value || dateEndDefault)
+	}
+
+	function handleClear () {
+		const filter = new FilterModel()
+		setTreeId('')
+		setPlanterId('')
+		setDeviceId('')
+		setPlanterIdentifier('')
+		setStatus('All')
+		setDateStart(dateStartDefault)
+		setDateEnd(dateEndDefault)
+		setApproved()
+		setActive()
+		props.onSubmit && props.onSubmit(filter)
+	  }
 
 	function handleSubmit(){
 		const filter		= new FilterModel()
@@ -145,6 +141,13 @@ function Filter (props) {
 				onClick={handleSubmit}
 			>
 				Apply Filters
+			</Button>
+			<Button
+				variant='outlined'
+				color='primary'
+				onClick={handleClear}
+			>
+				Clear Filters
 			</Button>
 			<GSInputLabel text='Tree Id' />
 			<TextField
