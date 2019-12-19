@@ -53,6 +53,8 @@ storiesOf('verity', module)
 						case 0:{
 							return Promise.resolve(Array.from(new Array(6)).map((e,i) => ({
 									id		: id-- ,
+									planterId		: 2,
+									deviceId		: 3,
 									imageUrl		: 'http://xxx',
 									i
 							})))

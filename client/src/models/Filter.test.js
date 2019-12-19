@@ -74,8 +74,9 @@ describe('Filter, with initial values about this filter object', () => {
 			filter.planterId		= ''
 		})
 
-		it('backloop string should not match any planterId', () => {
-			expect(filter.getBackloopString().indexOf('planterId') < 0).toBe(true)
+		it('backloop string should not match any [planterId]', () => {
+			console.error('the where:', filter.getBackloopString())
+			expect(filter.getBackloopString().indexOf('[planterId]') < 0).toBe(true)
 		})
 		//}}}
 	})
