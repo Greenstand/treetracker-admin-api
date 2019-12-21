@@ -75,6 +75,9 @@ const useStyles = makeStyles(theme => ({
   cardActions: {
     display: 'flex',
     justifyContent: 'space-between'
+  },
+  button: {
+    marginRight: '8px'
   }
 }));
 
@@ -184,6 +187,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             <CardActions className={classes.cardActions}>
               <Box>
                 <Button
+                  className={classes.button}
                   color='secondary'
                   size='small'
                   onClick={e => {
