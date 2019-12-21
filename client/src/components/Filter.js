@@ -18,6 +18,7 @@ import OutlinedInput		from '@material-ui/core/OutlinedInput';
 import FilterModel		from '../models/Filter'
 import dateformat		from 'dateformat'
 import GSInputLabel		from './common/InputLabel';
+import classNames from 'classnames'
 
 export const FILTER_WIDTH		= 330
 
@@ -42,10 +43,13 @@ const styles = theme => {
 		width		: 158,
 		fontSize		: 14,
 	},
+	button : {
+		marginTop: 5,
+	},
 }}
 
 function Filter(props){
-
+	console.log(styles);
 	const {classes, filter}		= props
 	//console.error('filter:%o', filter)
 	const dateStartDefault		= '1970-01-01'
@@ -146,6 +150,7 @@ function Filter(props){
 				variant='outlined'
 				color='primary'
 				onClick={handleClear}
+				className={classNames(classes.button)}
 			>
 				Clear Filters
 			</Button>
