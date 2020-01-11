@@ -1,55 +1,12 @@
-{
-  "name": "treetracker-admin",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.3.0",
-    "@material-ui/icons": "^4.2.1",
-    "@material-ui/styles": "^4.3.0",
-    "@material-ui/system": "^4.3.2",
-    "@rematch/core": "*",
-    "axios": "*",
-    "classnames": "*",
-    "d3-selection": "^1.4.0",
-    "dateformat": "*",
-    "geocoder": "*",
-    "i": "*",
-    "import": "*",
-    "install": "*",
-    "loglevel": "^1.6.3",
-    "mdi-material-ui": "*",
-    "mdi-svg": "*",
-    "mui-datatables": "*",
-    "npm": "*",
-    "prop-types": "*",
-    "react": "*",
-    "react-dom": "*",
-    "react-infinite": "*",
-    "react-redux": "*",
-    "react-scripts": "*",
-    "recompose": "*",
-    "typeface-roboto": "*",
-    "eslint": "^6.1.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom --setupTestFrameworkScriptFile=./src/testSetup.js",
-    "eject": "react-scripts eject",
-    "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "devDependencies": {
-    "@storybook/addon-actions": "^5.1.9",
-    "@storybook/addon-links": "^5.1.9",
-    "@storybook/addons": "^5.1.9",
-    "@storybook/react": "^5.1.9",
-    "react-inspector": "^3.0.2"
-  }
-}
+<form className={classes.container} noValidate>
+  <TextField
+    id="date"
+    label="Birthday"
+    type="date"
+    defaultValue="2017-05-24"
+    className={classes.textField}
+    InputLabelProps={{
+      shrink: true,
+    }}
+  />
+</form>
