@@ -65,11 +65,13 @@ function Filter(props) {
   const [dateEnd, setDateEnd] = useState(filter.dateEnd || dateEndDefault);
 
   const handleDateStartChange = date => {
-    setDateStart(date);
+    const formattedDate = dateformat(date, 'yyyy-mm-dd');
+    setDateStart(formattedDate);
   };
 
   const handleDateEndChange = date => {
-    setDateEnd(date);
+    const formattedDate = dateformat(date, 'yyyy-mm-dd');
+    setDateEnd(formattedDate);
   };
 
   function handleClear() {
