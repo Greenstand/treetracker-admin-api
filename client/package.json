@@ -3,15 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@date-io/date-fns": "^1.3.13",
     "@material-ui/core": "^4.3.0",
     "@material-ui/icons": "^4.2.1",
+    "@material-ui/pickers": "^3.2.8",
     "@material-ui/styles": "^4.3.0",
     "@material-ui/system": "^4.3.2",
     "@rematch/core": "*",
     "axios": "*",
     "classnames": "*",
     "d3-selection": "^1.4.0",
+    "date-fns": "^2.0.0-beta.5",
     "dateformat": "*",
+    "eslint": "^6.1.0",
     "geocoder": "*",
     "i": "*",
     "import": "*",
@@ -28,8 +32,7 @@
     "react-redux": "*",
     "react-scripts": "*",
     "recompose": "*",
-    "typeface-roboto": "*",
-    "eslint": "^6.1.0"
+    "typeface-roboto": "*"
   },
   "scripts": {
     "start": "react-scripts start",
