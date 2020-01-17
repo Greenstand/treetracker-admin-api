@@ -328,6 +328,39 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                     onClick={async () => {
                       if (
                         window.confirm(
+                          `Are you sure to reject these ${props.verityState.treeImagesSelected.length} trees?`
+                        )
+                      ) {
+                        const result = await props.verityDispatch.rejectAll();
+                        if (result) {
+                          //if all trees were rejected, then, load more
+                          if (
+                            props.verityState.treeImagesSelected.length ===
+                            props.verityState.treeImages.length
+                          ) {
+                            log.debug('all trees rejected, reload');
+                            props.verityDispatch.loadMoreTreeImages();
+                          }
+                        } else {
+                          window.alert('sorry, failed to reject some picture');
+                        }
+                      }
+                    }}
+                  >
+                    Reject all
+                    {props.verityState.treeImagesSelected.length > 0
+                      ? ` ${props.verityState.treeImagesSelected.length} trees`
+                      : ''}
+                  </Button>
+                  <Button
+                    style={{
+                      margin: 15
+                    }}
+                    color='primary'
+                    disabled={props.verityState.treeImagesSelected.length <= 0}
+                    onClick={async () => {
+                      if (
+                        window.confirm(
                           `Are you sure to approve these ${props.verityState.treeImagesSelected.length} trees?`
                         )
                       ) {
@@ -409,7 +442,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           <div></div>
         </Modal>
       )}
-      {!props.verityState.isApproveAllProcessing &&
+      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing && 
         props.verityState.treeImagesUndo.length > 0 && (
           <Snackbar
             open
@@ -420,7 +453,8 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             }}
             message={
               <span id='snackbar-fab-message-id'>
-                You have approved {props.verityState.treeImagesUndo.length}{' '}
+                You have { props.verityState.isBulkApproving ? ' approved ' : ' rejected '}  
+                {props.verityState.treeImagesUndo.length}{' '}
                 trees
               </span>
             }
