@@ -48,8 +48,8 @@ const styles = theme => {
 
 function Filter(props) {
   const { classes, filter } = props;
-  const dateStartDefault = '1970-01-01';
-  const dateEndDefault = `${dateformat(Date.now(), 'yyyy-mm-dd')}`;
+  const dateStartDefault = null;
+  const dateEndDefault = null;
   const [treeId, setTreeId] = useState(filter.treeId);
   const [planterId, setPlanterId] = useState(filter.planterId);
   const [deviceId, setDeviceId] = useState(filter.deviceId);
@@ -65,13 +65,15 @@ function Filter(props) {
   const [dateEnd, setDateEnd] = useState(filter.dateEnd || dateEndDefault);
 
   const handleDateStartChange = date => {
-    const formattedDate = dateformat(date, 'yyyy-mm-dd');
-    setDateStart(formattedDate);
+    setDateStart(date);
   };
 
   const handleDateEndChange = date => {
-    const formattedDate = dateformat(date, 'yyyy-mm-dd');
-    setDateEnd(formattedDate);
+    setDateEnd(date);
+  };
+
+  const formatDate = date => {
+    return dateformat(date, 'yyyy-mm-dd');
   };
 
   function handleClear() {
@@ -95,8 +97,8 @@ function Filter(props) {
     filter.deviceId = deviceId;
     filter.planterIdentifier = planterIdentifier;
     filter.status = status;
-    filter.dateStart = dateStart;
-    filter.dateEnd = dateEnd;
+    filter.dateStart = formatDate(dateStart);
+    filter.dateEnd = formatDate(dateEnd);
     filter.approved = approved;
     filter.active = active;
     props.onSubmit && props.onSubmit(filter);
