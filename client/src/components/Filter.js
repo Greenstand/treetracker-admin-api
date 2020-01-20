@@ -256,12 +256,10 @@ function Filter(props) {
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Grid container justify='space-between'>
           <KeyboardDatePicker
-            disableToolbar
-            variant='inline'
-            format='MM/dd/yyyy'
             margin='normal'
             id='start-date-picker'
             label='Start Date'
+            format='MM/dd/yyyy'
             value={dateStart}
             onChange={handleDateStartChange}
             KeyboardButtonProps={{
@@ -270,12 +268,10 @@ function Filter(props) {
             className={classes.dateInput}
           />
           <KeyboardDatePicker
-            disableToolbar
-            variant='inline'
-            format='MM/dd/yyyy'
             margin='normal'
             id='end-date-picker'
             label='End Date'
+            format='MM/dd/yyyy'
             value={dateEnd}
             onChange={handleDateEndChange}
             KeyboardButtonProps={{
