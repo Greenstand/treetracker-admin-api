@@ -239,6 +239,10 @@ describe('verity', () => {
 					beforeEach(async () => {
 						await store.dispatch.verity.approveAll();
 					})
+					
+					it('isBulkApproving === true', () => {
+						expect(store.getState().verity.isBulkApproving).toBe(true)
+					})
 
 					it('tree images should be 7', () => {
 						expect(store.getState().verity.treeImages).toHaveLength(7)
@@ -262,6 +266,62 @@ describe('verity', () => {
 							await store.dispatch.verity.undoAll()
 						})
 
+						it('tree list should restore to 10', () => {
+							expect(store.getState().verity.treeImages).toHaveLength(10)
+						})
+
+						it('isBulkApproving === false', () => {
+							expect(store.getState().verity.isBulkApproving).toBe(false)
+						})
+	
+
+						it('tree list order should be correct', () => {
+							expect(store.getState().verity.treeImages.map(tree => tree.id)).toMatchObject(
+								[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+							)
+						})
+						//}}}
+					})
+
+					//}}}
+				})
+
+				describe('rejectAll()', () => {
+					//{{{
+					beforeEach(async () => {
+						await store.dispatch.verity.rejectAll();
+					})
+
+					it('isBulkRejecting === true', () => {
+						expect(store.getState().verity.isBulkRejecting).toBe(true)
+					})
+
+					it('tree images should be 7', () => {
+						expect(store.getState().verity.treeImages).toHaveLength(7)
+					})
+
+					it('isRejectAllProcessing === false', () => {
+						expect(store.getState().verity.isRejectAllProcessing).toBe(false)
+					})
+
+					it('after rejectAll, some page information should be reset, pagesLoaded = -1', () => {
+						expect(store.getState().verity.pagesLoaded).toBe(-1)
+					})
+
+					it('after rejectAll, should get an undo list', () => {
+						expect(store.getState().verity.treeImagesUndo).toHaveLength(3)
+					})
+
+					describe('undoAll()', () => {
+						//{{{
+						beforeEach(async () => {
+							await store.dispatch.verity.undoAll()
+						})
+
+						it('isBulkRejecting === false', () => {
+							expect(store.getState().verity.isBulkRejecting).toBe(false)
+						})
+	
 						it('tree list should restore to 10', () => {
 							expect(store.getState().verity.treeImages).toHaveLength(10)
 						})
