@@ -151,14 +151,14 @@ const verity = {
 		},
 		undoedTreeImage(state, treeId){
 			/*
-			 * put the tree back, from undo list, sort by date
+			 * put the tree back, from undo list, sort by id
 			 */
 			const treeUndo		= state.treeImagesUndo.reduce((a,c) => 
 				(c.id === treeId ? c:a))
 			const treeImagesUndo		= state.treeImagesUndo.filter(tree => 
 				tree.id !== treeId)
 			const treeImages		= [...state.treeImages, treeUndo].sort((a,b) => 
-				(b.id - a.id)
+				(a.id - b.id)
 			)
 			return {
 				...state,
