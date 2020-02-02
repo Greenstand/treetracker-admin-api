@@ -257,7 +257,7 @@ const verity = {
 		async rejectAll(payload, state){
 			log.debug('rejectAll with state:', state)
 			this.setLoading(true);
-			this.setRejectAllProcessing(true);
+			this.setApproveAllProcessing(true);
 			this.setIsBulkRejecting(true);
 			const verityState		= state.verity;
 			const total		= verityState.treeImagesSelected.length;
@@ -277,7 +277,7 @@ const verity = {
 					}, undefined)
 					log.trace('reject:%d', treeImage.id)
 					await this.rejectTreeImage(treeImage.id)
-					this.setRejectAllComplete(100 * ((i + 1) / total))
+					this.setApproveAllComplete(100 * ((i + 1) / total))
 				}
 			}catch(e){
 				log.warn('get error:', e)
@@ -291,10 +291,11 @@ const verity = {
 			})
 			//finished, set status flags
 			this.setLoading(false);
+			this.setApproveAllProcessing(false);
 			this.setRejectAllProcessing(false);
 			//reset
 			this.setPagesLoaded(-1);
-			this.setRejectAllComplete(0);
+			this.setApproveAllComplete(0);
 			this.resetSelection();
 			return true;
 		},
@@ -355,6 +356,7 @@ const verity = {
 			//{{{
 			log.debug('undo with state:', state)
 			this.setLoading(true);
+			this.setRejectAllProcessing(true);
 			this.setApproveAllProcessing(true);
 			const verityState		= state.verity;
 			const total		= verityState.treeImagesUndo.length;
