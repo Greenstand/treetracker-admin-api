@@ -27,9 +27,21 @@ const verity = {
 		 * Note, the element of this array is tree object, not tree id
 		 */
 		treeImagesUndo		: [],
+		/*
+		 * When rejecting a lot of trees, set isBulkRejecting to true
+		 * set it back to false when undo
+		 */
+		isBulkRejecting		: false,
+		/*
+		 * When approving a lot of trees, set isBulkApproving to true
+		 * set it back to false when undo
+		 */
+		isBulkApproving		: false,
 		isLoading		: false,
+		isRejectAllProcessing		: false,
 		isApproveAllProcessing		: false,
 		//cal the complete of progress (0-100)
+		rejectAllComplete		: 0,
 		approveAllComplete		: 0,
 		pagesLoaded		: -1,
 		moreTreeImagesAvailable		: true,
@@ -65,6 +77,26 @@ const verity = {
 				isApproveAllProcessing,
 			}
 		},
+		setIsBulkRejecting(state, isBulkRejecting){
+			return {
+				...state,
+				isBulkRejecting,
+			}
+
+		},
+		setIsBulkApproving(state, isBulkApproving){
+			return {
+				...state,
+				isBulkApproving,
+			}
+
+		},
+		setRejectAllProcessing(state, isRejectAllProcessing){
+			return {
+				...state,
+				isRejectAllProcessing,
+			}
+		},
 		setPagesLoaded(state, pagesLoaded){
 			return {
 				...state,
@@ -81,6 +113,12 @@ const verity = {
 			return {
 				...state,
 				approveAllComplete,
+			}
+		},
+		setRejectAllComplete(state, rejectAllComplete){
+			return {
+				...state,
+				rejectAllComplete,
 			}
 		},
 		approvedTreeImage(state, treeId){
@@ -113,14 +151,14 @@ const verity = {
 		},
 		undoedTreeImage(state, treeId){
 			/*
-			 * put the tree back, from undo list, sort by date
+			 * put the tree back, from undo list, sort by id
 			 */
 			const treeUndo		= state.treeImagesUndo.reduce((a,c) => 
 				(c.id === treeId ? c:a))
 			const treeImagesUndo		= state.treeImagesUndo.filter(tree => 
 				tree.id !== treeId)
 			const treeImages		= [...state.treeImages, treeUndo].sort((a,b) => 
-				(b.id - a.id)
+				(a.id - b.id)
 			)
 			return {
 				...state,
@@ -213,6 +251,55 @@ const verity = {
 			//}}}
 		},
 
+			/*
+		 * reject all tree
+		 */
+		async rejectAll(payload, state){
+			log.debug('rejectAll with state:', state)
+			this.setLoading(true);
+			this.setApproveAllProcessing(true);
+			this.setIsBulkRejecting(true);
+			const verityState		= state.verity;
+			const total		= verityState.treeImagesSelected.length;
+			const undo		= verityState.treeImages.filter(tree => 
+				verityState.treeImagesSelected.some(id => id === tree.id)
+			)
+			log.debug('items:%d', verityState.treeImages.length);
+			try{
+				for(let i = 0; i < verityState.treeImagesSelected.length; i++){
+					const treeId		= verityState.treeImagesSelected[i]
+					const treeImage		= verityState.treeImages.reduce((a,c) => {
+						if(c && c.id === treeId){
+							return c
+						}else{
+							return a
+						}
+					}, undefined)
+					log.trace('reject:%d', treeImage.id)
+					await this.rejectTreeImage(treeImage.id)
+					this.setApproveAllComplete(100 * ((i + 1) / total))
+				}
+			}catch(e){
+				log.warn('get error:', e)
+				this.setLoading(false);
+				this.setRejectAllProcessing(false);
+				return false
+			}
+			//push to undo list
+			this.set({
+				treeImagesUndo		: undo,
+			})
+			//finished, set status flags
+			this.setLoading(false);
+			this.setApproveAllProcessing(false);
+			this.setRejectAllProcessing(false);
+			//reset
+			this.setPagesLoaded(-1);
+			this.setApproveAllComplete(0);
+			this.resetSelection();
+			return true;
+		},
+
 		/*
 		 * approve all tree
 		 */
@@ -221,6 +308,7 @@ const verity = {
 			log.debug('approveAll with state:', state)
 			this.setLoading(true);
 			this.setApproveAllProcessing(true);
+			this.setIsBulkApproving(true);
 			const verityState		= state.verity;
 			const total		= verityState.treeImagesSelected.length;
 			const undo		= verityState.treeImages.filter(tree => 
@@ -268,6 +356,7 @@ const verity = {
 			//{{{
 			log.debug('undo with state:', state)
 			this.setLoading(true);
+			this.setRejectAllProcessing(true);
 			this.setApproveAllProcessing(true);
 			const verityState		= state.verity;
 			const total		= verityState.treeImagesUndo.length;
@@ -282,14 +371,19 @@ const verity = {
 			}catch(e){
 				log.warn('get error:', e)
 				this.setLoading(false);
+				this.setRejectAllProcessing(false);
 				this.setApproveAllProcessing(false);
 				return false
 			}
 			//finished, set status flags
 			this.setLoading(false);
+			this.setIsBulkApproving(false);
+			this.setIsBulkRejecting(false);
 			this.setApproveAllProcessing(false);
+			this.setRejectAllProcessing(false);
 			//reset
 			this.setPagesLoaded(-1);
+			this.setRejectAllComplete(0);
 			this.setApproveAllComplete(0);
 			this.resetSelection();
 			return true;
