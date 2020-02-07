@@ -408,12 +408,13 @@ const verity = {
 		 * 		treeId		: string,
 		 * 		isShift		: boolean,
 		 * 		isCmd		: boolean,
+		 * 		isCtrl		: boolean
 		 * 		}
 		 */
 		clickTree(payload, state){
 			//{{{
-			const {treeId, isShift, isCmd}		= payload
-			if(!isShift && !isCmd){
+			const {treeId, isShift, isCmd, isCtrl}		= payload
+			if(!isShift && !isCmd && !isCtrl){
 				this.set({
 					treeImagesSelected		: [treeId],
 					treeImageAnchor		: treeId,
@@ -450,6 +451,13 @@ const verity = {
 					indexCurrent,
 					treeImagesSelected.length,
 				)
+				this.set({
+					treeImagesSelected,
+				})
+			} else if (isCmd || isCtrl) {
+				const treeImagesSelected		= state.verity.treeImagesSelected.filter(function(tree) {
+					return tree !== treeId
+				})
 				this.set({
 					treeImagesSelected,
 				})
