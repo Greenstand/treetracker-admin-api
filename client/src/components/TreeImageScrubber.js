@@ -145,7 +145,9 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     log.debug('click at tree:%d', treeId);
     props.verityDispatch.clickTree({
       treeId,
-      isShift: e.shiftKey
+      isShift: e.shiftKey,
+      isCmd: e.metaKey,
+      isCtrl: e.ctrlKey
     });
   }
 
