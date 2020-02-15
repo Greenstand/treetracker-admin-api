@@ -8,6 +8,10 @@ See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more in
 
 See [Contributing to The Cause](https://github.com/Greenstand/Development-Overview#contributing-to-the-cause)
 
+### See [New Milestone](https://github.com/Greenstand/treetracker-admin/milestone/3)
+
+New milestone is about our new version 2.0 for the admin panel. Currently, we are on branch 'v2' to build this version, so if you have finished tickets in this milestone, please push/PR to this branch(v2).
+
 Please add any missing content to this readme.
 
 ## Setup
@@ -288,4 +292,14 @@ var b = {
 ## Credit
 -----------
 - [Loopback](https://loopback.io/doc/en/lb4/index.html)
+
+## How to contribute
+
+Basically, we follow the React/Jest convention to build test, all test file are located at the same directory with the file to test, name convention: xxx.test.js , please at least make all the 'model' file to pass unit test, for client project, all model file at : /client/src/model/
+
+To run test:
+
+```npm test```
+
+
 
