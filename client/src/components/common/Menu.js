@@ -95,7 +95,8 @@ export default function GSMenu(props){
 	const theme		= useTheme()
 	return(
 			<Drawer
-				variant='permanent'
+				variant='persistent'
+				open={true}
 				PaperProps={{
 					elevation		: 5,
 				}}

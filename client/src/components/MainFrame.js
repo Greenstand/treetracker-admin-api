@@ -23,6 +23,7 @@ import FilterModel		from '../models/Filter';
 import Typography		from '@material-ui/core/Typography';
 import TreeImageScrubber		from './TreeImageScrubber';
 import Trees		from './Trees';
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -93,22 +94,24 @@ function SimpleTable() {
       </Table>
   );
 }
-export default function(){
+const MainFrame = ({...props }) => {
 	const [menuName, setMenuName]		= React.useState(/* default menu */'Verify')
 	const refContainer		= React.useRef()
-
+	
 	function handleMenuClick(menuName){
 		setMenuName(menuName)
 	}
 
 	return(
 		<Grid container wrap='nowrap' >
-			<Grid item>
-				<Menu
-					active={menuName}
-					onClick={handleMenuClick}
-				/>
-			</Grid>
+			{ props.verityState.isMenuShown ? 
+				<Grid item>
+					<Menu
+						active={menuName}
+						onClick={handleMenuClick}
+					/>
+				</Grid> : <Grid item></Grid>
+			}
 			<Grid item
 				style={{
 					width		: '100%',
@@ -186,4 +189,16 @@ export default function(){
 		</Grid>
 	)
 }
+
+export default connect(
+	//state
+	state => ({
+	  verityState: state.verity
+	}),
+	//dispatch
+	dispatch => ({
+	  verityDispatch: dispatch.verity
+	})
+  )(MainFrame);
+  
 

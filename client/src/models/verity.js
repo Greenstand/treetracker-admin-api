@@ -46,6 +46,7 @@ const verity = {
 		pagesLoaded		: -1,
 		moreTreeImagesAvailable		: true,
 		pageSize		: 20,
+		isMenuShown		: false,
 		/*
 		 * The default value means: image not approved yet, and not rejected yet too
 		 */
@@ -64,6 +65,12 @@ const verity = {
 				isLoading		: false,
       };
       return newState;
+		},
+		setIsMenuShown(state, isMenuShown){
+			return {
+				...state,
+				isMenuShown,
+			};
 		},
 		setLoading(state, isLoading){
 			return {
@@ -251,7 +258,7 @@ const verity = {
 			//}}}
 		},
 
-			/*
+		/*
 		 * reject all tree
 		 */
 		async rejectAll(payload, state){
