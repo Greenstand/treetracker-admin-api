@@ -309,6 +309,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                   >
                   <MenuIcon />
                   </IconButton>
+                  <IconLogo> </IconLogo>
                 </Grid>
 
                 <Grid item>
