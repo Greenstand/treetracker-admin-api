@@ -21,6 +21,8 @@ import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Snackbar from '@material-ui/core/Snackbar';
+import MenuIcon from '@material-ui/icons/Menu';
+import IconLogo		from './IconLogo';
 
 import Filter, { FILTER_WIDTH } from './Filter';
 import { MENU_WIDTH } from './common/Menu';
@@ -266,6 +268,15 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     }
   }
 
+  function toggleIsMenuShown() {
+    if (props.verityState.isMenuShown) {
+      props.verityDispatch.setIsMenuShown(false);   
+    } else {
+      props.verityDispatch.setIsMenuShown(true);
+    }
+             
+  }
+
   return (
     <React.Fragment>
       <Grid container>
@@ -273,7 +284,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           item
           style={{
             width: isFilterShown
-              ? `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px`
+              ? `calc(100vw - ${FILTER_WIDTH}px`
               : '100%'
           }}
         >
@@ -289,6 +300,17 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                 justify={'space-between'}
                 className={classes.title}
               >
+                <Grid item>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={toggleIsMenuShown}
+                    edge="start"
+                  >
+                  <MenuIcon />
+                  </IconButton>
+                </Grid>
+
                 <Grid item>
                   <Typography
                     variant='h5'
