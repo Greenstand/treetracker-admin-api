@@ -74,6 +74,13 @@ const TreeImageCard = props => {
         <CardActions
           style={{ 'position': 'fix' }}
         >
+
+     Tree# {tree.id}
+          </Typography>
+        </CardContent>
+        <CardActions
+          style={{ 'position': 'fix' }}
+        >
           <Button
             size="small"
             onClick={(e) => onStatusToggle(e, tree.id, true)}
