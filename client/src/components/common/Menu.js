@@ -103,9 +103,6 @@ export default function GSMenu(props){
 				className={classes.drawer}
 				classes={{paper:classes.drawerPaper}}
 			>
-				<Box p={4} >
-					<IconLogo/>
-				</Box>
 				<Box height={20} />
 				{menus.map(item => (
 					<MenuItem

@@ -24,6 +24,7 @@ import Typography		from '@material-ui/core/Typography';
 import TreeImageScrubber		from './TreeImageScrubber';
 import Trees		from './Trees';
 import { connect } from 'react-redux';
+import TopBar from './TopBar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -103,16 +104,19 @@ const MainFrame = ({...props }) => {
 	}
 
 	return(
-		<Grid container wrap='nowrap' >
+		<Grid container wrap='wrap' >
+			<Grid item xs={12}> 
+				<TopBar />
+			</Grid>
 			{ props.verityState.isMenuShown ? 
-				<Grid item>
+				<Grid item xs={2}>
 					<Menu
 						active={menuName}
 						onClick={handleMenuClick}
 					/>
 				</Grid> : <Grid item></Grid>
 			}
-			<Grid item
+			<Grid item xs={10}
 				style={{
 					width		: '100%',
 				}}

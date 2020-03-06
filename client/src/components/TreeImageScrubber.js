@@ -283,9 +283,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
         <Grid
           item
           style={{
-            width: isFilterShown
-              ? `calc(100vw - ${FILTER_WIDTH}px`
-              : '100%'
+            width: `calc(100vw - ${FILTER_WIDTH}px`
           }}
         >
           <Grid container>
@@ -300,18 +298,6 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                 justify={'space-between'}
                 className={classes.title}
               >
-                <Grid item>
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={toggleIsMenuShown}
-                    edge="start"
-                  >
-                  <MenuIcon />
-                  </IconButton>
-                  <IconLogo> </IconLogo>
-                </Grid>
-
                 <Grid item>
                   <Typography
                     variant='h5'
