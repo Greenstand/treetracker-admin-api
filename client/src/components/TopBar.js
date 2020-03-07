@@ -8,6 +8,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import IconLogo		from './IconLogo';
 import { connect } from 'react-redux';
 import Box		from '@material-ui/core/Box';
+import Filter, { FILTER_WIDTH } from './Filter';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +35,7 @@ const TopBar = ({...props }) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{ backgroundColor: "transparent" }}>
+      <AppBar position="static" style={{ backgroundColor: "transparent", width: `calc(100vw - ${FILTER_WIDTH}px` }}>
         <Toolbar>
         <Box p={4} >
           <IconButton
