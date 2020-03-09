@@ -7,7 +7,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconLogo from './IconLogo';
 import { connect } from 'react-redux';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { FILTER_WIDTH } from './Filter';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -54,7 +53,7 @@ const TopBar = ({ ...props }) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{ backgroundColor: "transparent", width: `calc(100vw - ${FILTER_WIDTH}px` }}>
+      <AppBar position="static" style={{ backgroundColor: "transparent" }}>
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={toggleIsMenuShown}>
             <MenuIcon />
