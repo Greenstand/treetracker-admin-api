@@ -308,104 +308,6 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                     trees to verify
                   </Typography>
                 </Grid>
-                <Grid item>
-                  {/* close select all function
-									<FormControlLabel
-										control={
-											<Checkbox
-												color='primary'
-												checked={
-													props.verityState.treeImages.length > 0 &&
-													props.verityState.treeImagesSelected.length ===
-													props.verityState.treeImages.length
-												}
-												onClick={() => {
-														props.verityDispatch.selectAll(
-															props.verityState.treeImagesSelected.length !==
-															props.verityState.treeImages.length
-														)
-												}}
-											/>
-										}
-										label="Select All"
-									/>
-									*/}
-                  <Button
-                    style={{
-                      margin: 15
-                    }}
-                    color='primary'
-                    disabled={props.verityState.treeImagesSelected.length <= 0}
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          `Are you sure to reject these ${props.verityState.treeImagesSelected.length} trees?`
-                        )
-                      ) {
-                        const result = await props.verityDispatch.rejectAll();
-                        if (result) {
-                          //if all trees were rejected, then, load more
-                          if (
-                            props.verityState.treeImagesSelected.length ===
-                            props.verityState.treeImages.length
-                          ) {
-                            log.debug('all trees rejected, reload');
-                            props.verityDispatch.loadMoreTreeImages();
-                          }
-                        } else {
-                          window.alert('sorry, failed to reject some picture');
-                        }
-                      }
-                    }}
-                  >
-                    Reject all
-                    {props.verityState.treeImagesSelected.length > 0
-                      ? ` ${props.verityState.treeImagesSelected.length} trees`
-                      : ''}
-                  </Button>
-                  <Button
-                    style={{
-                      margin: 15
-                    }}
-                    color='primary'
-                    disabled={props.verityState.treeImagesSelected.length <= 0}
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          `Are you sure to approve these ${props.verityState.treeImagesSelected.length} trees?`
-                        )
-                      ) {
-                        const result = await props.verityDispatch.approveAll();
-                        if (result) {
-                          //if all trees were approved, then, load more
-                          if (
-                            props.verityState.treeImagesSelected.length ===
-                            props.verityState.treeImages.length
-                          ) {
-                            log.debug('all trees approved, reload');
-                            props.verityDispatch.loadMoreTreeImages();
-                          }
-                        } else {
-                          window.alert('sorry, failed to approve some picture');
-                        }
-                      }
-                    }}
-                  >
-                    Approve all
-                    {props.verityState.treeImagesSelected.length > 0
-                      ? ` ${props.verityState.treeImagesSelected.length} trees`
-                      : ''}
-                  </Button>
-                  <IconButton
-                    onClick={handleFilterClick}
-                    style={{
-                      marginTop: 8,
-                      marginRight: 16
-                    }}
-                  >
-                    <IconFilter />
-                  </IconButton>
-                </Grid>
               </Grid>
             </Grid>
             <Grid
@@ -424,14 +326,14 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             width: `${FILTER_WIDTH}px`
           }}
         >
-          <Filter
+          {/* <Filter
             isOpen={isFilterShown}
             onSubmit={filter => {
               props.verityDispatch.updateFilter(filter);
             }}
             filter={props.verityState.filter}
             onClose={handleFilterClick}
-          />
+          /> */}
         </Grid>
       </Grid>
       {props.verityState.isApproveAllProcessing && (
