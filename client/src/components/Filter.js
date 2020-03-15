@@ -297,4 +297,4 @@ function Filter(props) {
 //export default compose(
 //  withStyles(styles, { withTheme: true, name: 'Filter' })
 //)(Filter)
-export default withStyles(styles)(Filter)
+export default withStyles(styles)(Filter);
