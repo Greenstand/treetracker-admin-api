@@ -47,6 +47,7 @@ const verity = {
 		moreTreeImagesAvailable		: true,
 		pageSize		: 20,
 		isMenuShown		: false,
+		isFilterShown	: false,
 		/*
 		 * The default value means: image not approved yet, and not rejected yet too
 		 */
@@ -70,6 +71,12 @@ const verity = {
 			return {
 				...state,
 				isMenuShown,
+			};
+		},
+		setIsFilterShown(state, isFilterShown){
+			return {
+				...state,
+				isFilterShown,
 			};
 		},
 		setLoading(state, isLoading){

@@ -8,9 +8,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import IconLogo from './IconLogo';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
-import { FILTER_WIDTH } from './Filter';
+import Filter, { FILTER_WIDTH } from './Filter';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Paper from '@material-ui/core/Paper';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,9 +52,13 @@ const TopBar = ({ ...props }) => {
     }
   }
 
+  function handleFilterClick() {
+    props.verityDispatch.setIsFilterShown(!props.verityState.isFilterShown);
+  }
+
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{ backgroundColor: "transparent" }}>
+      <AppBar position="static" style={{ backgroundColor: "transparent", width: `calc(100vw - ${FILTER_WIDTH}px`}}>
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={toggleIsMenuShown}>
             <MenuIcon />
@@ -65,16 +70,26 @@ const TopBar = ({ ...props }) => {
           <div>
             <Paper className={classes.paper}>
               <Grid container>
-                <Grid item className={classes.filter}>
-                  <Typography variant="h6" > Filters </Typography>
+                <Grid item className={classes.filter} onClick={handleFilterClick}>
+                  <Typography variant="h6" > {props.verityState.isFilterShown ? "Hide filters" : "Filters"} </Typography>
                 </Grid>
                 <Grid item>
-                  <FilterListIcon className={classes.filterIcon}/>
+                  <FilterListIcon className={classes.filterIcon} onClick={handleFilterClick}/>
                 </Grid>
               </Grid>
             </Paper>
           </div>
+          
         </Toolbar>
+        { props.verityState.isFilterShown ? 
+        <Filter
+            onSubmit={filter => {
+              props.verityDispatch.updateFilter(filter);
+            }}
+            filter={props.verityState.filter}
+        /> : <div> </div> 
+            
+        }
       </AppBar>
     </div>
   );
