@@ -18,7 +18,12 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 import FilterModel from '../models/Filter'
 import dateformat from 'dateformat'
 import GSInputLabel from './common/InputLabel';
-import classNames from 'classnames'
+import classNames from 'classnames';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from '@material-ui/pickers';
 
 export const FILTER_WIDTH = 330
 
@@ -46,6 +51,11 @@ const styles = theme => {
 			width: 145,
 			fontSize: 14,
 		},
+		endDate: {
+			width: 145,
+			fontSize: 14,
+			marginLeft: 10,
+		},
 		timeCreated: {
 			marginBottom: theme.spacing(2),
 		},
@@ -62,8 +72,8 @@ function Filter(props) {
 	console.log(styles);
 	const { classes, filter } = props
 	//console.error('filter:%o', filter)
-	const dateStartDefault = '2020-01-01'
-	const dateEndDefault = `${dateformat(Date.now(), 'yyyy-mm-dd')}`
+	const dateStartDefault = '2020-01-01';
+	const dateEndDefault = `${dateformat(Date.now(), 'yyyy-mm-dd')}`;
 	const [treeId, setTreeId] = useState(filter.treeId)
 	const [planterId, setPlanterId] = useState(filter.planterId)
 	const [deviceId, setDeviceId] = useState(filter.deviceId)
@@ -71,17 +81,23 @@ function Filter(props) {
 	const [status, setStatus] = useState(filter.status)
 	const [approved, setApproved] = useState(filter.approved)
 	const [active, setActive] = useState(filter.active)
-	const [dateStart, setDateStart] = useState(filter.dateStart || dateStartDefault)
-	const [dateEnd, setDateEnd] = useState(filter.dateEnd || dateEndDefault)
-	//console.error('the tree id:%d', treeId)
-
-	function handleDateStartChange(e) {
-		setDateStart(e.target.value || dateStartDefault)
-	}
-
-	function handleDateEndChange(e) {
-		setDateEnd(e.target.value || dateEndDefault)
-	}
+	const [dateStart, setDateStart] = useState(
+		filter.dateStart || dateStartDefault
+	);
+	const [dateEnd, setDateEnd] = useState(filter.dateEnd || dateEndDefault);
+	
+	const handleDateStartChange = date => {
+		console.log("日期是date： ", date);
+		setDateStart(formatDate(date));
+	};
+	
+	const handleDateEndChange = date => {
+		setDateEnd(formatDate(date));
+	};
+	
+	const formatDate = date => {
+		return dateformat(date, 'yyyy-mm-dd');
+	};
 
 	function handleClear() {
 		const filter = new FilterModel()
@@ -104,15 +120,11 @@ function Filter(props) {
 		filter.deviceId = deviceId
 		filter.planterIdentifier = planterIdentifier
 		filter.status = status
-		filter.dateStart = dateStart
-		filter.dateEnd = dateEnd
+		filter.dateStart = formatDate(dateStart);
+		filter.dateEnd = formatDate(dateEnd);
 		filter.approved = approved
 		filter.active = active
 		props.onSubmit && props.onSubmit(filter)
-	}
-
-	function handleCloseClick() {
-		props.onClose && props.onClose()
 	}
 
 	return (
@@ -213,27 +225,34 @@ function Filter(props) {
 			</Grid>
 			<Grid item className={classes.timeCreated}>
 				<GSInputLabel text='Time created' />
-				<Grid
-					container
-					justify='space-between'
-				>
-					<Grid item>
-						<OutlinedInput
-							type='date'
-							className={classes.dateInput}
-							value={dateStart}
-							onChange={handleDateStartChange}
-						/>
+				<MuiPickersUtilsProvider utils={DateFnsUtils}>
+					<Grid container justify='space-between'>
+					<KeyboardDatePicker
+						margin='none'
+						id='start-date-picker'
+						label='Start Date'
+						format='MM/dd/yyyy'
+						value={dateStart}
+						onChange={handleDateStartChange}
+						KeyboardButtonProps={{
+						'aria-label': 'change date'
+						}}
+						className={classes.dateInput}
+					/>
+					<KeyboardDatePicker
+						margin='none'
+						id='end-date-picker'
+						label='End Date'
+						format='MM/dd/yyyy'
+						value={dateEnd}
+						onChange={handleDateEndChange}
+						KeyboardButtonProps={{
+						'aria-label': 'change date'
+						}}
+						className={classes.endDate}
+					/>
 					</Grid>
-					<Grid item className={classes.endTime}>
-						<OutlinedInput
-							type='date'
-							className={classes.dateInput}
-							value={dateEnd}
-							onChange={handleDateEndChange}
-						/>
-					</Grid>
-				</Grid>
+      			</MuiPickersUtilsProvider>
 			</Grid>
 			<Grid item>
 				<GSInputLabel text='Planter Identifier' />

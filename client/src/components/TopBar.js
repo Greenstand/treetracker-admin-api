@@ -9,6 +9,7 @@ import IconLogo from './IconLogo';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import Filter, { FILTER_WIDTH } from './Filter';
+import FilterModel		from '../models/Filter';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Paper from '@material-ui/core/Paper';
 
@@ -86,7 +87,7 @@ const TopBar = ({ ...props }) => {
             onSubmit={filter => {
               props.verityDispatch.updateFilter(filter);
             }}
-            filter={props.verityState.filter}
+            filter={new FilterModel()}
         /> : <div> </div> 
             
         }
