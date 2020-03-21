@@ -215,6 +215,47 @@ export class Trees extends Entity {
   })
   status?: String;
 
+  @property({
+    type: String,
+    required: false,
+    length: 255,
+    postgresql: {"columnName":"morphology","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  status?: String;
+
+  @property({
+    type: String,
+    required: false,
+    length: 255,
+    postgresql: {"columnName":"age","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  status?: String;
+
+  @property({
+    type: String,
+    required: false,
+    length: 255,
+    postgresql: {"columnName":"species","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  status?: String;
+
+  @property({
+    type: String,
+    required: false,
+    length: 255,
+    postgresql: {"columnName":"capture_approval_tag","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  status?: String;
+
+  @property({
+    type: String,
+    required: false,
+    length: 255,
+    postgresql: {"columnName":"rejection_reason","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  status?: String;
+
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
