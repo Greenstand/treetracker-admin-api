@@ -194,11 +194,6 @@ class TreeTable extends Component {
         >
           <TreeDetails tree={tree} />
         </Drawer>
-				<Filter 
-					isOpen={true} 
-					onSubmit={this.handleFilterSubmit}
-					filter={this.state.filter}
-				/>
       </React.Fragment>
     );
   }
