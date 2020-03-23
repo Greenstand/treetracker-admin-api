@@ -221,7 +221,7 @@ export class Trees extends Entity {
     length: 255,
     postgresql: {"columnName":"morphology","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
-  status?: String;
+  morphology?: String;
 
   @property({
     type: String,
@@ -229,7 +229,7 @@ export class Trees extends Entity {
     length: 255,
     postgresql: {"columnName":"age","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
-  status?: String;
+  age?: String;
 
   @property({
     type: String,
@@ -237,7 +237,7 @@ export class Trees extends Entity {
     length: 255,
     postgresql: {"columnName":"species","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
-  status?: String;
+  species?: String;
 
   @property({
     type: String,
@@ -245,7 +245,7 @@ export class Trees extends Entity {
     length: 255,
     postgresql: {"columnName":"capture_approval_tag","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
-  status?: String;
+  captureApprovalTag?: String;
 
   @property({
     type: String,
@@ -253,7 +253,7 @@ export class Trees extends Entity {
     length: 255,
     postgresql: {"columnName":"rejection_reason","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
-  status?: String;
+  rejectionReason?: String;
 
 
   // Define well-known properties here
