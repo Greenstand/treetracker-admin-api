@@ -296,7 +296,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                       paddingTop: 20
                     }}
                   >
-                    trees to verify
+                  {props.verityState.treeImages.length} trees to verify
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -444,7 +444,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           <div></div>
         </Modal>
       )}
-      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing && 
+      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
         props.verityState.treeImagesUndo.length > 0 && (
           <Snackbar
             open
@@ -455,7 +455,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             }}
             message={
               <span id='snackbar-fab-message-id'>
-                You have { props.verityState.isBulkApproving ? ' approved ' : ' rejected '}  
+                You have { props.verityState.isBulkApproving ? ' approved ' : ' rejected '}
                 {props.verityState.treeImagesUndo.length}{' '}
                 trees
               </span>
