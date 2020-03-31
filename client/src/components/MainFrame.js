@@ -25,6 +25,7 @@ import TreeImageScrubber		from './TreeImageScrubber';
 import Trees		from './Trees';
 import { connect } from 'react-redux';
 import TopBar from './TopBar';
+import TagsBar from './TagsBar';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -177,18 +178,16 @@ const MainFrame = ({...props }) => {
 								<SimpleTable/>
 							</Box>
 						</Grid>
-						<Grid item>
-							<Filter
-								isOpen={true}
-								filter={new FilterModel()}
-							/>
-						</Grid>
+						
 						</React.Fragment>
 					}
 					{menuName === 'Verify' &&
 						<TreeImageScrubber getScrollContainerRef={() => refContainer.current}/>
 					}
 				</Grid>
+			</Grid>
+			<Grid item xs={2}>
+				<TagsBar />
 			</Grid>
 		</Grid>
 	)
