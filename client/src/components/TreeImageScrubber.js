@@ -177,13 +177,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             <CardContent className={classes.cardContent}>
               <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
               <Typography variant='body2' gutterBottom>
-                Tree# {tree.id}
-              </Typography>
-              <Typography variant='body2' gutterBottom>
-                Planter# {tree.planterId}
-              </Typography>
-              <Typography variant='body2' gutterBottom>
-                Device# {tree.deviceId}
+                Tree# {tree.id}, Planter# {tree.planterId}, Device# {tree.deviceId}
               </Typography>
             </CardContent>
             <CardActions className={classes.cardActions}>
@@ -444,7 +438,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           <div></div>
         </Modal>
       )}
-      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing && 
+      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
         props.verityState.treeImagesUndo.length > 0 && (
           <Snackbar
             open
@@ -455,7 +449,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             }}
             message={
               <span id='snackbar-fab-message-id'>
-                You have { props.verityState.isBulkApproving ? ' approved ' : ' rejected '}  
+                You have { props.verityState.isBulkApproving ? ' approved ' : ' rejected '}
                 {props.verityState.treeImagesUndo.length}{' '}
                 trees
               </span>
