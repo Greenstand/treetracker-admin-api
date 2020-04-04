@@ -16,8 +16,8 @@ const verity = {
 		 */
 		treeImagesSelected		: [],
 		/*
-		 * this is a tree id, used to assist selecting trees, when click a tree, 
-		 * and press shift to select a range, then, need use this tree id to cal 
+		 * this is a tree id, used to assist selecting trees, when click a tree,
+		 * and press shift to select a range, then, need use this tree id to cal
 		 * the whole range
 		 */
 		treeImageAnchor		: undefined,
@@ -53,6 +53,7 @@ const verity = {
 			approved		: false,
 			active		: true,
 		}),
+    treeCount: 0,
 	},
 	reducers		: {
 		appendTreeImages(state, treeImages){
@@ -109,6 +110,12 @@ const verity = {
 				filter
 			}
 		},
+    setTreeCount(state, treeCount) {
+        return {
+            ...state,
+            treeCount,
+        };
+    },
 		setApproveAllComplete(state, approveAllComplete){
 			return {
 				...state,
@@ -129,8 +136,8 @@ const verity = {
 			const treeImagesSelected		= state.treeImagesSelected.filter(
 				id => id !== treeId
 			)
-      return { 
-				...state, 
+      return {
+				...state,
 				treeImages,
 				treeImagesSelected,
 			}
@@ -143,8 +150,8 @@ const verity = {
 			const treeImagesSelected		= state.treeImagesSelected.filter(
 				id => id !== treeId
 			)
-      return { 
-				...state, 
+      return {
+				...state,
 				treeImages,
 				treeImagesSelected,
 			}
@@ -153,11 +160,11 @@ const verity = {
 			/*
 			 * put the tree back, from undo list, sort by id
 			 */
-			const treeUndo		= state.treeImagesUndo.reduce((a,c) => 
+			const treeUndo		= state.treeImagesUndo.reduce((a,c) =>
 				(c.id === treeId ? c:a))
-			const treeImagesUndo		= state.treeImagesUndo.filter(tree => 
+			const treeImagesUndo		= state.treeImagesUndo.filter(tree =>
 				tree.id !== treeId)
-			const treeImages		= [...state.treeImages, treeUndo].sort((a,b) => 
+			const treeImages		= [...state.treeImages, treeUndo].sort((a,b) =>
 				(a.id - b.id)
 			)
 			return {
@@ -234,7 +241,7 @@ const verity = {
 			const pageParams = {
 				//page: nextPage,
 				//REVISE Fri Aug 16 10:56:34 CST 2019
-				//change the api to use skip parameter directly, because there is a 
+				//change the api to use skip parameter directly, because there is a
 				//bug to use page as param
 				skip		: verityState.treeImages.length,
 				rowsPerPage: verityState.pageSize,
@@ -261,7 +268,7 @@ const verity = {
 			this.setIsBulkRejecting(true);
 			const verityState		= state.verity;
 			const total		= verityState.treeImagesSelected.length;
-			const undo		= verityState.treeImages.filter(tree => 
+			const undo		= verityState.treeImages.filter(tree =>
 				verityState.treeImagesSelected.some(id => id === tree.id)
 			)
 			log.debug('items:%d', verityState.treeImages.length);
@@ -311,7 +318,7 @@ const verity = {
 			this.setIsBulkApproving(true);
 			const verityState		= state.verity;
 			const total		= verityState.treeImagesSelected.length;
-			const undo		= verityState.treeImages.filter(tree => 
+			const undo		= verityState.treeImages.filter(tree =>
 				verityState.treeImagesSelected.some(id => id === tree.id)
 			)
 			log.debug('items:%d', verityState.treeImages.length);
@@ -421,7 +428,7 @@ const verity = {
 				})
 			}else if(isShift){
 				log.debug(
-					'press shift, and there is an anchor:', 
+					'press shift, and there is an anchor:',
 					state.verity.treeImageAnchor
 				)
 				//if no anchor, then, select from beginning
@@ -446,8 +453,8 @@ const verity = {
 						Math.min(indexAnchor, indexCurrent),
 						Math.max(indexAnchor, indexCurrent) + 1,
 					).map(tree => tree.id)
-				log.trace('find range:[%d,%d], selected:%d', 
-					indexAnchor, 
+				log.trace('find range:[%d,%d], selected:%d',
+					indexAnchor,
 					indexCurrent,
 					treeImagesSelected.length,
 				)
