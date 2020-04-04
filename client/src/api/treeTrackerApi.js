@@ -81,5 +81,9 @@ export default {
     })
       .then(handleResponse)
       .catch(handleError);
+  },
+  getUnverifiedTreeCount() {
+    const query = `${baseUrl}/trees/count?where[approved]=false&where[active]=true`;
+    return fetch(query).then(handleResponse).catch(handleError);
   }
 };
