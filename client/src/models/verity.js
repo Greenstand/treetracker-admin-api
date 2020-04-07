@@ -412,9 +412,9 @@ const verity = {
      * gets and sets count for unverified trees
      */
     async getTreeCount() {
-        const result = await api.getUnverifiedTreeCount();
-        this.setTreeCount(result.count);
-        return true;
+        const result = await api.getUnverifiedTreeCount()
+        this.setTreeCount(result.count)
+        return true
     },
 		/*
 		 * to select trees

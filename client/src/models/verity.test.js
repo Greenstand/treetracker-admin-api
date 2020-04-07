@@ -20,6 +20,9 @@ describe('verity', () => {
 		api.approveTreeImage		= () => Promise.resolve(true);
 		api.rejectTreeImage		= () => Promise.resolve(true);
 		api.undoTreeImage		= () => Promise.resolve(true);
+    api.getUnverifiedTreeCount = () => Promise.resolve({
+      count   : 1
+    });
 	})
 
 	describe('with a default store', () => {
@@ -39,7 +42,7 @@ describe('verity', () => {
 		describe('loadMoreTreeImages() ', () => {
 			//{{{
 			beforeEach(async () => {
-				const result		= await store.dispatch.verity.loadMoreTreeImages() 
+				const result		= await store.dispatch.verity.loadMoreTreeImages()
 				expect(result).toBe(true)
 			})
 
@@ -61,6 +64,17 @@ describe('verity', () => {
 					},
 				})
 			})
+
+      describe('getTreeCount()', () => {
+        beforeEach(async () => {
+          const result    = await store.dispatch.verity.getTreeCount()
+          expect(result).toBe(true)
+        })
+
+        it('getTreeCount should be 1', () => {
+          expect(store.getState().verity.treeCount).toBe(1)
+        })
+      })
 
 			describe('approveTreeImage(1)', () => {
 				//{{{
@@ -239,7 +253,7 @@ describe('verity', () => {
 					beforeEach(async () => {
 						await store.dispatch.verity.approveAll();
 					})
-					
+
 					it('isBulkApproving === true', () => {
 						expect(store.getState().verity.isBulkApproving).toBe(true)
 					})
@@ -273,7 +287,6 @@ describe('verity', () => {
 						it('isBulkApproving === false', () => {
 							expect(store.getState().verity.isBulkApproving).toBe(false)
 						})
-	
 
 						it('tree list order should be correct', () => {
 							expect(store.getState().verity.treeImages.map(tree => tree.id)).toMatchObject(
@@ -321,7 +334,7 @@ describe('verity', () => {
 						it('isBulkRejecting === false', () => {
 							expect(store.getState().verity.isBulkRejecting).toBe(false)
 						})
-	
+
 						it('tree list should restore to 10', () => {
 							expect(store.getState().verity.treeImages).toHaveLength(10)
 						})
