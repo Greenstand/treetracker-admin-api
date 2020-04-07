@@ -139,6 +139,11 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     setComplete(props.verityState.approveAllComplete);
   }, [props.verityState.approveAllComplete]);
 
+  /* To update unverified tree count */
+  useEffect(() => {
+      props.verityDispatch.getTreeCount();
+  }, [props.verityState.treeImages]);
+
   function handleTreeClick(e, treeId) {
     e.stopPropagation();
     e.preventDefault();
@@ -290,7 +295,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                       paddingTop: 20
                     }}
                   >
-                    trees to verify
+                  {props.verityState.treeCount} trees to verify
                   </Typography>
                 </Grid>
                 <Grid item>
