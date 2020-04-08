@@ -104,10 +104,12 @@ export default function(){
 	return(
 		<Grid container wrap='nowrap' >
 			<Grid item>
+        {/* hide menu 
 				<Menu
 					active={menuName}
 					onClick={handleMenuClick}
 				/>
+        */}
 			</Grid>
 			<Grid item
 				style={{

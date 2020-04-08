@@ -95,12 +95,13 @@ export default function GSMenu(props){
 	const theme		= useTheme()
 	return(
 			<Drawer
-				variant='permanent'
 				PaperProps={{
 					elevation		: 5,
 				}}
 				className={classes.drawer}
 				classes={{paper:classes.drawerPaper}}
+        onClose={props.onClose}
+        open={true}
 			>
 				<Box p={4} >
 					<IconLogo/>

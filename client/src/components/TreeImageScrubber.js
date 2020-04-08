@@ -21,13 +21,26 @@ import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Snackbar from '@material-ui/core/Snackbar';
+import Drawer from '@material-ui/core/Drawer';
+import MenuIcon from '@material-ui/icons/Menu';
+import Toolbar from '@material-ui/core/Toolbar';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import TextField from '@material-ui/core/TextField';
 
 import Filter, { FILTER_WIDTH } from './Filter';
+import FilterTop from './FilterTop';
 import { MENU_WIDTH } from './common/Menu';
 import FilterModel from '../models/Filter';
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg';
+import IconLogo		from './IconLogo';
+import Menu from './common/Menu.js';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
+
+const SIDE_PANEL_WIDTH = 315;
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -78,7 +91,33 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     marginRight: '8px'
-  }
+  },
+
+  appBar: {
+    width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`,
+    left: 0,
+    right: 'auto',
+  },
+  sidePanel: {
+  },
+  drawerPaper: {
+    width: SIDE_PANEL_WIDTH,
+  },
+  body: {
+    width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`,
+  },
+  sidePanelContainer: {
+    padding: theme.spacing(2),
+  },
+  sidePanelItem: {
+    marginTop: theme.spacing(4),
+  },
+  radioGroup: {
+    flexDirection : 'row',
+  },
+  bottomLine: {
+    borderBottom : '1px solid lightgray',
+  },
 }));
 
 const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
@@ -87,6 +126,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   const classes = useStyles(props);
   const [complete, setComplete] = React.useState(0);
   const [isFilterShown, setFilterShown] = React.useState(false);
+  const [isMenuShown, setMenuShown] = React.useState(false);
 
   /*
    * effect to load page when mounted
@@ -265,22 +305,66 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     }
   }
 
+  function handleToggleMenu(){
+    setMenuShown(!isMenuShown)
+  }
+
   return (
     <React.Fragment>
-      <Grid container>
-        <Grid
-          item
+      <Grid 
+        container
+        direction='column'
+      >
+        <Grid item>
+          <AppBar
+            color='white'
+            className={classes.appBar}
+          >
+            <Grid container direction='column'>
+              <Grid item>
+                <Grid container justify='space-between'>
+                  <Grid item>
+                    <IconButton>
+                      <MenuIcon onClick={handleToggleMenu}/>
+                    </IconButton>
+                    <IconLogo/>
+                  </Grid>
+                  <Grid item>
+                    <IconButton
+                      onClick={handleFilterClick}
+                    >
+                      <IconFilter />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              </Grid>
+              {isFilterShown &&
+              <Grid item>
+                <FilterTop
+                  isOpen={isFilterShown}
+                  onSubmit={filter => {
+                    props.verityDispatch.updateFilter(filter);
+                  }}
+                  filter={props.verityState.filter}
+                  onClose={handleFilterClick}
+                />
+              </Grid>
+              }
+            </Grid>
+          </AppBar>
+        </Grid>
+        <Grid 
+          item 
+          className={classes.body}
           style={{
-            width: isFilterShown
-              ? `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px`
-              : '100%'
+            marginTop: isFilterShown? 100:50,
           }}
         >
           <Grid container>
             <Grid
               item
               style={{
-                width: '100%'
+                width: '100%',
               }}
             >
               <Grid
@@ -408,20 +492,34 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             </Grid>
           </Grid>
         </Grid>
+      </Grid>
+      <SidePanel/>
+      {isMenuShown &&
+        <Menu
+          onClose={() => setMenuShown(false)}
+        />
+      }
+    </React.Fragment>
+  )
+
+  return (
+    <React.Fragment>
+      <Grid container>
+        <Grid
+          item
+          style={{
+            width: isFilterShown
+              ? `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px`
+              : '100%'
+          }}
+        >
+        </Grid>
         <Grid
           item
           style={{
             width: `${FILTER_WIDTH}px`
           }}
         >
-          <Filter
-            isOpen={isFilterShown}
-            onSubmit={filter => {
-              props.verityDispatch.updateFilter(filter);
-            }}
-            filter={props.verityState.filter}
-            onClose={handleFilterClick}
-          />
         </Grid>
       </Grid>
       {props.verityState.isApproveAllProcessing && (
@@ -478,6 +576,81 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     </React.Fragment>
   );
 };
+
+function SidePanel(props){
+  const classes = useStyles(props);
+  return (
+    <Drawer
+      variant='permanent'
+      anchor='right'
+      className={classes.sidePanel}
+      classes={{
+        paper: classes.drawerPaper
+      }}
+      elevation={11}
+    >
+      <Grid container direction={'column'} className={classes.sidePanelContainer}>
+        <Grid>
+          <Typography variant='h4' >Tags</Typography>
+        </Grid>
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <RadioGroup className={classes.radioGroup}>
+            <FormControlLabel value='Seedling' control={<Radio/>} label='Seedling' />
+            <FormControlLabel value='Direct seeding' control={<Radio/>} label='Direct seeding' />
+            <FormControlLabel value='Pruned/tied(FMNR)' control={<Radio/>} label='Pruned/tied(FMNR)' />
+          </RadioGroup>
+        </Grid>
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <RadioGroup className={classes.radioGroup}>
+            <FormControlLabel value='New tree(s)' control={<Radio/>} label='New tree(s)' />
+            <FormControlLabel value='> 2 years old' control={<Radio/>} label='> 2 years old' />
+          </RadioGroup>
+        </Grid>
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <RadioGroup className={classes.radioGroup}>
+            <FormControlLabel value='Create token' control={<Radio/>} label='Create token' />
+            <FormControlLabel value='No token' control={<Radio/>} label='No token' />
+          </RadioGroup>
+        </Grid>
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <Tabs 
+            indicatorColor='primary'
+            textColor='primary'
+            variant='fullWidth'
+            value={0}
+          >
+            <Tab label='APPROVE' 
+              id='full-width-tab-0'
+              aria-controls='full-width-tabpanel-0'
+            />
+            <Tab 
+              label='REJECT'
+              id='full-width-tab-0'
+              aria-controls='full-width-tabpanel-0'
+            />
+          </Tabs>
+          <RadioGroup>
+            <FormControlLabel value='Create token' control={<Radio/>} label='Simple leaf' />
+            <FormControlLabel value='No token' control={<Radio/>} label='Complex leaf' />
+            <FormControlLabel value='No token' control={<Radio/>} label='Acacia-like' />
+            <FormControlLabel value='No token' control={<Radio/>} label='Conifer' />
+            <FormControlLabel value='No token' control={<Radio/>} label='Fruit' />
+            <FormControlLabel value='No token' control={<Radio/>} label='Mangrove' />
+            <FormControlLabel value='No token' control={<Radio/>} label='Palm' />
+            <FormControlLabel value='No token' control={<Radio/>} label='Timber' />
+          </RadioGroup>
+        </Grid>
+        <Grid className={`${classes.sidePanelItem}`}>
+          <TextField placeholder='Note(optional)' ></TextField>
+        </Grid>
+        <Grid className={`${classes.sidePanelItem}`}>
+          <Button color='primary' >SUBMIT</Button>
+        </Grid>
+      </Grid>
+    </Drawer>
+  )
+}
+
 
 export default connect(
   //state
