@@ -60,8 +60,8 @@ const useStyles = makeStyles(theme => ({
     height: '12rem'
   },
   cardWrapper: {
-    width: '33.33%',
-    minWidth: 300
+    width: '25%',
+    minWidth: 265
   },
   title: {
     padding: theme.spacing(2, 16)
