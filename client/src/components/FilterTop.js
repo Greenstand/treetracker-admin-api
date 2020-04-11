@@ -52,6 +52,17 @@ const styles = theme => {
     input: {
       margin: theme.spacing(2),
     },
+    filterElement: {
+      marginLeft: 4,
+    },
+    textField: {
+      marginTop: 15,
+      width: 142,
+    },
+    apply: {
+      marginTop: 15,
+      marginLeft: 4,
+    },
   };
 };
 
@@ -106,8 +117,8 @@ function Filter(props) {
     filter.deviceId = deviceId;
     filter.planterIdentifier = planterIdentifier;
     filter.status = status;
-    filter.dateStart = formatDate(dateStart);
-    filter.dateEnd = formatDate(dateEnd);
+    filter.dateStart = dateStart? formatDate(dateStart) : undefined;
+    filter.dateEnd = dateEnd? formatDate(dateEnd) : undefined;
     filter.approved = approved;
     filter.active = active;
     props.onSubmit && props.onSubmit(filter);
@@ -122,44 +133,64 @@ function Filter(props) {
       {
         <Grid container>
           <Grid item className={classes.inputContainer}>
-            <FormControl className={classes.input}>
-              <InputLabel>Status</InputLabel>
-              <Select value={'1'}>
-                <MenuItem value='1' >Status</MenuItem>
-                <MenuItem value='2' >Status</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.input}>
-              <InputLabel>Time Created From</InputLabel>
-              <Select value={'1'}>
-                <MenuItem value='1' >01/01/2020</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.input}>
-              <InputLabel>To</InputLabel>
-              <Select value={'1'}>
-                <MenuItem value='1' >01/01/2020</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.input}>
-              <InputLabel>Planter Identifier</InputLabel>
-              <Select value={'1'}>
-                <MenuItem value='1' >Planter Identifier</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.input}>
-              <InputLabel>Planter ID</InputLabel>
-              <Select value={'1'}>
-                <MenuItem value='1' >Planter ID</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.input}>
-              <InputLabel>Tree ID</InputLabel>
-              <Select value={'1'}>
-                <MenuItem value='1' >Tree ID</MenuItem>
-              </Select>
-            </FormControl>
-            <Button variant='outlined' color='primary' onClick={handleSubmit}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                margin='normal'
+                id='start-date-picker'
+                label='Start Date'
+                format='MM/dd/yyyy'
+                value={dateStart}
+                onChange={handleDateStartChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date'
+                }}
+                className={`${classes.dateInput} ${classes.filterElement}`}
+              />
+              <KeyboardDatePicker
+                className={`${classes.filterElement}`}
+                margin='normal'
+                id='end-date-picker'
+                label='End Date'
+                format='MM/dd/yyyy'
+                value={dateEnd}
+                onChange={handleDateEndChange}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date'
+                }}
+                className={`${classes.dateInput} ${classes.filterElement}`}
+              />
+            </MuiPickersUtilsProvider>
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='Planter ID'
+              placeholder='Planter ID'
+              value={planterId}
+              onChange={e => setPlanterId(e.target.value)}
+            />
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='Tree ID'
+              placeholder='e.g. 80'
+              value={treeId}
+              onChange={e => setTreeId(e.target.value)}
+            />
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='Device ID'
+              placeholder='device id'
+              value={deviceId}
+              onChange={e => setDeviceId(e.target.value)}
+            />
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='Planter Identifier'
+              placeholder='planter identifier'
+              value={planterIdentifier}
+              onChange={e => setPlanterIdentifier(e.target.value)}
+            />
+            <Button 
+              className={classes.apply}
+              variant='outlined' color='primary' onClick={handleSubmit}>
               Apply 
             </Button>
           </Grid>

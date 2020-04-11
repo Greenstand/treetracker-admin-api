@@ -40,6 +40,7 @@ import alert		from '../components/common/alert';
 import notification		from '../components/common/notification';
 import Inspector from 'react-inspector';
 import TreeImage		from '../components/TreeImage';
+import FilterTop from '../components/FilterTop';
 
 storiesOf('Form', module)
 	.add('InputLabel', () => 
@@ -118,6 +119,17 @@ storiesOf('Filter', module)
 			<FilterControl/>
 		</ThemeProvider>
 	)
+
+storiesOf('FilterTop', module)
+  .add('FilterTop',
+    () =>
+		<ThemeProvider theme={themeNew} >
+			<FilterTop filter={new FilterModel()} isOpen={true} 
+        onSubmit={(e) => console.log(e)}
+      />
+		</ThemeProvider>
+	)
+
 
 storiesOf('Menu', module)
 	.add('Menu', () => (

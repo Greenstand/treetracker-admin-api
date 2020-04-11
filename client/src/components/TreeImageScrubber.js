@@ -125,7 +125,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   log.debug('complete:', props.verityState.approveAllComplete);
   const classes = useStyles(props);
   const [complete, setComplete] = React.useState(0);
-  const [isFilterShown, setFilterShown] = React.useState(false);
+  const [isFilterShown, setFilterShown] = React.useState(true);
   const [isMenuShown, setMenuShown] = React.useState(false);
 
   /*
@@ -179,10 +179,10 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     setComplete(props.verityState.approveAllComplete);
   }, [props.verityState.approveAllComplete]);
 
-  /* To update unverified tree count */
-  useEffect(() => {
-      props.verityDispatch.getTreeCount();
-  }, [props.verityState.treeImages]);
+//  /* To update unverified tree count */
+//  useEffect(() => {
+//      props.verityDispatch.getTreeCount();
+//  }, [props.verityState.treeImages]);
 
   function handleTreeClick(e, treeId) {
     e.stopPropagation();
@@ -317,7 +317,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
       >
         <Grid item>
           <AppBar
-            color='white'
+            color='default'
             className={classes.appBar}
           >
             <Grid container direction='column'>
@@ -499,6 +499,57 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           onClose={() => setMenuShown(false)}
         />
       }
+      {props.verityState.isApproveAllProcessing && (
+        <AppBar
+          position='fixed'
+          style={{
+            zIndex: 10000
+          }}
+        >
+          <LinearProgress
+            color='primary'
+            variant='determinate'
+            value={complete}
+          />
+        </AppBar>
+      )}
+      {props.verityState.isApproveAllProcessing && (
+        <Modal open={true}>
+          <div></div>
+        </Modal>
+      )}
+      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
+        props.verityState.treeImagesUndo.length > 0 && (
+          <Snackbar
+            open
+            autoHideDuration={15000}
+            ContentProps={{
+              className: classes.snackbarContent,
+              'aria-describedby': 'snackbar-fab-message-id'
+            }}
+            message={
+              <span id='snackbar-fab-message-id'>
+                You have { props.verityState.isBulkApproving ? ' approved ' : ' rejected '}
+                {props.verityState.treeImagesUndo.length}{' '}
+                trees
+              </span>
+            }
+            color='primary'
+            action={
+              <Button
+                color='inherit'
+                size='small'
+                onClick={async () => {
+                  const result = await props.verityDispatch.undoAll();
+                  log.log('finished');
+                }}
+              >
+                Undo
+              </Button>
+            }
+            className={classes.snackbar}
+          />
+        )}
     </React.Fragment>
   )
 
@@ -579,6 +630,8 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
 
 function SidePanel(props){
   const classes = useStyles(props);
+  const [switchApprove, handleSwitchApprove] = React.useState(0)
+
   return (
     <Drawer
       variant='permanent'
@@ -595,21 +648,21 @@ function SidePanel(props){
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup className={classes.radioGroup}>
-            <FormControlLabel value='Seedling' control={<Radio/>} label='Seedling' />
-            <FormControlLabel value='Direct seeding' control={<Radio/>} label='Direct seeding' />
-            <FormControlLabel value='Pruned/tied(FMNR)' control={<Radio/>} label='Pruned/tied(FMNR)' />
+            <FormControlLabel checked value='seedling' control={<Radio/>} label='Seedling' />
+            <FormControlLabel value='direct_seeding' control={<Radio/>} label='Direct seeding' />
+            <FormControlLabel value='fmnr' control={<Radio/>} label='Pruned/tied(FMNR)' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup className={classes.radioGroup}>
-            <FormControlLabel value='New tree(s)' control={<Radio/>} label='New tree(s)' />
-            <FormControlLabel value='> 2 years old' control={<Radio/>} label='> 2 years old' />
+            <FormControlLabel checked value='new_tree' control={<Radio/>} label='New tree(s)' />
+            <FormControlLabel value='over_two_years' control={<Radio/>} label='> 2 years old' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup className={classes.radioGroup}>
-            <FormControlLabel value='Create token' control={<Radio/>} label='Create token' />
-            <FormControlLabel value='No token' control={<Radio/>} label='No token' />
+            <FormControlLabel disabled value='Create token' control={<Radio/>} label='Create token' />
+            <FormControlLabel disabled value='No token' control={<Radio/>} label='No token' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
@@ -617,28 +670,48 @@ function SidePanel(props){
             indicatorColor='primary'
             textColor='primary'
             variant='fullWidth'
-            value={0}
+            value={switchApprove}
           >
             <Tab label='APPROVE' 
               id='full-width-tab-0'
               aria-controls='full-width-tabpanel-0'
+              onClick={() => handleSwitchApprove(0)}
             />
             <Tab 
               label='REJECT'
               id='full-width-tab-0'
               aria-controls='full-width-tabpanel-0'
+              onClick={() => handleSwitchApprove(1)}
             />
           </Tabs>
-          <RadioGroup>
-            <FormControlLabel value='Create token' control={<Radio/>} label='Simple leaf' />
-            <FormControlLabel value='No token' control={<Radio/>} label='Complex leaf' />
-            <FormControlLabel value='No token' control={<Radio/>} label='Acacia-like' />
-            <FormControlLabel value='No token' control={<Radio/>} label='Conifer' />
-            <FormControlLabel value='No token' control={<Radio/>} label='Fruit' />
-            <FormControlLabel value='No token' control={<Radio/>} label='Mangrove' />
-            <FormControlLabel value='No token' control={<Radio/>} label='Palm' />
-            <FormControlLabel value='No token' control={<Radio/>} label='Timber' />
-          </RadioGroup>
+          {switchApprove === 0 &&
+            <RadioGroup
+              value={captureApprovalTag}
+            >
+              <FormControlLabel value='simple_leaf' control={<Radio/>} label='Simple leaf' />
+              <FormControlLabel value='complex_leaf' control={<Radio/>} label='Complex leaf' />
+              <FormControlLabel value='acacia_like' control={<Radio/>} label='Acacia-like' />
+              <FormControlLabel value='conifer' control={<Radio/>} label='Conifer' />
+              <FormControlLabel value='fruit' control={<Radio/>} label='Fruit' />
+              <FormControlLabel value='mangrove' control={<Radio/>} label='Mangrove' />
+              <FormControlLabel value='plam' control={<Radio/>} label='Palm' />
+              <FormControlLabel value='timber' control={<Radio/>} label='Timber' />
+            </RadioGroup>
+          }
+          {switchApprove === 1 &&
+            <RadioGroup
+              value={rejection_reason}
+            >
+              <FormControlLabel checked value='not_tree' control={<Radio/>} label='Not a tree' />
+              <FormControlLabel value='unapproved_tree' control={<Radio/>} label='Not an approved tree' />
+              <FormControlLabel value='blurry_image' control={<Radio/>} label='Blurry photo' />
+              <FormControlLabel value='dead' control={<Radio/>} label='Dead' />
+              <FormControlLabel value='duplicate_image' control={<Radio/>} label='Duplicate photo' />
+              <FormControlLabel value='flag_user' control={<Radio/>} label='Flag user!' />
+              <FormControlLabel value='needs_contact_or_review' control={<Radio/>} label='Flag tree for contact/review' />
+            </RadioGroup>
+          }
+        
         </Grid>
         <Grid className={`${classes.sidePanelItem}`}>
           <TextField placeholder='Note(optional)' ></TextField>
