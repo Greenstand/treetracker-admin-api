@@ -1,4 +1,4 @@
-/* 
+/*
  * The Material-UI theme for the whole UI
  */
 import {createMuiTheme}		from '@material-ui/core/styles'
@@ -14,9 +14,9 @@ export default createMuiTheme({
 		//htmlFontSize		: 20,
 		fontFamily: [
 			'Lato',
-			'Roboto', 
-			'Helvetica', 
-			'Arial', 
+			'Roboto',
+			'Helvetica',
+			'Arial',
 			'sans-serif',
 		].join(','),
 		h5		: {
@@ -38,7 +38,7 @@ export default createMuiTheme({
 		action		: {
 			active		: 'rgba(135, 195, 46, .64)',
 			hover		: 'rgba(135, 195, 46, .08)',
-			selected		: 'rgba(135, 195, 46, .14)',
+			selected		: 'rgba(135, 195, 46, .32)',
 		},
   },
 	overrides		: {
@@ -127,7 +127,7 @@ export default createMuiTheme({
 					width: 30
 				},
 				'&:nth-child(8)': {
-					width: 200, 
+					width: 200,
 				},
 			}
 		}
