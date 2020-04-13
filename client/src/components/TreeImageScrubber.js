@@ -44,6 +44,17 @@ const useStyles = makeStyles(theme => ({
     color: '#f00'
   },
   card: {
+    '&:hover': {
+      margin: 0,
+      height: '100%',
+      '& $cardMedia': {
+        height: '13rem'
+      },
+      transition: theme.transitions.create('height', {
+        easing: theme.transitions.easing.easeInOut,
+        duration: '0.3s'
+      }),
+    },
     cursor: 'pointer',
     margin: '0.5rem'
   },
@@ -60,8 +71,9 @@ const useStyles = makeStyles(theme => ({
     height: '12rem'
   },
   cardWrapper: {
-    width: '25%',
-    minWidth: 265
+    width: '24%',
+    minWidth: 260,
+    margin: 2
   },
   title: {
     padding: theme.spacing(2, 16)
@@ -167,16 +179,18 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   let treeImageItems = props.verityState.treeImages.map(tree => {
     if (tree.imageUrl) {
       return (
-        <div className={classes.cardWrapper} key={tree.id}>
+        <div
+          className={clsx(
+            classes.cardWrapper,
+            props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
+              ? classes.cardSelected
+              : undefined
+          )} key={tree.id}
+        >
           <Card
             onClick={e => handleTreeClick(e, tree.id)}
             id={`card_${tree.id}`}
-            className={clsx(
-              classes.card,
-              props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
-                ? classes.cardSelected
-                : undefined
-            )}
+            className={classes.card}
             elevation={3}
           >
             <CardContent className={classes.cardContent}>
