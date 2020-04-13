@@ -44,17 +44,6 @@ const useStyles = makeStyles(theme => ({
     color: '#f00'
   },
   card: {
-    '&:hover': {
-      margin: 0,
-      height: '100%',
-      '& $cardMedia': {
-        height: '13rem'
-      },
-      transition: theme.transitions.create('height', {
-        easing: theme.transitions.easing.easeInOut,
-        duration: '0.3s'
-      }),
-    },
     cursor: 'pointer',
     margin: '0.5rem'
   },
@@ -71,6 +60,17 @@ const useStyles = makeStyles(theme => ({
     height: '12rem'
   },
   cardWrapper: {
+    '&:not($cardSelected) $card:hover': {
+      margin: 0,
+      height: '100%',
+      '& $cardMedia': {
+        height: '13rem'
+      },
+      transition: theme.transitions.create('height', {
+        easing: theme.transitions.easing.easeInOut,
+        duration: '0.3s'
+      }),
+    },
     width: '24%',
     minWidth: 260,
     margin: 2
