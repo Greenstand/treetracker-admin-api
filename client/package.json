@@ -34,7 +34,7 @@
     "typeface-roboto": "*"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT =9000 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom --setupTestFrameworkScriptFile=./src/testSetup.js",
     "eject": "react-scripts eject",

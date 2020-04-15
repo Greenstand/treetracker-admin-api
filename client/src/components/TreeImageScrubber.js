@@ -204,6 +204,28 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     window.open(url, '_blank').opener = null;
   }
 
+  async function handleSubmit(approveAction){
+    console.log('approveAction:', approveAction)
+    //check selection
+    if(props.verityState.treeImagesSelected.length === 0){
+      window.alert('Please select some tree')
+      return
+    }
+    const result = await props.verityDispatch.approveAll({approveAction});
+    if (result) {
+      //if all trees were approved, then, load more
+      if (
+        props.verityState.treeImagesSelected.length ===
+        props.verityState.treeImages.length
+      ) {
+        log.debug('all trees approved, reload');
+        props.verityDispatch.loadMoreTreeImages();
+      }
+    } else {
+      window.alert('sorry, failed to approve some picture');
+    }
+  }
+
   let treeImageItems = props.verityState.treeImages.map(tree => {
     if (tree.imageUrl) {
       return (
@@ -379,106 +401,10 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                       paddingTop: 20
                     }}
                   >
-                  {props.verityState.treeCount} trees to verify
+                  {false /* close counter*/&& props.verityState.treeCount} trees to verify
                   </Typography>
                 </Grid>
                 <Grid item>
-                  {/* close select all function
-									<FormControlLabel
-										control={
-											<Checkbox
-												color='primary'
-												checked={
-													props.verityState.treeImages.length > 0 &&
-													props.verityState.treeImagesSelected.length ===
-													props.verityState.treeImages.length
-												}
-												onClick={() => {
-														props.verityDispatch.selectAll(
-															props.verityState.treeImagesSelected.length !==
-															props.verityState.treeImages.length
-														)
-												}}
-											/>
-										}
-										label="Select All"
-									/>
-									*/}
-                  <Button
-                    style={{
-                      margin: 15
-                    }}
-                    color='primary'
-                    disabled={props.verityState.treeImagesSelected.length <= 0}
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          `Are you sure to reject these ${props.verityState.treeImagesSelected.length} trees?`
-                        )
-                      ) {
-                        const result = await props.verityDispatch.rejectAll();
-                        if (result) {
-                          //if all trees were rejected, then, load more
-                          if (
-                            props.verityState.treeImagesSelected.length ===
-                            props.verityState.treeImages.length
-                          ) {
-                            log.debug('all trees rejected, reload');
-                            props.verityDispatch.loadMoreTreeImages();
-                          }
-                        } else {
-                          window.alert('sorry, failed to reject some picture');
-                        }
-                      }
-                    }}
-                  >
-                    Reject all
-                    {props.verityState.treeImagesSelected.length > 0
-                      ? ` ${props.verityState.treeImagesSelected.length} trees`
-                      : ''}
-                  </Button>
-                  <Button
-                    style={{
-                      margin: 15
-                    }}
-                    color='primary'
-                    disabled={props.verityState.treeImagesSelected.length <= 0}
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          `Are you sure to approve these ${props.verityState.treeImagesSelected.length} trees?`
-                        )
-                      ) {
-                        const result = await props.verityDispatch.approveAll();
-                        if (result) {
-                          //if all trees were approved, then, load more
-                          if (
-                            props.verityState.treeImagesSelected.length ===
-                            props.verityState.treeImages.length
-                          ) {
-                            log.debug('all trees approved, reload');
-                            props.verityDispatch.loadMoreTreeImages();
-                          }
-                        } else {
-                          window.alert('sorry, failed to approve some picture');
-                        }
-                      }
-                    }}
-                  >
-                    Approve all
-                    {props.verityState.treeImagesSelected.length > 0
-                      ? ` ${props.verityState.treeImagesSelected.length} trees`
-                      : ''}
-                  </Button>
-                  <IconButton
-                    onClick={handleFilterClick}
-                    style={{
-                      marginTop: 8,
-                      marginRight: 16
-                    }}
-                  >
-                    <IconFilter />
-                  </IconButton>
                 </Grid>
               </Grid>
             </Grid>
@@ -493,7 +419,9 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           </Grid>
         </Grid>
       </Grid>
-      <SidePanel/>
+      <SidePanel
+        onSubmit={handleSubmit}
+      />
       {isMenuShown &&
         <Menu
           onClose={() => setMenuShown(false)}
@@ -518,7 +446,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           <div></div>
         </Modal>
       )}
-      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
+      {false /* close undo */&& !props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
         props.verityState.treeImagesUndo.length > 0 && (
           <Snackbar
             open
@@ -631,6 +559,26 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
 function SidePanel(props){
   const classes = useStyles(props);
   const [switchApprove, handleSwitchApprove] = React.useState(0)
+  const [morphology, handleMorphology] = React.useState('seedling')
+  const [age, handleAge] = React.useState('new_tree')
+  const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_leaf')
+  const [rejectionReason, handleRejectionReason] = React.useState('not_tree')
+
+  function handleSubmit(){
+    const approveAction = switchApprove === 0?
+      {
+        isApproved: true,
+        morphology,
+        age,
+        captureApprovalTag,
+      }
+    :
+      {
+        isApproved: false,
+        rejectionReason,
+      }
+    props.onSubmit(approveAction)
+  }
 
   return (
     <Drawer
@@ -647,14 +595,14 @@ function SidePanel(props){
           <Typography variant='h4' >Tags</Typography>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
-          <RadioGroup className={classes.radioGroup}>
-            <FormControlLabel checked value='seedling' control={<Radio/>} label='Seedling' />
+          <RadioGroup value={morphology} className={classes.radioGroup}>
+            <FormControlLabel value='seedling' control={<Radio/>} label='Seedling' />
             <FormControlLabel value='direct_seeding' control={<Radio/>} label='Direct seeding' />
             <FormControlLabel value='fmnr' control={<Radio/>} label='Pruned/tied(FMNR)' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
-          <RadioGroup className={classes.radioGroup}>
+          <RadioGroup value={age} className={classes.radioGroup}>
             <FormControlLabel checked value='new_tree' control={<Radio/>} label='New tree(s)' />
             <FormControlLabel value='over_two_years' control={<Radio/>} label='> 2 years old' />
           </RadioGroup>
@@ -700,7 +648,7 @@ function SidePanel(props){
           }
           {switchApprove === 1 &&
             <RadioGroup
-              value={rejection_reason}
+              value={rejectionReason}
             >
               <FormControlLabel checked value='not_tree' control={<Radio/>} label='Not a tree' />
               <FormControlLabel value='unapproved_tree' control={<Radio/>} label='Not an approved tree' />
@@ -717,7 +665,7 @@ function SidePanel(props){
           <TextField placeholder='Note(optional)' ></TextField>
         </Grid>
         <Grid className={`${classes.sidePanelItem}`}>
-          <Button color='primary' >SUBMIT</Button>
+          <Button onClick={handleSubmit} color='primary' >SUBMIT</Button>
         </Grid>
       </Grid>
     </Drawer>

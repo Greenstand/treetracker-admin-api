@@ -17,8 +17,8 @@ describe('verity', () => {
 		api.getTreeImages		= jest.fn(() => Promise.resolve([{
 				id		: '1',
 			}]));
-		api.approveTreeImage		= () => Promise.resolve(true);
-		api.rejectTreeImage		= () => Promise.resolve(true);
+		api.approveTreeImage		= jest.fn(() => Promise.resolve(true));
+		api.rejectTreeImage		= jest.fn(() => Promise.resolve(true));
 		api.undoTreeImage		= () => Promise.resolve(true);
     api.getUnverifiedTreeCount = () => Promise.resolve({
       count   : 1
@@ -76,30 +76,63 @@ describe('verity', () => {
         })
       })
 
-			describe('approveTreeImage(1)', () => {
+			describe('approveTreeImage(1, {seedling, new_tree, simple_lead})', () => {
 				//{{{
+        let approveAction = {
+          morphology: 'seedling',
+          age: 'new_tree',
+          isApproved: true,
+          captureApprovalTag: 'simple_lead',
+        }
 				beforeEach(async () => {
-					const result		= await store.dispatch.verity.approveTreeImage('1');
+					const result		= await store.dispatch.verity.approve(
+            {
+              id: '1',
+              approveAction,
+            }
+          );
 					expect(result).toBe(true)
 				})
 
 				it('state tree list should removed the tree, so, get []', () => {
 					expect(store.getState().verity.treeImages).toHaveLength(0)
 				})
+
+        it('api.approve should be called by : id, seedling...', () => {
+          console.log(api.approveTreeImage.mock)
+					expect(api.approveTreeImage.mock.calls[0]).toMatchObject(
+            ['1', 'seedling', 'new_tree', 'simple_lead']
+          )
+        })
 
 				//}}}
 			})
 
-			describe('rejectTreeImage(1)', () => {
+			describe('rejectTreeImage(1, not_tree)', () => {
 				//{{{
+        let approveAction = {
+          isApproved: false,
+          rejectionReason: 'not_tree',
+        }
 				beforeEach(async () => {
-					const result		= await store.dispatch.verity.rejectTreeImage('1');
+					const result		= await store.dispatch.verity.approve(
+            {
+              id: '1',
+              approveAction,
+            });
 					expect(result).toBe(true)
 				})
 
 				it('state tree list should removed the tree, so, get []', () => {
 					expect(store.getState().verity.treeImages).toHaveLength(0)
 				})
+
+        it('api.reject should be called by : id, not_tree ...', () => {
+          console.log(api.approveTreeImage.mock)
+					expect(api.rejectTreeImage.mock.calls[0]).toMatchObject(
+            ['1', 'not_tree']
+          )
+        })
 
 				//}}}
 			})
@@ -250,8 +283,14 @@ describe('verity', () => {
 
 				describe('approveAll()', () => {
 					//{{{
+          let approveAction = {
+            morphology: 'seedling',
+            age: 'new_tree',
+            isApproved: true,
+            captureApprovalTag: 'simple_leaf',
+          }
 					beforeEach(async () => {
-						await store.dispatch.verity.approveAll();
+						await store.dispatch.verity.approveAll({approveAction});
 					})
 
 					it('isBulkApproving === true', () => {
@@ -259,6 +298,7 @@ describe('verity', () => {
 					})
 
 					it('tree images should be 7', () => {
+            console.error('tree:', store.getState().verity.treeImages)
 						expect(store.getState().verity.treeImages).toHaveLength(7)
 					})
 
@@ -274,39 +314,49 @@ describe('verity', () => {
 						expect(store.getState().verity.treeImagesUndo).toHaveLength(3)
 					})
 
-					describe('undoAll()', () => {
-						//{{{
-						beforeEach(async () => {
-							await store.dispatch.verity.undoAll()
-						})
+          it('api.approve should be called with ...', () => {
+            expect(api.approveTreeImage.mock.calls[0]).toMatchObject(
+              [7, 'seedling','new_tree','simple_leaf']
+            )
+          })
 
-						it('tree list should restore to 10', () => {
-							expect(store.getState().verity.treeImages).toHaveLength(10)
-						})
-
-						it('isBulkApproving === false', () => {
-							expect(store.getState().verity.isBulkApproving).toBe(false)
-						})
-
-						it('tree list order should be correct', () => {
-							expect(store.getState().verity.treeImages.map(tree => tree.id)).toMatchObject(
-								[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-							)
-						})
-						//}}}
-					})
+//					describe('undoAll()', () => {
+//						//{{{
+//						beforeEach(async () => {
+//							await store.dispatch.verity.undoAll()
+//						})
+//
+//						it('tree list should restore to 10', () => {
+//							expect(store.getState().verity.treeImages).toHaveLength(10)
+//						})
+//
+//						it('isBulkApproving === false', () => {
+//							expect(store.getState().verity.isBulkApproving).toBe(false)
+//						})
+//
+//						it('tree list order should be correct', () => {
+//							expect(store.getState().verity.treeImages.map(tree => tree.id)).toMatchObject(
+//								[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+//							)
+//						})
+//						//}}}
+//					})
 
 					//}}}
 				})
 
 				describe('rejectAll()', () => {
 					//{{{
+          let approveAction = {
+            isApproved: false,
+            rejectionReason: 'not_tree',
+          }
 					beforeEach(async () => {
-						await store.dispatch.verity.rejectAll();
+						await store.dispatch.verity.approveAll({approveAction});
 					})
 
-					it('isBulkRejecting === true', () => {
-						expect(store.getState().verity.isBulkRejecting).toBe(true)
+					it('isBulkApproving === true', () => {
+						expect(store.getState().verity.isBulkApproving).toBe(true)
 					})
 
 					it('tree images should be 7', () => {
@@ -325,27 +375,33 @@ describe('verity', () => {
 						expect(store.getState().verity.treeImagesUndo).toHaveLength(3)
 					})
 
-					describe('undoAll()', () => {
-						//{{{
-						beforeEach(async () => {
-							await store.dispatch.verity.undoAll()
-						})
+          it('api.approve should be called with ...', () => {
+            expect(api.rejectTreeImage.mock.calls[0]).toMatchObject(
+              [7, 'not_tree']
+            )
+          })
 
-						it('isBulkRejecting === false', () => {
-							expect(store.getState().verity.isBulkRejecting).toBe(false)
-						})
-
-						it('tree list should restore to 10', () => {
-							expect(store.getState().verity.treeImages).toHaveLength(10)
-						})
-
-						it('tree list order should be correct', () => {
-							expect(store.getState().verity.treeImages.map(tree => tree.id)).toMatchObject(
-								[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-							)
-						})
-						//}}}
-					})
+//					describe('undoAll()', () => {
+//						//{{{
+//						beforeEach(async () => {
+//							await store.dispatch.verity.undoAll()
+//						})
+//
+//						it('isBulkRejecting === false', () => {
+//							expect(store.getState().verity.isBulkRejecting).toBe(false)
+//						})
+//
+//						it('tree list should restore to 10', () => {
+//							expect(store.getState().verity.treeImages).toHaveLength(10)
+//						})
+//
+//						it('tree list order should be correct', () => {
+//							expect(store.getState().verity.treeImages.map(tree => tree.id)).toMatchObject(
+//								[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+//							)
+//						})
+//						//}}}
+//					})
 
 					//}}}
 				})
