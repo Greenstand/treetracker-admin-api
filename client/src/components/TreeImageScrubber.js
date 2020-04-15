@@ -125,7 +125,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   log.debug('complete:', props.verityState.approveAllComplete);
   const classes = useStyles(props);
   const [complete, setComplete] = React.useState(0);
-  const [isFilterShown, setFilterShown] = React.useState(true);
+  const [isFilterShown, setFilterShown] = React.useState(false);
   const [isMenuShown, setMenuShown] = React.useState(false);
 
   /*
@@ -561,7 +561,7 @@ function SidePanel(props){
   const [switchApprove, handleSwitchApprove] = React.useState(0)
   const [morphology, handleMorphology] = React.useState('seedling')
   const [age, handleAge] = React.useState('new_tree')
-  const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_leaf')
+  const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_lead')
   const [rejectionReason, handleRejectionReason] = React.useState('not_tree')
 
   function handleSubmit(){
@@ -596,15 +596,29 @@ function SidePanel(props){
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup value={morphology} className={classes.radioGroup}>
-            <FormControlLabel value='seedling' control={<Radio/>} label='Seedling' />
-            <FormControlLabel value='direct_seeding' control={<Radio/>} label='Direct seeding' />
-            <FormControlLabel value='fmnr' control={<Radio/>} label='Pruned/tied(FMNR)' />
+            <FormControlLabel 
+              value='seedling' 
+              onClick={() => handleMorphology('seedling')} 
+              control={<Radio/>} 
+              label='Seedling' />
+            <FormControlLabel 
+              value='direct_seedling' 
+              control={<Radio/>} 
+              onClick={() => handleMorphology('direct_seedling')}
+              label='Direct seeding' />
+            <FormControlLabel 
+              onClick={() => handleMorphology('fmnr')}
+              value='fmnr' control={<Radio/>} label='Pruned/tied(FMNR)' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup value={age} className={classes.radioGroup}>
-            <FormControlLabel checked value='new_tree' control={<Radio/>} label='New tree(s)' />
-            <FormControlLabel value='over_two_years' control={<Radio/>} label='> 2 years old' />
+            <FormControlLabel 
+              onClick={() => handleAge('new_tree')}
+              value='new_tree' control={<Radio/>} label='New tree(s)' />
+            <FormControlLabel 
+              onClick={() => handleAge('over_two_years')}
+              value='over_two_years' control={<Radio/>} label='> 2 years old' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
@@ -636,27 +650,57 @@ function SidePanel(props){
             <RadioGroup
               value={captureApprovalTag}
             >
-              <FormControlLabel value='simple_leaf' control={<Radio/>} label='Simple leaf' />
-              <FormControlLabel value='complex_leaf' control={<Radio/>} label='Complex leaf' />
-              <FormControlLabel value='acacia_like' control={<Radio/>} label='Acacia-like' />
-              <FormControlLabel value='conifer' control={<Radio/>} label='Conifer' />
-              <FormControlLabel value='fruit' control={<Radio/>} label='Fruit' />
-              <FormControlLabel value='mangrove' control={<Radio/>} label='Mangrove' />
-              <FormControlLabel value='plam' control={<Radio/>} label='Palm' />
-              <FormControlLabel value='timber' control={<Radio/>} label='Timber' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('simple_lead')}
+                value='simple_lead' control={<Radio/>} label='Simple leaf' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('complex_leaf')}
+                value='complex_leaf' control={<Radio/>} label='Complex leaf' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('acacia_like')}
+                value='acacia_like' control={<Radio/>} label='Acacia-like' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('conifer')}
+                value='conifer' control={<Radio/>} label='Conifer' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('fruit')}
+                value='fruit' control={<Radio/>} label='Fruit' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('mangrove')}
+                value='mangrove' control={<Radio/>} label='Mangrove' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('plam')}
+                value='plam' control={<Radio/>} label='Palm' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('timber')}
+                value='timber' control={<Radio/>} label='Timber' />
             </RadioGroup>
           }
           {switchApprove === 1 &&
             <RadioGroup
               value={rejectionReason}
             >
-              <FormControlLabel checked value='not_tree' control={<Radio/>} label='Not a tree' />
-              <FormControlLabel value='unapproved_tree' control={<Radio/>} label='Not an approved tree' />
-              <FormControlLabel value='blurry_image' control={<Radio/>} label='Blurry photo' />
-              <FormControlLabel value='dead' control={<Radio/>} label='Dead' />
-              <FormControlLabel value='duplicate_image' control={<Radio/>} label='Duplicate photo' />
-              <FormControlLabel value='flag_user' control={<Radio/>} label='Flag user!' />
-              <FormControlLabel value='needs_contact_or_review' control={<Radio/>} label='Flag tree for contact/review' />
+              <FormControlLabel 
+                onClick={() => handleRejectionReason('not_tree')}
+                value='not_tree' control={<Radio/>} label='Not a tree' />
+              <FormControlLabel 
+                onClick={() => handleRejectionReason('unapproved_tree')}
+                value='unapproved_tree' control={<Radio/>} label='Not an approved tree' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('blurry_image')}
+                value='blurry_image' control={<Radio/>} label='Blurry photo' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('dead')}
+                value='dead' control={<Radio/>} label='Dead' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('duplicate_image')}
+                value='duplicate_image' control={<Radio/>} label='Duplicate photo' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('flag_user')}
+                value='flag_user' control={<Radio/>} label='Flag user!' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('needs_contact_or_review')}
+                value='needs_contact_or_review' control={<Radio/>} label='Flag tree for contact/review' />
             </RadioGroup>
           }
         

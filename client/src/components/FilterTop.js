@@ -59,6 +59,10 @@ const styles = theme => {
       marginTop: 15,
       width: 142,
     },
+    textFieldSelect: {
+      marginTop: 17,
+      width: 142,
+    },
     apply: {
       marginTop: 15,
       marginLeft: 4,
@@ -133,6 +137,55 @@ function Filter(props) {
       {
         <Grid container>
           <Grid item className={classes.inputContainer}>
+            <TextField
+              select
+              className={`${classes.textFieldSelect} ${classes.filterElement}`}
+              label='Approved'
+              value={
+                approved === undefined ? 'All' : approved === true ? 'true' : 'false'
+              }
+              onChange={e =>
+                setApproved(
+                  e.target.value === 'All'
+                    ? undefined
+                    : e.target.value === 'true'
+                    ? true
+                    : false
+                )
+              }
+            >
+              {['All', 'true', 'false'].map(name => (
+                <MenuItem key={name} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              select
+              className={`${classes.textFieldSelect} ${classes.filterElement}`}
+              label='Rejected'
+              value={
+                active === undefined ? 'All' : active === true ? 'false' : 'true'
+              }
+              InputLabelProps={{
+                shrink: true
+              }}
+              onChange={e =>
+                setActive(
+                  e.target.value === 'All'
+                    ? undefined
+                    : e.target.value === 'true'
+                    ? false
+                    : true
+                )
+              }
+            >
+              {['All', 'false', 'true'].map(name => (
+                <MenuItem key={name} value={name}>
+                  {name}
+                </MenuItem>
+              ))}
+            </TextField>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
                 margin='normal'
