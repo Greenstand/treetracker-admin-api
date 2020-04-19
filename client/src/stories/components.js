@@ -41,6 +41,13 @@ import notification		from '../components/common/notification';
 import Inspector from 'react-inspector';
 import TreeImage		from '../components/TreeImage';
 import FilterTop from '../components/FilterTop';
+import Species from '../components/Species';
+import { init } from '@rematch/core'
+import { Provider } from 'react-redux'
+import * as models from '../models'
+import api		from '../api/treeTrackerApi';
+
+const store = init({ models });
 
 storiesOf('Form', module)
 	.add('InputLabel', () => 
@@ -400,3 +407,40 @@ function TestTreeImageList(){
 storiesOf('tree', module)
 	.add('image', () => <TestTreeImage/>)
 	.add('imageList', () => <TestTreeImageList/>)
+
+function TestSpecies(){
+  //mock api
+  api.getSpecies = () => {
+    return [
+      {
+        id: 0,
+        name: 'apple',
+      },{
+        id: 1,
+        name: 'pineapple',
+      }
+    ]
+  }
+
+  const species = [
+    {
+      id: 0,
+      name: 'apple',
+    },{
+      id: 1,
+      name: 'orange',
+    }
+  ]
+  return(
+		<Provider
+			store={store}
+		>
+      <ThemeProvider theme={themeNew} >
+        <Species/>
+      </ThemeProvider>
+		</Provider>
+  )
+}
+
+storiesOf('species', module)
+  .add('species', () => <TestSpecies/>)

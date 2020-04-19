@@ -29,6 +29,7 @@ import Radio from '@material-ui/core/Radio';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
+import Species from './Species';
 
 import Filter, { FILTER_WIDTH } from './Filter';
 import FilterTop from './FilterTop';
@@ -211,6 +212,24 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
       window.alert('Please select some tree')
       return
     }
+    const isNew = await props.speciesDispatch.isNewSpecies()
+    if(isNew){
+      const answer = await new Promise((resolve, reject) => {
+        if(window.confirm(`The species ${props.speciesState.speciesInput} is a new one, create it?`)){
+          resolve(true)
+        }else{
+          resolve(false)
+        }
+      })
+      if(!answer){
+        return
+      }else{
+        //create new species
+        const species = await props.speciesDispatch.createSpecies()
+        approveAction.speciesId = species.id
+      }
+    }
+    console.log('species text:', props.speciesState.speciesInput)
     const result = await props.verityDispatch.approveAll({approveAction});
     if (result) {
       //if all trees were approved, then, load more
@@ -563,6 +582,7 @@ function SidePanel(props){
   const [age, handleAge] = React.useState('new_tree')
   const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_lead')
   const [rejectionReason, handleRejectionReason] = React.useState('not_tree')
+  const speciesRef = React.useRef(null)
 
   function handleSubmit(){
     const approveAction = switchApprove === 0?
@@ -626,6 +646,12 @@ function SidePanel(props){
             <FormControlLabel disabled value='Create token' control={<Radio/>} label='Create token' />
             <FormControlLabel disabled value='No token' control={<Radio/>} label='No token' />
           </RadioGroup>
+        </Grid>
+        <Grid>
+          <Typography variant='h6'>Species(if known)</Typography>
+          <Species
+            ref={speciesRef}
+          />
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <Tabs 
@@ -720,10 +746,12 @@ function SidePanel(props){
 export default connect(
   //state
   state => ({
-    verityState: state.verity
+    verityState: state.verity,
+    speciesState: state.species,
   }),
   //dispatch
   dispatch => ({
-    verityDispatch: dispatch.verity
+    verityDispatch: dispatch.verity,
+    speciesDispatch: dispatch.species,
   })
 )(TreeImageScrubber);

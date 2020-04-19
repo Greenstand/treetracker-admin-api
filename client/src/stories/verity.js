@@ -77,6 +77,18 @@ storiesOf('verity', module)
 			api.approveTreeImage		= () => new Promise(r => setTimeout(() => r(true), 500))
 			api.rejectTreeImage		= () => new Promise(r => setTimeout(() => r(true), 500))
 			api.undoTreeImage		= () => new Promise(r => setTimeout(() => r(true), 500))
+      api.getSpecies = () => {
+        return [
+          {
+            id: 0,
+            name: 'apple',
+          },{
+            id: 1,
+            name: 'pineapple2',
+          }
+        ]
+      }
+
 			return (
 				<TestVerity/>
 			)
