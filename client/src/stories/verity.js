@@ -88,6 +88,12 @@ storiesOf('verity', module)
           }
         ]
       }
+      api.createSpecies =() => {
+        return {
+          id: 108,
+          name: 'orange',
+        }
+      }
 
 			return (
 				<TestVerity/>

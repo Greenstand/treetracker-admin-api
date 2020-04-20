@@ -93,8 +93,8 @@ export class SpeciesController {
   })
   async create(
     @requestBody() species: Species,
-  ): Promise<void> {
-    await this.speciesRepository.create(species);
+  ): Promise<Species> {
+    return await this.speciesRepository.create(species);
   }
 
 }

@@ -94,5 +94,29 @@ export default {
   getUnverifiedTreeCount() {
     const query = `${baseUrl}/trees/count?where[approved]=false&where[active]=true`;
     return fetch(query).then(handleResponse).catch(handleError);
-  }
+  },
+  /*
+   * get species list
+   */
+  getSpecies() {
+    const query = `${baseUrl}/species`;
+    return fetch(query, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
+   * create new species
+   */
+  createSpecies(name) {
+    const query = `${baseUrl}/species`;
+    return fetch(query, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
 };

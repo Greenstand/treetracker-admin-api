@@ -27,7 +27,8 @@ const species = {
 	},
 	effects		: {
     async loadSpeciesList(){
-      const speciesList = api.getSpecies()
+      const speciesList = await api.getSpecies()
+      log.debug('load species from api:', speciesList.length)
       this.setSpeciseList(speciesList)
     },
     onChange(text){
@@ -47,8 +48,11 @@ const species = {
       )
       return state.species.speciesList.every(c => c.name !== state.species.speciesInput)
     },
-    async createSpecies(name){
-      const species = await api.createSpecies(name)
+    async createSpecies(payload, state){
+      const species = await api.createSpecies(state.species.speciesInput)
+      console.debug('created new species:', species)
+      //update the list
+      this.setSpeciseList([species, ...state.species.speciesList])
       return species
     },
 	},

@@ -212,6 +212,9 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
       window.alert('Please select some tree')
       return
     }
+    /*
+     * check species
+     */
     const isNew = await props.speciesDispatch.isNewSpecies()
     if(isNew){
       const answer = await new Promise((resolve, reject) => {
