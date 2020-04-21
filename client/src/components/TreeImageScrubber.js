@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
   wrapper: {
     display: 'flex',
     flexWrap: 'wrap',
-    padding: theme.spacing(2, 16, 16, 16),
+    padding: theme.spacing(2, 16, 4, 16),
     userSelect: 'none'
   },
   cardImg: {
@@ -111,7 +111,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
   },
   sidePanelItem: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(1),
   },
   radioGroup: {
     flexDirection : 'row',
@@ -229,10 +229,13 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
       }else{
         //create new species
         const species = await props.speciesDispatch.createSpecies()
-        approveAction.speciesId = species.id
       }
     }
-    console.log('species text:', props.speciesState.speciesInput)
+    const speciesId = await props.speciesDispatch.getSpeciesId()
+    if(speciesId){
+        approveAction.speciesId = speciesId
+        console.log('species id:', speciesId)
+    }
     const result = await props.verityDispatch.approveAll({approveAction});
     if (result) {
       //if all trees were approved, then, load more
@@ -615,7 +618,7 @@ function SidePanel(props){
     >
       <Grid container direction={'column'} className={classes.sidePanelContainer}>
         <Grid>
-          <Typography variant='h4' >Tags</Typography>
+          <Typography variant='h5' >Tags</Typography>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup value={morphology} className={classes.radioGroup}>

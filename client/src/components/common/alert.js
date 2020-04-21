@@ -11,7 +11,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as d3		from 'd3-selection';
 import theme		from './theme';
-import {ThemeProvider, useTheme, }		from '@material-ui/styles';
+import {ThemeProvider, useTheme, }		from '@material-ui/core/styles';
 
 export default function alert(
 		title,

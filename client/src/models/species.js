@@ -55,6 +55,22 @@ const species = {
       this.setSpeciseList([species, ...state.species.speciesList])
       return species
     },
+    /*
+     * to get the species id according the input
+     */
+    getSpeciesId(payload, state){
+      if(state.species.speciesInput){
+          return state.species.speciesList.reduce((a,c) => {
+            if(a){
+              return a
+            }else if(c.name === state.species.speciesInput){
+              return c.id
+            }else{
+              return a
+            }
+          }, undefined)
+      }
+    },
 	},
 }
 

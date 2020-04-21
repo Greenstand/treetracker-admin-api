@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {ThemeProvider}		from '@material-ui/styles';
+import {ThemeProvider}		from '@material-ui/core/styles';
 import MainFrame		from './components/MainFrame';
 import theme		from './components/common/theme';
 

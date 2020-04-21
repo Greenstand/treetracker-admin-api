@@ -232,12 +232,12 @@ export class Trees extends Entity {
   age?: String;
 
   @property({
-    type: String,
+    type: Number,
     required: false,
-    length: 255,
-    postgresql: {"columnName":"species","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    scale: 0,
+    postgresql: {"columnName":"species_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
   })
-  species?: String;
+  speciesId?: Number;
 
   @property({
     type: String,

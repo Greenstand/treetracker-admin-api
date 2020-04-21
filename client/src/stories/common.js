@@ -4,7 +4,7 @@ import IconLogo		from '../components/IconLogo';
 import themeNew		from '../components/common/theme';
 import Typography		from '@material-ui/core/Typography';
 import {withTheme}		from '@material-ui/core/styles';
-import {ThemeProvider, useTheme, }		from '@material-ui/styles';
+import {ThemeProvider, useTheme, }		from '@material-ui/core/styles';
 import Button		from '@material-ui/core/Button';
 import Box		from '@material-ui/core/Box';
 import TextField		from '@material-ui/core/TextField';
@@ -183,8 +183,12 @@ storiesOf('MatirialUITheme', module)
 			<TypographyTest/>
 		</ThemeProvider>
 	)
-	.add('Palette', () => 
+	.add('Palette', () => {
+    console.log('the theme:', themeNew)
+    return (
 		<ThemeProvider theme={themeNew} >
 			<PaletteTest/>
 		</ThemeProvider>
+    )
+  }
 	)

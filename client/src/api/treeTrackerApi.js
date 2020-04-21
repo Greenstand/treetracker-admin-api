@@ -38,6 +38,7 @@ export default {
     morphology,
     age,
     captureApprovalTag,
+    speciesId,
   ) {
     const query = `${baseUrl}/trees/${id}`;
     return fetch(query, {
@@ -52,6 +53,7 @@ export default {
         morphology,
         age,
         captureApprovalTag,
+        speciesId: speciesId,
       })
     })
       .then(handleResponse)
@@ -113,8 +115,14 @@ export default {
   createSpecies(name) {
     const query = `${baseUrl}/species`;
     return fetch(query, {
-      method: "GET",
+      method: "POST",
       headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        desc: name,
+        active: 0,
+        valueFactor: 0,
+      })
     })
       .then(handleResponse)
       .catch(handleError);

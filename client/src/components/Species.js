@@ -2,6 +2,18 @@ import React from 'react'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {connect} from 'react-redux'
+import { withStyles } from '@material-ui/styles';
+
+const styles = theme => {
+  return {
+    root: {
+      color: 'red',
+      '& div': {
+        padding: '0px !important',
+      },
+    },
+  }
+}
 
 function Species(props){
   /* load species list when mount*/
@@ -20,18 +32,19 @@ function Species(props){
     onInputChange={(a,b,c) => {
       props.speciesDispatch.onChange(b || '')
     }}
+    className={props.classes.root}
     freeSolo={true}
     renderInput={(params) => 
       <TextField 
         {...params} 
-        label="Combo box" 
+        placeholder='e.g. Mango'
         variant="outlined" 
       />}
     />
   )
 }
 
-export default connect(
+export default withStyles(styles)(connect(
   //state
   state => ({
     speciesState: state.species
@@ -40,4 +53,4 @@ export default connect(
   dispatch => ({
     speciesDispatch: dispatch.species
   })
-)(Species);
+)(Species));

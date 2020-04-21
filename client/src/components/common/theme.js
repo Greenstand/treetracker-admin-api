@@ -4,6 +4,7 @@
 import {createMuiTheme}		from '@material-ui/core/styles'
 
 const colorPrimary		= '#76BB23'
+
 const colorPrimarySelected		= 'rgba(118, 187, 35, 0.3)'
 const colorPrimaryHover		= 'rgba(118, 187, 35, 0.1)'
 
