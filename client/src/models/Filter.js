@@ -12,6 +12,7 @@ export default class Filter{
 	planterId
 	deviceId
 	planterIdentifier
+  speciesId
 
 	constructor(options){
 		Object.assign(this, options)
@@ -56,6 +57,10 @@ export default class Filter{
 		if(this.planterIdentifier !== undefined && this.planterIdentifier.length > 0){
 			result		+= `&filter[where][planterIdentifier]=${this.planterIdentifier}`
 		}
+
+    if(this.speciesId){
+			result		+= `&filter[where][speciesId]=${this.speciesId}`
+    }
 
 		return result
 		//}}}

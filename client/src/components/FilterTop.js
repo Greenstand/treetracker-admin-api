@@ -16,6 +16,7 @@ import classNames from 'classnames';
 import DateFnsUtils from '@date-io/date-fns';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import {connect} from 'react-redux';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
@@ -87,6 +88,7 @@ function Filter(props) {
     filter.dateStart || dateStartDefault
   );
   const [dateEnd, setDateEnd] = useState(filter.dateEnd || dateEndDefault);
+  const [speciesId, setSpeciesId] = useState(0);
 
   const handleDateStartChange = date => {
     setDateStart(date);
@@ -125,6 +127,7 @@ function Filter(props) {
     filter.dateEnd = dateEnd? formatDate(dateEnd) : undefined;
     filter.approved = approved;
     filter.active = active;
+    filter.speciesId = speciesId;
     props.onSubmit && props.onSubmit(filter);
   }
 
@@ -241,6 +244,21 @@ function Filter(props) {
               value={planterIdentifier}
               onChange={e => setPlanterIdentifier(e.target.value)}
             />
+            <TextField
+              select
+              className={`${classes.textFieldSelect} ${classes.filterElement}`}
+              label='Species'
+              value={speciesId}
+              onChange={e =>
+                setSpeciesId(e.target.value)
+              }
+            >
+              {[{id:0,name:'all'}, ...props.speciesState.speciesList].map(species => (
+                <MenuItem key={species.id} value={species.id}>
+                  {species.name}
+                </MenuItem>
+              ))}
+            </TextField>
             <Button 
               className={classes.apply}
               variant='outlined' color='primary' onClick={handleSubmit}>
@@ -432,4 +450,12 @@ function Filter(props) {
 //export default compose(
 //  withStyles(styles, { withTheme: true, name: 'Filter' })
 //)(Filter)
-export default withStyles(styles)(Filter);
+export default withStyles(styles)(connect(
+  //state
+  state => ({
+    speciesState: state.species
+  }),
+  //dispatch
+  dispatch => ({
+  })
+)(Filter));
