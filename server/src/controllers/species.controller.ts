@@ -97,4 +97,17 @@ export class SpeciesController {
     return await this.speciesRepository.create(species);
   }
 
+  @del('/species/{id}', {
+    responses: {
+      '204': {
+        description: 'Species delete success',
+      },
+    },
+  })
+  async delete(
+    @param.path.number('id') id: number,
+  ): Promise<void>{
+    await this.speciesRepository.deleteById(id)
+  }
+
 }

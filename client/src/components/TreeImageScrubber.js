@@ -263,7 +263,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           <Tooltip
             arrow
             interactive
-            enterDelay={1000}
+            enterDelay={1500}
             classes={{
               tooltip: classes.tooltip,
             }}
