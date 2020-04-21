@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 import clsx from 'clsx';
+import Tooltip from '@material-ui/core/Tooltip';
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
 import { makeStyles } from '@material-ui/core/styles';
@@ -119,6 +120,10 @@ const useStyles = makeStyles(theme => ({
   bottomLine: {
     borderBottom : '1px solid lightgray',
   },
+  tooltip: {
+    maxWidth: 'none',
+  },
+
 }));
 
 const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
@@ -255,90 +260,48 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     if (tree.imageUrl) {
       return (
         <div className={classes.cardWrapper} key={tree.id}>
-          <Card
-            onClick={e => handleTreeClick(e, tree.id)}
-            id={`card_${tree.id}`}
-            className={clsx(
-              classes.card,
-              props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
-                ? classes.cardSelected
-                : undefined
-            )}
-            elevation={3}
+          <Tooltip
+            arrow
+            interactive
+            enterDelay={1000}
+            classes={{
+              tooltip: classes.tooltip,
+            }}
+            title={
+              <React.Fragment>
+                <img src={tree.imageUrl} />
+                <Typography variant='body2' gutterBottom>
+                  Tree# {tree.id}, Planter# {tree.planterId}, Device# {tree.deviceId}
+                </Typography>
+              </React.Fragment>
+            }
           >
-            <CardContent className={classes.cardContent}>
-              <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
-              <Typography variant='body2' gutterBottom>
-                Tree# {tree.id}, Planter# {tree.planterId}, Device# {tree.deviceId}
-              </Typography>
-            </CardContent>
-            <CardActions className={classes.cardActions}>
-              <Box>
-                <Button
-                  className={classes.button}
-                  color='secondary'
-                  size='small'
-                  onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    props.verityDispatch.rejectTreeImage(tree.id).then(() => {
-                      //after approve/reject, clear selection
-                      props.verityDispatch.resetSelection();
-                      //when finished, check if the list is empty, if true,
-                      //load more tree
-                      //why 1? because it is old state in hook
-                      if (props.verityState.treeImages.length === 1) {
-                        log.debug('empty, load more');
-                        props.verityDispatch.loadMoreTreeImages();
-                      } else {
-                        log.trace('not empty');
-                      }
-                    });
-                  }}
-                  disabled={tree.active === false}
-                >
-                  Reject
-                </Button>
-                <Button
-                  color='primary'
-                  size='small'
-                  onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    props.verityDispatch.approveTreeImage(tree.id).then(() => {
-                      //after approve/reject, clear selection
-                      props.verityDispatch.resetSelection();
-                      //when finished, check if the list is empty, if true,
-                      //load more tree
-                      //why 1? because it is old state in hook
-                      if (props.verityState.treeImages.length === 1) {
-                        log.debug('empty, load more');
-                        props.verityDispatch.loadMoreTreeImages();
-                      } else {
-                        log.trace(
-                          'not empty',
-                          props.verityState.treeImages.length
-                        );
-                      }
-                    });
-                  }}
-                  disabled={tree.approved === true}
-                >
-                  Approve
-                </Button>
-              </Box>
-              <Box>
+            <Card
+              onClick={e => handleTreeClick(e, tree.id)}
+              id={`card_${tree.id}`}
+              className={clsx(
+                classes.card,
+                props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
+                  ? classes.cardSelected
+                  : undefined
+              )}
+              elevation={3}
+            >
+              <CardContent className={classes.cardContent}>
+                <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
+              </CardContent>
+              <CardActions className={classes.cardActions}>
                 <TreePin
                   width='25px'
                   height='25px'
                   title={`Open Webmap for Tree# ${tree.id}`}
                   onClick={e => {
-                    handleTreePinClick(e, tree.id);
+                  handleTreePinClick(e, tree.id);
                   }}
                 />
-              </Box>
-            </CardActions>
-          </Card>
+              </CardActions>
+            </Card>
+          </Tooltip>
         </div>
       );
     }
