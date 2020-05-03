@@ -581,12 +581,14 @@ function SidePanel(props){
               value='over_two_years' control={<Radio/>} label='> 2 years old' />
           </RadioGroup>
         </Grid>
+        {/*
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup className={classes.radioGroup}>
             <FormControlLabel disabled value='Create token' control={<Radio/>} label='Create token' />
             <FormControlLabel disabled value='No token' control={<Radio/>} label='No token' />
           </RadioGroup>
         </Grid>
+        */}
         <Grid>
           <Typography variant='h6'>Species(if known)</Typography>
           <Species
