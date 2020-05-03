@@ -10,6 +10,13 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button'; // replace with icons down the line
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+
 import { selectedHighlightColor } from '../common/variables.js';
 import * as loglevel from 'loglevel';
 import Grid from '@material-ui/core/Grid';
@@ -17,6 +24,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Modal from '@material-ui/core/Modal';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import IconFilter from '@material-ui/icons/FilterList';
+import Image from '@material-ui/icons/Image';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -126,6 +134,10 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   log.debug('render TreeImageScrubber...');
   log.debug('complete:', props.verityState.approveAllComplete);
@@ -133,6 +145,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   const [complete, setComplete] = React.useState(0);
   const [isFilterShown, setFilterShown] = React.useState(false);
   const [isMenuShown, setMenuShown] = React.useState(false);
+  const [dialog, setDialog] = React.useState({isOpen: false, tree: {}});
 
   /*
    * effect to load page when mounted
@@ -256,52 +269,61 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     }
   }
 
+  function handleDialog(e, tree){
+    e.preventDefault();
+    e.stopPropagation();
+    setDialog({
+      isOpen: true,
+      tree,
+    })
+  }
+
+  function handleDialogClose(){
+    setDialog({
+      isOpen: false,
+      tree: {}
+    })
+  }
+
   let treeImageItems = props.verityState.treeImages.map(tree => {
     if (tree.imageUrl) {
       return (
         <div className={classes.cardWrapper} key={tree.id}>
-          <Tooltip
-            arrow
-            interactive
-            enterDelay={1500}
-            classes={{
-              tooltip: classes.tooltip,
-            }}
-            title={
-              <React.Fragment>
-                <img src={tree.imageUrl} />
-                <Typography variant='body2' gutterBottom>
-                  Tree# {tree.id}, Planter# {tree.planterId}, Device# {tree.deviceId}
-                </Typography>
-              </React.Fragment>
-            }
+          <Card
+            onClick={e => handleTreeClick(e, tree.id)}
+            id={`card_${tree.id}`}
+            className={clsx(
+              classes.card,
+              props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
+                ? classes.cardSelected
+                : undefined
+            )}
+            elevation={3}
           >
-            <Card
-              onClick={e => handleTreeClick(e, tree.id)}
-              id={`card_${tree.id}`}
-              className={clsx(
-                classes.card,
-                props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
-                  ? classes.cardSelected
-                  : undefined
-              )}
-              elevation={3}
-            >
-              <CardContent className={classes.cardContent}>
-                <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
-              </CardContent>
-              <CardActions className={classes.cardActions}>
-                <TreePin
-                  width='25px'
-                  height='25px'
-                  title={`Open Webmap for Tree# ${tree.id}`}
-                  onClick={e => {
-                  handleTreePinClick(e, tree.id);
-                  }}
-                />
-              </CardActions>
-            </Card>
-          </Tooltip>
+            <CardContent className={classes.cardContent}>
+              <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
+            </CardContent>
+            <CardActions className={classes.cardActions}>
+              <Grid 
+                justify='flex-end'
+                container>
+                <Grid item>
+                  <Image
+                    color='primary'
+                    onClick={e => handleDialog(e, tree)}
+                  />
+                  <TreePin
+                    width='25px'
+                    height='25px'
+                    title={`Open Webmap for Tree# ${tree.id}`}
+                    onClick={e => {
+                    handleTreePinClick(e, tree.id);
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </CardActions>
+          </Card>
         </div>
       );
     }
@@ -466,82 +488,31 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             className={classes.snackbar}
           />
         )}
+      <Dialog
+        open={dialog.isOpen}
+        TransitionComponent={Transition}
+      >
+        <DialogTitle>Tree Detail</DialogTitle>
+        <DialogContent>
+          <img src={dialog.tree.imageUrl} />
+        </DialogContent>
+        <DialogActions>
+          <Grid container justify="space-between" >
+            <Grid item>
+              <Typography variant='body2' color="primary" gutterBottom>
+                Tree #{dialog.tree.id}, 
+                Planter #{dialog.tree.planterId}, 
+                Device #{dialog.tree.deviceId}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button onClick={handleDialogClose}>Close</Button>
+            </Grid>
+          </Grid>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   )
-
-  return (
-    <React.Fragment>
-      <Grid container>
-        <Grid
-          item
-          style={{
-            width: isFilterShown
-              ? `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px`
-              : '100%'
-          }}
-        >
-        </Grid>
-        <Grid
-          item
-          style={{
-            width: `${FILTER_WIDTH}px`
-          }}
-        >
-        </Grid>
-      </Grid>
-      {props.verityState.isApproveAllProcessing && (
-        <AppBar
-          position='fixed'
-          style={{
-            zIndex: 10000
-          }}
-        >
-          <LinearProgress
-            color='primary'
-            variant='determinate'
-            value={complete}
-          />
-        </AppBar>
-      )}
-      {props.verityState.isApproveAllProcessing && (
-        <Modal open={true}>
-          <div></div>
-        </Modal>
-      )}
-      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
-        props.verityState.treeImagesUndo.length > 0 && (
-          <Snackbar
-            open
-            autoHideDuration={15000}
-            ContentProps={{
-              className: classes.snackbarContent,
-              'aria-describedby': 'snackbar-fab-message-id'
-            }}
-            message={
-              <span id='snackbar-fab-message-id'>
-                You have { props.verityState.isBulkApproving ? ' approved ' : ' rejected '}
-                {props.verityState.treeImagesUndo.length}{' '}
-                trees
-              </span>
-            }
-            color='primary'
-            action={
-              <Button
-                color='inherit'
-                size='small'
-                onClick={async () => {
-                  const result = await props.verityDispatch.undoAll();
-                  log.log('finished');
-                }}
-              >
-                Undo
-              </Button>
-            }
-            className={classes.snackbar}
-          />
-        )}
-    </React.Fragment>
-  );
 };
 
 function SidePanel(props){
