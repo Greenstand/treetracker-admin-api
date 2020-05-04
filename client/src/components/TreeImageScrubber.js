@@ -94,8 +94,8 @@ const useStyles = makeStyles(theme => ({
         duration: '0.3s'
       }),
     },
-    width: '24%',
-    minWidth: 260,
+    width: '30%',
+    minWidth: 300,
     margin: 2
   },
   title: {
