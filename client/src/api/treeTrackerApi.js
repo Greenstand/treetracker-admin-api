@@ -33,7 +33,13 @@ export default {
       .then(handleResponse)
       .catch(handleError);
   },
-  approveTreeImage(id) {
+  approveTreeImage(
+    id,
+    morphology,
+    age,
+    captureApprovalTag,
+    speciesId,
+  ) {
     const query = `${baseUrl}/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
@@ -43,13 +49,17 @@ export default {
         approved: true,
         //revise, if click approved on a rejected pic, then, should set the pic
         //approved, AND restore to ACTIVE = true
-        active: true
+        active: true,
+        morphology,
+        age,
+        captureApprovalTag,
+        speciesId: speciesId,
       })
     })
       .then(handleResponse)
       .catch(handleError);
   },
-  rejectTreeImage(id) {
+  rejectTreeImage(id, rejectionReason) {
     const query = `${baseUrl}/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
@@ -59,7 +69,8 @@ export default {
         active: false,
         //revise, if click a approved pic, then, should set active = false and
         //at the same time, should set approved to false
-        approved: false
+        approved: false,
+        rejectionReason,
       })
     })
       .then(handleResponse)
@@ -85,5 +96,35 @@ export default {
   getUnverifiedTreeCount() {
     const query = `${baseUrl}/trees/count?where[approved]=false&where[active]=true`;
     return fetch(query).then(handleResponse).catch(handleError);
-  }
+  },
+  /*
+   * get species list
+   */
+  getSpecies() {
+    const query = `${baseUrl}/species`;
+    return fetch(query, {
+      method: "GET",
+      headers: { "content-type": "application/json" },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
+   * create new species
+   */
+  createSpecies(name) {
+    const query = `${baseUrl}/species`;
+    return fetch(query, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        desc: name,
+        active: 0,
+        valueFactor: 0,
+      })
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
 };

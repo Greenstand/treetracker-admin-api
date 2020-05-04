@@ -1,14 +1,22 @@
 import React, { useEffect, useReducer } from 'react';
 import clsx from 'clsx';
+import Tooltip from '@material-ui/core/Tooltip';
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button'; // replace with icons down the line
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+
 import { selectedHighlightColor } from '../common/variables.js';
 import * as loglevel from 'loglevel';
 import Grid from '@material-ui/core/Grid';
@@ -16,24 +24,39 @@ import AppBar from '@material-ui/core/AppBar';
 import Modal from '@material-ui/core/Modal';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import IconFilter from '@material-ui/icons/FilterList';
+import Image from '@material-ui/icons/Image';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Snackbar from '@material-ui/core/Snackbar';
+import Drawer from '@material-ui/core/Drawer';
+import MenuIcon from '@material-ui/icons/Menu';
+import Toolbar from '@material-ui/core/Toolbar';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import TextField from '@material-ui/core/TextField';
+import Species from './Species';
 
 import Filter, { FILTER_WIDTH } from './Filter';
+import FilterTop from './FilterTop';
 import { MENU_WIDTH } from './common/Menu';
 import FilterModel from '../models/Filter';
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg';
+import IconLogo		from './IconLogo';
+import Menu from './common/Menu.js';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
+
+const SIDE_PANEL_WIDTH = 315;
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
     display: 'flex',
     flexWrap: 'wrap',
-    padding: theme.spacing(2, 16, 16, 16),
+    padding: theme.spacing(2, 16, 4, 16),
     userSelect: 'none'
   },
   cardImg: {
@@ -90,8 +113,42 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     marginRight: '8px'
-  }
+  },
+
+  appBar: {
+    width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`,
+    left: 0,
+    right: 'auto',
+  },
+  sidePanel: {
+  },
+  drawerPaper: {
+    width: SIDE_PANEL_WIDTH,
+  },
+  body: {
+    width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`,
+  },
+  sidePanelContainer: {
+    padding: theme.spacing(2),
+  },
+  sidePanelItem: {
+    marginTop: theme.spacing(1),
+  },
+  radioGroup: {
+    flexDirection : 'row',
+  },
+  bottomLine: {
+    borderBottom : '1px solid lightgray',
+  },
+  tooltip: {
+    maxWidth: 'none',
+  },
+
 }));
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   log.debug('render TreeImageScrubber...');
@@ -99,6 +156,8 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   const classes = useStyles(props);
   const [complete, setComplete] = React.useState(0);
   const [isFilterShown, setFilterShown] = React.useState(false);
+  const [isMenuShown, setMenuShown] = React.useState(false);
+  const [dialog, setDialog] = React.useState({isOpen: false, tree: {}});
 
   /*
    * effect to load page when mounted
@@ -151,10 +210,10 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     setComplete(props.verityState.approveAllComplete);
   }, [props.verityState.approveAllComplete]);
 
-  /* To update unverified tree count */
-  useEffect(() => {
-      props.verityDispatch.getTreeCount();
-  }, [props.verityState.treeImages]);
+//  /* To update unverified tree count */
+//  useEffect(() => {
+//      props.verityDispatch.getTreeCount();
+//  }, [props.verityState.treeImages]);
 
   function handleTreeClick(e, treeId) {
     e.stopPropagation();
@@ -176,6 +235,68 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     window.open(url, '_blank').opener = null;
   }
 
+  async function handleSubmit(approveAction){
+    console.log('approveAction:', approveAction)
+    //check selection
+    if(props.verityState.treeImagesSelected.length === 0){
+      window.alert('Please select some tree')
+      return
+    }
+    /*
+     * check species
+     */
+    const isNew = await props.speciesDispatch.isNewSpecies()
+    if(isNew){
+      const answer = await new Promise((resolve, reject) => {
+        if(window.confirm(`The species ${props.speciesState.speciesInput} is a new one, create it?`)){
+          resolve(true)
+        }else{
+          resolve(false)
+        }
+      })
+      if(!answer){
+        return
+      }else{
+        //create new species
+        const species = await props.speciesDispatch.createSpecies()
+      }
+    }
+    const speciesId = await props.speciesDispatch.getSpeciesId()
+    if(speciesId){
+        approveAction.speciesId = speciesId
+        console.log('species id:', speciesId)
+    }
+    const result = await props.verityDispatch.approveAll({approveAction});
+    if (result) {
+      //if all trees were approved, then, load more
+      if (
+        props.verityState.treeImagesSelected.length ===
+        props.verityState.treeImages.length
+      ) {
+        log.debug('all trees approved, reload');
+        props.verityDispatch.loadMoreTreeImages();
+      }
+    } else {
+      window.alert('sorry, failed to approve some picture');
+    }
+  }
+
+  function handleDialog(e, tree){
+    e.preventDefault();
+    e.stopPropagation();
+    setDialog({
+      isOpen: true,
+      tree,
+    })
+  }
+
+  function handleDialogClose(){
+    setDialog({
+      isOpen: false,
+      tree: {}
+    })
+  }
+
   let treeImageItems = props.verityState.treeImages.map(tree => {
     if (tree.imageUrl) {
       return (
@@ -195,75 +316,26 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           >
             <CardContent className={classes.cardContent}>
               <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
-              <Typography variant='body2' gutterBottom>
-                Tree# {tree.id}, Planter# {tree.planterId}, Device# {tree.deviceId}
-              </Typography>
             </CardContent>
             <CardActions className={classes.cardActions}>
-              <Box>
-                <Button
-                  className={classes.button}
-                  color='secondary'
-                  size='small'
-                  onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    props.verityDispatch.rejectTreeImage(tree.id).then(() => {
-                      //after approve/reject, clear selection
-                      props.verityDispatch.resetSelection();
-                      //when finished, check if the list is empty, if true,
-                      //load more tree
-                      //why 1? because it is old state in hook
-                      if (props.verityState.treeImages.length === 1) {
-                        log.debug('empty, load more');
-                        props.verityDispatch.loadMoreTreeImages();
-                      } else {
-                        log.trace('not empty');
-                      }
-                    });
-                  }}
-                  disabled={tree.active === false}
-                >
-                  Reject
-                </Button>
-                <Button
-                  color='primary'
-                  size='small'
-                  onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    props.verityDispatch.approveTreeImage(tree.id).then(() => {
-                      //after approve/reject, clear selection
-                      props.verityDispatch.resetSelection();
-                      //when finished, check if the list is empty, if true,
-                      //load more tree
-                      //why 1? because it is old state in hook
-                      if (props.verityState.treeImages.length === 1) {
-                        log.debug('empty, load more');
-                        props.verityDispatch.loadMoreTreeImages();
-                      } else {
-                        log.trace(
-                          'not empty',
-                          props.verityState.treeImages.length
-                        );
-                      }
-                    });
-                  }}
-                  disabled={tree.approved === true}
-                >
-                  Approve
-                </Button>
-              </Box>
-              <Box>
-                <TreePin
-                  width='25px'
-                  height='25px'
-                  title={`Open Webmap for Tree# ${tree.id}`}
-                  onClick={e => {
+              <Grid 
+                justify='flex-end'
+                container>
+                <Grid item>
+                  <Image
+                    color='primary'
+                    onClick={e => handleDialog(e, tree)}
+                  />
+                  <TreePin
+                    width='25px'
+                    height='25px'
+                    title={`Open Webmap for Tree# ${tree.id}`}
+                    onClick={e => {
                     handleTreePinClick(e, tree.id);
-                  }}
-                />
-              </Box>
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </CardActions>
           </Card>
         </div>
@@ -279,22 +351,66 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     }
   }
 
+  function handleToggleMenu(){
+    setMenuShown(!isMenuShown)
+  }
+
   return (
     <React.Fragment>
-      <Grid container>
-        <Grid
-          item
+      <Grid 
+        container
+        direction='column'
+      >
+        <Grid item>
+          <AppBar
+            color='default'
+            className={classes.appBar}
+          >
+            <Grid container direction='column'>
+              <Grid item>
+                <Grid container justify='space-between'>
+                  <Grid item>
+                    <IconButton>
+                      <MenuIcon onClick={handleToggleMenu}/>
+                    </IconButton>
+                    <IconLogo/>
+                  </Grid>
+                  <Grid item>
+                    <IconButton
+                      onClick={handleFilterClick}
+                    >
+                      <IconFilter />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              </Grid>
+              {isFilterShown &&
+              <Grid item>
+                <FilterTop
+                  isOpen={isFilterShown}
+                  onSubmit={filter => {
+                    props.verityDispatch.updateFilter(filter);
+                  }}
+                  filter={props.verityState.filter}
+                  onClose={handleFilterClick}
+                />
+              </Grid>
+              }
+            </Grid>
+          </AppBar>
+        </Grid>
+        <Grid 
+          item 
+          className={classes.body}
           style={{
-            width: isFilterShown
-              ? `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px`
-              : '100%'
+            marginTop: isFilterShown? 100:50,
           }}
         >
           <Grid container>
             <Grid
               item
               style={{
-                width: '100%'
+                width: '100%',
               }}
             >
               <Grid
@@ -309,106 +425,10 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                       paddingTop: 20
                     }}
                   >
-                  {props.verityState.treeCount} trees to verify
+                  {false /* close counter*/&& props.verityState.treeCount} trees to verify
                   </Typography>
                 </Grid>
                 <Grid item>
-                  {/* close select all function
-									<FormControlLabel
-										control={
-											<Checkbox
-												color='primary'
-												checked={
-													props.verityState.treeImages.length > 0 &&
-													props.verityState.treeImagesSelected.length ===
-													props.verityState.treeImages.length
-												}
-												onClick={() => {
-														props.verityDispatch.selectAll(
-															props.verityState.treeImagesSelected.length !==
-															props.verityState.treeImages.length
-														)
-												}}
-											/>
-										}
-										label="Select All"
-									/>
-									*/}
-                  <Button
-                    style={{
-                      margin: 15
-                    }}
-                    color='primary'
-                    disabled={props.verityState.treeImagesSelected.length <= 0}
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          `Are you sure to reject these ${props.verityState.treeImagesSelected.length} trees?`
-                        )
-                      ) {
-                        const result = await props.verityDispatch.rejectAll();
-                        if (result) {
-                          //if all trees were rejected, then, load more
-                          if (
-                            props.verityState.treeImagesSelected.length ===
-                            props.verityState.treeImages.length
-                          ) {
-                            log.debug('all trees rejected, reload');
-                            props.verityDispatch.loadMoreTreeImages();
-                          }
-                        } else {
-                          window.alert('sorry, failed to reject some picture');
-                        }
-                      }
-                    }}
-                  >
-                    Reject all
-                    {props.verityState.treeImagesSelected.length > 0
-                      ? ` ${props.verityState.treeImagesSelected.length} trees`
-                      : ''}
-                  </Button>
-                  <Button
-                    style={{
-                      margin: 15
-                    }}
-                    color='primary'
-                    disabled={props.verityState.treeImagesSelected.length <= 0}
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          `Are you sure to approve these ${props.verityState.treeImagesSelected.length} trees?`
-                        )
-                      ) {
-                        const result = await props.verityDispatch.approveAll();
-                        if (result) {
-                          //if all trees were approved, then, load more
-                          if (
-                            props.verityState.treeImagesSelected.length ===
-                            props.verityState.treeImages.length
-                          ) {
-                            log.debug('all trees approved, reload');
-                            props.verityDispatch.loadMoreTreeImages();
-                          }
-                        } else {
-                          window.alert('sorry, failed to approve some picture');
-                        }
-                      }
-                    }}
-                  >
-                    Approve all
-                    {props.verityState.treeImagesSelected.length > 0
-                      ? ` ${props.verityState.treeImagesSelected.length} trees`
-                      : ''}
-                  </Button>
-                  <IconButton
-                    onClick={handleFilterClick}
-                    style={{
-                      marginTop: 8,
-                      marginRight: 16
-                    }}
-                  >
-                    <IconFilter />
-                  </IconButton>
                 </Grid>
               </Grid>
             </Grid>
@@ -422,22 +442,15 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid
-          item
-          style={{
-            width: `${FILTER_WIDTH}px`
-          }}
-        >
-          <Filter
-            isOpen={isFilterShown}
-            onSubmit={filter => {
-              props.verityDispatch.updateFilter(filter);
-            }}
-            filter={props.verityState.filter}
-            onClose={handleFilterClick}
-          />
-        </Grid>
       </Grid>
+      <SidePanel
+        onSubmit={handleSubmit}
+      />
+      {isMenuShown &&
+        <Menu
+          onClose={() => setMenuShown(false)}
+        />
+      }
       {props.verityState.isApproveAllProcessing && (
         <AppBar
           position='fixed'
@@ -457,7 +470,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           <div></div>
         </Modal>
       )}
-      {!props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
+      {false /* close undo */&& !props.verityState.isApproveAllProcessing && !props.verityState.isRejectAllProcessing &&
         props.verityState.treeImagesUndo.length > 0 && (
           <Snackbar
             open
@@ -489,17 +502,212 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             className={classes.snackbar}
           />
         )}
+      <Dialog
+        open={dialog.isOpen}
+        TransitionComponent={Transition}
+      >
+        <DialogTitle>Tree Detail</DialogTitle>
+        <DialogContent>
+          <img src={dialog.tree.imageUrl} />
+        </DialogContent>
+        <DialogActions>
+          <Grid container justify="space-between" >
+            <Grid item>
+              <Typography variant='body2' color="primary" gutterBottom>
+                Tree #{dialog.tree.id}, 
+                Planter #{dialog.tree.planterId}, 
+                Device #{dialog.tree.deviceId}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button onClick={handleDialogClose}>Close</Button>
+            </Grid>
+          </Grid>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
-  );
+  )
 };
+
+function SidePanel(props){
+  const classes = useStyles(props);
+  const [switchApprove, handleSwitchApprove] = React.useState(0)
+  const [morphology, handleMorphology] = React.useState('seedling')
+  const [age, handleAge] = React.useState('new_tree')
+  const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_lead')
+  const [rejectionReason, handleRejectionReason] = React.useState('not_tree')
+  const speciesRef = React.useRef(null)
+
+  function handleSubmit(){
+    const approveAction = switchApprove === 0?
+      {
+        isApproved: true,
+        morphology,
+        age,
+        captureApprovalTag,
+      }
+    :
+      {
+        isApproved: false,
+        rejectionReason,
+      }
+    props.onSubmit(approveAction)
+  }
+
+  return (
+    <Drawer
+      variant='permanent'
+      anchor='right'
+      className={classes.sidePanel}
+      classes={{
+        paper: classes.drawerPaper
+      }}
+      elevation={11}
+    >
+      <Grid container direction={'column'} className={classes.sidePanelContainer}>
+        <Grid>
+          <Typography variant='h5' >Tags</Typography>
+        </Grid>
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <RadioGroup value={morphology} className={classes.radioGroup}>
+            <FormControlLabel 
+              value='seedling' 
+              onClick={() => handleMorphology('seedling')} 
+              control={<Radio/>} 
+              label='Seedling' />
+            <FormControlLabel 
+              value='direct_seedling' 
+              control={<Radio/>} 
+              onClick={() => handleMorphology('direct_seedling')}
+              label='Direct seeding' />
+            <FormControlLabel 
+              onClick={() => handleMorphology('fmnr')}
+              value='fmnr' control={<Radio/>} label='Pruned/tied(FMNR)' />
+          </RadioGroup>
+        </Grid>
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <RadioGroup value={age} className={classes.radioGroup}>
+            <FormControlLabel 
+              onClick={() => handleAge('new_tree')}
+              value='new_tree' control={<Radio/>} label='New tree(s)' />
+            <FormControlLabel 
+              onClick={() => handleAge('over_two_years')}
+              value='over_two_years' control={<Radio/>} label='> 2 years old' />
+          </RadioGroup>
+        </Grid>
+        {/*
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <RadioGroup className={classes.radioGroup}>
+            <FormControlLabel disabled value='Create token' control={<Radio/>} label='Create token' />
+            <FormControlLabel disabled value='No token' control={<Radio/>} label='No token' />
+          </RadioGroup>
+        </Grid>
+        */}
+        <Grid>
+          <Typography variant='h6'>Species(if known)</Typography>
+          <Species
+            ref={speciesRef}
+          />
+        </Grid>
+        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+          <Tabs 
+            indicatorColor='primary'
+            textColor='primary'
+            variant='fullWidth'
+            value={switchApprove}
+          >
+            <Tab label='APPROVE' 
+              id='full-width-tab-0'
+              aria-controls='full-width-tabpanel-0'
+              onClick={() => handleSwitchApprove(0)}
+            />
+            <Tab 
+              label='REJECT'
+              id='full-width-tab-0'
+              aria-controls='full-width-tabpanel-0'
+              onClick={() => handleSwitchApprove(1)}
+            />
+          </Tabs>
+          {switchApprove === 0 &&
+            <RadioGroup
+              value={captureApprovalTag}
+            >
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('simple_lead')}
+                value='simple_lead' control={<Radio/>} label='Simple leaf' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('complex_leaf')}
+                value='complex_leaf' control={<Radio/>} label='Complex leaf' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('acacia_like')}
+                value='acacia_like' control={<Radio/>} label='Acacia-like' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('conifer')}
+                value='conifer' control={<Radio/>} label='Conifer' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('fruit')}
+                value='fruit' control={<Radio/>} label='Fruit' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('mangrove')}
+                value='mangrove' control={<Radio/>} label='Mangrove' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('plam')}
+                value='plam' control={<Radio/>} label='Palm' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('timber')}
+                value='timber' control={<Radio/>} label='Timber' />
+            </RadioGroup>
+          }
+          {switchApprove === 1 &&
+            <RadioGroup
+              value={rejectionReason}
+            >
+              <FormControlLabel 
+                onClick={() => handleRejectionReason('not_tree')}
+                value='not_tree' control={<Radio/>} label='Not a tree' />
+              <FormControlLabel 
+                onClick={() => handleRejectionReason('unapproved_tree')}
+                value='unapproved_tree' control={<Radio/>} label='Not an approved tree' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('blurry_image')}
+                value='blurry_image' control={<Radio/>} label='Blurry photo' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('dead')}
+                value='dead' control={<Radio/>} label='Dead' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('duplicate_image')}
+                value='duplicate_image' control={<Radio/>} label='Duplicate photo' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('flag_user')}
+                value='flag_user' control={<Radio/>} label='Flag user!' />
+              <FormControlLabel 
+                onClick={() => handleCaptureApprovalTag('needs_contact_or_review')}
+                value='needs_contact_or_review' control={<Radio/>} label='Flag tree for contact/review' />
+            </RadioGroup>
+          }
+        
+        </Grid>
+        <Grid className={`${classes.sidePanelItem}`}>
+          <TextField placeholder='Note(optional)' ></TextField>
+        </Grid>
+        <Grid className={`${classes.sidePanelItem}`}>
+          <Button onClick={handleSubmit} color='primary' >SUBMIT</Button>
+        </Grid>
+      </Grid>
+    </Drawer>
+  )
+}
+
 
 export default connect(
   //state
   state => ({
-    verityState: state.verity
+    verityState: state.verity,
+    speciesState: state.species,
   }),
   //dispatch
   dispatch => ({
-    verityDispatch: dispatch.verity
+    verityDispatch: dispatch.verity,
+    speciesDispatch: dispatch.species,
   })
 )(TreeImageScrubber);

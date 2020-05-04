@@ -28,11 +28,6 @@ const verity = {
 		 */
 		treeImagesUndo		: [],
 		/*
-		 * When rejecting a lot of trees, set isBulkRejecting to true
-		 * set it back to false when undo
-		 */
-		isBulkRejecting		: false,
-		/*
 		 * When approving a lot of trees, set isBulkApproving to true
 		 * set it back to false when undo
 		 */
@@ -78,13 +73,6 @@ const verity = {
 				isApproveAllProcessing,
 			}
 		},
-		setIsBulkRejecting(state, isBulkRejecting){
-			return {
-				...state,
-				isBulkRejecting,
-			}
-
-		},
 		setIsBulkApproving(state, isBulkApproving){
 			return {
 				...state,
@@ -128,6 +116,23 @@ const verity = {
 				rejectAllComplete,
 			}
 		},
+    /*
+     * replace approve and reject
+     */
+    approved(state, treeId){
+      const treeImages = state.treeImages.filter(
+        treeImage => treeImage.id !== treeId
+      )
+			//remove if selected
+			const treeImagesSelected		= state.treeImagesSelected.filter(
+				id => id !== treeId
+			)
+      return {
+				...state,
+				treeImages,
+				treeImagesSelected,
+			}
+    },
 		approvedTreeImage(state, treeId){
       const treeImages = state.treeImages.filter(
         treeImage => treeImage.id !== treeId
@@ -204,6 +209,7 @@ const verity = {
 	},
 	effects		: {
 		/*
+     * Dedicated, by approve
 		 * approve a tree, given tree id
 		 */
 		async approveTreeImage(id){
@@ -212,6 +218,7 @@ const verity = {
 			return true
 		},
 		/*
+     * Dedicated, by approve
 		 * reject a tree, given tree id
 		 */
 		async rejectTreeImage(id){
@@ -219,6 +226,40 @@ const verity = {
 			this.rejectedTreeImage(id)
 			return true
 		},
+    /*
+     * Sat Apr 11 17:23:16 CST 2020
+     * use new method to replace old ones: approveTreeImage, rejectTreeImage
+     * add approveAction to indicate if it's approve or reject, and other 
+     * arguments
+     * 
+     * payload: {
+     *  id,
+     *  approveAction,
+     * }
+     */
+    async approve(payload){
+      if(!payload.approveAction){
+        throw Error('no apprive action object!')
+      }
+      if(payload.approveAction.isApproved){
+        log.debug('approve')
+        await api.approveTreeImage(
+          payload.id,
+          payload.approveAction.morphology,
+          payload.approveAction.age,
+          payload.approveAction.captureApprovalTag,
+          payload.approveAction.speciesId,
+        )
+      }else{
+        log.debug('reject')
+        await api.rejectTreeImage(
+          payload.id, 
+          payload.approveAction.rejectionReason
+        )
+      }
+			this.approved(payload.id)
+      return true
+    },
 		async undoTreeImage(id){
 			await api.undoTreeImage(id)
 			this.undoedTreeImage(id)
@@ -259,6 +300,7 @@ const verity = {
 		},
 
 			/*
+       * Dedicated, by approveAll
 		 * reject all tree
 		 */
 		async rejectAll(payload, state){
@@ -309,6 +351,12 @@ const verity = {
 
 		/*
 		 * approve all tree
+     * REVISE Tue Apr 14 16:20:31 CST 2020
+     * Merge approve and reject to one, just: approveAll
+     * payload : {
+     *  approveAction,
+     * }
+     *
 		 */
 		async approveAll(payload, state){
 			//{{{
@@ -333,7 +381,10 @@ const verity = {
 						}
 					}, undefined)
 					log.trace('approve:%d', treeImage.id)
-					await this.approveTreeImage(treeImage.id)
+					await this.approve({
+            id: treeImage.id,
+            approveAction: payload.approveAction,
+          })
 					this.setApproveAllComplete(100 * ((i + 1) / total))
 				}
 			}catch(e){
@@ -357,6 +408,7 @@ const verity = {
 			//}}}
 		},
 		/*
+     * Dedicated
 		 * To undo all approved trees
 		 */
 		async undoAll(payload, state){

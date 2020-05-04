@@ -4,8 +4,9 @@
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
-    "@material-ui/core": "^4.3.0",
+    "@material-ui/core": "^4.9.10",
     "@material-ui/icons": "^4.2.1",
+    "@material-ui/lab": "^4.0.0-alpha.49",
     "@material-ui/pickers": "^3.2.8",
     "@material-ui/styles": "^4.3.0",
     "@material-ui/system": "^4.3.2",
@@ -15,7 +16,6 @@
     "d3-selection": "^1.4.0",
     "date-fns": "^2.0.0-beta.5",
     "dateformat": "*",
-    "eslint": "^6.1.0",
     "geocoder": "*",
     "i": "*",
     "import": "*",
@@ -53,6 +53,8 @@
     "@storybook/addon-links": "^5.1.9",
     "@storybook/addons": "^5.1.9",
     "@storybook/react": "^5.1.9",
+    "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.19.0",
     "react-inspector": "^3.0.2"
   }
 }
