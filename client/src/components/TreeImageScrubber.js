@@ -518,6 +518,9 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
                 Planter #{dialog.tree.planterId}, 
                 Device #{dialog.tree.deviceId}
               </Typography>
+              <Typography variant='body2' color="primary" gutterBottom>
+                Created time: {dialog.tree.timeCreated}, 
+              </Typography>
             </Grid>
             <Grid item>
               <Button onClick={handleDialogClose}>Close</Button>

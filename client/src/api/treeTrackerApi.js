@@ -6,7 +6,7 @@ export default {
     skip,
     rowsPerPage,
     orderBy = "id",
-    order = "asc",
+    order = "desc",
     //the filter model
     filter
   }) {
