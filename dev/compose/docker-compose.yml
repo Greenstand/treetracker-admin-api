@@ -13,6 +13,7 @@ services:
      - "3001:3000"
     volumes:
      - ../../client:/opt/admin-web
+    stdin_open: true
   treetracker-admin-api:
     container_name: "treetracker-admin-api"
     image: "treetracker-admin-api:latest"
