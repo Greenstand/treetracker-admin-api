@@ -253,7 +253,9 @@ function Filter(props) {
                 setSpeciesId(e.target.value)
               }
             >
-              {[{id:0,name:'all'}, ...props.speciesState.speciesList].map(species => (
+              {[{id:0,name:'all'}, ...props.speciesState.speciesList].sort(
+                (a,b) => a.name.localeCompare(b.name)
+              ).map(species => (
                 <MenuItem key={species.id} value={species.id}>
                   {species.name}
                 </MenuItem>
