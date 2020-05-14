@@ -47,6 +47,8 @@ import FilterModel from '../models/Filter';
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg';
 import IconLogo		from './IconLogo';
 import Menu from './common/Menu.js';
+import CheckIcon from '@material-ui/icons/Check';
+import Paper from '@material-ui/core/Paper';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -69,6 +71,17 @@ const useStyles = makeStyles(theme => ({
   card: {
     cursor: 'pointer',
     margin: '0.5rem'
+  },
+  cardCheckbox: {
+    position: 'absolute',
+    height: '1.2em',
+    width: '1.2em',
+    top: '0.2rem',
+    left: '0.3rem',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   cardSelected: {
     backgroundColor: theme.palette.action.selected
@@ -94,6 +107,7 @@ const useStyles = makeStyles(theme => ({
         duration: '0.3s'
       }),
     },
+    position: 'relative',
     width: '30%',
     minWidth: 300,
     margin: 2
@@ -297,17 +311,29 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     })
   }
 
+  function isTreeSelected(id){
+    return props.verityState.treeImagesSelected.indexOf(id) >= 0
+  }
+
   let treeImageItems = props.verityState.treeImages.map(tree => {
     if (tree.imageUrl) {
       return (
         <div
           className={clsx(
             classes.cardWrapper,
-            props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
+            isTreeSelected(tree.id)
               ? classes.cardSelected
               : undefined
           )} key={tree.id}
         >
+          {isTreeSelected(tree.id) &&
+            (<Paper
+              className={classes.cardCheckbox}
+              elevation={4}
+            >
+              <CheckIcon/>
+            </Paper>)
+          }
           <Card
             onClick={e => handleTreeClick(e, tree.id)}
             id={`card_${tree.id}`}
