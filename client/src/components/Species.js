@@ -23,9 +23,7 @@ function Species(props){
 
   return(
   <Autocomplete
-    options={props.speciesState.speciesList.slice().sort(
-      (a,b) => a.name.localeCompare(b.name)
-    )}
+    options={props.speciesState.speciesList}
     getOptionLabel={(option) => option.name}
     style={{ width: 300 }}
     onChange={(a,b,c) => {

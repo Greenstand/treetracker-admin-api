@@ -13,9 +13,12 @@ const species = {
 	},
 	reducers		: {
 		setSpeciseList(state, speciesList){
+      const sortedSpeciesList = speciesList.slice().sort(
+        (a,b) => a.name.localeCompare(b.name)
+      )
       return {
         ...state,
-        speciesList,
+        speciesList: sortedSpeciesList,
       };
 		},
     setSpeciesInput(state, text){
