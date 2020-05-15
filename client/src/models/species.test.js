@@ -17,10 +17,10 @@ describe('species', () => {
       log.debug('mock getSpecies:')
       return Promise.resolve([{
         id: 0,
-        name: 'apple',
+        name: 'Pine',
       },{
         id: 1,
-        name: 'pine',
+        name: 'apple',
       }])
     }
     api.createSpecies = jest.fn(() => {
@@ -51,6 +51,11 @@ describe('species', () => {
         expect(store.getState().species.speciesList).toHaveLength(2)
       })
 
+      it('species are sorted alphabetically', () => {
+        const speciesNames = store.getState().species.speciesList.map(el => el.name);
+        expect(speciesNames).toStrictEqual(['apple','Pine'])
+      })
+
       describe('input: water melon, create species', () => {
         beforeEach(async () => {
           await store.dispatch.species.onChange('water melon')
@@ -61,7 +66,7 @@ describe('species', () => {
           expect(api.createSpecies.mock.calls[0][0]).toBe('water melon')
         })
 
-        it('specis list should be 3(added)', () => {
+        it('species list should be 3(added)', () => {
           expect(store.getState().species.speciesList).toHaveLength(3)
         })
       })
