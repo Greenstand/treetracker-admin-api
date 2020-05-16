@@ -1,7 +1,6 @@
 import React		from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer		from '@material-ui/core/Drawer';
-import Menu		from '@material-ui/core/Menu';
 import MenuItem		from '@material-ui/core/MenuItem';
 import IconSettings		from '@material-ui/icons/Settings';
 import IconShowChart	from '@material-ui/icons/ShowChart';
@@ -13,7 +12,7 @@ import IconPermIdentity		from '@material-ui/icons/PermIdentity';
 import ListItemIcon		from '@material-ui/core/ListItemIcon';
 import ListItemText		from '@material-ui/core/ListItemText';
 import Box		from '@material-ui/core/Box';
-import {useTheme, }		from '@material-ui/styles';
+
 import IconLogo		from '../IconLogo';
 
 export const MENU_WIDTH		= 232
@@ -70,7 +69,7 @@ const menus		= [
 	},{
 		name		: 'Trees',
 		icon		: IconNature,
-		disabled		: false,
+		disabled		: true,
 	},{
 		name		: 'Planters',
 		icon		: IconGroup,
@@ -90,9 +89,8 @@ const menus		= [
 	}
 ]
 
-export default function GSMenu(props){
+export default function GSMenu({ onClose, active, onClick }){
 	const classes		= useStyles()
-	const theme		= useTheme()
 	return(
 			<Drawer
 				PaperProps={{
@@ -100,7 +98,7 @@ export default function GSMenu(props){
 				}}
 				className={classes.drawer}
 				classes={{paper:classes.drawerPaper}}
-        onClose={props.onClose}
+        onClose={onClose}
         open={true}
 			>
 				<Box p={4} >
@@ -109,9 +107,10 @@ export default function GSMenu(props){
 				<Box height={20} />
 				{menus.map(item => (
 					<MenuItem
+						key={item.name}
 						className={classes.menuItem}
-						selected={props.active === item.name}
-						onClick={() => props.onClick(item.name)}
+						selected={active === item.name}
+						onClick={() => onClick(item.name)}
 						disabled={item.disabled}
 					>
 						<ListItemIcon

@@ -464,6 +464,8 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
       {isMenuShown &&
         <Menu
           onClose={() => setMenuShown(false)}
+          onClick={() => setMenuShown(false)}
+          active='Verify'
         />
       }
       {props.verityState.isApproveAllProcessing && (
