@@ -1,17 +1,17 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import {ThemeProvider}		from '@material-ui/core/styles';
-import MainFrame		from './components/MainFrame';
-import theme		from './components/common/theme';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { ThemeProvider } from '@material-ui/core/styles'
+import MainFrame from './components/MainFrame'
+import theme from './components/common/theme'
 
 class App extends Component {
-  componentDidMount () {
+  componentDidMount() {
     // in the future we want to maybe restore the users last filter set from the server
     // as well as deal with all the login state stuff.
     this.props.requestTreeCount()
   }
 
-  render () {
+  render() {
     return (
       <ThemeProvider theme={theme}>
         <MainFrame />
@@ -20,16 +20,13 @@ class App extends Component {
   }
 }
 
-const mapState = state => {
+const mapState = (state) => {
   return state
 }
 
-const mapDispatch = dispatch => ({
-  requestTreeCount: id => dispatch.trees.requestTreeCount(),
-  requestTrees: id => dispatch.trees.requestTrees()
+const mapDispatch = (dispatch) => ({
+  requestTreeCount: () => dispatch.trees.requestTreeCount(),
+  requestTrees: () => dispatch.trees.requestTrees(),
 })
 
-export default connect(
-  mapState,
-  mapDispatch
-)(App)
+export default connect(mapState, mapDispatch)(App)
