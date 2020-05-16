@@ -121,15 +121,18 @@ const useStyles = makeStyles(theme => ({
     right: 'auto',
   },
   sidePanel: {
+    width: SIDE_PANEL_WIDTH,
   },
   drawerPaper: {
     width: SIDE_PANEL_WIDTH,
   },
   body: {
-    width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`,
+    display: 'flex',
+    height: '100%',
   },
   sidePanelContainer: {
     padding: theme.spacing(2),
+    flexWrap: 'nowrap',
   },
   sidePanelItem: {
     marginTop: theme.spacing(1),
@@ -358,8 +361,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   return (
     <React.Fragment>
       <Grid 
-        container
-        direction='column'
+        className={classes.body}
       >
         <Grid item>
           <AppBar
@@ -399,11 +401,11 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             </Grid>
           </AppBar>
         </Grid>
-        <Grid 
-          item 
-          className={classes.body}
+        <Grid
+          item
           style={{
-            marginTop: isFilterShown? 100:50,
+            overflow: 'auto',
+            marginTop: isFilterShown? 156:44,
           }}
         >
           <Grid container>
@@ -442,10 +444,10 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             </Grid>
           </Grid>
         </Grid>
+        <SidePanel
+          onSubmit={handleSubmit}
+        />
       </Grid>
-      <SidePanel
-        onSubmit={handleSubmit}
-      />
       {isMenuShown &&
         <Menu
           onClose={() => setMenuShown(false)}
