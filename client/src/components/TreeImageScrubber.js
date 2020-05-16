@@ -47,8 +47,6 @@ import FilterModel from '../models/Filter';
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg';
 import IconLogo		from './IconLogo';
 import Menu from './common/Menu.js';
-import CheckIcon from '@material-ui/icons/Check';
-import Paper from '@material-ui/core/Paper';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -71,17 +69,6 @@ const useStyles = makeStyles(theme => ({
   card: {
     cursor: 'pointer',
     margin: '0.5rem'
-  },
-  cardCheckbox: {
-    position: 'absolute',
-    height: '1.2em',
-    width: '1.2em',
-    top: '0.2rem',
-    left: '0.3rem',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
   },
   cardSelected: {
     backgroundColor: theme.palette.action.selected
@@ -107,7 +94,6 @@ const useStyles = makeStyles(theme => ({
         duration: '0.3s'
       }),
     },
-    position: 'relative',
     width: '30%',
     minWidth: 300,
     margin: 2
@@ -311,29 +297,17 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
     })
   }
 
-  function isTreeSelected(id){
-    return props.verityState.treeImagesSelected.indexOf(id) >= 0
-  }
-
   let treeImageItems = props.verityState.treeImages.map(tree => {
     if (tree.imageUrl) {
       return (
         <div
           className={clsx(
             classes.cardWrapper,
-            isTreeSelected(tree.id)
+            props.verityState.treeImagesSelected.indexOf(tree.id) >= 0
               ? classes.cardSelected
               : undefined
           )} key={tree.id}
         >
-          {isTreeSelected(tree.id) &&
-            (<Paper
-              className={classes.cardCheckbox}
-              elevation={4}
-            >
-              <CheckIcon/>
-            </Paper>)
-          }
           <Card
             onClick={e => handleTreeClick(e, tree.id)}
             id={`card_${tree.id}`}
@@ -344,7 +318,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
               <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
             </CardContent>
             <CardActions className={classes.cardActions}>
-              <Grid 
+              <Grid
                 justify='flex-end'
                 container>
                 <Grid item>
@@ -383,10 +357,11 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
 
   return (
     <React.Fragment>
-      <Grid 
+      <Grid
         container
         direction='column'
       >
+      {/*
         <Grid item>
           <AppBar
             color='default'
@@ -396,8 +371,8 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
               <Grid item>
                 <Grid container justify='space-between'>
                   <Grid item>
-                    <IconButton onClick={handleToggleMenu}>
-                      <MenuIcon/>
+                    <IconButton>
+                      <MenuIcon onClick={handleToggleMenu}/>
                     </IconButton>
                     <IconLogo/>
                   </Grid>
@@ -425,8 +400,9 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
             </Grid>
           </AppBar>
         </Grid>
-        <Grid 
-          item 
+      */}
+        <Grid
+          item
           className={classes.body}
           style={{
             marginTop: isFilterShown? 100:50,
@@ -472,11 +448,11 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
       <SidePanel
         onSubmit={handleSubmit}
       />
-      {isMenuShown &&
+      {/*isMenuShown &&
         <Menu
           onClose={() => setMenuShown(false)}
         />
-      }
+      */}
       {props.verityState.isApproveAllProcessing && (
         <AppBar
           position='fixed'
@@ -540,12 +516,12 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
           <Grid container justify="space-between" >
             <Grid item>
               <Typography variant='body2' color="primary" gutterBottom>
-                Tree #{dialog.tree.id}, 
-                Planter #{dialog.tree.planterId}, 
+                Tree #{dialog.tree.id},
+                Planter #{dialog.tree.planterId},
                 Device #{dialog.tree.deviceId}
               </Typography>
               <Typography variant='body2' color="primary" gutterBottom>
-                Created time: {dialog.tree.timeCreated}, 
+                Created time: {dialog.tree.timeCreated},
               </Typography>
             </Grid>
             <Grid item>
@@ -599,27 +575,27 @@ function SidePanel(props){
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup value={morphology} className={classes.radioGroup}>
-            <FormControlLabel 
-              value='seedling' 
-              onClick={() => handleMorphology('seedling')} 
-              control={<Radio/>} 
+            <FormControlLabel
+              value='seedling'
+              onClick={() => handleMorphology('seedling')}
+              control={<Radio/>}
               label='Seedling' />
-            <FormControlLabel 
-              value='direct_seedling' 
-              control={<Radio/>} 
+            <FormControlLabel
+              value='direct_seedling'
+              control={<Radio/>}
               onClick={() => handleMorphology('direct_seedling')}
               label='Direct seeding' />
-            <FormControlLabel 
+            <FormControlLabel
               onClick={() => handleMorphology('fmnr')}
               value='fmnr' control={<Radio/>} label='Pruned/tied(FMNR)' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <RadioGroup value={age} className={classes.radioGroup}>
-            <FormControlLabel 
+            <FormControlLabel
               onClick={() => handleAge('new_tree')}
               value='new_tree' control={<Radio/>} label='New tree(s)' />
-            <FormControlLabel 
+            <FormControlLabel
               onClick={() => handleAge('over_two_years')}
               value='over_two_years' control={<Radio/>} label='> 2 years old' />
           </RadioGroup>
@@ -639,18 +615,18 @@ function SidePanel(props){
           />
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
-          <Tabs 
+          <Tabs
             indicatorColor='primary'
             textColor='primary'
             variant='fullWidth'
             value={switchApprove}
           >
-            <Tab label='APPROVE' 
+            <Tab label='APPROVE'
               id='full-width-tab-0'
               aria-controls='full-width-tabpanel-0'
               onClick={() => handleSwitchApprove(0)}
             />
-            <Tab 
+            <Tab
               label='REJECT'
               id='full-width-tab-0'
               aria-controls='full-width-tabpanel-0'
@@ -661,28 +637,28 @@ function SidePanel(props){
             <RadioGroup
               value={captureApprovalTag}
             >
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('simple_lead')}
                 value='simple_lead' control={<Radio/>} label='Simple leaf' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('complex_leaf')}
                 value='complex_leaf' control={<Radio/>} label='Complex leaf' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('acacia_like')}
                 value='acacia_like' control={<Radio/>} label='Acacia-like' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('conifer')}
                 value='conifer' control={<Radio/>} label='Conifer' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('fruit')}
                 value='fruit' control={<Radio/>} label='Fruit' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('mangrove')}
                 value='mangrove' control={<Radio/>} label='Mangrove' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('plam')}
                 value='plam' control={<Radio/>} label='Palm' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('timber')}
                 value='timber' control={<Radio/>} label='Timber' />
             </RadioGroup>
@@ -691,30 +667,30 @@ function SidePanel(props){
             <RadioGroup
               value={rejectionReason}
             >
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleRejectionReason('not_tree')}
                 value='not_tree' control={<Radio/>} label='Not a tree' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleRejectionReason('unapproved_tree')}
                 value='unapproved_tree' control={<Radio/>} label='Not an approved tree' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('blurry_image')}
                 value='blurry_image' control={<Radio/>} label='Blurry photo' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('dead')}
                 value='dead' control={<Radio/>} label='Dead' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('duplicate_image')}
                 value='duplicate_image' control={<Radio/>} label='Duplicate photo' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('flag_user')}
                 value='flag_user' control={<Radio/>} label='Flag user!' />
-              <FormControlLabel 
+              <FormControlLabel
                 onClick={() => handleCaptureApprovalTag('needs_contact_or_review')}
                 value='needs_contact_or_review' control={<Radio/>} label='Flag tree for contact/review' />
             </RadioGroup>
           }
-        
+
         </Grid>
         <Grid className={`${classes.sidePanelItem}`}>
           <TextField placeholder='Note(optional)' ></TextField>

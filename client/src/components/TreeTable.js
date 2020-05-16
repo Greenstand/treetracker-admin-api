@@ -21,7 +21,7 @@ const styles = () => ({
     overflowX: 'auto',
   },
 	myTable		: {
-		width		: `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px)`,
+		width		: `calc(100vw - ${FILTER_WIDTH}px)`,
 	},
   locationCol: {
     width: '270px'
@@ -143,8 +143,8 @@ class TreeTable extends Component {
 				name		: 'status',
 				label		: 'Status',
 			},
-      { 
-				name: 'timeCreated', 
+      {
+				name: 'timeCreated',
 				label: 'Created',
 				options		: {
 					customBodyRender		: v => `${dateformat(v, 'm/d/yyyy h:Mtt')}`,
@@ -194,8 +194,8 @@ class TreeTable extends Component {
         >
           <TreeDetails tree={tree} />
         </Drawer>
-				<Filter 
-					isOpen={true} 
+				<Filter
+					isOpen={true}
 					onSubmit={this.handleFilterSubmit}
 					filter={this.state.filter}
 				/>

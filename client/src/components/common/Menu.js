@@ -109,6 +109,7 @@ export default function GSMenu(props){
 				<Box height={20} />
 				{menus.map(item => (
 					<MenuItem
+            key={item.name}
 						className={classes.menuItem}
 						selected={props.active === item.name}
 						onClick={() => props.onClick(item.name)}
