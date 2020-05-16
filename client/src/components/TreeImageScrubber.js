@@ -153,7 +153,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
+const TreeImageScrubber = (props) => {
   log.debug('render TreeImageScrubber...');
   log.debug('complete:', props.verityState.approveAllComplete);
   const classes = useStyles(props);
@@ -161,6 +161,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   const [isFilterShown, setFilterShown] = React.useState(false);
   const [isMenuShown, setMenuShown] = React.useState(false);
   const [dialog, setDialog] = React.useState({isOpen: false, tree: {}});
+	const refContainer = React.useRef();
 
   /*
    * effect to load page when mounted
@@ -176,7 +177,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
   useEffect(() => {
     log.debug('verity state changed');
     //move add listener to effect to let it refresh at every state change
-    let scrollContainerRef = getScrollContainerRef();
+    let scrollContainerRef = refContainer.current;
     const handleScroll = e => {
       if (
         scrollContainerRef &&
@@ -403,6 +404,7 @@ const TreeImageScrubber = ({ getScrollContainerRef, ...props }) => {
         </Grid>
         <Grid
           item
+					ref={refContainer}
           style={{
             overflow: 'auto',
             marginTop: isFilterShown? 156:44,
