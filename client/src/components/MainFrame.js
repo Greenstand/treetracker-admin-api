@@ -95,7 +95,6 @@ function SimpleTable() {
 }
 export default function(){
 	const [menuName, setMenuName]		= React.useState(/* default menu */'Verify')
-	const refContainer		= React.useRef()
 
 	function handleMenuClick(menuName){
 		setMenuName(menuName)
@@ -118,7 +117,6 @@ export default function(){
 			>
 				<Grid 
 					container
-					ref={refContainer}
 					style={{
 						height		: '100vh',
 						overflow		: 'auto',
@@ -181,7 +179,7 @@ export default function(){
 						</React.Fragment>
 					}
 					{menuName === 'Verify' &&
-						<TreeImageScrubber getScrollContainerRef={() => refContainer.current}/>
+						<TreeImageScrubber/>
 					}
 				</Grid>
 			</Grid>
