@@ -3,8 +3,9 @@ import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { ThemeProvider } from '@material-ui/core/styles'
 
-import MainFrame from './components/MainFrame'
 import theme from './components/common/theme'
+import Verify from './routes/verify/Verify'
+import Trees from './routes/trees/Trees'
 
 class App extends Component {
   componentDidMount() {
@@ -19,13 +20,15 @@ class App extends Component {
         <Router>
           <Switch>
             <Route path={'/explorer/monitor'}>Monitor</Route>
-            <Route path={'/explorer/trees'}>Trees</Route>
+            <Route path={'/explorer/trees'}>
+              <Trees />
+            </Route>
             <Route path={'/explorer/planters'}>Planters</Route>
             <Route path={'/explorer/payments'}>Payments</Route>
             <Route path={'/explorer/settings'}>Settings</Route>
             <Route path={'/explorer/account'}>Account</Route>
             <Route path={'/explorer'}>
-              <MainFrame />
+              <Verify />
             </Route>
           </Switch>
         </Router>
