@@ -103,7 +103,7 @@ const menus = [
   },
 ]
 
-export default function Menu({ isOpen }) {
+export default function Menu({ isOpen, onDrawerClose }) {
   const classes = useStyles()
   const history = useHistory()
   const location = useLocation()
@@ -119,7 +119,8 @@ export default function Menu({ isOpen }) {
         elevation: 5,
       }}
       classes={{ paper: classes.drawerPaper }}
-      isOpen={isOpen}
+      open={isOpen}
+      onClose={onDrawerClose}
     >
       <Box p={4}>
         <IconLogo />
@@ -142,5 +143,6 @@ export default function Menu({ isOpen }) {
 }
 
 Menu.propTypes = {
-  isOpen: PropTypes.bool,
+  isOpen: PropTypes.bool.isRequired,
+  onDrawerClose: PropTypes.func.isRequired,
 }

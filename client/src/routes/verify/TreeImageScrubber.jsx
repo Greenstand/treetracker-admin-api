@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
@@ -160,11 +160,18 @@ const TreeImageScrubber = (props) => {
   log.debug('render TreeImageScrubber...')
   log.debug('complete:', props.verityState.approveAllComplete)
   const classes = useStyles(props)
-  const [complete, setComplete] = React.useState(0)
-  const [isFilterShown, setFilterShown] = React.useState(false)
-  const [isMenuShown, setMenuShown] = React.useState(false)
-  const [dialog, setDialog] = React.useState({ isOpen: false, tree: {} })
-  const refContainer = React.useRef()
+  const [complete, setComplete] = useState(0)
+  const [isFilterShown, setFilterShown] = useState(false)
+  const [isMenuShown, setMenuShown] = useState(false)
+  const [dialog, setDialog] = useState({ isOpen: false, tree: {} })
+  const refContainer = useRef()
+
+  const handleToggleMenu = useCallback(() => {
+    setMenuShown(!isMenuShown)
+  }, [])
+  const handleCloseMenu = useCallback(() => {
+    setMenuShown(false)
+  }, [])
 
   /*
    * effect to load page when mounted
@@ -215,11 +222,6 @@ const TreeImageScrubber = (props) => {
   useEffect(() => {
     setComplete(props.verityState.approveAllComplete)
   }, [props.verityState.approveAllComplete])
-
-  //  /* To update unverified tree count */
-  //  useEffect(() => {
-  //      props.verityDispatch.getTreeCount();
-  //  }, [props.verityState.treeImages]);
 
   function handleTreeClick(e, treeId) {
     e.stopPropagation()
@@ -359,10 +361,6 @@ const TreeImageScrubber = (props) => {
     }
   }
 
-  function handleToggleMenu() {
-    setMenuShown(!isMenuShown)
-  }
-
   return (
     <React.Fragment>
       <Grid className={classes.body}>
@@ -425,7 +423,7 @@ const TreeImageScrubber = (props) => {
                     {false /* close counter*/ && props.verityState.treeCount} trees to verify
                   </Typography>
                 </Grid>
-                <Grid item></Grid>
+                <Grid item />
               </Grid>
             </Grid>
             <Grid
@@ -440,7 +438,7 @@ const TreeImageScrubber = (props) => {
         </Grid>
         <SidePanel onSubmit={handleSubmit} />
       </Grid>
-      {isMenuShown && <Menu onClose={() => setMenuShown(false)} />}
+      <Menu isOpen={isMenuShown} onDrawerClose={handleCloseMenu} />
       {props.verityState.isApproveAllProcessing && (
         <AppBar
           position="fixed"
@@ -453,7 +451,7 @@ const TreeImageScrubber = (props) => {
       )}
       {props.verityState.isApproveAllProcessing && (
         <Modal open={true}>
-          <div></div>
+          <div />
         </Modal>
       )}
       {false /* close undo */ &&
@@ -479,7 +477,7 @@ const TreeImageScrubber = (props) => {
                 color="inherit"
                 size="small"
                 onClick={async () => {
-                  const result = await props.verityDispatch.undoAll()
+                  await props.verityDispatch.undoAll()
                   log.log('finished')
                 }}
               >
@@ -492,7 +490,7 @@ const TreeImageScrubber = (props) => {
       <Dialog open={dialog.isOpen} TransitionComponent={Transition}>
         <DialogTitle>Tree Detail</DialogTitle>
         <DialogContent>
-          <img src={dialog.tree.imageUrl} />
+          <img src={dialog.tree.imageUrl} alt="tree image" />
         </DialogContent>
         <DialogActions>
           <Grid container justify="space-between">
@@ -517,12 +515,12 @@ const TreeImageScrubber = (props) => {
 
 function SidePanel(props) {
   const classes = useStyles(props)
-  const [switchApprove, handleSwitchApprove] = React.useState(0)
-  const [morphology, handleMorphology] = React.useState('seedling')
-  const [age, handleAge] = React.useState('new_tree')
-  const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_lead')
-  const [rejectionReason, handleRejectionReason] = React.useState('not_tree')
-  const speciesRef = React.useRef(null)
+  const [switchApprove, handleSwitchApprove] = useState(0)
+  const [morphology, handleMorphology] = useState('seedling')
+  const [age, handleAge] = useState('new_tree')
+  const [captureApprovalTag, handleCaptureApprovalTag] = useState('simple_lead')
+  const [rejectionReason, handleRejectionReason] = useState('not_tree')
+  const speciesRef = useRef(null)
 
   function handleSubmit() {
     const approveAction =
@@ -724,7 +722,7 @@ function SidePanel(props) {
           )}
         </Grid>
         <Grid className={`${classes.sidePanelItem}`}>
-          <TextField placeholder="Note(optional)"></TextField>
+          <TextField placeholder="Note(optional)" />
         </Grid>
         <Grid className={`${classes.sidePanelItem}`}>
           <Button onClick={handleSubmit} color="primary">
