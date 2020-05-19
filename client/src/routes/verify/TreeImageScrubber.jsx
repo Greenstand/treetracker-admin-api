@@ -38,7 +38,7 @@ import FilterTop from '../../components/FilterTop'
 import { ReactComponent as TreePin } from '../../components/images/highlightedPinNoStick.svg'
 
 import IconLogo from '../../components/IconLogo'
-import Menu from '../../components/common/Menu.js'
+import Menu from '../../components/common/Menu'
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber')
 

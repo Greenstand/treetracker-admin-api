@@ -6,6 +6,7 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import theme from './components/common/theme'
 import Verify from './routes/verify/Verify'
 import Trees from './routes/trees/Trees'
+import paths from './paths'
 
 class App extends Component {
   componentDidMount() {
@@ -19,15 +20,15 @@ class App extends Component {
       <ThemeProvider theme={theme}>
         <Router>
           <Switch>
-            <Route path={'/explorer/monitor'}>Monitor</Route>
-            <Route path={'/explorer/trees'}>
+            <Route path={paths.monitor}>Monitor</Route>
+            <Route path={paths.trees}>
               <Trees />
             </Route>
-            <Route path={'/explorer/planters'}>Planters</Route>
-            <Route path={'/explorer/payments'}>Payments</Route>
-            <Route path={'/explorer/settings'}>Settings</Route>
-            <Route path={'/explorer/account'}>Account</Route>
-            <Route path={'/explorer'}>
+            <Route path={paths.planters}>Planters</Route>
+            <Route path={paths.payments}>Payments</Route>
+            <Route path={paths.settings}>Settings</Route>
+            <Route path={paths.account}>Account</Route>
+            <Route path={paths.root}>
               <Verify />
             </Route>
           </Switch>
