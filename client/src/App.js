@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { ThemeProvider } from '@material-ui/core/styles'
 import MainFrame from './components/MainFrame'
@@ -14,7 +15,19 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={theme}>
-        <MainFrame />
+        <Router>
+          <Switch>
+            <Route path={'/explorer/monitor'}>Monitor</Route>
+            <Route path={'/explorer/trees'}>Trees</Route>
+            <Route path={'/explorer/planters'}>Planters</Route>
+            <Route path={'/explorer/payments'}>Payments</Route>
+            <Route path={'/explorer/settings'}>Settings</Route>
+            <Route path={'/explorer/account'}>Account</Route>
+            <Route path={'/explorer'}>
+              <MainFrame />
+            </Route>
+          </Switch>
+        </Router>
       </ThemeProvider>
     )
   }
