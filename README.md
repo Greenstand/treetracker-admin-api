@@ -128,6 +128,10 @@ It comes with Node.js support out of the box.
 
 https://code.visualstudio.com/docs
 
+### Still can not figure it out?
+
+Here is our wiki page for troubleshooting , take a look. And help us to improve it by adding your case solving this problem. https://github.com/Greenstand/treetracker-admin/wiki/Set-Up-Issues
+
 ## Quick Start For API only development
 
 Run the following command to start the REST API.
