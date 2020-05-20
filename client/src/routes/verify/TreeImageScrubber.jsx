@@ -46,10 +46,7 @@ const SIDE_PANEL_WIDTH = 315
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    padding: theme.spacing(2, 16, 4, 16),
-    userSelect: 'none',
+    padding: theme.spacing(2, 8, 4, 8),
   },
   cardImg: {
     width: '100%',
@@ -60,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     cursor: 'pointer',
-    margin: '0.5rem',
   },
   cardCheckbox: {
     position: 'absolute',
@@ -72,38 +68,38 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 1,
   },
   cardSelected: {
     backgroundColor: theme.palette.action.selected,
   },
   cardContent: {
-    padding: 0,
+    padding: '87% 0 0 0',
+    position: 'relative',
   },
   selected: {
     border: `2px ${selectedHighlightColor} solid`,
   },
   cardMedia: {
-    height: '12rem',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   cardWrapper: {
-    '&:not($cardSelected) $card:hover': {
-      margin: 0,
-      height: '100%',
-      '& $cardMedia': {
-        height: '13rem',
-      },
-      transition: theme.transitions.create('height', {
-        easing: theme.transitions.easing.easeInOut,
-        duration: '0.3s',
-      }),
-    },
     position: 'relative',
-    width: '30%',
-    minWidth: 300,
-    margin: 2,
+    padding: theme.spacing(2),
+    transition: theme.transitions.create('padding', {
+      easing: theme.transitions.easing.easeInOut,
+      duration: '0.1s',
+    }),
+    '&:not($cardSelected):hover': {
+      padding: 0,
+    },
   },
   title: {
-    padding: theme.spacing(2, 16),
+    padding: theme.spacing(2, 8),
   },
   snackbar: {
     bottom: 20,
@@ -311,44 +307,46 @@ const TreeImageScrubber = (props) => {
   let treeImageItems = props.verityState.treeImages.map((tree) => {
     if (tree.imageUrl) {
       return (
-        <div
-          className={clsx(
-            classes.cardWrapper,
-            isTreeSelected(tree.id) ? classes.cardSelected : undefined
-          )}
-          key={tree.id}
-        >
-          {isTreeSelected(tree.id) && (
-            <Paper className={classes.cardCheckbox} elevation={4}>
-              <CheckIcon />
-            </Paper>
-          )}
-          <Card
-            onClick={(e) => handleTreeClick(e, tree.id)}
-            id={`card_${tree.id}`}
-            className={classes.card}
-            elevation={3}
+        <Grid item xs={12} sm={6} md={4} xl={3}>
+          <div
+            className={clsx(
+              classes.cardWrapper,
+              isTreeSelected(tree.id) ? classes.cardSelected : undefined
+            )}
+            key={tree.id}
           >
-            <CardContent className={classes.cardContent}>
-              <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
-            </CardContent>
-            <CardActions className={classes.cardActions}>
-              <Grid justify="flex-end" container>
-                <Grid item>
-                  <Image color="primary" onClick={(e) => handleDialog(e, tree)} />
-                  <TreePin
-                    width="25px"
-                    height="25px"
-                    title={`Open Webmap for Tree# ${tree.id}`}
-                    onClick={(e) => {
-                      handleTreePinClick(e, tree.id)
-                    }}
-                  />
+            {isTreeSelected(tree.id) && (
+              <Paper className={classes.cardCheckbox} elevation={4}>
+                <CheckIcon />
+              </Paper>
+            )}
+            <Card
+              onClick={(e) => handleTreeClick(e, tree.id)}
+              id={`card_${tree.id}`}
+              className={classes.card}
+              elevation={3}
+            >
+              <CardContent className={classes.cardContent}>
+                <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
+              </CardContent>
+              <CardActions className={classes.cardActions}>
+                <Grid justify="flex-end" container>
+                  <Grid item>
+                    <Image color="primary" onClick={(e) => handleDialog(e, tree)} />
+                    <TreePin
+                      width="25px"
+                      height="25px"
+                      title={`Open Webmap for Tree# ${tree.id}`}
+                      onClick={(e) => {
+                        handleTreePinClick(e, tree.id)
+                      }}
+                    />
+                  </Grid>
                 </Grid>
-              </Grid>
-            </CardActions>
-          </Card>
-        </div>
+              </CardActions>
+            </Card>
+          </div>
+        </Grid>
       )
     }
   })
@@ -401,7 +399,7 @@ const TreeImageScrubber = (props) => {
           item
           ref={refContainer}
           style={{
-            overflow: 'auto',
+            overflow: 'hidden auto',
             marginTop: isFilterShown ? 156 : 44,
           }}
         >
@@ -432,7 +430,9 @@ const TreeImageScrubber = (props) => {
                 width: '100%',
               }}
             >
-              <section className={classes.wrapper}>{treeImageItems}</section>
+              <Grid container className={classes.wrapper} spacing={1}>
+                {treeImageItems}
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
