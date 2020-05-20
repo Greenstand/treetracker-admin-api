@@ -533,6 +533,7 @@ const TreeImageScrubber = (props) => {
       <Dialog
         open={dialog.isOpen}
         TransitionComponent={Transition}
+        onClose={handleDialogClose}
       >
         <DialogTitle>Tree Detail</DialogTitle>
         <DialogContent>
