@@ -487,7 +487,7 @@ const TreeImageScrubber = (props) => {
             className={classes.snackbar}
           />
         )}
-      <Dialog open={dialog.isOpen} TransitionComponent={Transition}>
+      <Dialog open={dialog.isOpen} TransitionComponent={Transition} onClose={handleDialogClose}>
         <DialogTitle>Tree Detail</DialogTitle>
         <DialogContent>
           <img src={dialog.tree.imageUrl} alt="tree image" />
