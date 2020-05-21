@@ -91,15 +91,31 @@ function SimpleTable() {
   );
 }
 
+const AppContext = React.createContext({
+  menuName: "Verify",
+  handleMenuChange: () => {},
+});
+export {AppContext}
+
 export default function Mainframe() {
   const [menuName, setMenuName] = React.useState(/* default menu */ "Verify");
   const refContainer = React.useRef();
+
+
+  const context = {
+    menuName,
+    handleMenuChange: (n) => {
+      console.log("Set menu to:", n);
+      setMenuName(n);
+    },
+  }
 
   function handleMenuClick(menuName) {
     setMenuName(menuName);
   }
 
   return (
+    <AppContext.Provider value={context} >
     <Grid container wrap="nowrap">
       <Grid item>
         {/* hide menu 
@@ -164,8 +180,12 @@ export default function Mainframe() {
               getScrollContainerRef={() => refContainer.current}
             />
           )}
+          {menuName === "Planters" && (
+            <div>Planters</div>
+          )}
         </Grid>
       </Grid>
     </Grid>
+    </AppContext.Provider>
   );
 }

@@ -1,9 +1,10 @@
-describe.skip("Planter", () => {
+describe("Trees", () => {
   before(() => {
-    cy.visit("/");
+    cy.visit("/")
+      .wait(1000);
     cy.get("button[title=menu]")
       .click();
-    cy.contains("Planters")
+    cy.contains("Trees")
       .click();
   });
 

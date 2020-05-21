@@ -21,7 +21,7 @@ const styles = () => ({
     overflowX: 'auto',
   },
 	myTable		: {
-		width		: `calc(100vw - ${MENU_WIDTH}px - ${FILTER_WIDTH}px)`,
+		width		: `calc(100vw  - ${FILTER_WIDTH}px)`,
 	},
   locationCol: {
     width: '270px'

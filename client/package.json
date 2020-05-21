@@ -40,7 +40,8 @@
     "test": "react-scripts test --env=jsdom --setupTestFrameworkScriptFile=./src/testSetup.js",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "cypress": "cypress open"
   },
   "browserslist": [
     ">0.2%",

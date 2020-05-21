@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Drawer from '@material-ui/core/Drawer';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
