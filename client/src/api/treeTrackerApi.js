@@ -1,5 +1,4 @@
 import { handleResponse, handleError } from "./apiUtils";
-import { API_ROOT as baseUrl } from "../common/variables.js";
 
 export default {
   getTreeImages({
@@ -11,7 +10,7 @@ export default {
     filter
   }) {
     const query =
-      `${baseUrl}/trees?` +
+      `${process.env.REACT_APP_API_ROOT}/trees?` +
       `filter[order]=${orderBy} ${order}&` +
       `filter[limit]=${rowsPerPage}&` +
       `filter[skip]=${skip}&` +
@@ -40,7 +39,7 @@ export default {
     captureApprovalTag,
     speciesId,
   ) {
-    const query = `${baseUrl}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
@@ -60,7 +59,7 @@ export default {
       .catch(handleError);
   },
   rejectTreeImage(id, rejectionReason) {
-    const query = `${baseUrl}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
@@ -80,7 +79,7 @@ export default {
    * to rollback from a wrong approving
    */
   undoTreeImage(id) {
-    const query = `${baseUrl}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
@@ -94,14 +93,14 @@ export default {
       .catch(handleError);
   },
   getUnverifiedTreeCount() {
-    const query = `${baseUrl}/trees/count?where[approved]=false&where[active]=true`;
+    const query = `${process.env.REACT_APP_API_ROOT}/trees/count?where[approved]=false&where[active]=true`;
     return fetch(query).then(handleResponse).catch(handleError);
   },
   /*
    * get species list
    */
   getSpecies() {
-    const query = `${baseUrl}/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/species`;
     return fetch(query, {
       method: "GET",
       headers: { "content-type": "application/json" },
@@ -113,7 +112,7 @@ export default {
    * create new species
    */
   createSpecies(name) {
-    const query = `${baseUrl}/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/species`;
     return fetch(query, {
       method: "POST",
       headers: { "content-type": "application/json" },

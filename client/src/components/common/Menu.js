@@ -15,6 +15,7 @@ import ListItemText		from '@material-ui/core/ListItemText';
 import Box		from '@material-ui/core/Box';
 import {useTheme, }		from '@material-ui/styles';
 import IconLogo		from '../IconLogo';
+import {AppContext} from "../MainFrame";
 
 export const MENU_WIDTH		= 232
 
@@ -93,6 +94,7 @@ const menus		= [
 export default function GSMenu(props){
 	const classes		= useStyles()
 	const theme		= useTheme()
+  const appContext = React.useContext(AppContext);
 	return(
 			<Drawer
 				PaperProps={{
@@ -107,11 +109,12 @@ export default function GSMenu(props){
 					<IconLogo/>
 				</Box>
 				<Box height={20} />
-				{menus.map(item => (
+				{menus.map((item,i) => (
 					<MenuItem
+            key={i}
 						className={classes.menuItem}
 						selected={props.active === item.name}
-						onClick={() => props.onClick(item.name)}
+						onClick={() => appContext.handleMenuChange(item.name)}
 						disabled={item.disabled}
 					>
 						<ListItemIcon

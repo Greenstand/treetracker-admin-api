@@ -132,6 +132,38 @@ https://code.visualstudio.com/docs
 
 Here is our wiki page for troubleshooting , take a look. And help us to improve it by adding your case solving this problem. https://github.com/Greenstand/treetracker-admin/wiki/Set-Up-Issues
 
+### How to devlop without Docker
+If Docker is really a roadblock, please consider using this way below to bypass it.
+
+* Add a .env.local under "client" for local config, it looks like this:
+
+
+```
+REACT_APP_WEBMAP_DOMAIN=https://treetracker.org
+REACT_APP_API_ROOT=http://localhost:3000/
+```
+
+So the React App would connect to http://localhost:3000 for API server.
+
+* Start server:
+
+```
+cd server
+npm start
+```
+
+* Start client:
+
+```
+cd client
+npm start
+```
+
+* Visit
+
+http://localhost:3001
+
+
 ## Quick Start For API only development
 
 Run the following command to start the REST API.

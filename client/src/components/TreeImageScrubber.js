@@ -397,7 +397,7 @@ const TreeImageScrubber = (props) => {
               <Grid item>
                 <Grid container justify='space-between'>
                   <Grid item>
-                    <IconButton onClick={handleToggleMenu}>
+                    <IconButton title="menu" onClick={handleToggleMenu}>
                       <MenuIcon/>
                     </IconButton>
                     <IconLogo/>

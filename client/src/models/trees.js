@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import { API_ROOT } from '../common/variables.js';
 
 const trees = {
   state: {
@@ -67,7 +66,7 @@ const trees = {
       orderBy = 'id',
       order = 'desc'
     }) {
-      const query = `${API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
+      const query = `${process.env.REACT_APP_API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true&field[imageURL]`;
       Axios.get(query).then(response => {
         this.getTrees(response.data, {
@@ -82,7 +81,7 @@ const trees = {
 			filter,
 		}) {
 			console.error('filter:', filter)
-      const query = `${API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
+      const query = `${process.env.REACT_APP_API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true&&filter[where][active]=true` + 
 				(filter?filter.getBackloopString():'')
       Axios.get(query).then(response => {
@@ -94,13 +93,13 @@ const trees = {
       });
     },
     async requestTreeCount(payload, rootState) {
-      Axios.get(`${API_ROOT}/trees/count`).then(response => {
+      Axios.get(`${process.env.REACT_APP_API_ROOT}/trees/count`).then(response => {
         const data = response.data;
         this.receiveTreeCount(data);
       });
     },
     async getTreeAsync(id) {
-      const query = `${API_ROOT}/Trees/${id}`;
+      const query = `${process.env.REACT_APP_API_ROOT}/Trees/${id}`;
       Axios.get(query)
         .then(res => {
           this.getTree(res.data);
@@ -129,7 +128,7 @@ const trees = {
       }
     },
     async markInactiveTree(id) {
-      const query = `${API_ROOT}/trees/${id}/`;
+      const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}/`;
       const data = { active: false };
       Axios.patch(query, data).then(response => {
         this.receiveStatus(response.status);
@@ -139,7 +138,7 @@ const trees = {
     async sortTrees(payload, rootState) {
       const { page, rowsPerPage, order } = rootState.trees;
       const newOrder = order === 'asc' ? 'desc' : 'asc';
-      const query = `${API_ROOT}/trees?filter[order]=${
+      const query = `${process.env.REACT_APP_API_ROOT}/trees?filter[order]=${
         payload.orderBy
       } ${newOrder}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true`;
