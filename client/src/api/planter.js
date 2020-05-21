@@ -1,10 +1,9 @@
 import { handleResponse, handleError } from "./apiUtils";
-import { API_ROOT as baseUrl } from "../common/variables.js";
 
 export default {
   get({ skip, rowsPerPage, orderBy = "id", order = "desc", filter }) {
     const query =
-      `${baseUrl}/planter?` +
+      `${process.env.REACT_APP_API_ROOT}/planter?` +
       `filter[order]=${orderBy} ${order}&` +
       `filter[limit]=${rowsPerPage}&` +
       `filter[skip]=${skip}&` +
