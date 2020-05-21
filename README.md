@@ -135,6 +135,18 @@ Here is our wiki page for troubleshooting , take a look. And help us to improve 
 ### How to devlop without Docker
 If Docker is really a roadblock, please consider using this way below to bypass it.
 
+* Install
+
+```
+cd client
+npm install
+```
+
+```
+cd server
+npm install
+```
+
 * Add a .env.local under "client" for local config, it looks like this:
 
 
