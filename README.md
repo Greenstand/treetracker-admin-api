@@ -128,6 +128,10 @@ It comes with Node.js support out of the box.
 
 https://code.visualstudio.com/docs
 
+### Still can not figure it out?
+
+Here is our wiki page for troubleshooting , take a look. And help us to improve it by adding your case solving this problem. https://github.com/Greenstand/treetracker-admin/wiki/Set-Up-Issues
+
 ### How to devlop without Docker
 If Docker is really a roadblock, please consider using this way below to bypass it.
 
