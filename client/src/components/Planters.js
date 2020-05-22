@@ -46,7 +46,7 @@ import Species from './Species'
 
 import FilterTopPlanter from './FilterTopPlanter'
 import { MENU_WIDTH } from './common/Menu'
-import FilterModel from '../models/FilterPlanter'
+import FilterPlanter from '../models/FilterPlanter'
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg'
 import IconLogo from './IconLogo'
 import Menu from './common/Menu.js'
@@ -166,6 +166,7 @@ const Planters = (props) => {
     props.plantersDispatch.count()
     props.plantersDispatch.load({
       pageNumber: 1,
+      filter: new FilterPlanter(),
     })
   }, [])
 
@@ -190,6 +191,14 @@ const Planters = (props) => {
   function handlePageChange(e, page){
     props.plantersDispatch.load({
       pageNumber: page,
+      filter: props.plantersState.filter,
+    });
+  }
+
+  function updateFilter(filter){
+    props.plantersDispatch.load({
+      pageNumber: 1,
+      filter,
     });
   }
 
@@ -218,9 +227,7 @@ const Planters = (props) => {
                 <Grid item>
                   <FilterTopPlanter
                     isOpen={isFilterShown}
-                    onSubmit={(filter) => {
-                      props.plantersDispatch.updateFilter(filter)
-                    }}
+                    onSubmit={filter => updateFilter(filter)}
                     filter={props.plantersState.filter}
                     onClose={handleFilterClick}
                   />

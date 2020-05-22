@@ -3,6 +3,7 @@
  */
 import * as loglevel from "loglevel";
 import api from "../api/planters";
+import FilterPlanter from "./FilterPlanter";
 
 const log = loglevel.getLogger("../models/planters");
 
@@ -13,6 +14,7 @@ const planters = {
     count: 0,
     pageCount: 0,
     currentPage: 0,
+    filter: new FilterPlanter(),
   },
   reducers: {
     setPlanters(state, planters){
@@ -40,6 +42,12 @@ const planters = {
         pageCount: Math.ceil(count / state.pageSize),
       }
     },
+    setFilter(state, filter){
+      return {
+        ...state,
+        filter,
+      }
+    },
   },
   effects: {
     /*
@@ -53,8 +61,10 @@ const planters = {
         rowsPerPage: state.planters.pageSize,
         filter: payload.filter,
       });
+      //TODO should use single reducer to get faster
       this.setPlanters(planters);
       this.setCurrentPage(payload.pageNumber);
+      this.setFilter(payload.filter);
       return true;
     },
     async changePageSize(payload, state){

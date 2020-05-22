@@ -73,18 +73,27 @@ const styles = theme => {
 
 function FilterTopPlanter(props) {
   const { classes, filter } = props;
+  const [id, setId] = useState("");
   const [personId, setPersonId] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
 
   function handleClear() {
     const filter = new FilterModel();
     setPersonId("");
+    setFirstName("");
+    setId("");
+    setLastName("");
     props.onSubmit && props.onSubmit(filter);
   }
 
   function handleSubmit() {
     const filter = new FilterModel({
       personId,
+      id,
+      firstName,
+      lastName,
     });
     props.onSubmit && props.onSubmit(filter);
   }
@@ -100,10 +109,33 @@ function FilterTopPlanter(props) {
           <Grid item className={classes.inputContainer}>
             <TextField
               className={`${classes.textField} ${classes.filterElement}`}
+              label='Planter ID'
+              placeholder='Planter ID'
+              value={id}
+              onChange={e => setId(e.target.value)}
+            />
+            {/*
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
               label='Person ID'
               placeholder='Person ID'
               value={personId}
               onChange={e => setPersonId(e.target.value)}
+            />
+            */}
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='First Name'
+              placeholder='Last Name'
+              value={firstName}
+              onChange={e => setFirstName(e.target.value)}
+            />
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='Last Name'
+              placeholder='Last Name'
+              value={lastName}
+              onChange={e => setLastName(e.target.value)}
             />
             <Button 
               className={classes.apply}

@@ -17,17 +17,6 @@ describe("planter", () => {
   let filter;
 
   beforeEach(() => {
-    //mock the api
-    //		api		= require('../api/treeTrackerApi').default
-    //		api.getTreeImages		= jest.fn(() => Promise.resolve([{
-    //				id		: '1',
-    //			}]));
-    //		api.approveTreeImage		= jest.fn(() => Promise.resolve(true));
-    //		api.rejectTreeImage		= jest.fn(() => Promise.resolve(true));
-    //		api.undoTreeImage		= () => Promise.resolve(true);
-    //    api.getUnverifiedTreeCount = () => Promise.resolve({
-    //      count   : 1
-    //    });
   });
 
   describe("with a default store", () => {
@@ -47,6 +36,7 @@ describe("planter", () => {
     it("check initial state", () => {
       expect(store.getState().planters.planters).toBeInstanceOf(Array);
       expect(store.getState().planters.planters).toHaveLength(0);
+      expect(store.getState().planters.filter).toBeInstanceOf(FilterPlanter);
     });
 
     describe("load(1) ", () => {
@@ -78,11 +68,16 @@ describe("planter", () => {
         expect(store.getState().planters.currentPage).toBe(1);
       });
 
+      it("Sould have filter be set to store", () => {
+        expect(store.getState().planters.filter).toBe(filter);
+      });
+
       describe("load(2)", () => {
         beforeEach(async () => {
           api.getPlanters.mockReturnValue([planter]);
           const result = await store.dispatch.planters.load({
             pageNumber: 2,
+            filter,
           });
           expect(result).toBe(true);
         });
@@ -95,6 +90,7 @@ describe("planter", () => {
           expect(api.getPlanters).toHaveBeenCalledWith({
             skip: 1,
             rowsPerPage: 1,
+            filter,
           });
         });
       });
