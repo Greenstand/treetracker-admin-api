@@ -44,10 +44,9 @@ import Tab from '@material-ui/core/Tab'
 import TextField from '@material-ui/core/TextField'
 import Species from './Species'
 
-import Filter, { FILTER_WIDTH } from './Filter'
-import FilterTop from './FilterTop'
+import FilterTopPlanter from './FilterTopPlanter'
 import { MENU_WIDTH } from './common/Menu'
-import FilterModel from '../models/Filter'
+import FilterModel from '../models/FilterPlanter'
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg'
 import IconLogo from './IconLogo'
 import Menu from './common/Menu.js'
@@ -172,7 +171,7 @@ const Planters = (props) => {
 
   let plantersItems = props.plantersState.planters.map((planter) => {
     return (
-      <Planter planter={planter} />
+      <Planter key={planter.id} planter={planter} />
     )
   })
 
@@ -217,12 +216,12 @@ const Planters = (props) => {
               </Grid>
               {isFilterShown && (
                 <Grid item>
-                  <FilterTop
+                  <FilterTopPlanter
                     isOpen={isFilterShown}
                     onSubmit={(filter) => {
-                      props.verityDispatch.updateFilter(filter)
+                      props.plantersDispatch.updateFilter(filter)
                     }}
-                    filter={props.verityState.filter}
+                    filter={props.plantersState.filter}
                     onClose={handleFilterClick}
                   />
                 </Grid>

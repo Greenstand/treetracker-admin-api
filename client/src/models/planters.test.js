@@ -2,6 +2,7 @@ import { init } from "@rematch/core";
 import planters from "./planters";
 import * as loglevel from "loglevel";
 import api from "../api/planters";
+import FilterPlanter from "./FilterPlanter";
 
 jest.mock("../api/planters");
 
@@ -13,6 +14,7 @@ describe("planter", () => {
   let planter = {
     name: "OK",
   };
+  let filter;
 
   beforeEach(() => {
     //mock the api
@@ -37,7 +39,7 @@ describe("planter", () => {
         },
       });
       //set page size
-      expect(store.getState().planters.pageSize).toBe(20);
+      expect(store.getState().planters.pageSize).toBe(21);
       await store.dispatch.planters.changePageSize({ pageSize: 1 });
       expect(store.getState().planters.pageSize).toBe(1);
     });
@@ -50,8 +52,12 @@ describe("planter", () => {
     describe("load(1) ", () => {
       beforeEach(async () => {
         api.getPlanters.mockReturnValue([planter]);
+        filter = new FilterPlanter({
+          personId: 1,
+        });
         const result = await store.dispatch.planters.load({
           pageNumber: 1,
+          filter,
         });
         expect(result).toBe(true);
       });
@@ -64,6 +70,7 @@ describe("planter", () => {
         expect(api.getPlanters).toHaveBeenCalledWith({
           skip: 0,
           rowsPerPage: 1,
+          filter: filter,
         });
       });
 

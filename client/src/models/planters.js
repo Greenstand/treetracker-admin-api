@@ -51,6 +51,7 @@ const planters = {
       const planters = await api.getPlanters({
         skip: (payload.pageNumber - 1) * state.planters.pageSize,
         rowsPerPage: state.planters.pageSize,
+        filter: payload.filter,
       });
       this.setPlanters(planters);
       this.setCurrentPage(payload.pageNumber);
