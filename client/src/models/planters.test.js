@@ -67,6 +67,10 @@ describe("planter", () => {
         });
       });
 
+      it("currentPage should be 1", () => {
+        expect(store.getState().planters.currentPage).toBe(1);
+      });
+
       describe("load(2)", () => {
         beforeEach(async () => {
           api.getPlanters.mockReturnValue([planter]);

@@ -12,6 +12,7 @@ const planters = {
     pageSize: 20,
     count: 0,
     pageCount: 0,
+    currentPage: 0,
   },
   reducers: {
     setPlanters(state, planters){
@@ -19,6 +20,12 @@ const planters = {
         ...state,
         planters
       };
+    },
+    setCurrentPage(state, currentPage){
+      return {
+        ...state,
+        currentPage,
+      }
     },
     setPageSize(state, pageSize){
       return {
@@ -46,6 +53,7 @@ const planters = {
         rowsPerPage: state.planters.pageSize,
       });
       this.setPlanters(planters);
+      this.setCurrentPage(payload.pageNumber);
       return true;
     },
     async changePageSize(payload, state){
