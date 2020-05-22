@@ -23,7 +23,6 @@
     "loglevel": "^1.6.3",
     "mdi-material-ui": "*",
     "mdi-svg": "*",
-    "mui-datatables": "*",
     "npm": "*",
     "prop-types": "*",
     "react": "*",

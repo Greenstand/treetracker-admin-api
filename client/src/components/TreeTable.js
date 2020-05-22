@@ -1,16 +1,13 @@
-import React, { Component } from 'react';
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
-import MUIDataTable from 'mui-datatables';
-import dateformat		from 'dateformat';
-import Filter, {FILTER_WIDTH}		from './Filter';
-import FilterModel		from '../models/Filter';
-import {MENU_WIDTH}		from './common/Menu';
+import React, { Component } from 'react'
+import compose from 'recompose/compose'
+import { connect } from 'react-redux'
+import { withStyles } from '@material-ui/core/styles'
+import { Table, TableHead, TableBody, TableRow, TableCell, Drawer } from '@material-ui/core'
+import dateformat from 'dateformat'
 
-import Drawer from '@material-ui/core/Drawer';
-
-import TreeDetails from './TreeDetails.js';
+import Filter, { FILTER_WIDTH } from './Filter'
+import FilterModel from '../models/Filter'
+import TreeDetails from './TreeDetails.js'
 
 // change 88 to unit spacing,
 const styles = () => ({
@@ -20,38 +17,38 @@ const styles = () => ({
     paddingLeft: '70px',
     overflowX: 'auto',
   },
-	myTable		: {
-		width		: `calc(100vw  - ${FILTER_WIDTH}px)`,
-	},
+  myTable: {
+    width: `calc(100vw  - ${FILTER_WIDTH}px)`,
+  },
   locationCol: {
-    width: '270px'
+    width: '270px',
   },
   table: {
     minHeight: '100vh',
-		'&:nth-child(2)': {
-			width: 20,
-		}
+    '&:nth-child(2)': {
+      width: 20,
+    },
   },
   tableBody: {
-    minHeight: '100vh'
+    minHeight: '100vh',
   },
   pagination: {
     position: 'sticky',
     bottom: '0px',
     width: '100%',
     backgroundColor: '#fff',
-    boxShadow: '0 -2px 5px rgba(0,0,0,0.15)'
-  }
-});
+    boxShadow: '0 -2px 5px rgba(0,0,0,0.15)',
+  },
+})
 
 class TreeTable extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       detailsPane: false,
       page: 0,
-			filter		: new FilterModel(),
-    };
+      filter: new FilterModel(),
+    }
   }
 
   componentDidMount() {
@@ -59,103 +56,64 @@ class TreeTable extends Component {
       page: this.state.page,
       rowsPerPage: this.props.rowsPerPage,
       order: this.props.order,
-      orderBy: this.props.orderBy
-    };
-    this.props.getTreesAsync(payload);
+      orderBy: this.props.orderBy,
+    }
+    this.props.getTreesAsync(payload)
   }
 
-  toggleDrawer = id => {
-    this.props.getTreeAsync(id);
-    const { detailsPane } = this.state;
+  toggleDrawer = (id) => {
+    this.props.getTreeAsync(id)
+    const { detailsPane } = this.state
     this.setState({
-      detailsPane: !detailsPane
-    });
-  };
+      detailsPane: !detailsPane,
+    })
+  }
 
-	handleFilterSubmit = filter => {
-		this.setState({
-			//reset
-			page		: 0,
-			filter,
-		},() => {
-			this.props.getTreesAsync({
-				page		: 0,
-				rowsPerPage		: this.props.rowsPerPage,
-				filter,
-			});
-		})
-	}
+  handleFilterSubmit = (filter) => {
+    this.setState(
+      {
+        //reset
+        page: 0,
+        filter,
+      },
+      () => {
+        this.props.getTreesAsync({
+          page: 0,
+          rowsPerPage: this.props.rowsPerPage,
+          filter,
+        })
+      }
+    )
+  }
 
   onPageChange = (page, rowsPerPage) => {
     this.props.getTreesAsync({
       page,
-      rowsPerPage
-    });
+      rowsPerPage,
+    })
     this.setState({
-      page
-    });
-  };
+      page,
+    })
+  }
 
-  onChangeRowsPerPage = rowsPerPage => {
+  onChangeRowsPerPage = (rowsPerPage) => {
     this.props.getTreesAsync({
       page: this.state.page,
-      rowsPerPage
-    });
-  };
+      rowsPerPage,
+    })
+  }
 
   onSort = (order, orderBy) => {
-    this.props.sortTrees(order, orderBy);
-  };
+    this.props.sortTrees(order, orderBy)
+  }
 
   render() {
-    const { treesArray, tree , classes} = this.props;
-    const columnData = [
-      { name: 'id', label: 'Tree' },
-			{
-				name		: '',
-				label		: 'Planter',
-				options		: {
-					customBodyRender		: () => 'pending',
-				}
-			},
-			{
-				name		: '',
-				label		: 'Payment',
-				options		: {
-					customBodyRender		: () => 'pending',
-				},
-			},
-			{
-				name		: '',
-				label		: 'Country',
-				options		: {
-					customBodyRender		: () => 'pending',
-				},
-			},
-			{
-				name		: '',
-				label		: 'Specie',
-				options		: {
-					customBodyRender		: () => 'pending',
-				},
-			},
-			{
-				name		: 'status',
-				label		: 'Status',
-			},
-      { 
-				name: 'timeCreated', 
-				label: 'Created',
-				options		: {
-					customBodyRender		: v => `${dateformat(v, 'm/d/yyyy h:Mtt')}`,
-				},
-			},
-    ];
+    const { treesArray, tree, classes } = this.props
     const options = {
       filterType: 'dropdown',
       onRowClick: (_, rowMeta) => {
-        const id = treesArray[rowMeta.dataIndex].id;
-        this.toggleDrawer(id);
+        const id = treesArray[rowMeta.dataIndex].id
+        this.toggleDrawer(id)
       },
       serverSide: true,
       count: this.props.treeCount,
@@ -163,52 +121,68 @@ class TreeTable extends Component {
       rowsPerPage: this.props.rowsPerPage,
       rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
       onTableChange: (action, tableState) => {
-        console.log(tableState);
+        console.log(tableState)
         switch (action) {
           case 'changePage':
-            this.onPageChange(tableState.page, tableState.rowsPerPage);
-            break;
+            this.onPageChange(tableState.page, tableState.rowsPerPage)
+            break
           case 'changeRowsPerPage':
-            this.onChangeRowsPerPage(tableState.rowsPerPage);
-            break;
+            this.onChangeRowsPerPage(tableState.rowsPerPage)
+            break
           case 'sort':
-            const col = tableState.columns[tableState.activeColumn];
-            this.onSort(col.sortDirection === 'asc' ? 'desc' : 'asc', col.name);
-            break;
+            const col = tableState.columns[tableState.activeColumn]
+            this.onSort(col.sortDirection === 'asc' ? 'desc' : 'asc', col.name)
+            break
         }
-      }
-    };
+      },
+    }
+    debugger
     return (
       <React.Fragment>
-        <MUIDataTable
-          title={'Trees'}
-          data={this.props.treesArray}
-          columns={columnData}
-          options={options}
-					className={classes.myTable}
-        />
+        <Table className={classes.myTable}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Tree</TableCell>
+              <TableCell>Planter</TableCell>
+              <TableCell>Payment</TableCell>
+              <TableCell>Country</TableCell>
+              <TableCell>Specie</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Created</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.props.treesArray.map(tree => (
+              <TableRow key={tree.id}>
+                <TableCell>{tree.id}</TableCell>
+                <TableCell>pending</TableCell>
+                <TableCell>pending</TableCell>
+                <TableCell>pending</TableCell>
+                <TableCell>pending</TableCell>
+                <TableCell>{tree.status}</TableCell>
+                <TableCell>{dateformat(tree.timeCreated, 'm/d/yyyy h:Mtt')}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
         <Drawer
           anchor="right"
           open={this.state.detailsPane}
-          onClose={event => this.toggleDrawer(event, undefined)}
+          onClose={(event) => this.toggleDrawer(event, undefined)}
         >
           <TreeDetails tree={tree} />
         </Drawer>
-				<Filter 
-					isOpen={true} 
-					onSubmit={this.handleFilterSubmit}
-					filter={this.state.filter}
-				/>
+        <Filter isOpen={true} onSubmit={this.handleFilterSubmit} filter={this.state.filter} />
       </React.Fragment>
-    );
+    )
   }
 }
 
-const mapState = state => {
-  const keys = Object.keys(state.trees.data);
+const mapState = (state) => {
+  const keys = Object.keys(state.trees.data)
   return {
-    treesArray: keys.map(id => ({
-      ...state.trees.data[id]
+    treesArray: keys.map((id) => ({
+      ...state.trees.data[id],
     })),
     page: state.trees.page,
     rowsPerPage: state.trees.rowsPerPage,
@@ -219,12 +193,12 @@ const mapState = state => {
     byId: state.trees.byId,
     isOpen: state.trees.displayDrawer.isOpen,
     tree: state.trees.tree,
-    treeCount: state.trees.treeCount
-  };
-};
+    treeCount: state.trees.treeCount,
+  }
+}
 
-const mapDispatch = dispatch => ({
-  getTreesAsync: ({ page, rowsPerPage, order, orderBy , filter}) =>
+const mapDispatch = (dispatch) => ({
+  getTreesAsync: ({ page, rowsPerPage, order, orderBy, filter }) =>
     dispatch.trees.getTreesAsync({
       page: page,
       rowsPerPage: rowsPerPage,
@@ -234,15 +208,11 @@ const mapDispatch = dispatch => ({
     }),
   getLocationName: (id, lat, lon) =>
     dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
-  getTreeAsync: id => dispatch.trees.getTreeAsync(id),
-  sortTrees: (order, orderBy) =>
-    dispatch.trees.sortTrees({ order: order, orderBy: orderBy })
-});
+  getTreeAsync: (id) => dispatch.trees.getTreeAsync(id),
+  sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order: order, orderBy: orderBy }),
+})
 
 export default compose(
   withStyles(styles, { withTheme: true, name: 'TreeTable' }),
-  connect(
-    mapState,
-    mapDispatch
-  )
-)(TreeTable);
+  connect(mapState, mapDispatch)
+)(TreeTable)
