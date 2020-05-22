@@ -22,6 +22,7 @@ import IconCloudDownload from "@material-ui/icons/CloudDownload";
 import FilterModel from "../models/Filter";
 import Typography from "@material-ui/core/Typography";
 import TreeImageScrubber from "./TreeImageScrubber";
+import Planters from "./Planters";
 import Trees from "./Trees";
 
 const useStyles = makeStyles((theme) => ({
@@ -181,7 +182,7 @@ export default function Mainframe() {
             />
           )}
           {menuName === "Planters" && (
-            <div>Planters</div>
+            <Planters/>
           )}
         </Grid>
       </Grid>

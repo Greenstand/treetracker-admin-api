@@ -1,4 +1,4 @@
-describe.skip("Planter", () => {
+describe("Planter", () => {
   before(() => {
     cy.visit("/");
     cy.get("button[title=menu]")
