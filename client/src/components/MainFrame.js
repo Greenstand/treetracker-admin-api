@@ -93,13 +93,13 @@ function SimpleTable() {
 }
 
 const AppContext = React.createContext({
-  menuName: "Planters",
+  menuName: "Verify",
   handleMenuChange: () => {},
 });
 export {AppContext}
 
 export default function Mainframe() {
-  const [menuName, setMenuName] = React.useState(/* default menu */ "Planters");
+  const [menuName, setMenuName] = React.useState(/* default menu */ "Verify");
   const refContainer = React.useRef();
 
 
