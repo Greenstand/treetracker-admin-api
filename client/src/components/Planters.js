@@ -312,6 +312,8 @@ function Planter (props){
   )
 }
 
+export {Planter};
+
 export default connect(
   //state
   (state) => ({
