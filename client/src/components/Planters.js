@@ -88,7 +88,6 @@ const useStyles = makeStyles((theme) => ({
   },
   cardWrapper: {
     width: 200,
-    height: 305,
   },
   planterCard: {
     borderRadius: 16,
@@ -144,6 +143,9 @@ const useStyles = makeStyles((theme) => ({
     height: 90,
     width: 90,
     fill: "gray",
+  },
+  name: {
+    textTransform: "capitalize",
   },
 }))
 
@@ -302,9 +304,11 @@ function Planter (props){
             }
           </CardContent>
           <CardActions className={classes.cardActions}>
-            <Grid justify="flex-start" container>
-              <Typography>{planter.firstName} {planter.lastName}</Typography>
-              <Typography>ID:{planter.id}</Typography>
+            <Grid justify="flex-start" container >
+              <Grid container direction="column">
+                <Typography className={classes.name} >{planter.firstName} {planter.lastName}</Typography>
+                <Typography>ID:{planter.id}</Typography>
+              </Grid>
             </Grid>
           </CardActions>
         </Card>

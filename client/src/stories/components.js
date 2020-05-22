@@ -46,6 +46,7 @@ import { init } from '@rematch/core'
 import { Provider } from 'react-redux'
 import * as models from '../models'
 import api		from '../api/treeTrackerApi';
+import {Planter} from "../components/Planters";
 
 const store = init({ models });
 
@@ -444,3 +445,11 @@ function TestSpecies(){
 
 storiesOf('species', module)
   .add('species', () => <TestSpecies/>)
+
+
+const planterData = {
+  firstName: "Dadior",
+  lastName: "Chen",
+}
+storiesOf("planterSingle", module)
+  .add("planterSingle", () => <Planter planter={planterData} />);

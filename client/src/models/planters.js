@@ -9,7 +9,7 @@ const log = loglevel.getLogger("../models/planters");
 const planters = {
   state: {
     planters: [],
-    pageSize: 20,
+    pageSize: 21,
     count: 0,
     pageCount: 0,
     currentPage: 0,
