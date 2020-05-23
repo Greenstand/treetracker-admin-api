@@ -20,6 +20,9 @@ const styles = () => ({
   myTable: {
     width: `calc(100vw  - ${FILTER_WIDTH}px)`,
   },
+  tableRow: {
+    cursor: 'pointer'
+  },
   locationCol: {
     width: '270px',
   },
@@ -45,7 +48,7 @@ class TreeTable extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      detailsPane: false,
+      isDetailsPaneOpen: false,
       page: 0,
       filter: new FilterModel(),
     }
@@ -61,11 +64,22 @@ class TreeTable extends Component {
     this.props.getTreesAsync(payload)
   }
 
-  toggleDrawer = (id) => {
+  toggleDrawer(id) {
     this.props.getTreeAsync(id)
-    const { detailsPane } = this.state
+    const { isDetailsPaneOpen } = this.state
     this.setState({
-      detailsPane: !detailsPane,
+      isDetailsPaneOpen: !isDetailsPaneOpen,
+    })
+  }
+
+  getToggleDrawerHandler(id) {
+    return () => {
+      this.toggleDrawer(id)
+    }
+  }
+  closeDrawer = () => {
+    this.setState({
+      isDetailsPaneOpen: false
     })
   }
 
@@ -111,10 +125,6 @@ class TreeTable extends Component {
     const { treesArray, tree, classes } = this.props
     const options = {
       filterType: 'dropdown',
-      onRowClick: (_, rowMeta) => {
-        const id = treesArray[rowMeta.dataIndex].id
-        this.toggleDrawer(id)
-      },
       serverSide: true,
       count: this.props.treeCount,
       page: this.state.page,
@@ -151,7 +161,7 @@ class TreeTable extends Component {
           </TableHead>
           <TableBody>
             {this.props.treesArray.map(tree => (
-              <TableRow key={tree.id}>
+              <TableRow key={tree.id} onClick={this.getToggleDrawerHandler(tree.id)} className={classes.tableRow}>
                 <TableCell>{tree.id}</TableCell>
                 <TableCell>pending</TableCell>
                 <TableCell>pending</TableCell>
@@ -165,8 +175,8 @@ class TreeTable extends Component {
         </Table>
         <Drawer
           anchor="right"
-          open={this.state.detailsPane}
-          onClose={(event) => this.toggleDrawer(event, undefined)}
+          open={this.state.isDetailsPaneOpen}
+          onClose={this.closeDrawer}
         >
           <TreeDetails tree={tree} />
         </Drawer>
