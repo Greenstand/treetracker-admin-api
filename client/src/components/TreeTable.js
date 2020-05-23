@@ -121,7 +121,6 @@ class TreeTable extends Component {
       rowsPerPage: this.props.rowsPerPage,
       rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
       onTableChange: (action, tableState) => {
-        console.log(tableState)
         switch (action) {
           case 'changePage':
             this.onPageChange(tableState.page, tableState.rowsPerPage)
@@ -136,7 +135,6 @@ class TreeTable extends Component {
         }
       },
     }
-    debugger
     return (
       <React.Fragment>
         <Table className={classes.myTable}>
