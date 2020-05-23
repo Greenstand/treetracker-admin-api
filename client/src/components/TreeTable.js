@@ -11,6 +11,7 @@ import {
   Drawer,
   TablePagination,
   TableSortLabel,
+  Typography,
 } from '@material-ui/core'
 import dateformat from 'dateformat'
 
@@ -19,7 +20,7 @@ import FilterModel from '../models/Filter'
 import TreeDetails from './TreeDetails.js'
 
 // change 88 to unit spacing,
-const styles = () => ({
+const styles = (theme) => ({
   root: {
     position: 'relative',
     top: '88px',
@@ -27,7 +28,7 @@ const styles = () => ({
     overflowX: 'auto',
   },
   myTable: {
-    width: `calc(100vw  - ${FILTER_WIDTH}px)`,
+    width: `calc(100vw  - ${FILTER_WIDTH + theme.spacing(4)}px)`,
   },
   tableRow: {
     cursor: 'pointer',
@@ -51,16 +52,9 @@ const styles = () => ({
     backgroundColor: '#fff',
     boxShadow: '0 -2px 5px rgba(0,0,0,0.15)',
   },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
+  title: {
+    paddingTop: theme.spacing(6),
+    paddingLeft: theme.spacing(4),
   },
 })
 
@@ -91,8 +85,6 @@ const headerCells = [
   },
 ]
 
-const ROWS_PER_PAGE_OPTIONS = [25, 50, 75, 100, 250, 500]
-
 class TreeTable extends Component {
   constructor(props) {
     super(props)
@@ -106,17 +98,17 @@ class TreeTable extends Component {
     this.closeDrawer = this.closeDrawer.bind(this)
     this.handleFilterSubmit = this.handleFilterSubmit.bind(this)
     this.handlePageChange = this.handlePageChange.bind(this)
+    this.handleRowsPerPageChange = this.handleRowsPerPageChange.bind(this)
     this.createSortHandler = this.createSortHandler.bind(this)
   }
 
   componentDidMount() {
-    const payload = {
+    this.props.getTreesAsync({
       rowsPerPage: this.props.rowsPerPage,
       order: this.state.order,
       orderBy: this.state.orderBy,
       page: this.state.page,
-    }
-    this.props.getTreesAsync(payload)
+    })
   }
 
   toggleDrawer(id) {
@@ -127,7 +119,7 @@ class TreeTable extends Component {
     })
   }
 
-  getToggleDrawerHandler(id) {
+  createToggleDrawerHandler(id) {
     return () => {
       this.toggleDrawer(id)
     }
@@ -163,10 +155,15 @@ class TreeTable extends Component {
       rowsPerPage: this.props.rowsPerPage,
     })
   }
+  handleRowsPerPageChange(event) {
+    this.props.getTreesAsync({
+      page: 0,
+      rowsPerPage: parseInt(event.target.value),
+    })
+  }
 
   createSortHandler(id) {
     return () => {
-      console.log(`clicked on: ${id}`)
       this.setState(({ orderBy, order }) => ({
         order: orderBy === id && order === 'asc' ? 'desc' : 'asc',
         orderBy: id,
@@ -180,7 +177,10 @@ class TreeTable extends Component {
     const { orderBy, order } = this.state
 
     return (
-      <React.Fragment>
+      <div>
+        <Typography variant="h5" className={classes.title}>
+          Trees
+        </Typography>
         <Table className={classes.myTable}>
           <TableHead>
             <TableRow>
@@ -193,11 +193,6 @@ class TreeTable extends Component {
                     disabled={typeof id === 'undefined'}
                   >
                     {label}
-                    {orderBy === id ? (
-                      <span className={classes.visuallyHidden}>
-                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                      </span>
-                    ) : null}
                   </TableSortLabel>
                 </TableCell>
               ))}
@@ -207,7 +202,7 @@ class TreeTable extends Component {
             {treesArray.map((tree) => (
               <TableRow
                 key={tree.id}
-                onClick={this.getToggleDrawerHandler(tree.id)}
+                onClick={this.createToggleDrawerHandler(tree.id)}
                 className={classes.tableRow}
               >
                 <TableCell>{tree.id}</TableCell>
@@ -222,24 +217,19 @@ class TreeTable extends Component {
           </TableBody>
         </Table>
         <TablePagination
-          rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+          rowsPerPageOptions={[25, 50, 75, 100, 250, 500]}
           component="div"
           count={this.props.treeCount}
           page={this.state.page}
           rowsPerPage={this.props.rowsPerPage}
           onChangePage={this.handlePageChange}
-          onChangeRowsPerPage={(event) => {
-            this.props.getTreesAsync({
-              page: 0,
-              rowsPerPage: parseInt(event.target.value),
-            })
-          }}
+          onChangeRowsPerPage={this.handleRowsPerPageChange}
         />
         <Drawer anchor="right" open={this.state.isDetailsPaneOpen} onClose={this.closeDrawer}>
           <TreeDetails tree={tree} />
         </Drawer>
         <Filter isOpen={true} onSubmit={this.handleFilterSubmit} filter={this.state.filter} />
-      </React.Fragment>
+      </div>
     )
   }
 }
@@ -275,7 +265,4 @@ const mapDispatch = (dispatch) => ({
   sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order, orderBy }),
 })
 
-export default compose(
-  withStyles(styles, { withTheme: true, name: 'TreeTable' }),
-  connect(mapState, mapDispatch)
-)(TreeTable)
+export default compose(withStyles(styles), connect(mapState, mapDispatch))(TreeTable)
