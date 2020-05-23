@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import compose from 'recompose/compose'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
-import { Table, TableHead, TableBody, TableRow, TableCell, Drawer } from '@material-ui/core'
+import { Table, TableHead, TableBody, TableRow, TableCell, Drawer, TablePagination } from '@material-ui/core'
 import dateformat from 'dateformat'
 
 import Filter, { FILTER_WIDTH } from './Filter'
@@ -52,14 +52,17 @@ class TreeTable extends Component {
       page: 0,
       filter: new FilterModel(),
     }
+    this.closeDrawer = this.closeDrawer.bind(this)
+    this.handleFilterSubmit = this.handleFilterSubmit.bind(this)
+    this.handlePageChange = this.handlePageChange.bind(this)
   }
 
   componentDidMount() {
     const payload = {
-      page: this.state.page,
       rowsPerPage: this.props.rowsPerPage,
       order: this.props.order,
       orderBy: this.props.orderBy,
+      page: this.state.page
     }
     this.props.getTreesAsync(payload)
   }
@@ -77,13 +80,13 @@ class TreeTable extends Component {
       this.toggleDrawer(id)
     }
   }
-  closeDrawer = () => {
+  closeDrawer() {
     this.setState({
       isDetailsPaneOpen: false
     })
   }
 
-  handleFilterSubmit = (filter) => {
+  handleFilterSubmit(filter) {
     this.setState(
       {
         //reset
@@ -100,20 +103,11 @@ class TreeTable extends Component {
     )
   }
 
-  onPageChange = (page, rowsPerPage) => {
+  handlePageChange(_event, page) {
+    this.setState({ page })
     this.props.getTreesAsync({
       page,
-      rowsPerPage,
-    })
-    this.setState({
-      page,
-    })
-  }
-
-  onChangeRowsPerPage = (rowsPerPage) => {
-    this.props.getTreesAsync({
-      page: this.state.page,
-      rowsPerPage,
+      rowsPerPage: this.props.rowsPerPage,
     })
   }
 
@@ -124,26 +118,14 @@ class TreeTable extends Component {
   render() {
     const { treesArray, tree, classes } = this.props
     const options = {
-      filterType: 'dropdown',
-      serverSide: true,
-      count: this.props.treeCount,
-      page: this.state.page,
-      rowsPerPage: this.props.rowsPerPage,
-      rowsPerPageOptions: [25, 50, 75, 100, 250, 500],
-      onTableChange: (action, tableState) => {
-        switch (action) {
-          case 'changePage':
-            this.onPageChange(tableState.page, tableState.rowsPerPage)
-            break
-          case 'changeRowsPerPage':
-            this.onChangeRowsPerPage(tableState.rowsPerPage)
-            break
-          case 'sort':
-            const col = tableState.columns[tableState.activeColumn]
-            this.onSort(col.sortDirection === 'asc' ? 'desc' : 'asc', col.name)
-            break
-        }
-      },
+      // onTableChange: (action, tableState) => {
+      //   switch (action) {
+      //     case 'sort':
+      //       const col = tableState.columns[tableState.activeColumn]
+      //       this.onSort(col.sortDirection === 'asc' ? 'desc' : 'asc', col.name)
+      //       break
+      //   }
+      // },
     }
     return (
       <React.Fragment>
@@ -160,7 +142,7 @@ class TreeTable extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.props.treesArray.map(tree => (
+            {treesArray.map(tree => (
               <TableRow key={tree.id} onClick={this.getToggleDrawerHandler(tree.id)} className={classes.tableRow}>
                 <TableCell>{tree.id}</TableCell>
                 <TableCell>pending</TableCell>
@@ -173,6 +155,20 @@ class TreeTable extends Component {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[25, 50, 75, 100, 250, 500]}
+          component="div"
+          count={this.props.treeCount}
+          page={this.state.page}
+          rowsPerPage={this.props.rowsPerPage}
+          onChangePage={this.handlePageChange}
+          onChangeRowsPerPage={(event) => {
+            this.props.getTreesAsync({
+              page: 0,
+              rowsPerPage: parseInt(event.target.value)
+            })
+          }}
+        />
         <Drawer
           anchor="right"
           open={this.state.isDetailsPaneOpen}
@@ -192,7 +188,6 @@ const mapState = (state) => {
     treesArray: keys.map((id) => ({
       ...state.trees.data[id],
     })),
-    page: state.trees.page,
     rowsPerPage: state.trees.rowsPerPage,
     selected: state.trees.selected,
     order: state.trees.order,
@@ -208,16 +203,16 @@ const mapState = (state) => {
 const mapDispatch = (dispatch) => ({
   getTreesAsync: ({ page, rowsPerPage, order, orderBy, filter }) =>
     dispatch.trees.getTreesAsync({
-      page: page,
-      rowsPerPage: rowsPerPage,
-      order: order,
-      orderBy: orderBy,
-      filter: filter,
+      page,
+      rowsPerPage,
+      order,
+      orderBy,
+      filter,
     }),
   getLocationName: (id, lat, lon) =>
     dispatch.trees.getLocationName({ id: id, latitude: lat, longitude: lon }),
   getTreeAsync: (id) => dispatch.trees.getTreeAsync(id),
-  sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order: order, orderBy: orderBy }),
+  sortTrees: (order, orderBy) => dispatch.trees.sortTrees({ order, orderBy }),
 })
 
 export default compose(
