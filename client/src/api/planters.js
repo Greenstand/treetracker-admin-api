@@ -10,6 +10,11 @@ export default {
       `filter[fields][firstName]=true&` +
       `filter[fields][lastName]=true&` +
       `filter[fields][imageUrl]=true&` +
+      `filter[fields][email]=true&` +
+      `filter[fields][phone]=true&` +
+      `filter[fields][personId]=true&` +
+      `filter[fields][organization]=true&` +
+      `filter[fields][organizationId]=true&` +
       `filter[fields][id]=true&` +
       //the filter query
       (filter? filter.getBackloopString():"");

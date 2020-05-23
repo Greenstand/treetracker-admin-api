@@ -114,7 +114,6 @@ function FilterTopPlanter(props) {
               value={id}
               onChange={e => setId(e.target.value)}
             />
-            {/*
             <TextField
               className={`${classes.textField} ${classes.filterElement}`}
               label='Person ID'
@@ -122,7 +121,6 @@ function FilterTopPlanter(props) {
               value={personId}
               onChange={e => setPersonId(e.target.value)}
             />
-            */}
             <TextField
               className={`${classes.textField} ${classes.filterElement}`}
               label='First Name'
