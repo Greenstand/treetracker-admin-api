@@ -204,7 +204,7 @@ const TreeImageScrubber = (props) => {
   /* load more trees when the page or page size changes */
   useEffect(() => {
     props.verityDispatch.loadTreeImages();
-  }, [props.verityState.pageSize, props.verityState.currentPage, props.verityState.filter]);
+  }, [props.verityState.pageSize, props.verityState.currentPage]);
   
   function handleTreeClick(e, treeId) {
     e.stopPropagation();

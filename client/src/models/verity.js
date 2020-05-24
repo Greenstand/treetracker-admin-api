@@ -179,7 +179,8 @@ const verity = {
 		reset(state){
 			return {
 				...state,
-				treeImages		: [],
+				treeImages: [],
+				currentPage: 0,
 			}
 		},
 		/*
@@ -188,8 +189,8 @@ const verity = {
 		resetSelection(state){
 			return {
 				...state,
-				treeImagesSelected		: [],
-				treeImageAnchor		: undefined,
+				treeImagesSelected: [],
+				treeImageAnchor: undefined,
 			}
 		},
 		/*
