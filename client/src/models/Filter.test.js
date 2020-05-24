@@ -23,6 +23,13 @@ describe('Filter, with initial values about this filter object', () => {
 		expect(filter.getBackloopString().indexOf('&filter[where][timeCreated][between]=2019-07-25&filter[where][timeCreated][between]=2019-07-30') >=0).toBe(true)
 	})
 
+	it('getBackloopString(false) should be: ', () => {
+		console.log(filter.getBackloopString(false))
+		expect(filter.getBackloopString(false).indexOf('&where[id]=10') >= 0).toBe(true)
+		expect(filter.getBackloopString(false).indexOf('&where[status]=planted') >=0).toBe(true)
+		expect(filter.getBackloopString(false).indexOf('&where[timeCreated][between]=2019-07-25&where[timeCreated][between]=2019-07-30') >=0).toBe(true)
+	})
+
 	it('getBackloopString() should match: approved=true', () => {
 		expect(filter.getBackloopString().indexOf('&filter[where][approved]=true') >= 0).toBe(true)
 	})
