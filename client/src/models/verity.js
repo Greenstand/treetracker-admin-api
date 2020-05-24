@@ -270,7 +270,7 @@ const verity = {
 			log.debug('to load images')
 			const verityState		= state.verity
 			if (verityState.isLoading ||
-					verityState.treeImages.length >= verityState.treeCount ||
+				  (verityState.treeCount > 0 && verityState.treeImages.length >= verityState.treeCount) ||
 				  verityState.pageSize * (verityState.currentPage+1) <= verityState.treeImages.length) {
 				// No need to request more images
 				log.debug('cancel load because condition doesn\'t meet')
