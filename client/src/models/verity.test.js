@@ -179,6 +179,26 @@ describe('verity', () => {
 				//}}}
 			})
 
+			describe('set pageSize', () => {
+				beforeEach(async () => {
+					await store.dispatch.verity.set({pageSize:24})
+				})
+	
+				it('pageSize should be 24', () => {
+					expect(store.getState().verity.pageSize).toBe(24)
+				})
+			});
+	
+			describe('set currentPage', () => {
+				beforeEach(async () => {
+					store.dispatch.verity.set({currentPage:1})
+				})
+	
+				it('currentPage should be 1', () => {
+					expect(store.getState().verity.currentPage).toBe(1)
+				})
+			});
+	
 			//}}}
 		})
 
