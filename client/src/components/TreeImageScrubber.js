@@ -614,7 +614,7 @@ function SidePanel(props){
               label='Direct seeding' />
             <FormControlLabel 
               onClick={() => handleMorphology('fmnr')}
-              value='fmnr' control={<Radio/>} label='Pruned/tied(FMNR)' />
+              value='fmnr' control={<Radio/>} label='Pruned/tied (FMNR)' />
           </RadioGroup>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
@@ -636,7 +636,7 @@ function SidePanel(props){
         </Grid>
         */}
         <Grid>
-          <Typography variant='h6'>Species(if known)</Typography>
+          <Typography variant='h6'>Species (if known)</Typography>
           <Species
             ref={speciesRef}
           />
@@ -701,26 +701,26 @@ function SidePanel(props){
                 onClick={() => handleRejectionReason('unapproved_tree')}
                 value='unapproved_tree' control={<Radio/>} label='Not an approved tree' />
               <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('blurry_image')}
+                onClick={() => handleRejectionReason('blurry_image')}
                 value='blurry_image' control={<Radio/>} label='Blurry photo' />
               <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('dead')}
+                onClick={() => handleRejectionReason('dead')}
                 value='dead' control={<Radio/>} label='Dead' />
               <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('duplicate_image')}
+                onClick={() => handleRejectionReason('duplicate_image')}
                 value='duplicate_image' control={<Radio/>} label='Duplicate photo' />
               <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('flag_user')}
+                onClick={() => handleRejectionReason('flag_user')}
                 value='flag_user' control={<Radio/>} label='Flag user!' />
               <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('needs_contact_or_review')}
+                onClick={() => handleRejectionReason('needs_contact_or_review')}
                 value='needs_contact_or_review' control={<Radio/>} label='Flag tree for contact/review' />
             </RadioGroup>
           }
         
         </Grid>
         <Grid className={`${classes.sidePanelItem}`}>
-          <TextField placeholder='Note(optional)' ></TextField>
+          <TextField placeholder='Note (optional)' ></TextField>
         </Grid>
         <Grid className={`${classes.sidePanelItem}`}>
           <Button onClick={handleSubmit} color='primary' >SUBMIT</Button>
