@@ -69,6 +69,16 @@ export class Planter extends Entity {
   })
   imageUrl?: String;
 
+  //added person_id  
+  //Sat May 23 09:56:55 CST 2020
+  @property({
+    type: Number,
+    required: false,
+    scale: 0,
+    postgresql: {"columnName":"person_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+  })
+  personId?: Number;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

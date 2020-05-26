@@ -75,7 +75,7 @@ const menus		= [
 	},{
 		name		: 'Planters',
 		icon		: IconGroup,
-		disabled		: true,
+		disabled		: false,
 	},{
 		name		: 'Payments',
 		icon		: IconCompareArrows,

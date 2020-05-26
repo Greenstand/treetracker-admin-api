@@ -46,6 +46,8 @@ import { init } from '@rematch/core'
 import { Provider } from 'react-redux'
 import * as models from '../models'
 import api		from '../api/treeTrackerApi';
+import {Planter} from "../components/Planters";
+import {Detail} from "../components/Planters";
 
 const store = init({ models });
 
@@ -444,3 +446,35 @@ function TestSpecies(){
 
 storiesOf('species', module)
   .add('species', () => <TestSpecies/>)
+
+
+const planterData = {
+  firstName: "Dadior",
+  lastName: "Chen",
+}
+storiesOf("planter", module)
+  .add("planterSingle", () => <Planter planter={planterData} />);
+
+function DetailTest(){
+  const [isShown, setShown] = React.useState(true);
+  const planter = {
+    id: 12345,
+    imageUrl: undefined,
+    firstName: "Dadior", 
+    lastName: "Chen",
+    email: "Dadiorchen@outlook.com",
+    phone: "123456789",
+  }
+
+  return (
+      <ThemeProvider theme={themeNew} >
+        <div>
+          <button onClick={() => setShown(!isShown)} >open</button>
+          <Detail planter={planter} open={isShown} onClose={() => setShown(false)} />
+        </div>
+      </ThemeProvider>
+  )
+}
+
+storiesOf("planter", module)
+  .add("detail", () => <DetailTest />);
