@@ -7,6 +7,7 @@ describe("auth", () => {
 
   beforeEach(() => {
     app = express();
+    app.use(express.json());
     app.use("/auth", auth.router);
   });
 
@@ -19,8 +20,14 @@ describe("auth", () => {
 
   it("/auth/login", async () => {
     const response = await request(app)
-      .post("/auth/login/");
+      .post("/auth/login")
+      .send({
+        username: "test",
+        password: "password",
+      });
     expect(response.statusCode).toBe(200);
+    expect(response.body).toBeDefined();
+    expect(response.body.token).toMatch(/\S+/);
   });
 
 });
