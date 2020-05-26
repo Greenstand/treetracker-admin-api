@@ -96,6 +96,10 @@ export default {
     const query = `${process.env.REACT_APP_API_ROOT}/trees/count?where[approved]=false&where[active]=true`;
     return fetch(query).then(handleResponse).catch(handleError);
   },
+  getTreeCount(filter) {
+    const query = `${process.env.REACT_APP_API_ROOT}/trees/count?${filter.getBackloopString(false)}`;
+    return fetch(query).then(handleResponse).catch(handleError);
+  },
   /*
    * get species list
    */

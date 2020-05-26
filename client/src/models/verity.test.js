@@ -23,6 +23,9 @@ describe('verity', () => {
     api.getUnverifiedTreeCount = () => Promise.resolve({
       count   : 1
     });
+    api.getTreeCount = () => Promise.resolve({
+      count   : 1
+    });
 	})
 
 	describe('with a default store', () => {
@@ -39,10 +42,10 @@ describe('verity', () => {
 			expect(store.getState().verity.isLoading).toBe(false)
 		})
 
-		describe('loadMoreTreeImages() ', () => {
+		describe('loadTreeImages() ', () => {
 			//{{{
 			beforeEach(async () => {
-				const result		= await store.dispatch.verity.loadMoreTreeImages()
+				const result		= await store.dispatch.verity.loadTreeImages()
 				expect(result).toBe(true)
 			})
 
@@ -76,13 +79,14 @@ describe('verity', () => {
         })
       })
 
-			describe('approveTreeImage(1, {seedling, new_tree, simple_lead})', () => {
+			describe('approveTreeImage(1, {seedling, new_tree, simple_leaf, 6})', () => {
 				//{{{
         let approveAction = {
           morphology: 'seedling',
           age: 'new_tree',
           isApproved: true,
-          captureApprovalTag: 'simple_lead',
+					captureApprovalTag: 'simple_leaf',
+					speciesId: 6,
         }
 				beforeEach(async () => {
 					const result		= await store.dispatch.verity.approve(
@@ -101,7 +105,7 @@ describe('verity', () => {
         it('api.approve should be called by : id, seedling...', () => {
           console.log(api.approveTreeImage.mock)
 					expect(api.approveTreeImage.mock.calls[0]).toMatchObject(
-            ['1', 'seedling', 'new_tree', 'simple_lead']
+            ['1', 'seedling', 'new_tree', 'simple_leaf', 6]
           )
         })
 
@@ -138,11 +142,11 @@ describe('verity', () => {
 			})
 
 
-			describe('loadMoreTreeImages() load second page', () => {
+			describe('loadTreeImages() load second page', () => {
 				//{{{
 				beforeEach(async () => {
 					api.getTreeImages.mockClear()
-					await store.dispatch.verity.loadMoreTreeImages();
+					await store.dispatch.verity.loadTreeImages();
 				})
 
 				it('should call api with param: skip = 1', () => {
@@ -175,6 +179,26 @@ describe('verity', () => {
 				//}}}
 			})
 
+			describe('set pageSize', () => {
+				beforeEach(async () => {
+					await store.dispatch.verity.set({pageSize:24})
+				})
+	
+				it('pageSize should be 24', () => {
+					expect(store.getState().verity.pageSize).toBe(24)
+				})
+			});
+	
+			describe('set currentPage', () => {
+				beforeEach(async () => {
+					store.dispatch.verity.set({currentPage:1})
+				})
+	
+				it('currentPage should be 1', () => {
+					expect(store.getState().verity.currentPage).toBe(1)
+				})
+			});
+	
 			//}}}
 		})
 
@@ -287,7 +311,8 @@ describe('verity', () => {
             morphology: 'seedling',
             age: 'new_tree',
             isApproved: true,
-            captureApprovalTag: 'simple_leaf',
+						captureApprovalTag: 'simple_leaf',
+						speciesId: 6
           }
 					beforeEach(async () => {
 						await store.dispatch.verity.approveAll({approveAction});
@@ -306,17 +331,13 @@ describe('verity', () => {
 						expect(store.getState().verity.isApproveAllProcessing).toBe(false)
 					})
 
-					it('after approveAll, some page information should be reset, pagesLoaded = -1', () => {
-						expect(store.getState().verity.pagesLoaded).toBe(-1)
-					})
-
 					it('after approveAll, should get an undo list', () => {
 						expect(store.getState().verity.treeImagesUndo).toHaveLength(3)
 					})
 
           it('api.approve should be called with ...', () => {
             expect(api.approveTreeImage.mock.calls[0]).toMatchObject(
-              [7, 'seedling','new_tree','simple_leaf']
+              [7, 'seedling','new_tree','simple_leaf', 6]
             )
           })
 
@@ -365,10 +386,6 @@ describe('verity', () => {
 
 					it('isRejectAllProcessing === false', () => {
 						expect(store.getState().verity.isRejectAllProcessing).toBe(false)
-					})
-
-					it('after rejectAll, some page information should be reset, pagesLoaded = -1', () => {
-						expect(store.getState().verity.pagesLoaded).toBe(-1)
 					})
 
 					it('after rejectAll, should get an undo list', () => {

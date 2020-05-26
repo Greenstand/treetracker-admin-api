@@ -49,6 +49,7 @@ import IconLogo		from './IconLogo';
 import Menu from './common/Menu.js';
 import CheckIcon from '@material-ui/icons/Check';
 import Paper from '@material-ui/core/Paper';
+import TablePagination from '@material-ui/core/TablePagination';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -106,6 +107,15 @@ const useStyles = makeStyles(theme => ({
     }),
     '&:not($cardSelected):hover': {
       padding: 0,
+    },
+  },
+  placeholderCard: {
+    pointerEvents: 'none',
+    '& $card': {
+      background: '#eee',
+      '& *': {
+        opacity: 0,
+      },
     },
   },
   title: {
@@ -171,64 +181,31 @@ const TreeImageScrubber = (props) => {
   const [isFilterShown, setFilterShown] = React.useState(false);
   const [isMenuShown, setMenuShown] = React.useState(false);
   const [dialog, setDialog] = React.useState({isOpen: false, tree: {}});
-	const refContainer = React.useRef();
+  const refContainer = React.useRef();
 
   /*
    * effect to load page when mounted
    */
   useEffect(() => {
     log.debug('mounted');
-    props.verityDispatch.loadMoreTreeImages();
+    props.verityDispatch.loadTreeImages();
   }, []);
-
-  /*
-   * effect to set the scroll event
-   */
-  useEffect(() => {
-    log.debug('verity state changed');
-    //move add listener to effect to let it refresh at every state change
-    let scrollContainerRef = refContainer.current;
-    const handleScroll = e => {
-      if (
-        scrollContainerRef &&
-        Math.floor(scrollContainerRef.scrollTop) !==
-          Math.floor(scrollContainerRef.scrollHeight) -
-            Math.floor(scrollContainerRef.offsetHeight)
-      ) {
-        return;
-      }
-      props.verityDispatch.loadMoreTreeImages();
-    };
-    let isListenerAttached = false;
-    if (
-      scrollContainerRef &&
-      //should not listen scroll when loading
-      !props.verityState.isLoading
-    ) {
-      log.debug('attaching listener');
-      scrollContainerRef.addEventListener('scroll', handleScroll);
-      isListenerAttached = true;
-    } else {
-      log.debug('do not attach listener');
-    }
-
-    return () => {
-      if (isListenerAttached) {
-        scrollContainerRef.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [props.verityState]);
 
   /* to display progress */
   useEffect(() => {
     setComplete(props.verityState.approveAllComplete);
   }, [props.verityState.approveAllComplete]);
 
-//  /* To update unverified tree count */
-//  useEffect(() => {
-//      props.verityDispatch.getTreeCount();
-//  }, [props.verityState.treeImages]);
+  /* To update tree count */
+  useEffect(() => {
+    props.verityDispatch.getTreeCount();
+  }, [props.verityState.treeImages]);
 
+  /* load more trees when the page or page size changes */
+  useEffect(() => {
+    props.verityDispatch.loadTreeImages();
+  }, [props.verityState.pageSize, props.verityState.currentPage]);
+  
   function handleTreeClick(e, treeId) {
     e.stopPropagation();
     e.preventDefault();
@@ -281,18 +258,10 @@ const TreeImageScrubber = (props) => {
         console.log('species id:', speciesId)
     }
     const result = await props.verityDispatch.approveAll({approveAction});
-    if (result) {
-      //if all trees were approved, then, load more
-      if (
-        props.verityState.treeImagesSelected.length ===
-        props.verityState.treeImages.length
-      ) {
-        log.debug('all trees approved, reload');
-        props.verityDispatch.loadMoreTreeImages();
-      }
-    } else {
+    if (!result) {
       window.alert('sorry, failed to approve some picture');
     }
+    props.verityDispatch.loadTreeImages();
   }
 
   function handleDialog(e, tree){
@@ -311,12 +280,32 @@ const TreeImageScrubber = (props) => {
     })
   }
 
+  function handleChangePageSize(event, value){
+    props.verityDispatch.set({pageSize: event.target.value});
+  }
+
+  function handleChangePage(event, page){
+    props.verityDispatch.set({currentPage: page});
+  }
+
   function isTreeSelected(id){
     return props.verityState.treeImagesSelected.indexOf(id) >= 0
   }
 
-  let treeImageItems = props.verityState.treeImages.map(tree => {
-    if (tree.imageUrl) {
+  const placeholderImages = Array(props.verityState.pageSize).fill().map((_, index) => {
+    return {
+      id: index,
+      placeholder: true,
+    };
+  });
+
+  const treeImages = props.verityState.treeImages.filter((tree, index) => {
+    return index >= props.verityState.currentPage * props.verityState.pageSize &&
+           index < (props.verityState.currentPage+1) * props.verityState.pageSize;
+  });
+
+  const treeImageItems = (props.verityState.isLoading ? placeholderImages : treeImages)
+    .map(tree => {
       return (
         <Grid item xs={12} sm={6} md={4} xl={3}>
           <div
@@ -324,7 +313,8 @@ const TreeImageScrubber = (props) => {
               classes.cardWrapper,
               isTreeSelected(tree.id)
                 ? classes.cardSelected
-                : undefined
+                : undefined,
+              tree.placeholder && classes.placeholderCard
             )} key={tree.id}
           >
             {isTreeSelected(tree.id) &&
@@ -339,10 +329,10 @@ const TreeImageScrubber = (props) => {
               onClick={e => handleTreeClick(e, tree.id)}
               id={`card_${tree.id}`}
               className={classes.card}
-              elevation={3}
+              elevation={tree.placeholder ? 0 : 3}
             >
               <CardContent className={classes.cardContent}>
-                <CardMedia className={classes.cardMedia} image={tree.imageUrl} />
+                {tree.imageUrl && <CardMedia className={classes.cardMedia} image={tree.imageUrl} />}
               </CardContent>
               <CardActions className={classes.cardActions}>
                 <Grid 
@@ -369,7 +359,7 @@ const TreeImageScrubber = (props) => {
         </Grid>
       );
     }
-  });
+  );
 
   function handleFilterClick() {
     if (isFilterShown) {
@@ -382,6 +372,19 @@ const TreeImageScrubber = (props) => {
   function handleToggleMenu(){
     setMenuShown(!isMenuShown)
   }
+
+  let imagePagination = (
+    <TablePagination
+      rowsPerPageOptions={[12, 24, 48, 96]}
+      component="div"
+      count={props.verityState.treeCount}
+      rowsPerPage={props.verityState.pageSize}
+      page={props.verityState.currentPage}
+      onChangePage={handleChangePage}
+      onChangeRowsPerPage={handleChangePageSize}
+      labelRowsPerPage="Images per page:"
+    />
+  );
 
   return (
     <React.Fragment>
@@ -443,20 +446,17 @@ const TreeImageScrubber = (props) => {
             >
               <Grid
                 container
-                justify={'space-between'}
+                justify='space-between'
+                alignItems='center'
                 className={classes.title}
               >
                 <Grid item>
-                  <Typography
-                    variant='h5'
-                    style={{
-                      paddingTop: 20
-                    }}
-                  >
+                  <Typography variant='h5'>
                   {false /* close counter*/&& props.verityState.treeCount} trees to verify
                   </Typography>
                 </Grid>
                 <Grid item>
+                  {imagePagination}
                 </Grid>
               </Grid>
             </Grid>
@@ -467,6 +467,9 @@ const TreeImageScrubber = (props) => {
               }}
             >
               <Grid container className={classes.wrapper} spacing={1}>{treeImageItems}</Grid>
+            </Grid>
+            <Grid item container justify='flex-end' className={classes.title}>
+              {imagePagination}
             </Grid>
           </Grid>
         </Grid>

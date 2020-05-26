@@ -38,9 +38,8 @@ const verity = {
 		//cal the complete of progress (0-100)
 		rejectAllComplete		: 0,
 		approveAllComplete		: 0,
-		pagesLoaded		: -1,
-		moreTreeImagesAvailable		: true,
-		pageSize		: 20,
+		pageSize: 12,
+		currentPage: 0,
 		/*
 		 * The default value means: image not approved yet, and not rejected yet too
 		 */
@@ -48,7 +47,7 @@ const verity = {
 			approved		: false,
 			active		: true,
 		}),
-    treeCount: 0,
+		treeCount: 0,
 	},
 	reducers		: {
 		appendTreeImages(state, treeImages){
@@ -56,10 +55,14 @@ const verity = {
       let newState = {
         ...state,
         treeImages: newTreeImages,
-				pagesLoaded		: state.pagesLoaded + 1,
-				isLoading		: false,
       };
-      return newState;
+			return newState;
+		},
+		setTreeImages(state, treeImages){
+			return {
+				...state,
+				treeImages,
+			}
 		},
 		setLoading(state, isLoading){
 			return {
@@ -86,12 +89,6 @@ const verity = {
 				isRejectAllProcessing,
 			}
 		},
-		setPagesLoaded(state, pagesLoaded){
-			return {
-				...state,
-				pagesLoaded,
-			}
-		},
 		setFilter(state, filter){
 			return {
 				...state,
@@ -103,7 +100,7 @@ const verity = {
             ...state,
             treeCount,
         };
-    },
+		},
 		setApproveAllComplete(state, approveAllComplete){
 			return {
 				...state,
@@ -182,9 +179,9 @@ const verity = {
 		reset(state){
 			return {
 				...state,
-				treeImages		: [],
-				pagesLoaded		: -1,
-				moreTreeImagesAvailable		: true,
+				treeImages: [],
+				currentPage: 0,
+				treeCount: 0,
 			}
 		},
 		/*
@@ -193,8 +190,8 @@ const verity = {
 		resetSelection(state){
 			return {
 				...state,
-				treeImagesSelected		: [],
-				treeImageAnchor		: undefined,
+				treeImagesSelected: [],
+				treeImageAnchor: undefined,
 			}
 		},
 		/*
@@ -266,32 +263,34 @@ const verity = {
 			return true
 		},
 		/*
-		 * To load more trees into the list
+		 * To load trees into the list
 		 */
-		async loadMoreTreeImages(payload, state){
+		async loadTreeImages(payload, state){
 			//{{{
 			log.debug('to load images')
 			const verityState		= state.verity
-			if (verityState.isLoading || !verityState.moreTreeImagesAvailable){
+			if (verityState.isLoading ||
+				  (verityState.treeCount > 0 && verityState.treeImages.length >= verityState.treeCount) ||
+				  verityState.pageSize * (verityState.currentPage+1) <= verityState.treeImages.length) {
+				// No need to request more images
 				log.debug('cancel load because condition doesn\'t meet')
 				return true;
 			}
 			//set loading status
 			this.setLoading(true)
-			const nextPage = verityState.pagesLoaded + 1;
+
 			const pageParams = {
 				//page: nextPage,
 				//REVISE Fri Aug 16 10:56:34 CST 2019
 				//change the api to use skip parameter directly, because there is a
 				//bug to use page as param
 				skip		: verityState.treeImages.length,
-				rowsPerPage: verityState.pageSize,
+				rowsPerPage: verityState.pageSize * (verityState.currentPage+1) - verityState.treeImages.length,
 				filter		: verityState.filter,
 			};
 			log.debug('load page with params:', pageParams)
 			const result		= await api.getTreeImages(pageParams)
 			log.debug('loaded trees:%d', result.length)
-			//verityState.pagesLoaded = nextPage;
 			this.appendTreeImages(result);
 			//restore loading status
 			this.setLoading(false)
@@ -343,7 +342,6 @@ const verity = {
 			this.setApproveAllProcessing(false);
 			this.setRejectAllProcessing(false);
 			//reset
-			this.setPagesLoaded(-1);
 			this.setApproveAllComplete(0);
 			this.resetSelection();
 			return true;
@@ -401,7 +399,6 @@ const verity = {
 			this.setLoading(false);
 			this.setApproveAllProcessing(false);
 			//reset
-			this.setPagesLoaded(-1);
 			this.setApproveAllComplete(0);
 			this.resetSelection();
 			return true;
@@ -441,7 +438,6 @@ const verity = {
 			this.setApproveAllProcessing(false);
 			this.setRejectAllProcessing(false);
 			//reset
-			this.setPagesLoaded(-1);
 			this.setRejectAllComplete(0);
 			this.setApproveAllComplete(0);
 			this.resetSelection();
@@ -457,14 +453,14 @@ const verity = {
 			this.reset()
 			this.resetSelection()
 			//clear all stuff
-			await this.loadMoreTreeImages()
+			await this.loadTreeImages()
 			//}}}
 		},
     /*
      * gets and sets count for unverified trees
      */
-    async getTreeCount() {
-        const result = await api.getUnverifiedTreeCount()
+    async getTreeCount(payload, state) {
+        const result = await api.getTreeCount(state.verity.filter)
         this.setTreeCount(result.count)
         return true
     },

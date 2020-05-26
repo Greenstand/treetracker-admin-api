@@ -18,48 +18,49 @@ export default class Filter{
 		Object.assign(this, options)
 	}
 
-	getBackloopString(){
+	getBackloopString(includeFilterString=true){
 		//{{{
 		let result		= ''
+		const prefix = includeFilterString ? '&filter[where]' : '&where'
 
 		if(this.treeId){
-			result		+= `&filter[where][id]=${this.treeId}`
+			result		+= `${prefix}[id]=${this.treeId}`
 		}
 
 		if(this.status){
-			result		+= `&filter[where][status]=${this.status.toLowerCase()}`
+			result		+= `${prefix}[status]=${this.status.toLowerCase()}`
 		}
 
 		if(this.dateStart && this.dateEnd){
-			result		+= `&filter[where][timeCreated][between]=${this.dateStart}&filter[where][timeCreated][between]=${this.dateEnd}`
+			result		+= `${prefix}[timeCreated][between]=${this.dateStart}${prefix}[timeCreated][between]=${this.dateEnd}`
 		}else if(this.dateStart && !this.dateEnd){
-			result		+= `&filter[where][timeCreated][gte]=${this.dateStart}`
+			result		+= `${prefix}[timeCreated][gte]=${this.dateStart}`
 		}else if(!this.dateStart && this.dateEnd){
-			result		+= `&filter[where][timeCreated][lte]=${this.dateEnd}`
+			result		+= `${prefix}[timeCreated][lte]=${this.dateEnd}`
 		}
 
 		if(this.approved !== undefined){
-			result		+= `&filter[where][approved]=${this.approved}`
+			result		+= `${prefix}[approved]=${this.approved}`
 		}
 
 		if(this.active !== undefined){
-			result		+= `&filter[where][active]=${this.active}`
+			result		+= `${prefix}[active]=${this.active}`
 		}
 
 		if(this.planterId !== undefined && this.planterId.length > 0){
-			result		+= `&filter[where][planterId]=${this.planterId}`
+			result		+= `${prefix}[planterId]=${this.planterId}`
 		}
 
 		if(this.deviceId !== undefined && this.deviceId.length > 0){
-			result		+= `&filter[where][deviceId]=${this.deviceId}`
+			result		+= `${prefix}[deviceId]=${this.deviceId}`
 		}
 
 		if(this.planterIdentifier !== undefined && this.planterIdentifier.length > 0){
-			result		+= `&filter[where][planterIdentifier]=${this.planterIdentifier}`
+			result		+= `${prefix}[planterIdentifier]=${this.planterIdentifier}`
 		}
 
     if(this.speciesId){
-			result		+= `&filter[where][speciesId]=${this.speciesId}`
+			result		+= `${prefix}[speciesId]=${this.speciesId}`
     }
 
 		return result
