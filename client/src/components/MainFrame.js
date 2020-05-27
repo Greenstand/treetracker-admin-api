@@ -123,6 +123,10 @@ export default function Mainframe() {
     login: (theUser) => {
       setUser(theUser)
     },
+    logout: () => {
+      setUser(undefined);
+      setMenuName("Login");
+    },
     user,
   }
 

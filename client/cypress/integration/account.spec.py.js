@@ -16,6 +16,9 @@ describe("Account", () => {
   it("Account", () => {
     cy.contains(/account/i)
       .click();
+    cy.contains(/log out/i)
+      .click();
+    cy.contains(/login/i);
   });
 
 });
