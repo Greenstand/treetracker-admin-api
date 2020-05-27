@@ -64,6 +64,20 @@ const Login = (props) => {
   const { classes } = props;
 
   function handleSubmit(){
+    //TODO login request
+    appContext.login({
+      username: "dadiorchen",
+      firstName: "Dadior",
+      lastName: "Chen",
+      email: "dadiorchen@outlook.com",
+      role: [{
+        id: 1,
+        name: "admin",
+      },{
+        id: 2,
+        name: "Tree Auditor",
+      }],
+    });
     appContext.handleHome();
     return false;
   }

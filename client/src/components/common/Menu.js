@@ -88,7 +88,7 @@ const menus		= [
 	},{
 		name		: 'Account',
 		icon		: IconPermIdentity,
-		disabled		: true,
+		disabled		: false,
 	}
 ]
 

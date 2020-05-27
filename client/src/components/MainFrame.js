@@ -25,6 +25,7 @@ import TreeImageScrubber from "./TreeImageScrubber";
 import Planters from "./Planters";
 import Trees from "./Trees";
 import Login from "./Login";
+import Account from "./Account";
 import Home from "./Home";
 
 const useStyles = makeStyles((theme) => ({
@@ -98,12 +99,15 @@ const AppContext = React.createContext({
   menuName: "",
   handleMenuChange: () => {},
   handleHome: () => {},
+  //login user 
+  user: undefined,
 });
 export {AppContext}
 
 export default function Mainframe() {
   const [menuName, setMenuName] = React.useState(/* default menu */ "Login");
   const refContainer = React.useRef();
+  const [user, setUser] = React.useState(undefined);
 
 
   const context = {
@@ -115,7 +119,11 @@ export default function Mainframe() {
     handleHome: () => {
       console.log("Go to home");
       setMenuName("Home");
-    }
+    },
+    login: (theUser) => {
+      setUser(theUser)
+    },
+    user,
   }
 
   function handleMenuClick(menuName) {
@@ -193,6 +201,9 @@ export default function Mainframe() {
           )}
           {menuName === "Planters" && (
             <Planters/>
+          )}
+          {menuName === "Account" && (
+            <Account/>
           )}
         </Grid>
       </Grid>
