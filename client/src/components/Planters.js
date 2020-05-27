@@ -48,12 +48,12 @@ import Close from "@material-ui/icons/Close";
 import FilterTopPlanter from './FilterTopPlanter'
 import { MENU_WIDTH } from './common/Menu'
 import FilterPlanter from '../models/FilterPlanter'
-import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg'
 import IconLogo from './IconLogo'
 import Menu from './common/Menu.js'
 import Avatar from "@material-ui/core/Avatar";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
+const  TreePin = require('../components/images/highlightedPinNoStick.svg')
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber')
 

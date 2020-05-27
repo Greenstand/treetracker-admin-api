@@ -42,7 +42,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "cypress": "cypress open"
+    "cypress": "DEBUG=cypress-react-unit-test cypress open"
   },
   "browserslist": [
     ">0.2%",
