@@ -31,7 +31,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Snackbar from '@material-ui/core/Snackbar';
 import Drawer from '@material-ui/core/Drawer';
-import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
@@ -42,14 +41,11 @@ import Species from './Species';
 
 import Filter, { FILTER_WIDTH } from './Filter';
 import FilterTop from './FilterTop';
-import { MENU_WIDTH } from './common/Menu';
-import FilterModel from '../models/Filter';
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg';
-import IconLogo		from './IconLogo';
-import Menu from './common/Menu.js';
 import CheckIcon from '@material-ui/icons/Check';
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
+import Navbar from "./Navbar";
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -135,7 +131,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: '8px'
   },
 
-  appBar: {
+  navbar: {
     width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`,
     left: 0,
     right: 'auto',
@@ -149,6 +145,7 @@ const useStyles = makeStyles(theme => ({
   body: {
     display: 'flex',
     height: '100%',
+    flexDirection: 'column',
   },
   sidePanelContainer: {
     padding: theme.spacing(2),
@@ -179,7 +176,6 @@ const TreeImageScrubber = (props) => {
   const classes = useStyles(props);
   const [complete, setComplete] = React.useState(0);
   const [isFilterShown, setFilterShown] = React.useState(false);
-  const [isMenuShown, setMenuShown] = React.useState(false);
   const [dialog, setDialog] = React.useState({isOpen: false, tree: {}});
   const refContainer = React.useRef();
 
@@ -369,10 +365,6 @@ const TreeImageScrubber = (props) => {
     }
   }
 
-  function handleToggleMenu(){
-    setMenuShown(!isMenuShown)
-  }
-
   let imagePagination = (
     <TablePagination
       rowsPerPageOptions={[12, 24, 48, 96]}
@@ -388,53 +380,37 @@ const TreeImageScrubber = (props) => {
 
   return (
     <React.Fragment>
-      <Grid 
+      <Grid
         className={classes.body}
       >
         <Grid item>
-          <AppBar
-            color='default'
-            className={classes.appBar}
+          <Navbar
+            className={classes.navbar}
+            buttons={[
+              <IconButton onClick={handleFilterClick}>
+                <IconFilter />
+              </IconButton>
+            ]}
           >
-            <Grid container direction='column'>
-              <Grid item>
-                <Grid container justify='space-between'>
-                  <Grid item>
-                    <IconButton title="menu" onClick={handleToggleMenu}>
-                      <MenuIcon/>
-                    </IconButton>
-                    <IconLogo/>
-                  </Grid>
-                  <Grid item>
-                    <IconButton
-                      onClick={handleFilterClick}
-                    >
-                      <IconFilter />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {isFilterShown &&
-              <Grid item>
-                <FilterTop
-                  isOpen={isFilterShown}
-                  onSubmit={filter => {
-                    props.verityDispatch.updateFilter(filter);
-                  }}
-                  filter={props.verityState.filter}
-                  onClose={handleFilterClick}
-                />
-              </Grid>
-              }
-            </Grid>
-          </AppBar>
+            {isFilterShown &&
+              <FilterTop
+                isOpen={isFilterShown}
+                onSubmit={filter => {
+                  props.verityDispatch.updateFilter(filter);
+                }}
+                filter={props.verityState.filter}
+                onClose={handleFilterClick}
+              />
+            }
+          </Navbar>
         </Grid>
         <Grid
           item
 					ref={refContainer}
           style={{
             overflow: 'hidden auto',
-            marginTop: isFilterShown? 156:44,
+            marginTop: isFilterShown? 112:0,
+            width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`, //## SHOULDN'T NEED THIS
           }}
         >
           <Grid container>
@@ -477,11 +453,6 @@ const TreeImageScrubber = (props) => {
           onSubmit={handleSubmit}
         />
       </Grid>
-      {isMenuShown &&
-        <Menu
-          onClose={() => setMenuShown(false)}
-        />
-      }
       {props.verityState.isApproveAllProcessing && (
         <AppBar
           position='fixed'

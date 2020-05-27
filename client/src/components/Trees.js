@@ -9,12 +9,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import Grid from '@material-ui/core/Grid';
+
+import Navbar from './Navbar';
 import TreeTable from './TreeTable';
 
 const Trees = props => ({
   render () {
     return (
-			<TreeTable />
+      <Grid container direction="column">
+        <Grid item>
+          <Navbar />
+        </Grid>
+        <Grid item>
+          <TreeTable />
+        </Grid>
+      </Grid>
     )
   }
 })
