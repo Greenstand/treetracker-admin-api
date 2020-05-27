@@ -17,6 +17,7 @@ const style = (theme) => ({
   },
   welcomeBox:{
     height: "100%",
+    paddingTop: "25%",//theme.spacing(50),
   },
 })
 
@@ -31,7 +32,7 @@ function Home(props) {
         </Paper>
       </Grid>
       <Grid item xs={9} >
-        <Grid container className={classes.welcomeBox} justify="center" alignItems="center" >
+        <Grid container className={classes.welcomeBox} justify="center"  >
           <Typography variant="h4" color="primary">
             Welcome to Greenstand Admin Panel
           </Typography>
