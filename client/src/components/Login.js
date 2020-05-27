@@ -16,6 +16,8 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import IconLogo from "./IconLogo";
 import { withStyles } from "@material-ui/core/styles";
+import {AppContext} from "./MainFrame";
+
 //import axios from "axios";
 //import { useAuth } from "../context/auth";
 //import Copyright from "components/Copyright";
@@ -51,15 +53,20 @@ const styles = (theme) => ({
 const Login = (props) => {
   //const { setAuthToken } = useAuth();
   const [errorMessage, setErrorMessage] = useState("");
+  const appContext = React.useContext(AppContext);
   const {
     touched,
     errors,
     isSubmitting,
     handleChange: onChange,
     handleBlur: onBlur,
-    handleSubmit,
   } = {};
   const { classes } = props;
+
+  function handleSubmit(){
+    appContext.handleHome();
+    return false;
+  }
 
   if (isSubmitting) {
     return (
@@ -68,6 +75,7 @@ const Login = (props) => {
         Vent venligst...
       </Typography>
     );
+
   }
 
   return (
@@ -95,8 +103,8 @@ const Login = (props) => {
             fullWidth
             id="username"
             label="username"
-            name="email"
-            autoComplete="email"
+            name="username"
+            autoComplete="username"
             helperText={""/*touched.email ? errors.email : ""*/}
             error={""/*touched.email && Boolean(errors.email)*/}
             onChange={onChange}

@@ -24,6 +24,8 @@ import Typography from "@material-ui/core/Typography";
 import TreeImageScrubber from "./TreeImageScrubber";
 import Planters from "./Planters";
 import Trees from "./Trees";
+import Login from "./Login";
+import Home from "./Home";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,11 +97,12 @@ function SimpleTable() {
 const AppContext = React.createContext({
   menuName: "",
   handleMenuChange: () => {},
+  handleHome: () => {},
 });
 export {AppContext}
 
 export default function Mainframe() {
-  const [menuName, setMenuName] = React.useState(/* default menu */ "Verify");
+  const [menuName, setMenuName] = React.useState(/* default menu */ "Login");
   const refContainer = React.useRef();
 
 
@@ -109,11 +112,16 @@ export default function Mainframe() {
       console.log("Set menu to:", n);
       setMenuName(n);
     },
+    handleHome: () => {
+      console.log("Go to home");
+      setMenuName("Home");
+    }
   }
 
   function handleMenuClick(menuName) {
     setMenuName(menuName);
   }
+
 
   return (
     <AppContext.Provider value={context} >
@@ -140,6 +148,8 @@ export default function Mainframe() {
             overflow: "auto",
           }}
         >
+          {menuName === "Home" && <Home/>}
+          {menuName === "Login" && <Login/>}
           {menuName === "Trees" && <Trees />}
           {menuName === "TreesTest" && (
             <React.Fragment>

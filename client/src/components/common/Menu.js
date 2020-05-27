@@ -1,6 +1,7 @@
 import React		from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer		from '@material-ui/core/Drawer';
+import Paper		from '@material-ui/core/Paper';
 import Menu		from '@material-ui/core/Menu';
 import MenuItem		from '@material-ui/core/MenuItem';
 import IconSettings		from '@material-ui/icons/Settings';
@@ -95,16 +96,8 @@ export default function GSMenu(props){
 	const classes		= useStyles()
 	const theme		= useTheme()
   const appContext = React.useContext(AppContext);
-	return(
-			<Drawer
-				PaperProps={{
-					elevation		: 5,
-				}}
-				className={classes.drawer}
-				classes={{paper:classes.drawerPaper}}
-        onClose={props.onClose}
-        open={true}
-			>
+  const menu = 
+      <>
 				<Box p={4} >
 					<IconLogo/>
 				</Box>
@@ -129,6 +122,24 @@ export default function GSMenu(props){
 						</ListItemText>
 					</MenuItem>
 				))}
+      </>;
+
+	return(
+    props.variant === "plain"?
+      <>
+        {menu}
+      </>
+    :
+			<Drawer
+				PaperProps={{
+					elevation		: 5,
+				}}
+				className={classes.drawer}
+				classes={{paper:classes.drawerPaper}}
+        onClose={props.onClose}
+        open={true}
+			>
+        {menu}
 			</Drawer>
 	)
 }
