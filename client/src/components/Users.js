@@ -232,21 +232,41 @@ function Users(props) {
 
   async function handleSave(){
     //upload
-    let res = await axios.patch(
-      `http://localhost:3000/auth/admin_users/${userEditing.id}`, 
-      {
-        ...userEditing,
-        role: right.map(e => e.id),
-      },
-      {
-        headers: { Authorization: token },
-      });
-    if(res.status === 200){
-      setUserEditing(undefined);
-      load();
+    if(userEditing.id === undefined){
+      //add
+      let res = await axios.post(
+        `http://localhost:3000/auth/admin_users/`, 
+        {
+          ...userEditing,
+          role: right.map(e => e.id),
+        },
+        {
+          headers: { Authorization: token },
+        });
+      if(res.status === 201){
+        setUserEditing(undefined);
+        load();
+      }else{
+        console.error("load fail:", res);
+        return;
+      }
     }else{
-      console.error("load fail:", res);
-      return;
+      let res = await axios.patch(
+        `http://localhost:3000/auth/admin_users/${userEditing.id}`, 
+        {
+          ...userEditing,
+          role: right.map(e => e.id),
+        },
+        {
+          headers: { Authorization: token },
+        });
+      if(res.status === 200){
+        setUserEditing(undefined);
+        load();
+      }else{
+        console.error("load fail:", res);
+        return;
+      }
     }
   }
 
@@ -301,6 +321,11 @@ function Users(props) {
     });
   }
 
+  function handleAddUser(){
+    setUserEditing({});
+    setLeft(permissions);
+  }
+
   return (
     <>
       <Grid container className={classes.box}>
@@ -324,7 +349,7 @@ function Users(props) {
                   </Grid>
                 </Grid>
                 <Grid item className={classes.addUserBox}>
-                  <Button variant="contained" className={classes.addUser} color="primary">
+                  <Button onClick={handleAddUser} variant="contained" className={classes.addUser} color="primary">
                     ADD USER
                   </Button>
                 </Grid>
@@ -411,7 +436,7 @@ function Users(props) {
             InputLabelProps={{
               shrink: true,
             }}
-            disabled
+            disabled={(userEditing && userEditing.id !== undefined)?true:false}
             value={(userEditing && userEditing.username) || ''}
             className={classes.input}
             onChange={handleUsernameChange}

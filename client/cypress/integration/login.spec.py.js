@@ -31,12 +31,26 @@ describe('Login', () => {
       cy.findRoleByText('listitem', 'Dadior2').contains('Tree Auditor').should('not.visible')
     })
 
-    it.only("Password", () => {
+    it("Password", () => {
       cy.findRoleByText('listitem', 'Dadior').find('button[title=\'generate password\']').click()
       cy.findInputByLabel(/please input/i)
         .type("abcdef");
       cy.contains("button","Generate")
         .click();
+    })
+
+    it.only("Create", () => {
+      cy.contains(/add user/i).click();
+      cy.contains(/user detail/i);
+      cy.findInputByLabel('Username').type('ezra');
+      cy.findInputByLabel('First Name').type('Ezra');
+      cy.findInputByLabel('Last Name').type('David');
+      cy.findInputByLabel('Email').type('ezra@gmail.com');
+      cy.findRoleByText('list', 'Roles').contains('Admin')
+        .click();
+      cy.contains('>').click()
+      cy.contains(/save/i).click()
+
     })
   })
 })
