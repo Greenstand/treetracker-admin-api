@@ -25,9 +25,20 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 //import "cypress-localstorage-commands";
 
+/*
+ * using html attr "for" to find the input described by the label
+ */
 Cypress.Commands.add("findInputByLabel", (labelText) => {
     return cy.contains("label", labelText)
       .then(element => {
         return cy.get("#" + element.attr("for"));
       });
+});
+
+/*
+ * To find a role which contain the given text
+ */
+Cypress.Commands.add("findRoleByText", (role, text) => {
+    return cy.contains(text)
+      .closest(`[role=${role}]`);
 });

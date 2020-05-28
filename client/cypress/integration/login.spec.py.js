@@ -22,9 +22,19 @@ describe("Login", () => {
         .click();
     });
 
-    it("in", () => {
-      cy.contains(/add user/i);
-    });
+  it("Edit", () => {
+//    cy.get("button[title=edit]")
+//      .click();
+    cy.findRoleByText("listitem", "Dadior")
+      .find("button[title=edit]")
+      .click();
+    cy.contains("User Detail");
+    cy.findInputByLabel("First Name")
+      .type("Dadior2");
+    cy.contains(/save/i)
+      .click();
+    cy.contains("User Detail").should("not.visible");
+  });
 
   });
 

@@ -129,7 +129,7 @@ router.patch("/admin_users/:userId", async (req, res, next) => {
 
 router.get("/admin_users/", async (req, res, next) => {
   try {
-      res.status(200).json([user]);
+      res.status(200).json(users);
   } catch {
     res.status(500).json();
   }

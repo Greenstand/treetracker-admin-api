@@ -129,8 +129,7 @@ function Users(props) {
   const [isPermissionsShow, setPermissionsShown] = React.useState(false);
   const [users, setUsers] = React.useState([]);
 
-  React.useEffect(() => {
-    (async () => {
+  async function load() {
       let res = await axios.get("http://localhost:3000/auth/permissions", 
         {
           headers: { Authorization: token },
@@ -151,7 +150,10 @@ function Users(props) {
         console.error("load fail:", res);
         return;
       }
-    })();
+    }
+
+  React.useEffect(() => {
+    load();
   },[]);
 
   function handleEdit(user) {
@@ -228,8 +230,23 @@ function Users(props) {
     </Paper>
   )
 
-  function handleSave(){
-    setUserEditing(undefined);
+  async function handleSave(){
+    //upload
+    let res = await axios.patch(
+      `http://localhost:3000/auth/admin_users/${userEditing.id}`, 
+      {
+        ...userEditing,
+      },
+      {
+        headers: { Authorization: token },
+      });
+    if(res.status === 200){
+      setUserEditing(undefined);
+      load();
+    }else{
+      console.error("load fail:", res);
+      return;
+    }
   }
 
   function handleGeneratePassword(user){
@@ -242,6 +259,30 @@ function Users(props) {
 
   function handlePermission(){
     setPermissionsShown(true);
+  }
+
+  function handleUsernameChange(e){
+    setUserEditing({...userEditing, 
+      username: e.target.value
+    });
+  }
+
+  function handleFirstNameChange(e){
+    setUserEditing({...userEditing, 
+      firstName: e.target.value
+    });
+  }
+
+  function handleLastNameChange(e){
+    setUserEditing({...userEditing, 
+      lastName: e.target.value
+    });
+  }
+
+  function handleEmailChange(e){
+    setUserEditing({...userEditing, 
+      email: e.target.value
+    });
   }
 
   return (
@@ -297,7 +338,7 @@ function Users(props) {
                     </TableHead>
                     <TableBody>
                       {users.map((user) => (
-                        <TableRow key={user.username}>
+                        <TableRow key={user.username} role="listitem" >
                           <TableCell component="th" scope="row">
                             {user.username}
                           </TableCell>
@@ -357,6 +398,7 @@ function Users(props) {
             disabled
             value={(userEditing && userEditing.username) || ''}
             className={classes.input}
+            onChange={handleUsernameChange}
           />
           <Grid container>
             <Grid item className={classes.firstName}>
@@ -372,6 +414,7 @@ function Users(props) {
                 }}
                 value={(userEditing && userEditing.firstName) || ''}
                 className={classes.input}
+                onChange={handleFirstNameChange}
               />
             </Grid>
             <Grid item className={classes.lastName}>
@@ -387,6 +430,7 @@ function Users(props) {
                 }}
                 value={(userEditing && userEditing.lastName) || ''}
                 className={classes.input}
+                onChange={handleLastNameChange}
               />
             </Grid>
           </Grid>
@@ -402,6 +446,7 @@ function Users(props) {
             }}
             value={(userEditing && userEditing.email) || ''}
             className={classes.input}
+            onChange={handleEmailChange}
           />
           <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
             <Grid item>{customList(left)}</Grid>
