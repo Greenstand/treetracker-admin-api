@@ -145,6 +145,9 @@ const useStyles = makeStyles(theme => ({
   body: {
     display: 'flex',
     height: '100%',
+  },
+  bodyInner: {
+    display: 'flex',
     flexDirection: 'column',
   },
   sidePanelContainer: {
@@ -380,72 +383,70 @@ const TreeImageScrubber = (props) => {
 
   return (
     <React.Fragment>
-      <Grid
-        className={classes.body}
-      >
-        <Grid item>
-          <Navbar
-            className={classes.navbar}
-            buttons={[
-              <IconButton onClick={handleFilterClick}>
-                <IconFilter />
-              </IconButton>
-            ]}
-          >
-            {isFilterShown &&
-              <FilterTop
-                isOpen={isFilterShown}
-                onSubmit={filter => {
-                  props.verityDispatch.updateFilter(filter);
-                }}
-                filter={props.verityState.filter}
-                onClose={handleFilterClick}
-              />
-            }
-          </Navbar>
-        </Grid>
-        <Grid
-          item
-					ref={refContainer}
-          style={{
-            overflow: 'hidden auto',
-            marginTop: isFilterShown? 112:0,
-            width: `calc(100% - ${SIDE_PANEL_WIDTH}px)`, //## SHOULDN'T NEED THIS
-          }}
-        >
-          <Grid container>
-            <Grid
-              item
-              style={{
-                width: '100%',
-              }}
+      <Grid item className={classes.body}>
+        <Grid item className={classes.bodyInner}>
+          <Grid item>
+            <Navbar
+              className={classes.navbar}
+              buttons={[
+                <IconButton onClick={handleFilterClick}>
+                  <IconFilter />
+                </IconButton>
+              ]}
             >
+              {isFilterShown &&
+                <FilterTop
+                  isOpen={isFilterShown}
+                  onSubmit={filter => {
+                    props.verityDispatch.updateFilter(filter);
+                  }}
+                  filter={props.verityState.filter}
+                  onClose={handleFilterClick}
+                />
+              }
+            </Navbar>
+          </Grid>
+          <Grid
+            item
+            ref={refContainer}
+            style={{
+              overflow: 'hidden auto',
+            }}
+          >
+            <Grid container>
               <Grid
-                container
-                justify='space-between'
-                alignItems='center'
-                className={classes.title}
+                item
+                style={{
+                  width: '100%',
+                }}
               >
-                <Grid item>
-                  <Typography variant='h5'>
-                  {false /* close counter*/&& props.verityState.treeCount} trees to verify
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  {imagePagination}
+                <Grid
+                  container
+                  justify='space-between'
+                  alignItems='center'
+                  className={classes.title}
+                >
+                  <Grid item>
+                    <Typography variant='h5'>
+                    {false /* close counter*/&& props.verityState.treeCount} trees to verify
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    {imagePagination}
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid
-              item
-              style={{
-                width: '100%'
-              }}
-            >
-              <Grid container className={classes.wrapper} spacing={1}>{treeImageItems}</Grid>
-            </Grid>
-            <Grid item container justify='flex-end' className={classes.title}>
-              {imagePagination}
+              <Grid
+                item
+                style={{
+                  width: '100%'
+                }}
+              >
+                <Grid container className={classes.wrapper} spacing={1}>{treeImageItems}</Grid>
+              </Grid>
+              <Grid item container justify='flex-end' className={classes.title}>
+                {imagePagination}
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

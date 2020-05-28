@@ -31,7 +31,7 @@ const Navbar = (props) => {
     <React.Fragment>
       <AppBar color='default' className={props.className}>
         <Grid container direction='column'>
-          <Toolbar className={classes.toolbar} disableGutters='true'>
+          <Toolbar className={classes.toolbar} disableGutters={true}>
             <Grid container justify='space-between'>
               <Grid item>
                 <IconButton title="menu" onClick={() => handleMenuClick()}>
@@ -49,7 +49,9 @@ const Navbar = (props) => {
           </Grid>
         </Grid>
       </AppBar>
+      {/* children duplicated behind the AppBar component to preserve height */}
       <Toolbar className={classes.toolbar}/>
+      {props.children}
       {isMenuShown && <Menu onClose={() => setMenuShown(false)} />}
     </React.Fragment>
   )

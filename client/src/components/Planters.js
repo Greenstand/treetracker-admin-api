@@ -222,9 +222,6 @@ const Planters = (props) => {
         <Grid
           item
           className={classes.body}
-          style={{
-            marginTop: isFilterShown ? 50 : 0,
-          }}
         >
           <Grid container>
             <Grid
