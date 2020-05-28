@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
@@ -32,7 +31,7 @@ const Navbar = (props) => {
     <React.Fragment>
       <AppBar color='default' className={props.className}>
         <Grid container direction='column'>
-          <Toolbar className={classes.toolbar}>
+          <Toolbar className={classes.toolbar} disableGutters='true'>
             <Grid container justify='space-between'>
               <Grid item>
                 <IconButton title="menu" onClick={() => handleMenuClick()}>
@@ -56,9 +55,4 @@ const Navbar = (props) => {
   )
 }
 
-export default connect(
-  //state
-  state => ({}),
-  //dispatch
-  dispatch => ({})
-)(Navbar);
+export default Navbar;

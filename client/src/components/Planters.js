@@ -46,7 +46,6 @@ import Close from "@material-ui/icons/Close";
 
 import FilterTopPlanter from './FilterTopPlanter'
 import FilterPlanter from '../models/FilterPlanter'
-import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg'
 import IconLogo from './IconLogo'
 import Avatar from "@material-ui/core/Avatar";
 import Person from "@material-ui/icons/Person";
@@ -107,12 +106,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginRight: '8px',
-  },
-
-  navbar: {
-    width: '100%',
-    left: 0,
-    right: 'auto',
   },
   sidePanel: {},
   body: {
@@ -210,7 +203,6 @@ const Planters = (props) => {
       <Grid container direction="column" className={classes.outer}>
         <Grid item>
           <Navbar
-            className={classes.navbar}
             buttons={[
               <IconButton onClick={handleFilterClick}>
                 <IconFilter />
