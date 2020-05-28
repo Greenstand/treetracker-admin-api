@@ -76,15 +76,15 @@ export default function GSMenu(props){
     },{
       name		: 'Verify',
       icon		: IconThumbsUpDown,
-      disabled		: !hasPermission(user,PERMISSIONS.TREE_AUDIT),
+      disabled		: !hasPermission(user,[PERMISSIONS.ADMIN, PERMISSIONS.TREE_AUDIT]),
     },{
       name		: 'Trees',
       icon		: IconNature,
-      disabled		: !hasPermission(user,PERMISSIONS.TREE_AUDIT),
+      disabled		: !hasPermission(user,[PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
     },{
       name		: 'Planters',
       icon		: IconGroup,
-      disabled		: !hasPermission(user,PERMISSIONS.PLANTER),
+      disabled		: !hasPermission(user,[PERMISSIONS.PLANTER, PERMISSIONS.ADMIN]),
     },{
       name		: 'Payments',
       icon		: IconCompareArrows,
