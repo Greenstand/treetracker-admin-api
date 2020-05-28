@@ -17,6 +17,7 @@ import Box		from '@material-ui/core/Box';
 import {useTheme, }		from '@material-ui/styles';
 import IconLogo		from '../IconLogo';
 import {AppContext} from "../MainFrame";
+import {PERMISSIONS, hasPermission} from "../../models/auth";
 
 export const MENU_WIDTH		= 232
 
@@ -60,42 +61,48 @@ const useStyles		= makeStyles(theme => ({
 	},
 }))
 
-const menus		= [
-	{
-		name		: 'Monitor',
-		icon		: IconShowChart,
-		disabled		: true,
-	},{
-		name		: 'Verify',
-		icon		: IconThumbsUpDown,
-		disabled		: false,
-	},{
-		name		: 'Trees',
-		icon		: IconNature,
-		disabled		: false,
-	},{
-		name		: 'Planters',
-		icon		: IconGroup,
-		disabled		: false,
-	},{
-		name		: 'Payments',
-		icon		: IconCompareArrows,
-		disabled		: true,
-	},{
-		name		: 'Settings',
-		icon		: IconSettings,
-		disabled		: true,
-	},{
-		name		: 'Account',
-		icon		: IconPermIdentity,
-		disabled		: false,
-	}
-]
 
 export default function GSMenu(props){
 	const classes		= useStyles()
 	const theme		= useTheme()
   const appContext = React.useContext(AppContext);
+  const { user} = appContext;
+
+  const menus		= [
+    {
+      name		: 'Monitor',
+      icon		: IconShowChart,
+      disabled		: true,
+    },{
+      name		: 'Verify',
+      icon		: IconThumbsUpDown,
+      disabled		: !hasPermission(user,PERMISSIONS.TREE_AUDIT),
+    },{
+      name		: 'Trees',
+      icon		: IconNature,
+      disabled		: !hasPermission(user,PERMISSIONS.TREE_AUDIT),
+    },{
+      name		: 'Planters',
+      icon		: IconGroup,
+      disabled		: !hasPermission(user,PERMISSIONS.PLANTER),
+    },{
+      name		: 'Payments',
+      icon		: IconCompareArrows,
+      disabled		: true,
+    },{
+      name		: 'Settings',
+      icon		: IconSettings,
+      disabled		: true,
+    },{
+      name		: 'User Manager',
+      icon		: IconGroup,
+      disabled		: !hasPermission(user,PERMISSIONS.ADMIN),
+    },{
+      name		: 'Account',
+      icon		: IconPermIdentity,
+      disabled		: false,
+    }
+  ]
   const menu = 
       <>
 				<Box p={4} >

@@ -13,6 +13,8 @@ describe("Login", () => {
     cy.contains(/login/i)
       .click();
     cy.contains(/Welcome/i);
+    cy.contains("Settings")
+      .click();
   });
 
 });
