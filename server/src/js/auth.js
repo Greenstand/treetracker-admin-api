@@ -26,7 +26,30 @@ const userB = {
   email: "b@outlook.com",
 }
 
+const permissions = [{
+  id: 0,
+  name: "Admin",
+  description: "Admin pemission",
+},{
+  id: 1,
+  name: "Tree Audit",
+  description: "Veify & view trees",
+},{
+  id: 2,
+  name: "Planter",
+  description: "Check & manage planters",
+}]
+
 const users = [user, userB];
+
+router.get('/permissions', async function login(req, res, next) {
+  try{
+    res.status(200).json(permissions);
+  }catch(e){
+    console.error(e);
+    res.status(500).json();
+  }
+});
 
 router.post('/login', async function login(req, res, next) {
   try {

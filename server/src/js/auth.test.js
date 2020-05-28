@@ -67,6 +67,14 @@ describe("auth", () => {
       token = response.body.token;
     });
 
+    it("/permissions", async () => {
+      const res = await request(app)
+        .get("/auth/permissions")
+        .set("Authorization", token);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toBeInstanceOf(Array);
+    });
+
     it("admin_users", async () => {
       const res = await request(app)
         .get("/auth/admin_users")
