@@ -68,6 +68,7 @@ describe("auth", () => {
 
     describe("create user", () => {
       let newUser = {
+            id: 3,
             username: "ccc",
             password: "123456",
             firstName: "C",
@@ -91,6 +92,26 @@ describe("auth", () => {
             password: newUser.password,
           });
         expect(res.statusCode).toBe(200);
+      });
+
+      describe("Edit user info", () => {
+        beforeEach(async () => {
+          const res = await request(app)
+            .patch("/auth/admin_users/3")
+            .set("Authorization", token)
+            .send({
+              email: "new@q.com",
+            });
+          expect(res.statusCode).toBe(200);
+        });
+
+        it("should get new info", async () => {
+          const res = await request(app)
+            .get("/auth/admin_users/3")
+            .set("Authorization", token);
+          expect(res.statusCode).toBe(200);
+          expect(res.body.email).toBe("new@q.com");
+        });
       });
 
     });
