@@ -85,11 +85,11 @@ const style = (theme) => ({
 })
 
 function not(a, b) {
-  return a.filter((value) => b.indexOf(value) === -1)
+  return a.filter((value) => b.every(bb => bb.id !== value.id))
 }
 
 function intersection(a, b) {
-  return a.filter((value) => b.indexOf(value) !== -1)
+  return a.filter((value) => b.some(bb => bb.id === value.id))
 }
 
 const permissions = [{
@@ -158,8 +158,8 @@ function Users(props) {
 
   function handleEdit(user) {
     setUserEditing(user)
-    setLeft(permissions.filter(p => user.role.every(r => r.id !== p.id)));
-    setRight(permissions.filter(p => user.role.some(r => r.id === p.id)));
+    setLeft(permissions.filter(p => user.role.every(r => r !== p.id)));
+    setRight(permissions.filter(p => user.role.some(r => r === p.id)));
   }
 
   function handleClose() {}
@@ -172,7 +172,7 @@ function Users(props) {
   const rightChecked = intersection(checked, right)
 
   const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value)
+    const currentIndex = checked.findIndex(e => e.id === value.id)
     const newChecked = [...checked]
 
     if (currentIndex === -1) {
@@ -215,7 +215,7 @@ function Users(props) {
             <ListItem key={value.id} role="listitem" button onClick={handleToggle(value)}>
               <ListItemIcon>
                 <Checkbox
-                  checked={checked.indexOf(value.id) !== -1}
+                  checked={checked.findIndex(e => e.id === value.id) !== -1}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ 'aria-labelledby': labelId }}
@@ -236,6 +236,7 @@ function Users(props) {
       `http://localhost:3000/auth/admin_users/${userEditing.id}`, 
       {
         ...userEditing,
+        role: right.map(e => e.id),
       },
       {
         headers: { Authorization: token },
@@ -348,7 +349,7 @@ function Users(props) {
                           <TableCell>{user.status}</TableCell>
                           <TableCell>
                             {user.role.map((r,i) => (
-                              <Grid key={i} >{permissions.reduce((a,c) => a || c.id === r?c:undefined, undefined).name}</Grid>
+                              <Grid key={i} >{permissions.reduce((a,c) => a || (c.id === r?c:undefined), undefined).name}</Grid>
                             ))}
                           </TableCell>
                           <TableCell>
@@ -449,7 +450,10 @@ function Users(props) {
             onChange={handleEmailChange}
           />
           <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
-            <Grid item>{customList(left)}</Grid>
+            <Grid item role="list" >
+              <Typography variant="outline" >Roles</Typography>
+              {customList(left)}
+            </Grid>
             <Grid item>
               <Grid container direction="column" alignItems="center">
                 <Button
@@ -494,7 +498,10 @@ function Users(props) {
                 </Button>
               </Grid>
             </Grid>
-            <Grid item>{customList(right)}</Grid>
+            <Grid item role="list" >
+              <Typography variant="outline" >Selected</Typography>
+              {customList(right)}
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
