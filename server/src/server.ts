@@ -25,6 +25,7 @@ export class ExpressServer {
     this.app.use('/api', this.lbApp.requestHandler);
 
     //the auth: login...
+    this.app.use("/auth", auth.isAuth);
     this.app.use('/auth', auth.router);
 
     // Custom Express routes

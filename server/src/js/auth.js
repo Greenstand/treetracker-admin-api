@@ -147,8 +147,9 @@ router.post("/admin_users/", async (req, res, next) => {
 
 const isAuth = (req, res, next) => {
   //white list
-  if(req.baseUrl === "/auth/login" || 
-    req.baseUrl === "/auth/test"
+  console.warn("req.baseUrl", req.originalUrl);
+  if(req.originalUrl === "/auth/login" || 
+    req.originalUrl === "/auth/test"
   ){
     next();
     return;
@@ -163,7 +164,7 @@ const isAuth = (req, res, next) => {
       req.user = userSession;
     //check role
     //console.log("userB:", userSession);
-    if(req.baseUrl.match(/\/auth\/(?!login).*/)){
+    if(req.originalUrl.match(/\/auth\/(?!login).*/)){
       if(userSession.role.some(r => r === ROLE_ADMIN)){
         next();
         return;

@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography'
 import Group from '@material-ui/icons/Group'
 import Edit from '@material-ui/icons/Edit'
 import VpnKey from '@material-ui/icons/VpnKey'
+import Help from '@material-ui/icons/Help'
 import Delete from '@material-ui/icons/Delete'
 import EmojiObjects from '@material-ui/icons/EmojiObjects'
 import { withStyles } from '@material-ui/core/styles'
@@ -29,6 +30,8 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
+import axios from "axios";
+import {AppContext} from "./MainFrame";
 
 const style = (theme) => ({
   box: {
@@ -99,27 +102,57 @@ const permissions = [{
 
 function Users(props) {
   const { classes } = props
-  const users = [
-    {
-      username: 'dadiorchen',
-      firstName: 'Dadior',
-      lastName: 'Chen',
-      email: 'dadiorchen@outlook.com',
-      role: [
-        {
-          id: 0,
-          name: 'admin',
-        },
-        {
-          id: 1,
-          name: 'Tree Auditor',
-        },
-      ],
-    },
-  ]
+  const appContext = React.useContext(AppContext);
+  const { user, token} = appContext;
+//  const users = [
+//    {
+//      username: 'dadiorchen',
+//      firstName: 'Dadior',
+//      lastName: 'Chen',
+//      email: 'dadiorchen@outlook.com',
+//      role: [
+//        {
+//          id: 0,
+//          name: 'admin',
+//        },
+//        {
+//          id: 1,
+//          name: 'Tree Auditor',
+//        },
+//      ],
+//    },
+//  ]
   const [userEditing, setUserEditing] = React.useState(undefined);
   const [userPassword, setUserPassword] = React.useState(undefined);
   const [newPassword, setNewPassword] = React.useState("");
+  const [permissions, setPermissions] = React.useState([]);
+  const [isPermissionsShow, setPermissionsShown] = React.useState(false);
+  const [users, setUsers] = React.useState([]);
+
+  React.useEffect(() => {
+    (async () => {
+      let res = await axios.get("http://localhost:3000/auth/permissions", 
+        {
+          headers: { Authorization: token },
+        });
+      if(res.status === 200){
+        setPermissions(res.data);
+      }else{
+        console.error("load fail:", res);
+        return;
+      }
+      res = await axios.get("http://localhost:3000/auth/admin_users",
+        {
+          headers: { Authorization: token },
+        });
+      if(res.status === 200){
+        setUsers(res.data);
+      }else{
+        console.error("load fail:", res);
+        return;
+      }
+    })();
+  },[]);
 
   function handleEdit(user) {
     setUserEditing(user)
@@ -207,6 +240,10 @@ function Users(props) {
     setUserPassword(undefined);
   }
 
+  function handlePermission(){
+    setPermissionsShown(true);
+  }
+
   return (
     <>
       <Grid container className={classes.box}>
@@ -243,7 +280,18 @@ function Users(props) {
                         <TableCell>Userame</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Status</TableCell>
-                        <TableCell>Role</TableCell>
+                        <TableCell>
+                          <Grid container justfy="center" alignItems="center" >
+                            <Grid item>
+                              Role
+                            </Grid>
+                            <Grid item>
+                              <IconButton onClick={handlePermission} size="small" >
+                                <Help/>
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+                        </TableCell>
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
@@ -258,8 +306,8 @@ function Users(props) {
                           </TableCell>
                           <TableCell>{user.status}</TableCell>
                           <TableCell>
-                            {user.role.map((r) => (
-                              <Grid>{r.name}</Grid>
+                            {user.role.map((r,i) => (
+                              <Grid key={i} >{permissions.reduce((a,c) => a || c.id === r?c:undefined, undefined).name}</Grid>
                             ))}
                           </TableCell>
                           <TableCell>
@@ -455,6 +503,44 @@ function Users(props) {
           <Button onClick={handleGenerate} variant="contained" color="primary">
             Generate
           </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={isPermissionsShow}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">Roles Description</DialogTitle>
+        <DialogContent>
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Role</TableCell>
+                  <TableCell>Description</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {permissions.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell component="th" scope="row">
+                      <Typography>
+                        {p.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <Typography>
+                        {p.description}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPermissionsShown(false)}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </>

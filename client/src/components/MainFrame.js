@@ -27,6 +27,7 @@ import Trees from "./Trees";
 import Login from "./Login";
 import Account from "./Account";
 import Home from "./Home";
+import Users from "./Users";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -108,6 +109,7 @@ export default function Mainframe() {
   const [menuName, setMenuName] = React.useState(/* default menu */ "Login");
   const refContainer = React.useRef();
   const [user, setUser] = React.useState(undefined);
+  const [token, setToken] = React.useState(undefined);
 
 
   const context = {
@@ -120,8 +122,9 @@ export default function Mainframe() {
       console.log("Go to home");
       setMenuName("Home");
     },
-    login: (theUser) => {
-      setUser(theUser)
+    login: (theUser, token) => {
+      setUser(theUser);
+      setToken(token);
       setMenuName("Home");
     },
     logout: () => {
@@ -129,6 +132,7 @@ export default function Mainframe() {
       setMenuName("Login");
     },
     user,
+    token,
   }
 
   function handleMenuClick(menuName) {
@@ -164,6 +168,7 @@ export default function Mainframe() {
           {menuName === "Home" && <Home/>}
           {menuName === "Login" && <Login/>}
           {menuName === "Trees" && <Trees />}
+          {menuName === "User Manager" && <Users />}
           {menuName === "TreesTest" && (
             <React.Fragment>
               <Grid item>

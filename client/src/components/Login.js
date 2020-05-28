@@ -86,7 +86,7 @@ const Login = (props) => {
       if(res.status === 200){
         const token = res.data.token;
         const user = res.data.user;
-        appContext.login(user);
+        appContext.login(user, token);
       }else{
         setErrorMessage("Invalid username or password!");
       }
