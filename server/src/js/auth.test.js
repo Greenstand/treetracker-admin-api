@@ -65,6 +65,37 @@ describe("auth", () => {
       expect(res.body).toBeInstanceOf(Array);
     });
 
+
+    describe("create user", () => {
+      let newUser = {
+            username: "ccc",
+            password: "123456",
+            firstName: "C",
+            lastName: "C",
+            email: "c@g.com",
+      }
+
+      beforeEach(async () => {
+        const res = await request(app)
+          .post("/auth/admin_users")
+          .set("Authorization", token)
+          .send(newUser);
+        expect(res.statusCode).toBe(201);
+      });
+
+      it("can login with new user", async () => {
+        const res = await request(app)
+          .post("/auth/login")
+          .send({
+            username: newUser.username,
+            password: newUser.password,
+          });
+        expect(res.statusCode).toBe(200);
+      });
+
+    });
+
+
   });
 
   describe("Login B", () => {

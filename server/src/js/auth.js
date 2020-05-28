@@ -66,6 +66,16 @@ router.get("/admin_users/", async (req, res, next) => {
   }
 });
 
+router.post("/admin_users/", async (req, res, next) => {
+  try {
+    const userNew = req.body;
+    users.push(userNew);
+    res.status(201).json(userNew);
+  } catch {
+    res.status(500);
+  }
+});
+
 const isAuth = (req, res, next) => {
   //white list
   if(req.baseUrl === "/auth/login" || 
