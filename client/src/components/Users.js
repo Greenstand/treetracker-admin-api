@@ -254,8 +254,23 @@ function Users(props) {
     setUserPassword(user);
   }
 
-  function handleGenerate(){
-    setUserPassword(undefined);
+  async function handleGenerate(){
+    //upload
+    let res = await axios.put(
+      `http://localhost:3000/auth/admin_users/${userPassword.id}/password`, 
+      {
+        password: newPassword,
+      },
+      {
+        headers: { Authorization: token },
+      });
+    if(res.status === 200){
+      setUserPassword(undefined);
+      load();
+    }else{
+      console.error("load fail:", res);
+      return;
+    }
   }
 
   function handlePermission(){
@@ -545,6 +560,7 @@ function Users(props) {
               shrink: true,
             }}
             value={newPassword}
+            onChange={e => setNewPassword(e.target.value)}
             className={classes.input}
             helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
           />
