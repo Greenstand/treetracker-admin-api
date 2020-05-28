@@ -62,7 +62,7 @@ router.get('/test', async function login(req, res, next) {
 
 router.get("/admin_users/:userId", async (req, res, next) => {
   try {
-    const userGet = users.reduce((a,c) => a || c.id == req.params.userId?c:undefined, undefined);
+    const userGet = users.reduce((a,c) => a || c.id === parseInt(req.params.userId)?c:undefined, undefined);
     if(userGet){
       res.status(200).json(userGet);
     }else{
@@ -76,7 +76,7 @@ router.get("/admin_users/:userId", async (req, res, next) => {
 
 router.patch("/admin_users/:userId", async (req, res, next) => {
   try {
-    const userGet = users.reduce((a,c) => a || c.id == req.params.userId?c:undefined, undefined);
+    const userGet = users.reduce((a,c) => a || c.id === parseInt(req.params.userId)?c:undefined, undefined);
     if(userGet){
       Object.assign(userGet, req.body);
       res.status(200).json(userGet);
