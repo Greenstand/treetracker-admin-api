@@ -7,9 +7,9 @@ describe("Login", () => {
 
   it("Login successfully", () => {
     cy.findInputByLabel("username")
-      .type("amdin");
+      .type("dadiorchen");
     cy.findInputByLabel("password")
-      .type("amdin");
+      .type("123456");
     cy.contains(/login/i)
       .click();
     cy.contains(/Welcome/i);

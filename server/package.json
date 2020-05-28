@@ -11,7 +11,7 @@
     "node": ">=8.9"
   },
   "scripts": {
-    "build": "lb-tsc",
+    "build": "lb-tsc --allowJs -d false",
     "build:watch": "lb-tsc --watch",
     "clean": "lb-clean dist *.tsbuildinfo",
     "lint": "npm run prettier:check && npm run eslint",
@@ -26,7 +26,7 @@
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "migrate": "node ./dist/migrate",
-    "prestart": "npm run build",
+    "prestart": "npm run clean && npm run build",
     "start": "node .",
     "prepublishOnly": "npm run test",
     "test:jest": "jest --watchAll --runInBand --detectOpenHandles"

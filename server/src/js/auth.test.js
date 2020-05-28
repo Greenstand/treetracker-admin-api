@@ -35,6 +35,16 @@ describe("auth", () => {
     });
   });
 
+  it("/auth/login fail", async () => {
+    const response = await request(app)
+      .post("/auth/login")
+      .send({
+        username: "dadiorchen",
+        password: "xxxxxxx",
+      });
+    expect(response.statusCode).toBe(401);
+  });
+
   it("401 /auth/admin_users/ cuz no token", async () => {
     const response = await request(app)
       .get("/auth/admin_users");

@@ -18,7 +18,7 @@ import IconLogo from "./IconLogo";
 import { withStyles } from "@material-ui/core/styles";
 import {AppContext} from "./MainFrame";
 
-//import axios from "axios";
+import axios from "axios";
 //import { useAuth } from "../context/auth";
 //import Copyright from "components/Copyright";
 //import { useHistory } from "react-router-dom";
@@ -52,7 +52,6 @@ const styles = (theme) => ({
 
 const Login = (props) => {
   //const { setAuthToken } = useAuth();
-  const [errorMessage, setErrorMessage] = useState("");
   const appContext = React.useContext(AppContext);
   const {
     touched,
@@ -62,23 +61,36 @@ const Login = (props) => {
     handleBlur: onBlur,
   } = {};
   const { classes } = props;
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
+  
 
-  function handleSubmit(){
-    //TODO login request
-    appContext.login({
-      username: "dadiorchen",
-      firstName: "Dadior",
-      lastName: "Chen",
-      email: "dadiorchen@outlook.com",
-      role: [{
-        id: 1,
-        name: "admin",
-      },{
-        id: 2,
-        name: "Tree Auditor",
-      }],
-    });
-    appContext.handleHome();
+  function handleUsernameChange(e){
+    setUsername(e.target.value);
+  }
+
+  function handlePasswordChange(e){
+    setPassword(e.target.value);
+  }
+
+  function handleSubmit(e){
+    e.preventDefault();
+    e.stopPropagation();
+    (async () => {
+      //TODO login request
+      const res = await axios.post("http://localhost:3000/auth/login",{
+        username,
+        password,
+      });
+      if(res.status === 200){
+        const token = res.data.token;
+        const user = res.data.user;
+        appContext.login(user);
+      }else{
+        setErrorMessage("Invalid username or password!");
+      }
+    })();
     return false;
   }
 
@@ -121,8 +133,8 @@ const Login = (props) => {
             autoComplete="username"
             helperText={""/*touched.email ? errors.email : ""*/}
             error={""/*touched.email && Boolean(errors.email)*/}
-            onChange={onChange}
-            onBlur={onBlur}
+            onChange={handleUsernameChange}
+            value={username}
           />
           <TextField
             variant="outlined"
@@ -136,8 +148,8 @@ const Login = (props) => {
             autoComplete="current-password"
             helperText={""/*touched.password ? errors.password : ""*/}
             error={""/*touched.password && Boolean(errors.password)*/}
-            onChange={onChange}
-            onBlur={onBlur}
+            onChange={handlePasswordChange}
+            value={password}
           />
           <Grid container justify="space-between">
             <Grid item>

@@ -1,5 +1,6 @@
 import {once} from 'events';
 import {Request, Response} from 'express';
+import cors from "cors";
 //TODO import better
 import express = require('express');
 import * as http from 'http';
@@ -16,6 +17,8 @@ export class ExpressServer {
 
   constructor(options: ApplicationConfig = {}) {
     this.app = express();
+    this.app.use(cors());
+    this.app.use(express.json());
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
     // Expose the front-end assets via Express, not as LB4 route

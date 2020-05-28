@@ -122,6 +122,7 @@ export default function Mainframe() {
     },
     login: (theUser) => {
       setUser(theUser)
+      setMenuName("Home");
     },
     logout: () => {
       setUser(undefined);
