@@ -74,6 +74,21 @@ router.get("/admin_users/:userId", async (req, res, next) => {
   }
 });
 
+router.put("/admin_users/:userId/password", async (req, res, next) => {
+  try {
+    const userGet = users.reduce((a,c) => a || c.id === parseInt(req.params.userId)?c:undefined, undefined);
+    if(userGet){
+      Object.assign(userGet, req.body);
+      res.status(200).json(userGet);
+    }else{
+      res.status(404).json();
+    }
+  } catch(e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
 router.patch("/admin_users/:userId", async (req, res, next) => {
   try {
     const userGet = users.reduce((a,c) => a || c.id === parseInt(req.params.userId)?c:undefined, undefined);

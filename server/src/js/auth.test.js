@@ -114,6 +114,30 @@ describe("auth", () => {
         });
       });
 
+      describe("Generate password", () => {
+
+        beforeEach(async () => {
+          const res = await request(app)
+            .put("/auth/admin_users/3/password")
+            .set("Authorization", token)
+            .send({
+              password: "abcdef",
+            });
+          expect(res.statusCode).toBe(200);
+        });
+
+        it("Can login with new password", async () => {
+          const res = await request(app)
+            .post("/auth/login")
+            .send({
+              username: newUser.username,
+              password: "abcdef",
+            });
+          expect(res.statusCode).toBe(200);
+        });
+
+      });
+
     });
 
 
