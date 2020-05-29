@@ -29,7 +29,7 @@
     "prestart": "npm run clean && npm run build",
     "start": "node .",
     "prepublishOnly": "npm run test",
-    "test:jest": "jest --watchAll --runInBand --detectOpenHandles"
+    "jest": "jest --watchAll --runInBand"
   },
   "repository": {
     "type": "git"
@@ -75,5 +75,8 @@
     ],
     "ext": "ts",
     "exec": "npm start"
+  },
+  "jest": {
+    "testPathIgnorePatterns": ["<rootDir>/dist/", "<rootDir>/node_modules/"]
   }
 }
