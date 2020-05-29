@@ -10,11 +10,15 @@ describe("auth", () => {
     app.use(express.json());
     app.use("*", auth.isAuth);
     app.use("/auth", auth.router);
+    //mock api
+    app.use("/api", async (req, res, next) => {
+      res.status(200).send("OK");
+    });
   });
 
   it("get /auth/test", async () => {
     const response = await request(app)
-      .get("/auth/test/");
+      .get("/auth/test");
     expect(response.statusCode).toBe(200);
   });
 
@@ -180,6 +184,20 @@ describe("auth", () => {
     it("admin_users 401", async () => {
       const res = await request(app)
         .get("/auth/admin_users")
+        .set("Authorization", token);
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("api: /api/trees/count 200", async () => {
+      const res = await request(app)
+        .get("/api/trees/count")
+        .set("Authorization", token);
+      expect(res.statusCode).toBe(200);
+    });
+
+    it("api: /api/planter/count 401", async () => {
+      const res = await request(app)
+        .get("/api/planter/count")
         .set("Authorization", token);
       expect(res.statusCode).toBe(401);
     });

@@ -21,11 +21,12 @@ export class ExpressServer {
     this.app.use(express.json());
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
+    this.app.use("*", auth.isAuth);
+
     // Expose the front-end assets via Express, not as LB4 route
     this.app.use('/api', this.lbApp.requestHandler);
 
     //the auth: login...
-    this.app.use("/auth", auth.isAuth);
     this.app.use('/auth', auth.router);
 
     // Custom Express routes
