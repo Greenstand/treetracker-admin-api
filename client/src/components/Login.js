@@ -61,7 +61,7 @@ const Login = (props) => {
     handleBlur: onBlur,
   } = {};
   const { classes } = props;
-  const [username, setUsername] = React.useState("");
+  const [userName, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
   
@@ -79,16 +79,21 @@ const Login = (props) => {
     e.stopPropagation();
     (async () => {
       //TODO login request
-      const res = await axios.post("http://localhost:3000/auth/login",{
-        username,
-        password,
-      });
-      if(res.status === 200){
-        const token = res.data.token;
-        const user = res.data.user;
-        appContext.login(user, token);
-      }else{
-        setErrorMessage("Invalid username or password!");
+      try{
+        const res = await axios.post("http://localhost:3000/auth/login",{
+          userName,
+          password,
+        });
+        if(res.status === 200){
+          const token = res.data.token;
+          const user = res.data.user;
+          appContext.login(user, token);
+        }else{
+          setErrorMessage("Invalid user name or password!");
+        }
+      }catch(e){
+        console.error(e);
+        setErrorMessage("Can not login, please check your username passowrd or contact the admin ...");
       }
     })();
     return false;
@@ -127,14 +132,14 @@ const Login = (props) => {
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="username"
-            name="username"
-            autoComplete="username"
+            id="userName"
+            label="userName"
+            name="userName"
+            autoComplete="userName"
             helperText={""/*touched.email ? errors.email : ""*/}
             error={""/*touched.email && Boolean(errors.email)*/}
             onChange={handleUsernameChange}
-            value={username}
+            value={userName}
           />
           <TextField
             variant="outlined"

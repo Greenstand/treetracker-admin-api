@@ -106,7 +106,7 @@ function Users(props) {
   const { user, token} = appContext;
 //  const users = [
 //    {
-//      username: 'dadiorchen',
+//      userName: 'dadiorchen',
 //      firstName: 'Dadior',
 //      lastName: 'Chen',
 //      email: 'dadiorchen@outlook.com',
@@ -221,7 +221,7 @@ function Users(props) {
                   inputProps={{ 'aria-labelledby': labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={value.name} />
+              <ListItemText id={labelId} primary={value.roleName} />
             </ListItem>
           )
         })}
@@ -299,7 +299,7 @@ function Users(props) {
 
   function handleUsernameChange(e){
     setUserEditing({...userEditing, 
-      username: e.target.value
+      userName: e.target.value
     });
   }
 
@@ -379,9 +379,9 @@ function Users(props) {
                     </TableHead>
                     <TableBody>
                       {users.map((user) => (
-                        <TableRow key={user.username} role="listitem" >
+                        <TableRow key={user.userName} role="listitem" >
                           <TableCell component="th" scope="row">
-                            {user.username}
+                            {user.userName}
                           </TableCell>
                           <TableCell component="th" scope="row">
                             {user.firstName} {user.lastName}
@@ -389,7 +389,7 @@ function Users(props) {
                           <TableCell>{user.status}</TableCell>
                           <TableCell>
                             {user.role.map((r,i) => (
-                              <Grid key={i} >{permissions.reduce((a,c) => a || (c.id === r?c:undefined), undefined).name}</Grid>
+                              <Grid key={i} >{permissions.reduce((a,c) => a || (c.id === r?c:undefined), undefined).roleName}</Grid>
                             ))}
                           </TableCell>
                           <TableCell>
@@ -428,7 +428,7 @@ function Users(props) {
         */}
           <TextField
             autoFocus
-            id="username"
+            id="userName"
             label="Username"
             type="text"
             variant="outlined"
@@ -437,7 +437,7 @@ function Users(props) {
               shrink: true,
             }}
             disabled={(userEditing && userEditing.id !== undefined)?true:false}
-            value={(userEditing && userEditing.username) || ''}
+            value={(userEditing && userEditing.userName) || ''}
             className={classes.input}
             onChange={handleUsernameChange}
           />
@@ -618,7 +618,7 @@ function Users(props) {
                   <TableRow key={p.id}>
                     <TableCell component="th" scope="row">
                       <Typography>
-                        {p.name}
+                        {p.roleName}
                       </Typography>
                     </TableCell>
                     <TableCell component="th" scope="row">

@@ -2,8 +2,8 @@ describe('Login', () => {
   before(() => {
     cy.visit('/')
     cy.contains(/Login/i)
-    cy.findInputByLabel('username').type('dadiorchen')
-    cy.findInputByLabel('password').type('123456')
+    cy.findInputByLabel('userName').type('admin')
+    cy.findInputByLabel('password').type('admin')
     cy.contains(/login/i).click()
   })
 
@@ -16,16 +16,16 @@ describe('Login', () => {
       cy.contains(/user manager/i).click()
     })
 
-    it('Edit', () => {
+    it.skip('Edit', () => {
       //    cy.get("button[title=edit]")
       //      .click();
-      cy.findRoleByText('listitem', 'Dadior').find('button[title=edit]').click()
+      cy.findRoleByText('listitem', 'admin').find('button[title=edit]').click()
       cy.contains('User Detail')
       cy.findInputByLabel('First Name').type('Dadior2')
       cy.findRoleByText('list', 'Roles').contains('Admin').should('not.visible')
       cy.findRoleByText('list', 'Selected').contains('Admin')
-      cy.findRoleByText('list', 'Selected').contains('Tree Auditor').click()
-      cy.contains('<').click()
+      cy.findRoleByText('list', 'Roles').contains('Tree Auditor').click()
+      cy.contains('>').click()
       cy.contains(/save/i).click()
       cy.contains('User Detail').should('not.visible')
       cy.findRoleByText('listitem', 'Dadior2').contains('Tree Auditor').should('not.visible')
@@ -34,7 +34,7 @@ describe('Login', () => {
     it("Password", () => {
       cy.findRoleByText('listitem', 'Dadior').find('button[title=\'generate password\']').click()
       cy.findInputByLabel(/please input/i)
-        .type("abcdef");
+        .type("admin");
       cy.contains("button","Generate")
         .click();
     })
@@ -55,11 +55,11 @@ describe('Login', () => {
   })
 })
 
-describe.only('Login with bbb', () => {
+describe.skip('Login with bbb', () => {
   before(() => {
     cy.visit('/')
     cy.contains(/Login/i)
-    cy.findInputByLabel('username').type('bbb')
+    cy.findInputByLabel('userName').type('bbb')
     cy.findInputByLabel('password').type('123456')
     cy.contains(/login/i).click()
   })

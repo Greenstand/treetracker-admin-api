@@ -1,7 +1,7 @@
 const PERMISSIONS = {
-  ADMIN: 0,
-  TREE_AUDIT: 1,
-  PLANTER: 2,
+  ADMIN: 1,
+  TREE_AUDIT: 2,
+  PLANTER: 3,
 };
 
 function hasPermission(user, p){

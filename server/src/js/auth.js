@@ -155,7 +155,7 @@ router.get('/admin_users/', async (req, res, next) => {
     const users = [];
     for(let i = 0; i <  result.rows.length; i++){
       const r = result.rows[i];
-      const roles = await pool.query(`select * from admin_user_role where role_id = ${r.id}`);
+      const roles = await pool.query(`select * from admin_user_role where admin_user_id = ${r.id}`);
       r.role = roles.rows.map(rr => rr.role_id);
       users.push(utils.convertCamel(r));
     }
