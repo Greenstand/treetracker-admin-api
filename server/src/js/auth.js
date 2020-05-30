@@ -5,8 +5,13 @@ const jwtSecret =
   '3n398nrNMSI992298948)#€/#/€#€Q/H/DFN/FNF90DFNM(FN)(Fn)(FDN)(DNF)(æ';
 const {Pool, Client} = require("pg");
 const {utils} = require("./utils");
+const config = require("../datasources/treetracker.datasource.json");
 
-const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
+//const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
+//const pool = new Pool({ connectionString: "postgresql://doadmin:l5al4hwte8qmj6x8@db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker_dev?ssl=true"});
+//const pool = new Pool({ connectionString: "postgres://treetracker:tr33dev@107.170.246.116:5432/treetracker"});
+//const pool = new Pool({ connectionString: "postgresql://doadmin:g7a1fey4jeqao9mg@db-postgresql-sfo2-40397-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker?ssl=true"});
+const pool = new Pool({ connectionString: config.url});
 
 const PERMISSIONS = {
   ADMIN : 1,

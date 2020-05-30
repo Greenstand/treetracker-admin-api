@@ -16,6 +16,12 @@ const {auth} = require('./auth.js');
 describe('auth', () => {
   let app;
 
+  it("Check the config", () => {
+    expect(Pool).toHaveBeenCalledWith({
+      connectionString: expect.stringMatching(/postgres(ql)?:\/\/.*/),
+    });
+  });
+
   beforeEach(() => {
     app = express();
     app.use(express.json());
