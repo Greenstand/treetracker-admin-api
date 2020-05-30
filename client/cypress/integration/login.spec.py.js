@@ -68,15 +68,15 @@ describe.only('Login with bbb', () => {
     cy.contains(/Welcome/i)
   })
 
-  it.only("Test api, should be 401 or 200 cuz the role", () => {
-    cy.request("GET", "http://localhost:3000/api/trees/count")
-      .then(res => {
-        expect(res.status).to.eq(200);
-      });
-    cy.request("GET", "http://localhost:3000/api/planter/count")
-      .then(res => {
-        expect(res.status).to.eq(401);
-      });
-  });
+//  it.only("Test api, should be 401 or 200 cuz the role", () => {
+//    cy.request("GET", "http://localhost:3000/api/trees/count")
+//      .should(res => {
+//        expect(res.status).to.eq(200);
+//      });
+//    cy.request("GET", "http://localhost:3000/api/planter/count")
+//      .should(res => {
+//        expect(res.status).to.eq(401);
+//      });
+//  });
 
 })
