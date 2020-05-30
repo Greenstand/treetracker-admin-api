@@ -208,7 +208,7 @@ router.post('/admin_users/', async (req, res, next) => {
 
 const isAuth = (req, res, next) => {
   //white list
-//  console.error("req.originalUrl", req.originalUrl);
+  console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
   if (url === '/auth/login' || url === '/auth/test') {
     next();
@@ -232,7 +232,10 @@ const isAuth = (req, res, next) => {
         return;
       }
     } else if(url.match(/\/api\/.*/)){
-      if(url.match(/\/api\/trees\/.*/)){
+      if(url.match(/\/api\/species.*/)){
+        next();
+        return;
+      }else if(url.match(/\/api\/trees.*/)){
         if(roles.includes(PERMISSIONS.ADMIN) || roles.includes(PERMISSIONS.TREE_AUDITOR)){
           next();
           return;
@@ -242,7 +245,7 @@ const isAuth = (req, res, next) => {
           });
           return;
         }
-      }else if(url.match(/\/api\/planter\/.*/)){
+      }else if(url.match(/\/api\/planter.*/)){
         if(roles.includes(PERMISSIONS.ADMIN) || roles.includes(PERMISSIONS.PLANTER_MANAGER)){
           next();
           return;

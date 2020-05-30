@@ -16,4 +16,10 @@ function hasPermission(user, p){
   }
 }
 
-export {PERMISSIONS, hasPermission};
+/*
+ * to save the token
+ */
+const session = {
+}
+
+export {PERMISSIONS, hasPermission, session};

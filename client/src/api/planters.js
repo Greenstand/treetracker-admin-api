@@ -1,4 +1,5 @@
 import { handleResponse, handleError } from "./apiUtils";
+import {session} from "../models/auth";
 
 export default {
   getPlanters({ skip, rowsPerPage, orderBy = "id", order = "desc", filter }) {
@@ -18,7 +19,12 @@ export default {
       `filter[fields][id]=true&` +
       //the filter query
       (filter? filter.getBackloopString():"");
-    return fetch(query).then(handleResponse).catch(handleError);
+    return fetch(query,{
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    }).then(handleResponse).catch(handleError);
   },
 
   getCount({
@@ -27,6 +33,11 @@ export default {
     const query = 
       `${process.env.REACT_APP_API_ROOT}/planter/count` + 
       (filter? filter.getBackloopString():"");
-    return fetch(query).then(handleResponse).catch(handleError);
+    return fetch(query,{
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    }).then(handleResponse).catch(handleError);
   },
 };

@@ -28,6 +28,7 @@ import Login from "./Login";
 import Account from "./Account";
 import Home from "./Home";
 import Users from "./Users";
+import {session} from "../models/auth";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -126,10 +127,12 @@ export default function Mainframe() {
       setUser(theUser);
       setToken(token);
       setMenuName("Home");
+      session.token = token;
     },
     logout: () => {
       setUser(undefined);
       setMenuName("Login");
+      session.token = undefined;
     },
     user,
     token,
