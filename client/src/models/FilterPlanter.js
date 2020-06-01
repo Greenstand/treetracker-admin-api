@@ -8,24 +8,25 @@ export default class Filter {
     Object.assign(this, options)
   }
 
-  getBackloopString() {
+  getBackloopString(includeFilterString=true) {
     //{{{
     let result = ''
+		const prefix = includeFilterString ? '&filter[where]' : '&where'
 
     if (this.personId) {
-      result += `&filter[where][personId]=${this.personId}`
+      result += `${prefix}[personId]=${this.personId}`
     }
 
     if (this.id) {
-      result += `&filter[where][id]=${this.id}`
+      result += `${prefix}[id]=${this.id}`
     }
 
     if (this.firstName) {
-      result += `&filter[where][firstName]=${this.firstName}`
+      result += `${prefix}[firstName]=${this.firstName}`
     }
 
     if (this.lastName) {
-      result += `&filter[where][lastName]=${this.lastName}`
+      result += `${prefix}[lastName]=${this.lastName}`
     }
 
     return result

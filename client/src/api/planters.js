@@ -25,8 +25,9 @@ export default {
     filter,
   }){
     const query = 
-      `${process.env.REACT_APP_API_ROOT}/planter/count` + 
-      (filter? filter.getBackloopString():"");
+      `${process.env.REACT_APP_API_ROOT}/planter/count?${
+        filter && filter.getBackloopString(false)
+      }`
     return fetch(query).then(handleResponse).catch(handleError);
   },
 };

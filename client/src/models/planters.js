@@ -10,11 +10,11 @@ const log = loglevel.getLogger("../models/planters");
 const planters = {
   state: {
     planters: [],
-    pageSize: 21,
+    pageSize: 24,
     count: 0,
-    pageCount: 0,
     currentPage: 0,
     filter: new FilterPlanter(),
+    isLoading: false,
   },
   reducers: {
     setPlanters(state, planters){
@@ -39,7 +39,6 @@ const planters = {
       return {
         ...state,
         count,
-        pageCount: Math.ceil(count / state.pageSize),
       }
     },
     setFilter(state, filter){
@@ -48,6 +47,12 @@ const planters = {
         filter,
       }
     },
+    setIsLoading(state, isLoading){
+      return {
+        ...state,
+        isLoading,
+      }
+    }
   },
   effects: {
     /*
@@ -56,8 +61,9 @@ const planters = {
      * }
      */
     async load(payload, state){
+      this.setIsLoading(true);
       const planters = await api.getPlanters({
-        skip: (payload.pageNumber - 1) * state.planters.pageSize,
+        skip: payload.pageNumber * state.planters.pageSize,
         rowsPerPage: state.planters.pageSize,
         filter: payload.filter,
       });
@@ -65,13 +71,14 @@ const planters = {
       this.setPlanters(planters);
       this.setCurrentPage(payload.pageNumber);
       this.setFilter(payload.filter);
+      this.setIsLoading(false);
       return true;
     },
     async changePageSize(payload, state){
       this.setPageSize(payload.pageSize);
     },
     async count(payload, state){
-      const count = await api.getCount({});
+      const {count} = await api.getCount({filter: state.planters.filter});
       this.setCount(count);
       return true;
     },
