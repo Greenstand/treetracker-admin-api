@@ -24,6 +24,11 @@ import Typography from "@material-ui/core/Typography";
 import TreeImageScrubber from "./TreeImageScrubber";
 import Planters from "./Planters";
 import Trees from "./Trees";
+import Login from "./Login";
+import Account from "./Account";
+import Home from "./Home";
+import Users from "./Users";
+import {session} from "../models/auth";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,12 +100,17 @@ function SimpleTable() {
 const AppContext = React.createContext({
   menuName: "",
   handleMenuChange: () => {},
+  handleHome: () => {},
+  //login user 
+  user: undefined,
 });
 export {AppContext}
 
 export default function Mainframe() {
-  const [menuName, setMenuName] = React.useState(/* default menu */ "Verify");
+  const [menuName, setMenuName] = React.useState(/* default menu */ "Login");
   const refContainer = React.useRef();
+  const [user, setUser] = React.useState(undefined);
+  const [token, setToken] = React.useState(undefined);
 
 
   const context = {
@@ -109,11 +119,29 @@ export default function Mainframe() {
       console.log("Set menu to:", n);
       setMenuName(n);
     },
+    handleHome: () => {
+      console.log("Go to home");
+      setMenuName("Home");
+    },
+    login: (theUser, token) => {
+      setUser(theUser);
+      setToken(token);
+      setMenuName("Home");
+      session.token = token;
+    },
+    logout: () => {
+      setUser(undefined);
+      setMenuName("Login");
+      session.token = undefined;
+    },
+    user,
+    token,
   }
 
   function handleMenuClick(menuName) {
     setMenuName(menuName);
   }
+
 
   return (
     <AppContext.Provider value={context} >
@@ -140,7 +168,10 @@ export default function Mainframe() {
             overflow: "auto",
           }}
         >
+          {menuName === "Home" && <Home/>}
+          {menuName === "Login" && <Login/>}
           {menuName === "Trees" && <Trees />}
+          {menuName === "User Manager" && <Users />}
           {menuName === "TreesTest" && (
             <React.Fragment>
               <Grid item>
@@ -183,6 +214,9 @@ export default function Mainframe() {
           )}
           {menuName === "Planters" && (
             <Planters/>
+          )}
+          {menuName === "Account" && (
+            <Account/>
           )}
         </Grid>
       </Grid>

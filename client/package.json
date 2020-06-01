@@ -13,6 +13,7 @@
     "@rematch/core": "*",
     "axios": "*",
     "classnames": "*",
+    "cypress-react-unit-test": "^4.2.3",
     "d3-selection": "^1.4.0",
     "date-fns": "^2.0.0-beta.5",
     "dateformat": "*",
@@ -41,7 +42,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "cypress": "cypress open"
+    "cypress": "DEBUG=cypress-react-unit-test cypress open"
   },
   "browserslist": [
     ">0.2%",
