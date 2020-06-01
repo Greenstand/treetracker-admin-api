@@ -162,6 +162,10 @@ function Users(props) {
     setRight(permissions.filter(p => user.role.some(r => r === p.id)));
   }
 
+  function handlePasswordClose(){
+    setUserPassword(undefined);
+  }
+
   function handleClose() {}
 
   const [checked, setChecked] = React.useState([])
@@ -324,6 +328,10 @@ function Users(props) {
   function handleAddUser(){
     setUserEditing({});
     setLeft(permissions);
+  }
+
+  function handleUserDetailClose(){
+    setUserEditing(undefined);
   }
 
   return (
@@ -545,7 +553,7 @@ function Users(props) {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleUserDetailClose}>Cancel</Button>
           <Button onClick={handleSave} variant="contained" color="primary">
             Save
           </Button>
@@ -592,7 +600,7 @@ function Users(props) {
           <Box height={20} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handlePasswordClose}>Cancel</Button>
           <Button onClick={handleGenerate} variant="contained" color="primary">
             Generate
           </Button>
