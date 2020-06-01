@@ -16,6 +16,11 @@ describe.skip('auth int', () => {
     });
   });
 
+  it("init", async () => {
+    const response = await request(app).post('/auth/init');
+    expect(response.statusCode).toBe(200);
+  });
+
   it('get /auth/test', async () => {
     const response = await request(app).get('/auth/test');
     expect(response.statusCode).toBe(200);

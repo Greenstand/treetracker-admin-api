@@ -71,6 +71,8 @@ router.get('/permissions', async function login(req, res, next) {
 
 router.post('/login', async function login(req, res, next) {
   try {
+    //try to init, in case of first visit
+    await init();
     const {userName, password} = req.body;
     //console.log(pool);
     let result = await pool.query(`select * from admin_user where user_name = '${userName}' and password_hash = '${password}'`);
@@ -206,11 +208,45 @@ router.post('/admin_users/', async (req, res, next) => {
   }
 });
 
+async function init(){
+  console.log("Begin init...");
+  const result = await pool.query(`select * from admin_user `);
+  if(result.rows.length > 0){
+    console.log("There are accounts in admin user, quit.");
+    return;
+  }
+  console.log("clean...");
+  await pool.query("delete from admin_user");
+  await pool.query("delete from admin_user_role");
+  await pool.query("delete from admin_role");
+  await pool.query(`insert into admin_role (id, role_name, description) ` + 
+    `values (1, 'Admin', 'The super administrator role, having all permissions'),` +
+    `(2, 'Tree Manager', 'Check, verify, manage trees'),` + 
+    `(3, 'Planter Manager', 'Check, manage planters')`);
+  await pool.query(`insert into admin_user (id, user_name, first_name, last_name, password_hash, email) ` +
+    `values ( 1, 'admin', 'Admin', 'Panel', 'admin', 'admin@greenstand.org'),` + 
+    `(2, 'test', 'Admin', 'Test', 'test', 'test@greenstand.org')`);
+  await pool.query(`insert into admin_user_role (id, role_id, admin_user_id) ` + 
+    `values ( 1, 1, 1), ` +
+    `(2, 2, 2), ` +
+    `(3, 3, 2)`);
+}
+
+router.post("/init", async (req, res, next) => {
+  try{
+    await init();
+    res.status(200).json();
+  }catch(e){
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
 const isAuth = (req, res, next) => {
   //white list
-  console.error("req.originalUrl", req.originalUrl);
+  //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
-  if (url === '/auth/login' || url === '/auth/test') {
+  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' ) {
     next();
     return;
   }
