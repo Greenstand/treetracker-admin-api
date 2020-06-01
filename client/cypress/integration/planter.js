@@ -1,35 +1,44 @@
-describe("Planter", () => {
+describe('Planter', () => {
+  const pageSize = 24;
+
   before(() => {
-    cy.visit("/");
-    cy.get("button[title=menu]")
+    cy.visit('/');
+    cy.get('button[title=menu]')
       .click();
-    cy.contains("Planters")
+    cy.contains('Planters')
       .click();
   });
 
-  it("Should get id:xxx", () => {
+  it('Should get id:xxx', () => {
     cy.contains(/ID:\d+/);
   });
 
-  it("Should be page 1", () => {
-    cy.contains("button", "1").should("have.class", "Mui-selected");
+  it('Should show items per page', () => {
+    cy.contains(/^1-\d+ of \d+/);
+    cy.get('.MuiTablePagination-select')
+      .should('contain',pageSize)
+      .and('be.visible');
   });
 
-  describe.skip("Click page 2", () => {
+  it('Should show page 1', () => {
+    cy.contains(new RegExp(`^1-${pageSize} of \\d+`));
+    cy.get('button[title="Previous page"]').should('be.disabled');
+  });
 
+  it('Should show a full page of planters', () => {
+    cy.get('.MuiCard-root').should('have.length', pageSize);
+  });
+
+  describe('Page 2', () => {
     before(() => {
-      cy.contains("2")
+      cy.get('button[title="Next page"]')
+        .first()
         .click();
     });
 
-    it("Should get id:xxx", async () => {
-      cy.contains(/ID:\d+/);
+    it('Should show page 2', () => {
+      cy.contains(new RegExp(`^${pageSize+1}-\\d+ of \\d+`));
+      cy.get('button[title="Previous page"]').should('be.enabled');
     });
-
-    it("Should be page 2", () => {
-      cy.contains("button", "2").should("have.class", "Mui-selected");
-    });
-
-  });
-
+  })
 });
