@@ -35,7 +35,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import Snackbar from '@material-ui/core/Snackbar'
 import Drawer from '@material-ui/core/Drawer'
-import MenuIcon from '@material-ui/icons/Menu'
 import Toolbar from '@material-ui/core/Toolbar'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import Radio from '@material-ui/core/Radio'
@@ -46,23 +45,20 @@ import Species from './Species'
 import Close from "@material-ui/icons/Close";
 
 import FilterTopPlanter from './FilterTopPlanter'
-import { MENU_WIDTH } from './common/Menu'
 import FilterPlanter from '../models/FilterPlanter'
 import IconLogo from './IconLogo'
-import Menu from './common/Menu.js'
 import Avatar from "@material-ui/core/Avatar";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
-const  TreePin = require('../components/images/highlightedPinNoStick.svg')
+import Navbar from "./Navbar";
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber')
 
 const useStyles = makeStyles((theme) => ({
-  wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    padding: theme.spacing(2, 16, 4, 16),
-    userSelect: 'none',
+  outer: {
+    height: '100vh',
+    flex: 1,
+    flexWrap: 'nowrap',
   },
   cardImg: {
     width: '100%',
@@ -111,15 +107,10 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginRight: '8px',
   },
-
-  appBar: {
-    width: '100%',
-    left: 0,
-    right: 'auto',
-  },
   sidePanel: {},
   body: {
     width: '100%',
+    overflow: 'hidden auto',
   },
   radioGroup: {
     flexDirection: 'row',
@@ -131,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 'none',
   },
   page: {
-    margin: theme.spacing(4),
+    padding: theme.spacing(4),
   },
   personBox: {
     display: "flex",
@@ -158,7 +149,6 @@ const Planters = (props) => {
   log.debug('render TreeImageScrubber...')
   const classes = useStyles(props)
   const [isFilterShown, setFilterShown] = React.useState(false)
-  const [isMenuShown, setMenuShown] = React.useState(false)
   const [isDetailShown, setDetailShown] = React.useState(false)
   const [planterDetail, setPlanterDetail] = React.useState({});
 
@@ -194,10 +184,6 @@ const Planters = (props) => {
     }
   }
 
-  function handleToggleMenu() {
-    setMenuShown(!isMenuShown)
-  }
-
   function handlePageChange(e, page){
     props.plantersDispatch.load({
       pageNumber: page,
@@ -214,44 +200,28 @@ const Planters = (props) => {
 
   return (
     <React.Fragment>
-      <Grid container direction="column">
+      <Grid container direction="column" className={classes.outer}>
         <Grid item>
-          <AppBar color="default" className={classes.appBar}>
-            <Grid container direction="column">
-              <Grid item>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <IconButton>
-                      <MenuIcon onClick={handleToggleMenu} />
-                    </IconButton>
-                    <IconLogo />
-                  </Grid>
-                  <Grid item>
-                    <IconButton onClick={handleFilterClick}>
-                      <IconFilter />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </Grid>
-              {isFilterShown && (
-                <Grid item>
-                  <FilterTopPlanter
-                    isOpen={isFilterShown}
-                    onSubmit={filter => updateFilter(filter)}
-                    filter={props.plantersState.filter}
-                    onClose={handleFilterClick}
-                  />
-                </Grid>
-              )}
-            </Grid>
-          </AppBar>
+          <Navbar
+            buttons={[
+              <IconButton onClick={handleFilterClick}>
+                <IconFilter />
+              </IconButton>
+            ]}
+          >
+            {isFilterShown &&
+              <FilterTopPlanter
+                isOpen={isFilterShown}
+                onSubmit={filter => updateFilter(filter)}
+                filter={props.plantersState.filter}
+                onClose={handleFilterClick}
+              />
+            }
+          </Navbar>
         </Grid>
         <Grid
           item
           className={classes.body}
-          style={{
-            marginTop: isFilterShown ? 100 : 50,
-          }}
         >
           <Grid container>
             <Grid
@@ -280,16 +250,15 @@ const Planters = (props) => {
               </Grid>
             </Grid>
           </Grid>
+          <Grid container className={classes.page} justify="flex-end" >
+            <Pagination
+              count={10}
+              variant="outlined"
+              shape="rounded"
+              onChange={handlePageChange}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-      {isMenuShown && <Menu onClose={() => setMenuShown(false)} />}
-      <Grid container className={classes.page} justify="flex-end" >
-        <Pagination
-          count={10}
-          variant="outlined"
-          shape="rounded"
-          onChange={handlePageChange}
-        />
       </Grid>
       <Detail open={isDetailShown} planter={planterDetail} onClose={() => setDetailShown(false)} />
     </React.Fragment>
