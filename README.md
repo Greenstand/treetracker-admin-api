@@ -190,6 +190,10 @@ Run the following command to run the linter.
 $ npm run lint
 ```
 
+## Login
+
+Since version 2.3.0, we added user/login system to admin panel, so you need use an account to login the system. The default administrator account is: username: admin, password: admin.
+
 ### Scripts
 
 Useful scripts are contained in /dev/scripts. Their uses are described here. Scripts are run from the repository root as /dev/scripts/{script-name}.sh

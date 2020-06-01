@@ -1,6 +1,7 @@
 import React		from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer		from '@material-ui/core/Drawer';
+import Paper		from '@material-ui/core/Paper';
 import Menu		from '@material-ui/core/Menu';
 import MenuItem		from '@material-ui/core/MenuItem';
 import IconSettings		from '@material-ui/icons/Settings';
@@ -16,6 +17,7 @@ import Box		from '@material-ui/core/Box';
 import {useTheme, }		from '@material-ui/styles';
 import IconLogo		from '../IconLogo';
 import {AppContext} from "../MainFrame";
+import {PERMISSIONS, hasPermission} from "../../models/auth";
 
 export const MENU_WIDTH		= 232
 
@@ -59,52 +61,50 @@ const useStyles		= makeStyles(theme => ({
 	},
 }))
 
-const menus		= [
-	{
-		name		: 'Monitor',
-		icon		: IconShowChart,
-		disabled		: true,
-	},{
-		name		: 'Verify',
-		icon		: IconThumbsUpDown,
-		disabled		: false,
-	},{
-		name		: 'Trees',
-		icon		: IconNature,
-		disabled		: false,
-	},{
-		name		: 'Planters',
-		icon		: IconGroup,
-		disabled		: false,
-	},{
-		name		: 'Payments',
-		icon		: IconCompareArrows,
-		disabled		: true,
-	},{
-		name		: 'Settings',
-		icon		: IconSettings,
-		disabled		: true,
-	},{
-		name		: 'Account',
-		icon		: IconPermIdentity,
-		disabled		: true,
-	}
-]
 
 export default function GSMenu(props){
 	const classes		= useStyles()
 	const theme		= useTheme()
   const appContext = React.useContext(AppContext);
-	return(
-			<Drawer
-				PaperProps={{
-					elevation		: 5,
-				}}
-				className={classes.drawer}
-				classes={{paper:classes.drawerPaper}}
-        onClose={props.onClose}
-        open={true}
-			>
+  const { user} = appContext;
+
+  const menus		= [
+    {
+      name		: 'Monitor',
+      icon		: IconShowChart,
+      disabled		: true,
+    },{
+      name		: 'Verify',
+      icon		: IconThumbsUpDown,
+      disabled		: !hasPermission(user,[PERMISSIONS.ADMIN, PERMISSIONS.TREE_AUDIT]),
+    },{
+      name		: 'Trees',
+      icon		: IconNature,
+      disabled		: !hasPermission(user,[PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
+    },{
+      name		: 'Planters',
+      icon		: IconGroup,
+      disabled		: !hasPermission(user,[PERMISSIONS.PLANTER, PERMISSIONS.ADMIN]),
+    },{
+      name		: 'Payments',
+      icon		: IconCompareArrows,
+      disabled		: true,
+    },{
+      name		: 'Settings',
+      icon		: IconSettings,
+      disabled		: true,
+    },{
+      name		: 'User Manager',
+      icon		: IconGroup,
+      disabled		: !hasPermission(user,PERMISSIONS.ADMIN),
+    },{
+      name		: 'Account',
+      icon		: IconPermIdentity,
+      disabled		: false,
+    }
+  ]
+  const menu = 
+      <>
 				<Box p={4} >
 					<IconLogo/>
 				</Box>
@@ -129,6 +129,24 @@ export default function GSMenu(props){
 						</ListItemText>
 					</MenuItem>
 				))}
+      </>;
+
+	return(
+    props.variant === "plain"?
+      <>
+        {menu}
+      </>
+    :
+			<Drawer
+				PaperProps={{
+					elevation		: 5,
+				}}
+				className={classes.drawer}
+				classes={{paper:classes.drawerPaper}}
+        onClose={props.onClose}
+        open={true}
+			>
+        {menu}
 			</Drawer>
 	)
 }

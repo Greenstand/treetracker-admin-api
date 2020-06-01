@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import {session} from "../models/auth";
 
 const trees = {
   state: {
@@ -68,7 +69,12 @@ const trees = {
     }) {
       const query = `${process.env.REACT_APP_API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true&field[imageURL]`;
-      Axios.get(query).then(response => {
+      Axios.get(query, {
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+      }).then(response => {
         this.getTrees(response.data, {
           page: page,
           rowsPerPage: rowsPerPage,
@@ -84,7 +90,12 @@ const trees = {
       const query = `${process.env.REACT_APP_API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true&&filter[where][active]=true` + 
 				(filter?filter.getBackloopString():'')
-      Axios.get(query).then(response => {
+      Axios.get(query,{
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+      }).then(response => {
         this.getTrees(response.data, {
           rowsPerPage: rowsPerPage,
           orderBy: orderBy,
@@ -93,14 +104,24 @@ const trees = {
       });
     },
     async requestTreeCount(payload, rootState) {
-      Axios.get(`${process.env.REACT_APP_API_ROOT}/trees/count`).then(response => {
+      Axios.get(`${process.env.REACT_APP_API_ROOT}/trees/count`,{
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+      }).then(response => {
         const data = response.data;
         this.receiveTreeCount(data);
       });
     },
     async getTreeAsync(id) {
       const query = `${process.env.REACT_APP_API_ROOT}/Trees/${id}`;
-      Axios.get(query)
+      Axios.get(query,{
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+      })
         .then(res => {
           this.getTree(res.data);
         })
@@ -120,7 +141,12 @@ const trees = {
         const query = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${
           payload.latitude
         }&lon=${payload.longitude}`;
-        Axios.get(query).then(response => {
+        Axios.get(query,{
+          headers: { 
+            "content-type": "application/json" ,
+            Authorization: session.token ,
+          },
+        }).then(response => {
           this.receiveLocation(response.data, payload);
         });
       } else {
@@ -130,7 +156,12 @@ const trees = {
     async markInactiveTree(id) {
       const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}/`;
       const data = { active: false };
-      Axios.patch(query, data).then(response => {
+      Axios.patch(query, data,{
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+      }).then(response => {
         this.receiveStatus(response.status);
       });
     },
@@ -142,7 +173,12 @@ const trees = {
         payload.orderBy
       } ${newOrder}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true`;
-      Axios.get(query).then(response => {
+      Axios.get(query,{
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+      }).then(response => {
         this.getTrees(response.data, {
           page: page,
           rowsPerPage: rowsPerPage,

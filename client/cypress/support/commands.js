@@ -25,17 +25,20 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 //import "cypress-localstorage-commands";
 
-//Cypress.Commands.add("login", () => {
-//  cy.request({
-//    method: "POST",
-//    url: "auth/login",
-//    body: {
-//      email: "stefanhyltoft@gmail.com",
-//      password: "dunfdsunsfl3",
-//    },
-//  })
-//    .its("body")
-//    .then((body) => {
-//      cy.setLocalStorage("token", JSON.stringify({token: body.token}));
-//    });
-//});
+/*
+ * using html attr "for" to find the input described by the label
+ */
+Cypress.Commands.add("findInputByLabel", (labelText) => {
+    return cy.contains("label", labelText)
+      .then(element => {
+        return cy.get("#" + element.attr("for"));
+      });
+});
+
+/*
+ * To find a role which contain the given text
+ */
+Cypress.Commands.add("findRoleByText", (role, text) => {
+    return cy.contains(text)
+      .closest(`[role=${role}]`);
+});
