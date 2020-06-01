@@ -1,4 +1,4 @@
-import {once} from 'events';
+//import {once} from 'events';
 import {Request, Response} from 'express';
 import cors from "cors";
 //TODO import better
@@ -21,12 +21,13 @@ export class ExpressServer {
     this.app.use(express.json());
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
-    this.app.use("*", auth.isAuth);
 
     // Expose the front-end assets via Express, not as LB4 route
+    this.app.use("/api", auth.isAuth);
     this.app.use('/api', this.lbApp.requestHandler);
 
     //the auth: login...
+    this.app.use("/auth", auth.isAuth);
     this.app.use('/auth', auth.router);
 
     // Custom Express routes
@@ -45,9 +46,11 @@ export class ExpressServer {
   public async start() {
     await this.lbApp.start();
     const port = this.lbApp.restServer.config.port || 3000;
-    const host = this.lbApp.restServer.config.host || '127.0.0.1';
+//    const host = this.lbApp.restServer.config.host || '0.0.0.0';
+    const host = '0.0.0.0';
+    console.log(`listerning at: ${host}:${port}`);
     this.server = this.app.listen(port, host);
-    await once(this.server, 'listening');
+    //await once(this.server, 'listening');
   }
 
   // For testing purposes
@@ -55,7 +58,7 @@ export class ExpressServer {
     if (!this.server) return;
     //await this.lbApp.stop();
     this.server.close();
-    await once(this.server, 'close');
+    //await once(this.server, 'close');
     this.server = undefined;
   }
 }
