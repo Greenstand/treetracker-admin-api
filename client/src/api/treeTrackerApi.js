@@ -11,7 +11,7 @@ export default {
     filter
   }) {
     const query =
-      `${process.env.REACT_APP_API_ROOT}/trees?` +
+      `${process.env.REACT_APP_API_ROOT}/api/trees?` +
       `filter[order]=${orderBy} ${order}&` +
       `filter[limit]=${rowsPerPage}&` +
       `filter[skip]=${skip}&` +
@@ -44,7 +44,7 @@ export default {
     captureApprovalTag,
     speciesId,
   ) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { 
@@ -67,7 +67,7 @@ export default {
       .catch(handleError);
   },
   rejectTreeImage(id, rejectionReason) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { 
@@ -90,7 +90,7 @@ export default {
    * to rollback from a wrong approving
    */
   undoTreeImage(id) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { 
@@ -107,7 +107,7 @@ export default {
       .catch(handleError);
   },
   getUnverifiedTreeCount() {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/count?where[approved]=false&where[active]=true`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/count?where[approved]=false&where[active]=true`;
     return fetch(query,{
         headers: {
           Authorization: session.token ,
@@ -115,7 +115,7 @@ export default {
     }).then(handleResponse).catch(handleError);
   },
   getTreeCount(filter) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/count?${filter.getBackloopString(false)}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/count?${filter.getBackloopString(false)}`;
     return fetch(query, {
         headers: {
           Authorization: session.token ,
@@ -126,7 +126,7 @@ export default {
    * get species list
    */
   getSpecies() {
-    const query = `${process.env.REACT_APP_API_ROOT}/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species`;
     return fetch(query, {
       method: "GET",
       headers: { 
@@ -141,7 +141,7 @@ export default {
    * create new species
    */
   createSpecies(name) {
-    const query = `${process.env.REACT_APP_API_ROOT}/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species`;
     return fetch(query, {
       method: "POST",
       headers: { 

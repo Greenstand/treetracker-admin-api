@@ -59,7 +59,7 @@ const imageScrubber = {
       orderBy = "id",
       order = "asc"
     }) {
-      const query = `${process.env.REACT_APP_API_ROOT}/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
+      const query = `${process.env.REACT_APP_API_ROOT}/api/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${page *
         rowsPerPage}&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true&field[imageURL]`;
       Axios.get(query).then(response => {
         this.getTrees(response.data, {
@@ -90,7 +90,7 @@ const imageScrubber = {
       }
     },
     async toggleTreeActive(id, isActive) {
-      const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}/`;
+      const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}/`;
       const data = { active: isActive };
       Axios.patch(query, data)
         .then(res => {

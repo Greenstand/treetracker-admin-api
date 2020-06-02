@@ -130,7 +130,7 @@ function Users(props) {
   const [users, setUsers] = React.useState([]);
 
   async function load() {
-      let res = await axios.get("http://localhost:3000/auth/permissions", 
+      let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, 
         {
           headers: { Authorization: token },
         });
@@ -140,7 +140,7 @@ function Users(props) {
         console.error("load fail:", res);
         return;
       }
-      res = await axios.get("http://localhost:3000/auth/admin_users",
+      res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/admin_users`,
         {
           headers: { Authorization: token },
         });
@@ -239,7 +239,7 @@ function Users(props) {
     if(userEditing.id === undefined){
       //add
       let res = await axios.post(
-        `http://localhost:3000/auth/admin_users/`, 
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/`, 
         {
           ...userEditing,
           role: right.map(e => e.id),
@@ -256,7 +256,7 @@ function Users(props) {
       }
     }else{
       let res = await axios.patch(
-        `http://localhost:3000/auth/admin_users/${userEditing.id}`, 
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userEditing.id}`, 
         {
           ...userEditing,
           role: right.map(e => e.id),
@@ -281,7 +281,7 @@ function Users(props) {
   async function handleGenerate(){
     //upload
     let res = await axios.put(
-      `http://localhost:3000/auth/admin_users/${userPassword.id}/password`, 
+      `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userPassword.id}/password`, 
       {
         password: newPassword,
       },

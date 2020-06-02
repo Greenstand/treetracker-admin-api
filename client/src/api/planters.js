@@ -4,7 +4,7 @@ import {session} from "../models/auth";
 export default {
   getPlanters({ skip, rowsPerPage, orderBy = "id", order = "desc", filter }) {
     const query =
-      `${process.env.REACT_APP_API_ROOT}/planter?` +
+      `${process.env.REACT_APP_API_ROOT}/api/planter?` +
       `filter[order]=${orderBy} ${order}&` +
       `filter[limit]=${rowsPerPage}&` +
       `filter[skip]=${skip}&` +
@@ -31,7 +31,7 @@ export default {
     filter,
   }){
     const query = 
-      `${process.env.REACT_APP_API_ROOT}/planter/count?${
+      `${process.env.REACT_APP_API_ROOT}/api/planter/count?${
         filter && filter.getBackloopString(false)
       }`
     return fetch(query,{
