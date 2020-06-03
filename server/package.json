@@ -52,6 +52,7 @@
     "@loopback/repository": "^1.8.1",
     "@loopback/rest": "^1.16.2",
     "@loopback/rest-explorer": "^1.2.4",
+    "generate-password": "^1.5.1",
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-postgresql": "^3.6.1"
   },
