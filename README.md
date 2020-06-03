@@ -36,9 +36,9 @@ cd treetracker-admin/server && touch .env src/datasources/treetracker.datasource
 
 - In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
 
-- In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
+- In `server/` directory you will need to create a `.env` file that will be used to reference the source of data for Loopback.
 
-- **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json.
+- **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json as well env file
 
 ## Development Environment Quick Start
 
