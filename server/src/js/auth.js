@@ -3,21 +3,25 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const jwtSecret =
   '3n398nrNMSI992298948)#€/#/€#€Q/H/DFN/FNF90DFNM(FN)(Fn)(FDN)(DNF)(æ';
-const {Pool, Client} = require("pg");
-const {utils} = require("./utils");
-const config = require("../datasources/treetracker.datasource.json");
+const generator = require('generate-password');
+const Crypto = require('crypto');
+const bodyParser = require('body-parser');
+const {Pool, Client} = require('pg');
+const {utils} = require('./utils');
+const config = require('../datasources/treetracker.datasource.json');
 
+const app = express();
 //const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
 //const pool = new Pool({ connectionString: "postgresql://doadmin:l5al4hwte8qmj6x8@db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker_dev?ssl=true"});
 //const pool = new Pool({ connectionString: "postgres://treetracker:tr33dev@107.170.246.116:5432/treetracker"});
 //const pool = new Pool({ connectionString: "postgresql://doadmin:g7a1fey4jeqao9mg@db-postgresql-sfo2-40397-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker?ssl=true"});
-const pool = new Pool({ connectionString: config.url});
+const pool = new Pool({connectionString: config.url});
 
 const PERMISSIONS = {
-  ADMIN : 1,
+  ADMIN: 1,
   TREE_AUDITOR: 2,
   PLANTER_MANAGER: 3,
-}
+};
 
 const user = {
   id: 1,
@@ -37,6 +41,18 @@ const userB = {
   password: '123456',
   role: [1],
   email: 'b@outlook.com',
+};
+
+const sha512 = function(password, salt) {
+  let hash = Crypto.createHmac('sha512', salt);
+  hash.update(password);
+  const hashedPwd = hash.digest('hex');
+  return hashedPwd;
+};
+
+const generateSalt = function() {
+  const generated = generator.generate({length: 6, numbers: true});
+  return generated;
 };
 
 const permissions = [
@@ -59,6 +75,9 @@ const permissions = [
 
 const users = [user, userB];
 
+const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
+// const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
+
 router.get('/permissions', async function login(req, res, next) {
   try {
     const result = await pool.query(`select * from admin_role`);
@@ -75,16 +94,20 @@ router.post('/login', async function login(req, res, next) {
     await init();
     const {userName, password} = req.body;
     //console.log(pool);
-    let result = await pool.query(`select * from admin_user where user_name = '${userName}' and password_hash = '${password}'`);
+    let result = await pool.query(
+      `select * from admin_user where user_name = '${userName}' and password_hash = '${password}'`,
+    );
     let userLogin;
-    if(result.rows.length === 1){
+    if (result.rows.length === 1) {
       userLogin = utils.convertCamel(result.rows[0]);
       //load role
-      console.assert(userLogin.id >= 0, "id?", userLogin);
-      result = await pool.query(`select * from admin_user_role where admin_user_id = ${userLogin.id}`);
+      console.assert(userLogin.id >= 0, 'id?', userLogin);
+      result = await pool.query(
+        `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
+      );
       userLogin.role = result.rows.map(r => r.role_id);
     }
-    
+
     if (userLogin) {
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
@@ -108,12 +131,16 @@ router.get('/test', async function login(req, res, next) {
 router.get('/admin_users/:userId', async (req, res, next) => {
   try {
     //console.log(pool);
-    let result = await pool.query(`select * from admin_user where id=${req.params.userId}`);
+    let result = await pool.query(
+      `select * from admin_user where id=${req.params.userId}`,
+    );
     let userGet;
-    if(result.rows.length === 1){
+    if (result.rows.length === 1) {
       userGet = utils.convertCamel(result.rows[0]);
       //load role
-      result = await pool.query(`select * from admin_user_role where role_id = ${userGet.id}`);
+      result = await pool.query(
+        `select * from admin_user_role where role_id = ${userGet.id}`,
+      );
       userGet.role = result.rows.map(r => r.role_id);
     }
     if (userGet) {
@@ -127,26 +154,40 @@ router.get('/admin_users/:userId', async (req, res, next) => {
   }
 });
 
-router.put('/admin_users/:userId/password', async (req, res, next) => {
-  try {
-    const result = await pool.query(`update admin_user set password_hash = '${req.body.password}' where id = ${req.params.userId}`);
-    res.status(200).json();
-  } catch (e) {
-    console.error(e);
-    res.status(500).json();
-  }
-});
+router.put(
+  '/admin_users/:userId/password',
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const salt = generateSalt();
+      const hash = sha512(req.body.password, salt);
+      const result = await pool.query(
+        `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
+      );
+      res.status(200).json();
+    } catch (e) {
+      console.error(e);
+      res.status(500).json();
+    }
+  },
+);
 
 router.patch('/admin_users/:userId', async (req, res, next) => {
   try {
-    const update = `update admin_user set ${utils.buildUpdateFields(req.body)} where id = ${req.params.userId}`;
-    console.log("update:", update)
+    const update = `update admin_user set ${utils.buildUpdateFields(
+      req.body,
+    )} where id = ${req.params.userId}`;
+    console.log('update:', update);
     let result = await pool.query(update);
     //role
-    result = await pool.query(`delete from admin_user_role where admin_user_id = ${req.params.userId}`);
-    if(req.body.role){
-      for(let i = 0; i < req.body.role.length; i++){
-        let result = await pool.query(`insert into admin_user_role (role_id, admin_user_id) values (${req.body.role[i]},${req.params.userId})`);
+    result = await pool.query(
+      `delete from admin_user_role where admin_user_id = ${req.params.userId}`,
+    );
+    if (req.body.role) {
+      for (let i = 0; i < req.body.role.length; i++) {
+        let result = await pool.query(
+          `insert into admin_user_role (role_id, admin_user_id) values (${req.body.role[i]},${req.params.userId})`,
+        );
       }
     }
     res.status(200).json();
@@ -160,14 +201,16 @@ router.get('/admin_users/', async (req, res, next) => {
   try {
     let result = await pool.query(`select * from admin_user`);
     const users = [];
-    for(let i = 0; i <  result.rows.length; i++){
+    for (let i = 0; i < result.rows.length; i++) {
       const r = result.rows[i];
-      const roles = await pool.query(`select * from admin_user_role where admin_user_id = ${r.id}`);
+      const roles = await pool.query(
+        `select * from admin_user_role where admin_user_id = ${r.id}`,
+      );
       r.role = roles.rows.map(rr => rr.role_id);
       users.push(utils.convertCamel(r));
     }
     res.status(200).json(users);
-  } catch (e){
+  } catch (e) {
     console.error(e);
     res.status(500).json();
   }
@@ -177,66 +220,80 @@ router.post('/admin_users/', async (req, res, next) => {
   try {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
-    let result = await pool.query(`select * from admin_user where user_name = '${req.body.userName}'`);
-    if(result.rows.length === 1){
+    let result = await pool.query(
+      `select * from admin_user where user_name = '${req.body.userName}'`,
+    );
+    if (result.rows.length === 1) {
       //TODO 401
       res.status(201).json({id: result.rows[0].id});
       return;
     }
-    const insert = `insert into admin_user ${utils.buildInsertFields(req.body)}`;
-    console.log("insert:", insert);
+    const insert = `insert into admin_user ${utils.buildInsertFields(
+      req.body,
+    )}`;
+    console.log('insert:', insert);
     await pool.query(insert);
-    result = await pool.query(`select * from admin_user where user_name = '${req.body.userName}'`);
+    result = await pool.query(
+      `select * from admin_user where user_name = '${req.body.userName}'`,
+    );
     let obj;
-    if(result.rows.length === 1){
+    if (result.rows.length === 1) {
       obj = result.rows[0];
       //roles
       //role
-      await pool.query(`delete from admin_user_role where admin_user_id = ${obj.id}`);
-      for(let i = 0; i < req.body.role.length; i++){
+      await pool.query(
+        `delete from admin_user_role where admin_user_id = ${obj.id}`,
+      );
+      for (let i = 0; i < req.body.role.length; i++) {
         const insertRole = `insert into admin_user_role (role_id, admin_user_id) values (${req.body.role[i]},${obj.id})`;
-        console.log("insert role:", insertRole);
+        console.log('insert role:', insertRole);
         await pool.query(insertRole);
       }
-    }else{
-      throw new Error("can not find new user");
+    } else {
+      throw new Error('can not find new user');
     }
     res.status(201).json({id: obj.id});
-  } catch(e) {
+  } catch (e) {
     console.error(e);
     res.status(500).json();
   }
 });
 
-async function init(){
-  console.log("Begin init...");
+async function init() {
+  console.log('Begin init...');
   const result = await pool.query(`select * from admin_user `);
-  if(result.rows.length > 0){
-    console.log("There are accounts in admin user, quit.");
+  if (result.rows.length > 0) {
+    console.log('There are accounts in admin user, quit.');
     return;
   }
-  console.log("clean...");
-  await pool.query("delete from admin_user");
-  await pool.query("delete from admin_user_role");
-  await pool.query("delete from admin_role");
-  await pool.query(`insert into admin_role (id, role_name, description) ` + 
-    `values (1, 'Admin', 'The super administrator role, having all permissions'),` +
-    `(2, 'Tree Manager', 'Check, verify, manage trees'),` + 
-    `(3, 'Planter Manager', 'Check, manage planters')`);
-  await pool.query(`insert into admin_user (id, user_name, first_name, last_name, password_hash, email) ` +
-    `values ( 1, 'admin', 'Admin', 'Panel', 'admin', 'admin@greenstand.org'),` + 
-    `(2, 'test', 'Admin', 'Test', 'test', 'test@greenstand.org')`);
-  await pool.query(`insert into admin_user_role (id, role_id, admin_user_id) ` + 
-    `values ( 1, 1, 1), ` +
-    `(2, 2, 2), ` +
-    `(3, 3, 2)`);
+  console.log('clean...');
+  await pool.query('delete from admin_user');
+  await pool.query('delete from admin_user_role');
+  await pool.query('delete from admin_role');
+  await pool.query(
+    `insert into admin_role (id, role_name, description) ` +
+      `values (1, 'Admin', 'The super administrator role, having all permissions'),` +
+      `(2, 'Tree Manager', 'Check, verify, manage trees'),` +
+      `(3, 'Planter Manager', 'Check, manage planters')`,
+  );
+  await pool.query(
+    `insert into admin_user (id, user_name, first_name, last_name, password_hash, email) ` +
+      `values ( 1, 'admin', 'Admin', 'Panel', 'admin', 'admin@greenstand.org'),` +
+      `(2, 'test', 'Admin', 'Test', 'test', 'test@greenstand.org')`,
+  );
+  await pool.query(
+    `insert into admin_user_role (id, role_id, admin_user_id) ` +
+      `values ( 1, 1, 1), ` +
+      `(2, 2, 2), ` +
+      `(3, 3, 2)`,
+  );
 }
 
-router.post("/init", async (req, res, next) => {
-  try{
+router.post('/init', async (req, res, next) => {
+  try {
     await init();
     res.status(200).json();
-  }catch(e){
+  } catch (e) {
     console.error(e);
     res.status(500).json();
   }
@@ -246,7 +303,7 @@ const isAuth = (req, res, next) => {
   //white list
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
-  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' ) {
+  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init') {
     next();
     return;
   }
@@ -261,42 +318,48 @@ const isAuth = (req, res, next) => {
       if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
         next();
         return;
-      }else{
+      } else {
         res.status(401).json({
           error: new Error('No permission'),
         });
         return;
       }
-    } else if(url.match(/\/api\/.*/)){
-      if(url.match(/\/api\/species.*/)){
+    } else if (url.match(/\/api\/.*/)) {
+      if (url.match(/\/api\/species.*/)) {
         next();
         return;
-      }else if(url.match(/\/api\/trees.*/)){
-        if(roles.includes(PERMISSIONS.ADMIN) || roles.includes(PERMISSIONS.TREE_AUDITOR)){
+      } else if (url.match(/\/api\/trees.*/)) {
+        if (
+          roles.includes(PERMISSIONS.ADMIN) ||
+          roles.includes(PERMISSIONS.TREE_AUDITOR)
+        ) {
           next();
           return;
-        }else{
+        } else {
           res.status(401).json({
             error: new Error('No permission'),
           });
           return;
         }
-      }else if(url.match(/\/api\/planter.*/)){
-        if(roles.includes(PERMISSIONS.ADMIN) || roles.includes(PERMISSIONS.PLANTER_MANAGER)){
+      } else if (url.match(/\/api\/planter.*/)) {
+        if (
+          roles.includes(PERMISSIONS.ADMIN) ||
+          roles.includes(PERMISSIONS.PLANTER_MANAGER)
+        ) {
           next();
           return;
-        }else{
+        } else {
           res.status(401).json({
             error: new Error('No permission'),
           });
           return;
         }
       }
-    }else{
+    } else {
       next();
       return;
     }
-    res.status(401).json({
+    res.status().json({
       error: new Error('No permission'),
     });
     //res.status(200).json([user]);
