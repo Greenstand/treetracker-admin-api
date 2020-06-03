@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const config = require('../../config');
+const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const db = require('../datasources/treetracker.datasource.json');
@@ -73,7 +73,7 @@ router.get('/permissions', async function login(req, res, next) {
 router.post('/login', async function login(req, res, next) {
   try {
     //try to init, in case of first visit
-    await init();
+    // await init();
     const {userName, password} = req.body;
     //console.log(pool);
     let result = await pool.query(
