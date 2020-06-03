@@ -31,8 +31,9 @@ export default {
     filter,
   }){
     const query = 
-      `${process.env.REACT_APP_API_ROOT}/api/planter/count` + 
-      (filter? filter.getBackloopString():"");
+      `${process.env.REACT_APP_API_ROOT}/api/planter/count?${
+        filter && filter.getBackloopString(false)
+      }`
     return fetch(query,{
       headers: { 
         "content-type": "application/json" ,
