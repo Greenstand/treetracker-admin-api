@@ -23,34 +23,40 @@ Please add any missing content to this readme.
 - On OSX you can alleviate the need to run as sudo by [following John Papa's instructions](http://jpapa.me/nomoresudo)
 - Open terminal
 - Go to a folder where you would like to install the project. Then type the following:
+
 ```
 git clone https://github.com/Greenstand/treetracker-admin.git
 ```
+
 - Once cloned type:
+
 ```
-cd treetracker-admin/server && touch src/datasources/treetracker.datasource.json && npm install
+cd treetracker-admin/server && touch .env src/datasources/treetracker.datasource.json && npm install
 ```
 
 - In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
 
-- **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json.
+- In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
 
+- **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json.
 
 ## Development Environment Quick Start
 
 We provide a development environment through docker that can run on your local environment.
 
 ### Set Up Docker
+
 To run docker on a local machine, you will have to install Docker first. Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM. Docker provides one for each OS by default.
 
 #### Mac
+
 Install Docker for Mac using homebrew, using the following command
 
 ```
 $ brew cask install docker
 ```
 
-You can alternatively install Docker via:  [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
+You can alternatively install Docker via: [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
 
 Once Docker is installed, lauch Docker from the Applications GUI.
 
@@ -63,6 +69,7 @@ For some older versions or Win10 Home: [Docker Toolbox](https://docs.docker.com/
 ```
 docker-machine create default --virtualbox-no-vtx-check
 ```
+
 then re-run the QuickStart terminal script.
 
 NOTE: if you use Docker Toolbox, check the IP address in the output of the QuickStart terminal script. You will use this IP address later instead of localhost.
@@ -70,7 +77,6 @@ NOTE: if you use Docker Toolbox, check the IP address in the output of the Quick
 #### Linux
 
 To install on linux, you can run `sudo apt-get install -y docker-ce` but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
-
 
 ### Install, build docker containers and go
 
@@ -83,28 +89,28 @@ git clone git@github.com:Greenstand/treetracker-admin.git
 cd treetracker-admin
 ```
 
-Run the setup script.  This script installs node modules, builds docker containers, and starts them
+Run the setup script. This script installs node modules, builds docker containers, and starts them
+
 ```
 ./dev/scripts/setup.sh
 ```
 
 You can now view the treetracker admin at http://localhost:8080.
 
-*note: If you try to access the site on port 3001 you will recieve a CORS error*
+_note: If you try to access the site on port 3001 you will recieve a CORS error_
 
-*note: If you used Docker Toolbox, you may need to use the IP address it reported, such as http://192.168.99.100:8080*
+_note: If you used Docker Toolbox, you may need to use the IP address it reported, such as http://192.168.99.100:8080_
 
-It may take a few seconds for the web and api servers to come up.  You can monitor them using the docker logs commands as:
+It may take a few seconds for the web and api servers to come up. You can monitor them using the docker logs commands as:
 
 ```
 docker logs -f treetracker-admin-web
 docker logs -f treetracker-admin-api
 ```
 
-Also see *Scripts* below
+Also see _Scripts_ below
 
 The REST API documentation can be viewed and explored by visiting http://localhost:3000/explorer
-
 
 To stop the dev environment use
 
@@ -118,11 +124,10 @@ To start the dev environment back up use
 ./dev/scripts/up.sh
 ```
 
-
 Just edit as you normally would to view changes in your development environment.
 
-
 ### Alternative setup for MS Windows (Works on Linux and Mac also)
+
 On Windows the easiest way to develop and debug Node.js applications is using Visual Studio Code.
 It comes with Node.js support out of the box.
 
@@ -133,9 +138,10 @@ https://code.visualstudio.com/docs
 Here is our wiki page for troubleshooting , take a look. And help us to improve it by adding your case solving this problem. https://github.com/Greenstand/treetracker-admin/wiki/Set-Up-Issues
 
 ### How to devlop without Docker
+
 If Docker is really a roadblock, please consider using this way below to bypass it.
 
-* Install
+- Install
 
 ```
 cd client
@@ -147,8 +153,7 @@ cd server
 npm install
 ```
 
-* Add a .env.local under "client" for local config, it looks like this:
-
+- Add a .env.local under "client" for local config, it looks like this:
 
 ```
 REACT_APP_WEBMAP_DOMAIN=https://treetracker.org
@@ -157,24 +162,23 @@ REACT_APP_API_ROOT=http://localhost:3000/
 
 So the React App would connect to http://localhost:3000 for API server.
 
-* Start server:
+- Start server:
 
 ```
 cd server
 npm start
 ```
 
-* Start client:
+- Start client:
 
 ```
 cd client
 npm start
 ```
 
-* Visit
+- Visit
 
 http://localhost:3001
-
 
 ## Quick Start For API only development
 
@@ -212,16 +216,16 @@ Useful scripts are contained in /dev/scripts. Their uses are described here. Scr
 
 **logs-web.sh** show logs for React.js dev server
 
-**docker-clear-images.sh** clear out *all* docker images
+**docker-clear-images.sh** clear out _all_ docker images
 
-**docker-remove-containers.sh** clear out *all* docker containers
-
+**docker-remove-containers.sh** clear out _all_ docker containers
 
 ## How to log
 
 We use loglevel for logging, with some convention. Using loglevel, we will be able to open/close a single file's log by chaning the level of log on the fly, even in production env. For more information about loglevel, check [here](https://github.com/pimterry/loglevel).
 
 The default of log level is set in the file: /src/init.js
+
 ```
 log.setDefaultLevel('info');
 ```
@@ -240,9 +244,8 @@ const log = loglevel.getLogger('../components/TreeImageScrubber')
 
 The convention is: call the loglevel.getLogger() function with argument of 'the path to current file'. In above example, the js file is: /src/components/TreeImageScrumbber.js, so pass the path string: '../components/TreeImageScrubber' in, just like what we do in 'import' sentence, but the path just points to itself.
 
-Acturally, we can pass in any string, following this convention is just for a UNIQUE key for the log object, now we can set the log level in browser to open/close log. To do so, open DevTools -> application -> localstorage -> add a key: 'loglevel:[the path]' and value: [the log level] (e.g. loglevel:../components/TreeImageScrubber  ->  DEBUG )
+Acturally, we can pass in any string, following this convention is just for a UNIQUE key for the log object, now we can set the log level in browser to open/close log. To do so, open DevTools -> application -> localstorage -> add a key: 'loglevel:[the path]' and value: [the log level] (e.g. loglevel:../components/TreeImageScrubber -> DEBUG )
 <img alt="snapshot" src="https://raw.githubusercontent.com/dadiorchen/treetracker-admin/master/client/loglevel.gif" width="600" >
-
 
 ## About Material-UI
 
@@ -253,7 +256,6 @@ We made some custom by setting the theme of Material-UI to fit our UI design. Th
 We create some basic components, such as 'alert', 'confirm', 'form', feel free to pick what you want or copy the sample code. You can find them in our Storybook components gallery.
 
 You can also pick the typographies and colors as you want in Storybook -> MaterialUITheme -> theme/typography/palette.
-
 
 ## About Storybook
 
@@ -272,15 +274,16 @@ All the stories are located at /client/src/stories/
 About more usage of Storybook, check [here](https://storybook.js.org/)
 
 ## About Redux/Rematch
-We use Rematch, it is a simple shell on Redux. Contrast to vanilla Redux, 
-Rematch has fewer boilerplate code. 
+
+We use Rematch, it is a simple shell on Redux. Contrast to vanilla Redux,
+Rematch has fewer boilerplate code.
 Check [here](https://github.com/rematch/rematch) for more detail.
 
-If you are not familiar with Redux/Rematch, please check our [simple tutorial](rematchTutorial.md), 
-there is a REAL example about how to convert a original React component to a 
+If you are not familiar with Redux/Rematch, please check our [simple tutorial](rematchTutorial.md),
+there is a REAL example about how to convert a original React component to a
 Redux-connected component, and how to test it.
 
-## Code style guide  
+## Code style guide
 
 **Indention** 2 Spaces for indentation
 
@@ -291,7 +294,7 @@ Redux-connected component, and how to test it.
 **Quotes** Use single quotes unless you are writing JSON
 
 ```js
-const foo = 'bar';
+const foo = "bar";
 ```
 
 **Braces** Opening braces go on the same line as the statment
@@ -305,14 +308,14 @@ If (true) {
 **Variable declaration** Declare one Varable per statment
 
 ```js
-const dog = ['bark', 'woof'];
-let cat = ['meow', 'sleep'];
+const dog = ["bark", "woof"];
+let cat = ["meow", "sleep"];
 ```
 
 **Variable, properties and function names** Use lowerCamelCase for variables, properties and function names
 
 ```js
-const adminUser = db.query('SELECT * From users …')
+const adminUser = db.query("SELECT * From users …");
 ```
 
 **Class names** Use UpperCamelCase for class names
@@ -328,21 +331,24 @@ class Dog {
 **Descriptive conditions** Make sure to to have a descriptive name that tells the use and meaning of the code
 
 ```js
-const isValidPassword = password.length >= 4 && /^(?=.*\d).{4,}$/.test(password);
+const isValidPassword =
+  password.length >= 4 && /^(?=.*\d).{4,}$/.test(password);
 ```
 
 **Object/Array creation** Use trailing commas and put short declarations on a single line. Only quote keys when your interpreter complains:
 
 ```js
-var a = ['hello', 'world'];
+var a = ["hello", "world"];
 var b = {
-  good: 'code',
-  'is generally': 'pretty',
+  good: "code",
+  "is generally": "pretty",
 };
 ```
 
 ## Credit
------------
+
+---
+
 - [Loopback](https://loopback.io/doc/en/lb4/index.html)
 
 ## How to contribute
@@ -351,7 +357,4 @@ Basically, we follow the React/Jest convention to build test, all test file are 
 
 To run test:
 
-```npm test```
-
-
-
+`npm test`
