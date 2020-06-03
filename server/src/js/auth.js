@@ -93,9 +93,17 @@ router.post('/login', async function login(req, res, next) {
     //try to init, in case of first visit
     await init();
     const {userName, password} = req.body;
-    //console.log(pool);
+
+    //find the user to get the salt, validate if hashed password matches
+    let user_rows = await pool.query(
+      `select * from admin_user where user_name = '${userName}'`,
+    ); /*TODO check if user name exists*/
+
+    const user_entity = user_rows.rows[0];
+    const hash = sha512(password, user_entity.salt);
+
     let result = await pool.query(
-      `select * from admin_user where user_name = '${userName}' and password_hash = '${password}'`,
+      `select * from admin_user where user_name = '${userName}' and password_hash = '${hash}'`,
     );
     let userLogin;
     if (result.rows.length === 1) {
