@@ -285,9 +285,9 @@ async function init() {
       `(3, 'Planter Manager', 'Check, manage planters')`,
   );
   await pool.query(
-    `insert into admin_user (id, user_name, first_name, last_name, password_hash, email) ` +
-      `values ( 1, 'admin', 'Admin', 'Panel', 'admin', 'admin@greenstand.org'),` +
-      `(2, 'test', 'Admin', 'Test', 'test', 'test@greenstand.org')`,
+    `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email) ` +
+      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org'),` +
+      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org')`,
   );
   await pool.query(
     `insert into admin_user_role (id, role_id, admin_user_id) ` +
