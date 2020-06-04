@@ -124,7 +124,7 @@ function FilterTopPlanter(props) {
             <TextField
               className={`${classes.textField} ${classes.filterElement}`}
               label='First Name'
-              placeholder='Last Name'
+              placeholder='First Name'
               value={firstName}
               onChange={e => setFirstName(e.target.value)}
             />

@@ -31,12 +31,14 @@ git clone https://github.com/Greenstand/treetracker-admin.git
 - Once cloned type:
 
 ```
-cd treetracker-admin/server && touch src/datasources/treetracker.datasource.json && npm install
+cd treetracker-admin/server && touch .env src/datasources/treetracker.datasource.json && npm install
 ```
 
 - In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
 
-- **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json.
+- In `server/` directory you will need to create a `.env` file that will be used to reference the source of data for Loopback.
+
+- **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json as well env file
 
 ## Development Environment Quick Start
 

@@ -28,7 +28,7 @@ describe("planter", () => {
         },
       });
       //set page size
-      expect(store.getState().planters.pageSize).toBe(21);
+      expect(store.getState().planters.pageSize).toBe(24);
       await store.dispatch.planters.changePageSize({ pageSize: 1 });
       expect(store.getState().planters.pageSize).toBe(1);
     });
@@ -39,20 +39,20 @@ describe("planter", () => {
       expect(store.getState().planters.filter).toBeInstanceOf(FilterPlanter);
     });
 
-    describe("load(1) ", () => {
+    describe("load(0) ", () => {
       beforeEach(async () => {
         api.getPlanters.mockReturnValue([planter]);
         filter = new FilterPlanter({
           personId: 1,
         });
         const result = await store.dispatch.planters.load({
-          pageNumber: 1,
+          pageNumber: 0,
           filter,
         });
         expect(result).toBe(true);
       });
 
-      it("should get some trees", () => {
+      it("should get some planters", () => {
         expect(store.getState().planters.planters).toHaveLength(1);
       });
 
@@ -64,25 +64,25 @@ describe("planter", () => {
         });
       });
 
-      it("currentPage should be 1", () => {
-        expect(store.getState().planters.currentPage).toBe(1);
+      it("currentPage should be 0", () => {
+        expect(store.getState().planters.currentPage).toBe(0);
       });
 
       it("Sould have filter be set to store", () => {
         expect(store.getState().planters.filter).toBe(filter);
       });
 
-      describe("load(2)", () => {
+      describe("load(1)", () => {
         beforeEach(async () => {
           api.getPlanters.mockReturnValue([planter]);
           const result = await store.dispatch.planters.load({
-            pageNumber: 2,
+            pageNumber: 1,
             filter,
           });
           expect(result).toBe(true);
         });
 
-        it("should get some trees", () => {
+        it("should get some planters", () => {
           expect(store.getState().planters.planters).toHaveLength(1);
         });
 
@@ -98,15 +98,19 @@ describe("planter", () => {
       describe("count()", () => {
 
         beforeEach(async () => {
-          api.getCount.mockReturnValue(2);
+          api.getCount.mockReturnValue({count: 2});
           expect(await store.dispatch.planters.count()).toBe(true);
         });
 
-        it("Should get count = 2, page count = 2", async () => {
-          expect(store.getState().planters.count).toBe(2);
-          expect(store.getState().planters.pageCount).toBe(2);
+        it("should call getCount api with param: filter", () => {
+          expect(api.getCount).toHaveBeenCalledWith({
+            filter,
+          });
         });
 
+        it("Should get count = 2", async () => {
+          expect(store.getState().planters.count).toBe(2);
+        });
       });
     });
   });
