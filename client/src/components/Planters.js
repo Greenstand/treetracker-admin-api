@@ -19,7 +19,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Slide from '@material-ui/core/Slide'
-import Pagination from '@material-ui/lab/Pagination'
+import TablePagination from '@material-ui/core/TablePagination'
 
 import { selectedHighlightColor } from '../common/variables.js'
 import * as loglevel from 'loglevel'
@@ -52,7 +52,7 @@ import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import Navbar from "./Navbar";
 
-const log = require('loglevel').getLogger('../components/TreeImageScrubber')
+const log = require('loglevel').getLogger('../components/Planters')
 
 const useStyles = makeStyles((theme) => ({
   outer: {
@@ -91,6 +91,14 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid rgba(0, 0, 0, 0.12)",
     boxShadow: "none",
   },
+  placeholderCard: {
+    pointerEvents: 'none',
+    background: '#eee',
+    '& *': {
+      opacity: 0,
+    },
+    border: 'none',
+  },
   title: {
     padding: theme.spacing(2, 16),
   },
@@ -122,7 +130,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 'none',
   },
   page: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(2, 16),
   },
   personBox: {
     display: "flex",
@@ -146,7 +154,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 })
 
 const Planters = (props) => {
-  log.debug('render TreeImageScrubber...')
+  log.debug('render Planters...')
   const classes = useStyles(props)
   const [isFilterShown, setFilterShown] = React.useState(false)
   const [isDetailShown, setDetailShown] = React.useState(false)
@@ -159,20 +167,46 @@ const Planters = (props) => {
     log.debug('mounted')
     props.plantersDispatch.count()
     props.plantersDispatch.load({
-      pageNumber: 1,
+      pageNumber: 0,
       filter: new FilterPlanter(),
     })
   }, [])
 
+  useEffect(() => {
+    props.plantersDispatch.load({
+      pageNumber: 0,
+      filter: props.plantersState.filter,
+    });
+  }, [props.plantersState.pageSize])
+
+  useEffect(() => {
+    props.plantersDispatch.count({
+      filter: props.plantersState.filter,
+    })
+  }, [props.plantersState.filter])
+
   function handlePlanterClick(planter){
-    debugger
     setDetailShown(true);
     setPlanterDetail(planter);
   }
 
-  let plantersItems = props.plantersState.planters.map((planter) => {
+  const placeholderPlanters = Array(props.plantersState.pageSize).fill().map((_, index) => {
+    return {
+      id: index,
+      placeholder: true,
+    };
+  });
+
+  let plantersItems = (props.plantersState.isLoading ?
+                       placeholderPlanters :
+                       props.plantersState.planters
+                      ).map((planter) => {
     return (
-      <Planter onClick={() => handlePlanterClick(planter)} key={planter.id} planter={planter} />
+      <Planter
+        onClick={() => handlePlanterClick(planter)}
+        key={planter.id} 
+        planter={planter}
+        placeholder={planter.placeholder}/>
     )
   })
 
@@ -191,12 +225,29 @@ const Planters = (props) => {
     });
   }
 
+  function handleChangePageSize(e, option){
+    props.plantersDispatch.changePageSize({pageSize: option.props.value})
+  }
+
   function updateFilter(filter){
     props.plantersDispatch.load({
-      pageNumber: 1,
+      pageNumber: 0,
       filter,
     });
   }
+
+  const pagination = (
+    <TablePagination
+      rowsPerPageOptions={[24, 48, 96]}
+      component="div"
+      count={props.plantersState.count}
+      rowsPerPage={props.plantersState.pageSize}
+      page={props.plantersState.currentPage}
+      onChangePage={handlePageChange}
+      onChangeRowsPerPage={handleChangePageSize}
+      labelRowsPerPage="Planters per page:"
+    />
+  );
 
   return (
     <React.Fragment>
@@ -230,33 +281,21 @@ const Planters = (props) => {
                 width: '100%',
               }}
             >
-              <Grid container justify={'space-between'} className={classes.title}>
+              <Grid container justify='space-between' alignItems='center' className={classes.title}>
                 <Grid item>
-                  <Typography
-                    variant="h5"
-                    style={{
-                      paddingTop: 20,
-                    }}
-                  >
+                  <Typography variant='h5'>
                     Planters
                   </Typography>
                 </Grid>
-                <Grid item></Grid>
+                <Grid item>{pagination}</Grid>
               </Grid>
             </Grid>
-            <Grid item>
-              <Grid container direction="row">
-                {plantersItems}
-              </Grid>
+            <Grid item container direction='row' justify='center'>
+              {plantersItems}
             </Grid>
           </Grid>
-          <Grid container className={classes.page} justify="flex-end" >
-            <Pagination
-              count={10}
-              variant="outlined"
-              shape="rounded"
-              onChange={handlePageChange}
-            />
+          <Grid container className={classes.page} justify='flex-end' >
+            {pagination}
           </Grid>
         </Grid>
       </Grid>
@@ -272,7 +311,9 @@ function Planter (props){
   const classes = useStyles(props);
   return(
       <div onClick={() => props.onClick()} className={clsx(classes.cardWrapper)} key={planter.id}>
-        <Card id={`card_${planter.id}`} className={classes.card} 
+        <Card
+          id={`card_${planter.id}`}
+          className={clsx(classes.card, props.placeholder && classes.placeholderCard)} 
           classes={{
             root: classes.planterCard,
           }}

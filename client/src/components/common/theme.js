@@ -53,8 +53,13 @@ export default createMuiTheme({
 		},
 		MuiOutlinedInput		: {
 			input		: {
-				padding		: '10.5px 7px',
-			}
+				padding		: '10.5px 10px',
+			},
+		},
+		MuiInputLabel: {
+			outlined: {
+				transform: 'translate(10px, 12px) scale(1)', 
+			},
 		},
 		MuiListItem		: {
 			root		: {
