@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const generator = require('generate-password');
+const Crypto = require('crypto');
+const bodyParser = require('body-parser');
 const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
