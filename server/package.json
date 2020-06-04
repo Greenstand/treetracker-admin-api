@@ -6,12 +6,12 @@
     "loopback-application",
     "loopback"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
   "engines": {
     "node": ">=8.9"
   },
   "scripts": {
-    "build": "lb-tsc",
+    "build": "lb-tsc --allowJs -d false",
     "build:watch": "lb-tsc --watch",
     "clean": "lb-clean dist *.tsbuildinfo",
     "lint": "npm run prettier:check && npm run eslint",
@@ -26,9 +26,10 @@
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "migrate": "node ./dist/migrate",
-    "prestart": "npm run build",
+    "prestart": "npm run clean && npm run build",
     "start": "node .",
-    "prepublishOnly": "npm run test"
+    "prepublishOnly": "npm run test",
+    "jest": "jest --watchAll --runInBand"
   },
   "repository": {
     "type": "git"
@@ -51,19 +52,21 @@
     "@loopback/repository": "^1.8.1",
     "@loopback/rest": "^1.16.2",
     "@loopback/rest-explorer": "^1.2.4",
+    "jsonwebtoken": "^8.5.1",
     "loopback-connector-postgresql": "^3.6.1"
   },
   "devDependencies": {
     "@loopback/build": "^2.0.2",
+    "@loopback/eslint-config": "^1.1.2",
     "@loopback/testlab": "^1.6.2",
     "@types/node": "^10.14.9",
-    "@typescript-eslint/parser": "^1.10.2",
     "@typescript-eslint/eslint-plugin": "^1.10.2",
-    "@loopback/eslint-config": "^1.1.2",
+    "@typescript-eslint/parser": "^1.10.2",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^5.0.0",
     "eslint-plugin-eslint-plugin": "^2.1.0",
     "eslint-plugin-mocha": "^5.3.0",
+    "jest": "^26.0.1",
     "typescript": "~3.5.2"
   },
   "nodemonConfig": {
@@ -72,5 +75,11 @@
     ],
     "ext": "ts",
     "exec": "npm start"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/dist/",
+      "<rootDir>/node_modules/"
+    ]
   }
 }

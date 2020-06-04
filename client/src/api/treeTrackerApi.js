@@ -1,4 +1,5 @@
 import { handleResponse, handleError } from "./apiUtils";
+import {session} from "../models/auth";
 
 export default {
   getTreeImages({
@@ -10,7 +11,7 @@ export default {
     filter
   }) {
     const query =
-      `${process.env.REACT_APP_API_ROOT}/trees?` +
+      `${process.env.REACT_APP_API_ROOT}/api/trees?` +
       `filter[order]=${orderBy} ${order}&` +
       `filter[limit]=${rowsPerPage}&` +
       `filter[skip]=${skip}&` +
@@ -28,7 +29,11 @@ export default {
       `field[imageURL]` +
       //the filter query
       filter.getBackloopString();
-    return fetch(query)
+    return fetch(query, {
+        headers: {
+          Authorization: session.token ,
+        }
+      })
       .then(handleResponse)
       .catch(handleError);
   },
@@ -39,10 +44,13 @@ export default {
     captureApprovalTag,
     speciesId,
   ) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
-      headers: { "content-type": "application/json" },
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
       body: JSON.stringify({
         id: id,
         approved: true,
@@ -59,10 +67,13 @@ export default {
       .catch(handleError);
   },
   rejectTreeImage(id, rejectionReason) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
-      headers: { "content-type": "application/json" },
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
       body: JSON.stringify({
         id: id,
         active: false,
@@ -79,10 +90,13 @@ export default {
    * to rollback from a wrong approving
    */
   undoTreeImage(id) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
-      headers: { "content-type": "application/json" },
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
       body: JSON.stringify({
         id: id,
         active: true,
@@ -93,21 +107,32 @@ export default {
       .catch(handleError);
   },
   getUnverifiedTreeCount() {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/count?where[approved]=false&where[active]=true`;
-    return fetch(query).then(handleResponse).catch(handleError);
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/count?where[approved]=false&where[active]=true`;
+    return fetch(query,{
+        headers: {
+          Authorization: session.token ,
+        }
+    }).then(handleResponse).catch(handleError);
   },
   getTreeCount(filter) {
-    const query = `${process.env.REACT_APP_API_ROOT}/trees/count?${filter.getBackloopString(false)}`;
-    return fetch(query).then(handleResponse).catch(handleError);
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/count?${filter.getBackloopString(false)}`;
+    return fetch(query, {
+        headers: {
+          Authorization: session.token ,
+        }
+    }).then(handleResponse).catch(handleError);
   },
   /*
    * get species list
    */
   getSpecies() {
-    const query = `${process.env.REACT_APP_API_ROOT}/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species`;
     return fetch(query, {
       method: "GET",
-      headers: { "content-type": "application/json" },
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
     })
       .then(handleResponse)
       .catch(handleError);
@@ -116,10 +141,13 @@ export default {
    * create new species
    */
   createSpecies(name) {
-    const query = `${process.env.REACT_APP_API_ROOT}/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species`;
     return fetch(query, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
       body: JSON.stringify({
         name: name,
         desc: name,
