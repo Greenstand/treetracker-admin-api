@@ -14,6 +14,7 @@ import TextField from '@material-ui/core/TextField'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { AppContext } from './MainFrame'
+import axios from 'axios'
 
 const style = (theme) => ({
   box: {
@@ -55,11 +56,12 @@ const style = (theme) => ({
 function Account(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
-  const { user } = appContext
+  const { user, token } = appContext
   const [openPwdForm, setOpenPwdForm] = React.useState(false)
   const [oldPassword, setOldPassword] = React.useState('')
   const [newPassword, setNewPassword] = React.useState('')
   const [confirmedPassword, setConfirmedPassword] = React.useState('')
+  const [errorMessage, setErrorMessage] = React.useState('')
 
   function handleLogout() {
     appContext.logout()
@@ -85,8 +87,67 @@ function Account(props) {
     setConfirmedPassword(e.target.value)
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async (e) => {
     console.log(oldPassword, newPassword, confirmedPassword)
+    e.preventDefault()
+    e.stopPropagation()
+    const result1 = await isOldPwdReal(oldPassword)
+    const result2 = await doesNewPwdMatch(newPassword, confirmedPassword)
+    if (result1 && result2) {
+      //patch the new password
+      let res = await axios.put(
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${user.id}/password`,
+        {
+          password: newPassword,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      )
+      if (res.status === 200) {
+        /*WARN!no update on the appContext here*/
+        setErrorMessage('Success!')
+      } else {
+        console.error('load fail:', res)
+        return
+      }
+    }
+  }
+
+  const doesNewPwdMatch = (newPassword, confirmedPassword) => {
+    if (newPassword.length > 0 && newPassword === confirmedPassword) {
+      setErrorMessage('')
+      return true
+    } else {
+      setErrorMessage('New password does not match, please try again')
+      return false
+    }
+  }
+
+  const isOldPwdReal = async (oldPassword) => {
+    let result
+
+    try {
+      /* TODO: login bypassing admin auth ?*/
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_ROOT}/auth/validate`,
+        {
+          password: oldPassword,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      )
+      if (res.status === 200) {
+        setErrorMessage('')
+        result = true
+      }
+    } catch (e) {
+      console.error(e)
+      setErrorMessage('Old password incorrect, please check')
+      result = false
+    }
+    return result
   }
 
   return (
@@ -209,6 +270,9 @@ function Account(props) {
             onChange={onChangeConfirmedPwd}
             value={confirmedPassword}
           />
+          <Typography variant="subtitle2" color="error">
+            {errorMessage}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleConfirm} color="primary">

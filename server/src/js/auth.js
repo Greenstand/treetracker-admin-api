@@ -73,7 +73,7 @@ router.get('/permissions', async function login(req, res, next) {
 router.post('/login', async function login(req, res, next) {
   try {
     //try to init, in case of first visit
-    await init();
+    // await init();
     const {userName, password} = req.body;
     //console.log(pool);
     let result = await pool.query(
@@ -188,6 +188,23 @@ router.get('/admin_users/', async (req, res, next) => {
     res.status(200).json(users);
   } catch (e) {
     console.error(e);
+    res.status(500).json();
+  }
+});
+
+router.post('/validate/', async (req, res, next) => {
+  try {
+    const {password} = req.body;
+    const token = req.headers.authorization;
+    const decodedToken = jwt.verify(token, jwtSecret);
+    const userSession = decodedToken;
+    if (password === userSession.passwordHash) {
+      return res.status(200).json();
+    } else {
+      return res.status(401).json();
+    }
+  } catch (err) {
+    console.error(err);
     res.status(500).json();
   }
 });
