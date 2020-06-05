@@ -57,6 +57,9 @@ function Account(props) {
   const appContext = React.useContext(AppContext)
   const { user } = appContext
   const [openPwdForm, setOpenPwdForm] = React.useState(false)
+  const [oldPassword, setOldPassword] = React.useState('')
+  const [newPassword, setNewPassword] = React.useState('')
+  const [confirmedPassword, setConfirmedPassword] = React.useState('')
 
   function handleLogout() {
     appContext.logout()
@@ -68,7 +71,22 @@ function Account(props) {
 
   const handleClose = () => {
     setOpenPwdForm(false)
-    // setSelectedValue(value)
+  }
+
+  const onChangeOldPwd = (e) => {
+    setOldPassword(e.target.value)
+  }
+
+  const onChangeNewPwd = (e) => {
+    setNewPassword(e.target.value)
+  }
+
+  const onChangeConfirmedPwd = (e) => {
+    setConfirmedPassword(e.target.value)
+  }
+
+  const handleConfirm = () => {
+    console.log(oldPassword, newPassword, confirmedPassword)
   }
 
   return (
@@ -160,9 +178,12 @@ function Account(props) {
             label="old password"
             type="password"
             id="password"
-
-            // onChange={handlePasswordChange}
-            // value={password}
+            // helperText={
+            //   userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
+            // }
+            // error={userName === '' /*touched.email && Boolean(errors.email)*/}
+            onChange={onChangeOldPwd}
+            value={oldPassword}
           />
           <TextField
             variant="outlined"
@@ -173,6 +194,8 @@ function Account(props) {
             label="new password"
             type="password"
             id="password"
+            onChange={onChangeNewPwd}
+            value={newPassword}
           />
           <TextField
             variant="outlined"
@@ -183,10 +206,14 @@ function Account(props) {
             label="confirm password"
             type="password"
             id="password"
+            onChange={onChangeConfirmedPwd}
+            value={confirmedPassword}
           />
         </DialogContent>
         <DialogActions>
-          <Button color="primary">Confirm</Button>
+          <Button onClick={handleConfirm} color="primary">
+            Confirm
+          </Button>
           <Button onClick={handleClose} color="primary">
             Close
           </Button>
