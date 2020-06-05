@@ -7,6 +7,12 @@ import Typography from '@material-ui/core/Typography'
 import { withStyles } from '@material-ui/core/styles'
 import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import TextField from '@material-ui/core/TextField'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import { AppContext } from './MainFrame'
 
 const style = (theme) => ({
@@ -50,80 +56,143 @@ function Account(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
   const { user } = appContext
+  const [openPwdForm, setOpenPwdForm] = React.useState(false)
 
-  function handleLogout(){
-    appContext.logout();
+  function handleLogout() {
+    appContext.logout()
+  }
+
+  const handleClickOpen = () => {
+    setOpenPwdForm(true)
+  }
+
+  const handleClose = () => {
+    setOpenPwdForm(false)
+    // setSelectedValue(value)
   }
 
   return (
-    <Grid container className={classes.box}>
-      <Grid item xs={3}>
-        <Paper elevation={3} className={classes.menu}>
-          <Menu variant="plain" />
-        </Paper>
-      </Grid>
-      <Grid item xs={9}>
-        <Grid container className={classes.rightBox}>
-          <Grid item xs="12">
-            <Grid container className={classes.titleBox}>
-              <Grid item>
-                <AccountIcon className={classes.accountIcon} />
-              </Grid>
-              <Grid item>
-                <Typography variant="h2">Account</Typography>
-              </Grid>
-            </Grid>
-            <Grid container direction="column" className={classes.bodyBox}>
-              <Grid item>
-                <Typography className={classes.title}>Username</Typography>
-                <Typography className={classes.item}>{user.username}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography className={classes.title}>Name</Typography>
-                <Typography className={classes.item}>
-                  {user.firstName} {user.lastName}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Typography className={classes.title}>Email</Typography>
-                <Typography className={classes.item}>{user.email}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography className={classes.title}>Role</Typography>
-                <Typography className={classes.item}>
-                  {user.role.map((e) => (
-                    <span>{e.name}/</span>
-                  ))}
-                </Typography>
-              </Grid>
-              <Grid item xs="8">
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography className={classes.title}>Password</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Grid
-                      container
-                      justif="center"
-                      alignItems="center"
-                      className={classes.changeBox}
-                    >
-                      <Button color="primary">CHANGE</Button>
-                    </Grid>
-                  </Grid>
+    <>
+      <Grid container className={classes.box}>
+        <Grid item xs={3}>
+          <Paper elevation={3} className={classes.menu}>
+            <Menu variant="plain" />
+          </Paper>
+        </Grid>
+        <Grid item xs={9}>
+          <Grid container className={classes.rightBox}>
+            <Grid item xs="12">
+              <Grid container className={classes.titleBox}>
+                <Grid item>
+                  <AccountIcon className={classes.accountIcon} />
                 </Grid>
                 <Grid item>
-                  <Box height={20} />
-                  <Button onClick={handleLogout} color="secondary" variant="contained" className={classes.logout}>
-                    LOG OUT
-                  </Button>
+                  <Typography variant="h2">Account</Typography>
+                </Grid>
+              </Grid>
+              <Grid container direction="column" className={classes.bodyBox}>
+                <Grid item>
+                  <Typography className={classes.title}>Username</Typography>
+                  <Typography className={classes.item}>{user.username}</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.title}>Name</Typography>
+                  <Typography className={classes.item}>
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.title}>Email</Typography>
+                  <Typography className={classes.item}>{user.email}</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.title}>Role</Typography>
+                  <Typography className={classes.item}>
+                    {user.role.map((e) => (
+                      <span>{e.name}/</span>
+                    ))}
+                  </Typography>
+                </Grid>
+                <Grid item xs="8">
+                  <Grid container justify="space-between">
+                    <Grid item>
+                      <Typography className={classes.title}>Password</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Grid
+                        container
+                        justif="center"
+                        alignItems="center"
+                        className={classes.changeBox}
+                      >
+                        <Button onClick={handleClickOpen} color="primary">
+                          CHANGE
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item>
+                    <Box height={20} />
+                    <Button
+                      onClick={handleLogout}
+                      color="secondary"
+                      variant="contained"
+                      className={classes.logout}
+                    >
+                      LOG OUT
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
+      <Dialog open={openPwdForm} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="old password"
+            type="password"
+            id="password"
+
+            // onChange={handlePasswordChange}
+            // value={password}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="new password"
+            type="password"
+            id="password"
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="confirm password"
+            type="password"
+            id="password"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button color="primary">Confirm</Button>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 
