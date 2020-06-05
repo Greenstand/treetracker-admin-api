@@ -46,6 +46,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
 import Navbar from "./Navbar";
+import TreeTags from './TreeTags';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -615,6 +616,10 @@ function SidePanel(props){
           <Species
             ref={speciesRef}
           />
+        </Grid>
+        <Grid>
+          <Typography variant='h6'>Tags</Typography>
+          <TreeTags/>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <Tabs 
