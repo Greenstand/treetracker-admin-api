@@ -22,6 +22,7 @@
     "import": "*",
     "install": "*",
     "loglevel": "^1.6.3",
+    "material-ui-chip-input": "^2.0.0-beta.2",
     "mdi-material-ui": "*",
     "mdi-svg": "*",
     "mui-datatables": "*",
