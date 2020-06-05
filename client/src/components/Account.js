@@ -73,6 +73,7 @@ function Account(props) {
 
   const handleClose = () => {
     setOpenPwdForm(false)
+    setErrorMessage('')
   }
 
   const onChangeOldPwd = (e) => {
@@ -88,7 +89,7 @@ function Account(props) {
   }
 
   const handleConfirm = async (e) => {
-    console.log(oldPassword, newPassword, confirmedPassword)
+    setErrorMessage('')
     e.preventDefault()
     e.stopPropagation()
     const result1 = await isOldPwdReal(oldPassword)
@@ -115,12 +116,14 @@ function Account(props) {
   }
 
   const doesNewPwdMatch = (newPassword, confirmedPassword) => {
-    if (newPassword.length > 0 && newPassword === confirmedPassword) {
-      setErrorMessage('')
-      return true
-    } else {
+    if (!newPassword.length > 0 || !confirmedPassword.length > 0) {
+      setErrorMessage('Input cannot be empty')
+      return false
+    } else if (newPassword !== confirmedPassword) {
       setErrorMessage('New password does not match, please try again')
       return false
+    } else {
+      return true
     }
   }
 
@@ -141,6 +144,9 @@ function Account(props) {
       if (res.status === 200) {
         setErrorMessage('')
         result = true
+      } else if (res.status === 401) {
+        setErrorMessage('Old password incorrect, please check')
+        result = false
       }
     } catch (e) {
       console.error(e)
