@@ -368,7 +368,7 @@ const isAuth = (req, res, next) => {
       next();
       return;
     }
-    res.status().json({
+    res.status(401).json({
       error: new Error('No permission'),
     });
     //res.status(200).json([user]);
