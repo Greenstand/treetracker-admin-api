@@ -73,7 +73,7 @@ router.get('/permissions', async function login(req, res, next) {
 router.post('/login', async function login(req, res, next) {
   try {
     //try to init, in case of first visit
-    // await init();
+    await init();
     const {userName, password} = req.body;
     //console.log(pool);
     let result = await pool.query(
