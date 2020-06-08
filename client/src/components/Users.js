@@ -279,6 +279,11 @@ function Users(props) {
 
   function handleGeneratePassword(user) {
     //auto generate password before open password Modal
+    let pwd = pwdGenerator.generate({
+      length: 10,
+      numbers: true /*generated pwd comprised of number, upper/lowercase */,
+    })
+    setNewPassword(pwd)
     setUserPassword(user)
   }
 
