@@ -157,7 +157,7 @@ npm install
 
 ```
 REACT_APP_WEBMAP_DOMAIN=https://treetracker.org
-REACT_APP_API_ROOT=http://localhost:3000/
+REACT_APP_API_ROOT=http://localhost:3000
 ```
 
 So the React App would connect to http://localhost:3000 for API server.

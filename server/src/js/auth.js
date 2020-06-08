@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const generator = require('generate-password');
+const Crypto = require('crypto');
+const bodyParser = require('body-parser');
 const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const db = require('../datasources/treetracker.datasource.json');
 
+const app = express();
 //const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
 //const pool = new Pool({ connectionString: "postgresql://doadmin:l5al4hwte8qmj6x8@db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker_dev?ssl=true"});
 //const pool = new Pool({ connectionString: "postgres://treetracker:tr33dev@107.170.246.116:5432/treetracker"});
@@ -40,6 +44,18 @@ const userB = {
   email: 'b@outlook.com',
 };
 
+const sha512 = function(password, salt) {
+  let hash = Crypto.createHmac('sha512', salt);
+  hash.update(password);
+  const hashedPwd = hash.digest('hex');
+  return hashedPwd;
+};
+
+const generateSalt = function() {
+  const generated = generator.generate({length: 6, numbers: true});
+  return generated;
+};
+
 const permissions = [
   {
     id: 0,
@@ -60,6 +76,9 @@ const permissions = [
 
 const users = [user, userB];
 
+const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
+// const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
+
 router.get('/permissions', async function login(req, res, next) {
   try {
     const result = await pool.query(`select * from admin_role`);
@@ -75,9 +94,17 @@ router.post('/login', async function login(req, res, next) {
     //try to init, in case of first visit
     await init();
     const {userName, password} = req.body;
-    //console.log(pool);
+
+    //find the user to get the salt, validate if hashed password matches
+    let user_rows = await pool.query(
+      `select * from admin_user where user_name = '${userName}'`,
+    ); /*TODO check if user name exists*/
+
+    const user_entity = user_rows.rows[0];
+    const hash = sha512(password, user_entity.salt);
+
     let result = await pool.query(
-      `select * from admin_user where user_name = '${userName}' and password_hash = '${password}'`,
+      `select * from admin_user where user_name = '${userName}' and password_hash = '${hash}'`,
     );
     let userLogin;
     if (result.rows.length === 1) {
@@ -136,17 +163,23 @@ router.get('/admin_users/:userId', async (req, res, next) => {
   }
 });
 
-router.put('/admin_users/:userId/password', async (req, res, next) => {
-  try {
-    const result = await pool.query(
-      `update admin_user set password_hash = '${req.body.password}' where id = ${req.params.userId}`,
-    );
-    res.status(200).json();
-  } catch (e) {
-    console.error(e);
-    res.status(500).json();
-  }
-});
+router.put(
+  '/admin_users/:userId/password',
+  jsonParser,
+  async (req, res, next) => {
+    try {
+      const salt = generateSalt();
+      const hash = sha512(req.body.password, salt);
+      const result = await pool.query(
+        `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
+      );
+      res.status(200).json();
+    } catch (e) {
+      console.error(e);
+      res.status(500).json();
+    }
+  },
+);
 
 router.patch('/admin_users/:userId', async (req, res, next) => {
   try {
@@ -270,9 +303,9 @@ async function init() {
       `(3, 'Planter Manager', 'Check, manage planters')`,
   );
   await pool.query(
-    `insert into admin_user (id, user_name, first_name, last_name, password_hash, email) ` +
-      `values ( 1, 'admin', 'Admin', 'Panel', 'admin', 'admin@greenstand.org'),` +
-      `(2, 'test', 'Admin', 'Test', 'test', 'test@greenstand.org')`,
+    `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email) ` +
+      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org'),` +
+      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org')`,
   );
   await pool.query(
     `insert into admin_user_role (id, role_id, admin_user_id) ` +
