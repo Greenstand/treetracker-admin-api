@@ -32,6 +32,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import axios from 'axios'
 import { AppContext } from './MainFrame'
+import pwdGenerator from 'generate-password'
 
 const style = (theme) => ({
   box: {
@@ -277,6 +278,12 @@ function Users(props) {
   }
 
   function handleGeneratePassword(user) {
+    //auto generate password before open password Modal
+    let pwd = pwdGenerator.generate({
+      length: 10,
+      numbers: true /*generated pwd comprised of number, upper/lowercase */,
+    })
+    setNewPassword(pwd)
     setUserPassword(user)
   }
 
