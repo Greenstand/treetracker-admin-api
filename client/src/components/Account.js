@@ -7,7 +7,14 @@ import Typography from '@material-ui/core/Typography'
 import { withStyles } from '@material-ui/core/styles'
 import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import TextField from '@material-ui/core/TextField'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import { AppContext } from './MainFrame'
+import axios from 'axios'
 
 const style = (theme) => ({
   box: {
@@ -49,81 +56,240 @@ const style = (theme) => ({
 function Account(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
-  const { user } = appContext
+  const { user, token } = appContext
+  const [openPwdForm, setOpenPwdForm] = React.useState(false)
+  const [oldPassword, setOldPassword] = React.useState('')
+  const [newPassword, setNewPassword] = React.useState('')
+  const [confirmedPassword, setConfirmedPassword] = React.useState('')
+  const [errorMessage, setErrorMessage] = React.useState('')
 
-  function handleLogout(){
-    appContext.logout();
+  function handleLogout() {
+    appContext.logout()
+  }
+
+  const handleClickOpen = () => {
+    setOpenPwdForm(true)
+  }
+
+  const handleClose = () => {
+    setOpenPwdForm(false)
+    setErrorMessage('')
+  }
+
+  const onChangeOldPwd = (e) => {
+    setOldPassword(e.target.value)
+  }
+
+  const onChangeNewPwd = (e) => {
+    setNewPassword(e.target.value)
+  }
+
+  const onChangeConfirmedPwd = (e) => {
+    setConfirmedPassword(e.target.value)
+  }
+
+  const handleConfirm = async (e) => {
+    setErrorMessage('')
+    e.preventDefault()
+    e.stopPropagation()
+    const result1 = await isOldPwdReal(oldPassword)
+    const result2 = await doesNewPwdMatch(newPassword, confirmedPassword)
+    if (result1 && result2) {
+      //patch the new password
+      let res = await axios.put(
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${user.id}/password`,
+        {
+          password: newPassword,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      )
+      if (res.status === 200) {
+        /*WARN!no update on the appContext here*/
+        setErrorMessage('Success!')
+      } else {
+        console.error('load fail:', res)
+        return
+      }
+    }
+  }
+
+  const doesNewPwdMatch = (newPassword, confirmedPassword) => {
+    if (!newPassword.length > 0 || !confirmedPassword.length > 0) {
+      setErrorMessage('Input cannot be empty')
+      return false
+    } else if (newPassword !== confirmedPassword) {
+      setErrorMessage('New password does not match, please try again')
+      return false
+    } else {
+      return true
+    }
+  }
+
+  const isOldPwdReal = async (oldPassword) => {
+    let result
+
+    try {
+      /* TODO: login bypassing admin auth ?*/
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_ROOT}/auth/validate`,
+        {
+          password: oldPassword,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      )
+      if (res.status === 200) {
+        setErrorMessage('')
+        result = true
+      } else if (res.status === 401) {
+        setErrorMessage('Old password incorrect, please check')
+        result = false
+      }
+    } catch (e) {
+      console.error(e)
+      setErrorMessage('Old password incorrect, please check')
+      result = false
+    }
+    return result
   }
 
   return (
-    <Grid container className={classes.box}>
-      <Grid item xs={3}>
-        <Paper elevation={3} className={classes.menu}>
-          <Menu variant="plain" />
-        </Paper>
-      </Grid>
-      <Grid item xs={9}>
-        <Grid container className={classes.rightBox}>
-          <Grid item xs="12">
-            <Grid container className={classes.titleBox}>
-              <Grid item>
-                <AccountIcon className={classes.accountIcon} />
-              </Grid>
-              <Grid item>
-                <Typography variant="h2">Account</Typography>
-              </Grid>
-            </Grid>
-            <Grid container direction="column" className={classes.bodyBox}>
-              <Grid item>
-                <Typography className={classes.title}>Username</Typography>
-                <Typography className={classes.item}>{user.username}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography className={classes.title}>Name</Typography>
-                <Typography className={classes.item}>
-                  {user.firstName} {user.lastName}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Typography className={classes.title}>Email</Typography>
-                <Typography className={classes.item}>{user.email}</Typography>
-              </Grid>
-              <Grid item>
-                <Typography className={classes.title}>Role</Typography>
-                <Typography className={classes.item}>
-                  {user.role.map((e) => (
-                    <span>{e.name}/</span>
-                  ))}
-                </Typography>
-              </Grid>
-              <Grid item xs="8">
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Typography className={classes.title}>Password</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Grid
-                      container
-                      justif="center"
-                      alignItems="center"
-                      className={classes.changeBox}
-                    >
-                      <Button color="primary">CHANGE</Button>
-                    </Grid>
-                  </Grid>
+    <>
+      <Grid container className={classes.box}>
+        <Grid item xs={3}>
+          <Paper elevation={3} className={classes.menu}>
+            <Menu variant="plain" />
+          </Paper>
+        </Grid>
+        <Grid item xs={9}>
+          <Grid container className={classes.rightBox}>
+            <Grid item xs="12">
+              <Grid container className={classes.titleBox}>
+                <Grid item>
+                  <AccountIcon className={classes.accountIcon} />
                 </Grid>
                 <Grid item>
-                  <Box height={20} />
-                  <Button onClick={handleLogout} color="secondary" variant="contained" className={classes.logout}>
-                    LOG OUT
-                  </Button>
+                  <Typography variant="h2">Account</Typography>
+                </Grid>
+              </Grid>
+              <Grid container direction="column" className={classes.bodyBox}>
+                <Grid item>
+                  <Typography className={classes.title}>Username</Typography>
+                  <Typography className={classes.item}>{user.username}</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.title}>Name</Typography>
+                  <Typography className={classes.item}>
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.title}>Email</Typography>
+                  <Typography className={classes.item}>{user.email}</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography className={classes.title}>Role</Typography>
+                  <Typography className={classes.item}>
+                    {user.role.map((e) => (
+                      <span>{e.name}/</span>
+                    ))}
+                  </Typography>
+                </Grid>
+                <Grid item xs="8">
+                  <Grid container justify="space-between">
+                    <Grid item>
+                      <Typography className={classes.title}>Password</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Grid
+                        container
+                        justif="center"
+                        alignItems="center"
+                        className={classes.changeBox}
+                      >
+                        <Button onClick={handleClickOpen} color="primary">
+                          CHANGE
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item>
+                    <Box height={20} />
+                    <Button
+                      onClick={handleLogout}
+                      color="secondary"
+                      variant="contained"
+                      className={classes.logout}
+                    >
+                      LOG OUT
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
+      <Dialog open={openPwdForm} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="old password"
+            type="password"
+            id="password"
+            // helperText={
+            //   userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
+            // }
+            // error={userName === '' /*touched.email && Boolean(errors.email)*/}
+            onChange={onChangeOldPwd}
+            value={oldPassword}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="new password"
+            type="password"
+            id="password"
+            onChange={onChangeNewPwd}
+            value={newPassword}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="confirm password"
+            type="password"
+            id="password"
+            onChange={onChangeConfirmedPwd}
+            value={confirmedPassword}
+          />
+          <Typography variant="subtitle2" color="error">
+            {errorMessage}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirm} color="primary">
+            Confirm
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 
