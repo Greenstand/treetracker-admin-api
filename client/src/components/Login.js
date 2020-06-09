@@ -12,11 +12,13 @@ import {
   Typography,
   Container,
   Link,
+  CircularProgress,
 } from '@material-ui/core'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import IconLogo from './IconLogo'
 import { withStyles } from '@material-ui/core/styles'
 import { AppContext } from './MainFrame'
+import classNames from 'classnames'
 
 import axios from 'axios'
 //import { useAuth } from "../context/auth";
@@ -47,6 +49,14 @@ const styles = (theme) => ({
   forgetPassword: {
     margin: theme.spacing(2, 0),
   },
+  buttonProgress: {
+    color: theme.palette.primary.main,
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
 })
 
 const Login = (props) => {
@@ -57,6 +67,17 @@ const Login = (props) => {
   const [userName, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    return () => {
+      setLoading(false)
+    }
+  }, [])
+
+  const submitClassname = classNames({
+    [classes.submit]: loading,
+  })
 
   function handleUsernameChange(e) {
     setUsername(e.target.value)
@@ -69,6 +90,9 @@ const Login = (props) => {
   function handleSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
+    if (!loading) {
+      setLoading(true)
+    }
     ;(async () => {
       //TODO login request
       try {
@@ -80,14 +104,17 @@ const Login = (props) => {
           const token = res.data.token
           const user = res.data.user
           appContext.login(user, token)
+          setLoading(true)
         } else {
           setErrorMessage('Invalid user name or password!')
+          setLoading(false)
         }
       } catch (e) {
         console.error(e)
         setErrorMessage(
           'Can not login, please check your username passowrd or contact the admin ...'
         )
+        setLoading(false)
       }
     })()
     return false
@@ -172,16 +199,18 @@ const Login = (props) => {
           <Typography variant="subtitle2" color="error">
             {errorMessage}
           </Typography>
-
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            className={classes.submit}
+            disabled={loading}
+            // className={classes.submit}
+            className={submitClassname}
           >
             <Typography className={classes.submitText}>LOGIN</Typography>
           </Button>
+          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
           {/*
           <Grid container justify="center">
             <Grid item>
