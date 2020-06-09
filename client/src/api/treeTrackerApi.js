@@ -158,4 +158,36 @@ export default {
       .then(handleResponse)
       .catch(handleError);
   },
-};
+  /*
+   * get tag list
+   */
+  getTags() {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags`;
+    return fetch(query, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
+   * create new tag
+   */
+  createTag(value) {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags`;
+    return fetch(query, {
+      method: "POST",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+      body: JSON.stringify({
+        value,
+      }),
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },};

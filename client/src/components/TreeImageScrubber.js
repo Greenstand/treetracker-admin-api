@@ -257,6 +257,14 @@ const TreeImageScrubber = (props) => {
         approveAction.speciesId = speciesId
         console.log('species id:', speciesId)
     }
+
+    /*
+     * check tags
+     */
+    approveAction.tags = props.tagState.tagInput
+    console.log('tags:', props.tagState.tagInput)
+    props.tagDispatch.updateTagList()
+
     const result = await props.verityDispatch.approveAll({approveAction});
     if (!result) {
       window.alert('sorry, failed to approve some picture');
@@ -716,10 +724,12 @@ export default connect(
   state => ({
     verityState: state.verity,
     speciesState: state.species,
+    tagState: state.tags,
   }),
   //dispatch
   dispatch => ({
     verityDispatch: dispatch.verity,
     speciesDispatch: dispatch.species,
+    tagDispatch: dispatch.tags,
   })
 )(TreeImageScrubber);
