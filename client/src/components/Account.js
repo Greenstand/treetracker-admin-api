@@ -14,6 +14,8 @@ import TextField from '@material-ui/core/TextField'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { AppContext } from './MainFrame'
+import PasswordStrengthMeter from './PasswordStrengthMeter'
+
 import axios from 'axios'
 
 const style = (theme) => ({
@@ -74,6 +76,9 @@ function Account(props) {
   const handleClose = () => {
     setOpenPwdForm(false)
     setErrorMessage('')
+    setOldPassword('')
+    setNewPassword('')
+    setConfirmedPassword('')
   }
 
   const onChangeOldPwd = (e) => {
@@ -264,6 +269,7 @@ function Account(props) {
             onChange={onChangeNewPwd}
             value={newPassword}
           />
+          <PasswordStrengthMeter password={newPassword} />
           <TextField
             variant="outlined"
             margin="normal"
