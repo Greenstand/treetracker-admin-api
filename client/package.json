@@ -17,6 +17,8 @@
     "d3-selection": "^1.4.0",
     "date-fns": "^2.0.0-beta.5",
     "dateformat": "*",
+    "env-cmd": "^10.1.0",
+    "generate-password": "^1.5.1",
     "geocoder": "*",
     "i": "*",
     "import": "*",
@@ -38,6 +40,7 @@
   "scripts": {
     "start": "cross-env PORT=3001 react-scripts start",
     "build": "react-scripts build",
+    "build:staging": "env-cmd -f .env.staging npm run build",
     "test": "react-scripts test --env=jsdom --setupTestFrameworkScriptFile=./src/testSetup.js",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
