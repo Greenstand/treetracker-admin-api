@@ -231,7 +231,9 @@ router.post('/validate/', async (req, res, next) => {
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
-    if (password === userSession.passwordHash) {
+    const hash = sha512(password, userSession.salt);
+
+    if (hash === userSession.passwordHash) {
       return res.status(200).json();
     } else {
       return res.status(401).json();

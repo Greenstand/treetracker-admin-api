@@ -1,18 +1,21 @@
-import React from 'react'
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
+import React, { lazy, Suspense } from 'react'
+import {
+  Grid,
+  Paper,
+  Box,
+  Button,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  TextField,
+  DialogContentText,
+  DialogTitle,
+  CircularProgress,
+} from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import TextField from '@material-ui/core/TextField'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import { AppContext } from './MainFrame'
 import axios from 'axios'
 
@@ -53,6 +56,11 @@ const style = (theme) => ({
   },
 })
 
+const PasswordStrengthMeter = lazy(() => import('./PasswordStrengthMeter'))
+const renderLoader = () => (
+  <CircularProgress size={24} classes={{ position: 'absolute', top: '50%', left: '50%' }} />
+)
+
 function Account(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
@@ -74,6 +82,9 @@ function Account(props) {
   const handleClose = () => {
     setOpenPwdForm(false)
     setErrorMessage('')
+    setOldPassword('')
+    setNewPassword('')
+    setConfirmedPassword('')
   }
 
   const onChangeOldPwd = (e) => {
@@ -234,60 +245,63 @@ function Account(props) {
         </Grid>
       </Grid>
       <Dialog open={openPwdForm} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
-        <DialogContent>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="old password"
-            type="password"
-            id="password"
-            // helperText={
-            //   userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
-            // }
-            // error={userName === '' /*touched.email && Boolean(errors.email)*/}
-            onChange={onChangeOldPwd}
-            value={oldPassword}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="new password"
-            type="password"
-            id="password"
-            onChange={onChangeNewPwd}
-            value={newPassword}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="confirm password"
-            type="password"
-            id="password"
-            onChange={onChangeConfirmedPwd}
-            value={confirmedPassword}
-          />
-          <Typography variant="subtitle2" color="error">
-            {errorMessage}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleConfirm} color="primary">
-            Confirm
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
+        <Suspense fallback={renderLoader()}>
+          <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
+          <DialogContent>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="old password"
+              type="password"
+              id="password"
+              // helperText={
+              //   userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
+              // }
+              // error={userName === '' /*touched.email && Boolean(errors.email)*/}
+              onChange={onChangeOldPwd}
+              value={oldPassword}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="new password"
+              type="password"
+              id="password"
+              onChange={onChangeNewPwd}
+              value={newPassword}
+            />
+            <PasswordStrengthMeter password={newPassword} />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="confirm password"
+              type="password"
+              id="password"
+              onChange={onChangeConfirmedPwd}
+              value={confirmedPassword}
+            />
+            <Typography variant="subtitle2" color="error">
+              {errorMessage}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleConfirm} color="primary">
+              Confirm
+            </Button>
+            <Button onClick={handleClose} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Suspense>
       </Dialog>
     </>
   )
