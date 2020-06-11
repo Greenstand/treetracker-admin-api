@@ -30,6 +30,7 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
 import { AppContext } from './MainFrame'
 import pwdGenerator from 'generate-password'
@@ -82,6 +83,15 @@ const style = (theme) => ({
     marginBottom: theme.spacing(4),
     padding: theme.spacing(2),
   },
+  copyIcon: {
+    position: 'relative',
+    bottom: 20,
+  },
+  copyMsg: {
+    color: theme.palette.primary.main,
+    position: 'relative',
+    bottom: 5,
+  },
 })
 
 function not(a, b) {
@@ -131,6 +141,8 @@ function Users(props) {
   const [permissions, setPermissions] = React.useState([])
   const [isPermissionsShow, setPermissionsShown] = React.useState(false)
   const [users, setUsers] = React.useState([])
+  const [copyMsg, setCopyMsg] = React.useState('')
+  const passwordRef = React.useRef(null)
 
   async function load() {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
@@ -165,6 +177,7 @@ function Users(props) {
 
   function handlePasswordClose() {
     setUserPassword(undefined)
+    setCopyMsg('')
   }
 
   function handleClose() {}
@@ -334,6 +347,13 @@ function Users(props) {
 
   function handleUserDetailClose() {
     setUserEditing(undefined)
+  }
+
+  const handleCopy = () => {
+    /*get the deep nested <input> tag from <TextField/> */
+    passwordRef.current.childNodes[1].childNodes[0].select()
+    document.execCommand('copy')
+    setCopyMsg('Copied!')
   }
 
   return (
@@ -598,21 +618,39 @@ function Users(props) {
               </Typography>
             </Grid>
           </Grid>
-          <TextField
-            autoFocus
-            id="newPassword"
-            label="Please input new password"
-            type="text"
-            variant="outlined"
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className={classes.input}
-            helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
-          />
+          <Grid container direction="row" alignItems="center" wrap="nowrap">
+            <Grid item>
+              <TextField
+                autoFocus
+                id="newPassword"
+                label="Please input new password"
+                type="text"
+                variant="outlined"
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                ref={passwordRef}
+                className={classes.input}
+                helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
+              />
+            </Grid>
+            {document.queryCommandSupported('copy') && (
+              <Grid item>
+                <IconButton
+                  title="copy"
+                  aria-label="copy"
+                  className={classes.copyIcon}
+                  onClick={handleCopy}
+                >
+                  <FileCopyIcon />
+                </IconButton>
+                <Typography className={classes.copyMsg}>{copyMsg}</Typography>
+              </Grid>
+            )}
+          </Grid>
           <Box height={20} />
         </DialogContent>
         <DialogActions>
