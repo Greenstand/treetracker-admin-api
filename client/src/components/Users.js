@@ -30,6 +30,7 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
 import { AppContext } from './MainFrame'
 import pwdGenerator from 'generate-password'
@@ -81,6 +82,10 @@ const style = (theme) => ({
     backgroundColor: 'lightgray',
     marginBottom: theme.spacing(4),
     padding: theme.spacing(2),
+  },
+  copyIcon: {
+    position: 'relative',
+    bottom: 20,
   },
 })
 
@@ -598,21 +603,35 @@ function Users(props) {
               </Typography>
             </Grid>
           </Grid>
-          <TextField
-            autoFocus
-            id="newPassword"
-            label="Please input new password"
-            type="text"
-            variant="outlined"
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className={classes.input}
-            helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
-          />
+          <Grid container direction="row" alignItems="center" wrap="nowrap">
+            <Grid item>
+              <TextField
+                autoFocus
+                id="newPassword"
+                label="Please input new password"
+                type="text"
+                variant="outlined"
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className={classes.input}
+                helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
+              />
+            </Grid>
+            <Grid item>
+              <IconButton
+                title="copy"
+                aria-label="copy"
+                className={classes.copyIcon}
+                onClick={() => handleEdit(user)}
+              >
+                <FileCopyIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
           <Box height={20} />
         </DialogContent>
         <DialogActions>
