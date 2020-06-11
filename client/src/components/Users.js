@@ -87,6 +87,11 @@ const style = (theme) => ({
     position: 'relative',
     bottom: 20,
   },
+  copyMsg: {
+    color: theme.palette.primary.main,
+    position: 'relative',
+    bottom: 5,
+  },
 })
 
 function not(a, b) {
@@ -136,6 +141,8 @@ function Users(props) {
   const [permissions, setPermissions] = React.useState([])
   const [isPermissionsShow, setPermissionsShown] = React.useState(false)
   const [users, setUsers] = React.useState([])
+  const [copyMsg, setCopyMsg] = React.useState('')
+  const passwordRef = React.useRef(null)
 
   async function load() {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
@@ -170,6 +177,7 @@ function Users(props) {
 
   function handlePasswordClose() {
     setUserPassword(undefined)
+    setCopyMsg('')
   }
 
   function handleClose() {}
@@ -339,6 +347,13 @@ function Users(props) {
 
   function handleUserDetailClose() {
     setUserEditing(undefined)
+  }
+
+  const handleCopy = () => {
+    /*get the deep nested <input> tag from <TextField/> */
+    passwordRef.current.childNodes[1].childNodes[0].select()
+    document.execCommand('copy')
+    setCopyMsg('Copied!')
   }
 
   return (
@@ -617,20 +632,24 @@ function Users(props) {
                 }}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                ref={passwordRef}
                 className={classes.input}
                 helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
               />
             </Grid>
-            <Grid item>
-              <IconButton
-                title="copy"
-                aria-label="copy"
-                className={classes.copyIcon}
-                onClick={() => handleEdit(user)}
-              >
-                <FileCopyIcon />
-              </IconButton>
-            </Grid>
+            {document.queryCommandSupported('copy') && (
+              <Grid item>
+                <IconButton
+                  title="copy"
+                  aria-label="copy"
+                  className={classes.copyIcon}
+                  onClick={handleCopy}
+                >
+                  <FileCopyIcon />
+                </IconButton>
+                <Typography className={classes.copyMsg}>{copyMsg}</Typography>
+              </Grid>
+            )}
           </Grid>
           <Box height={20} />
         </DialogContent>
