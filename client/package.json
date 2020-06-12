@@ -31,6 +31,7 @@
     "npm": "*",
     "prop-types": "*",
     "react": "*",
+    "react-autosuggest": "^10.0.2",
     "react-dom": "*",
     "react-infinite": "*",
     "react-redux": "*",
