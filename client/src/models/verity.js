@@ -245,7 +245,8 @@ const verity = {
           payload.approveAction.morphology,
           payload.approveAction.age,
           payload.approveAction.captureApprovalTag,
-          payload.approveAction.speciesId,
+					payload.approveAction.speciesId,
+					payload.approveAction.tags,
         )
       }else{
         log.debug('reject')

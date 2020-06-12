@@ -43,6 +43,7 @@ export default {
     age,
     captureApprovalTag,
     speciesId,
+    tags,
   ) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
@@ -66,7 +67,7 @@ export default {
       .then(handleResponse)
       .catch(handleError);
   },
-  rejectTreeImage(id, rejectionReason) {
+  rejectTreeImage(id, rejectionReason, tags) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
@@ -161,8 +162,9 @@ export default {
   /*
    * get tag list
    */
-  getTags() {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/tags`;
+  getTags(filter) {
+    const filterString = filter ? `?filter[where][value][ilike]=%${filter}%` : '';
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags${filterString}`;
     return fetch(query, {
       method: "GET",
       headers: { 
