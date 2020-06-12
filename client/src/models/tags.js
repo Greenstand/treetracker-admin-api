@@ -29,8 +29,8 @@ const tags = {
     },
 	},
 	effects: {
-    async loadTagList(){
-      const tagList = await api.getTags()
+    async getTags(filter){
+      const tagList = await api.getTags(filter)
       log.debug('load tags from api:', tagList.length)
       this.setTagList(tagList)
     },
@@ -42,13 +42,10 @@ const tags = {
      * check for new tags in tagInput and add them to the tagList
      */
     updateTagList(payload, state){
-      state.tags.tagInput.forEach(async tag => {
-        if (state.tags.tagList.every(c => c.value.toUpperCase() !== tag.toUpperCase())) {
-          const tag = await api.createTag(tag)
-          console.debug('created new tag:', tag)
-          //update the list
-          this.setTagList([tag, ...state.tags.tagList])
-        }
+      state.tags.tagInput.forEach(async t => {
+        const value = t.value;
+        const tag = await api.createTag(value)
+        console.debug('created new tag:', tag.value)
       })
     },
 	},
