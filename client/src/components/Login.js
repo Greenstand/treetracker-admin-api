@@ -68,6 +68,8 @@ const Login = (props) => {
   const [password, setPassword] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [nameFocus, setNameFocus] = React.useState(false)
+  const [passwordFocus, setPasswordFocus] = React.useState(false)
 
   React.useEffect(() => {
     return () => {
@@ -156,10 +158,16 @@ const Login = (props) => {
             label="userName"
             name="userName"
             autoComplete="userName"
+            onFocus={() => {
+              setNameFocus(true)
+            }}
+            onBlur={() => {
+              setNameFocus(false)
+            }}
             helperText={
               userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
             }
-            error={userName === '' /*touched.email && Boolean(errors.email)*/}
+            error={nameFocus && userName === '' /*touched.email && Boolean(errors.email)*/}
             onChange={handleUsernameChange}
             value={userName}
           />
@@ -173,10 +181,18 @@ const Login = (props) => {
             type="password"
             id="password"
             autoComplete="current-password"
+            onFocus={() => {
+              setPasswordFocus(true)
+            }}
+            onBlur={() => {
+              setPasswordFocus(false)
+            }}
             helperText={
               password === '' ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
             }
-            error={password === '' /*touched.password && Boolean(errors.password)*/}
+            error={
+              passwordFocus && password === '' /*touched.password && Boolean(errors.password)*/
+            }
             onChange={handlePasswordChange}
             value={password}
           />
