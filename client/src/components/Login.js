@@ -68,8 +68,25 @@ const Login = (props) => {
   const [password, setPassword] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [isRemember, setRemember] = React.useState(false)
 
   React.useEffect(() => {
+    //try to load token
+    async function load() {
+      const token = JSON.parse(localStorage.getItem('token'))
+      const user = JSON.parse(localStorage.getItem('user'))
+      if (token) {
+        const response = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/check_token`, {
+          headers: { Authorization: token },
+        })
+        if (response.status === 200) {
+          //valid token
+          appContext.login(user, token)
+        }
+      }
+    }
+    load()
+
     return () => {
       setLoading(false)
     }
@@ -105,6 +122,11 @@ const Login = (props) => {
           const user = res.data.user
           appContext.login(user, token)
           setLoading(true)
+          //remember
+          if (isRemember) {
+            localStorage.setItem('token', JSON.stringify(token))
+            localStorage.setItem('user', JSON.stringify(user))
+          }
         } else {
           setErrorMessage('Invalid user name or password!')
           setLoading(false)
@@ -183,7 +205,15 @@ const Login = (props) => {
           <Grid container justify="space-between">
             <Grid item>
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
+                control={
+                  <Checkbox
+                    name="remember"
+                    checked={isRemember}
+                    onClick={() => setRemember(!isRemember)}
+                    value="remember"
+                    color="primary"
+                  />
+                }
                 label="remember me"
               />
             </Grid>
