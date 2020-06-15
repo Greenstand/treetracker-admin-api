@@ -34,6 +34,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
 import { AppContext } from './MainFrame'
 import pwdGenerator from 'generate-password'
+import dateformat		from 'dateformat';
 
 const style = (theme) => ({
   box: {
@@ -394,7 +395,7 @@ function Users(props) {
                   <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Userame</TableCell>
+                        <TableCell>Username</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell>
@@ -407,6 +408,7 @@ function Users(props) {
                             </Grid>
                           </Grid>
                         </TableCell>
+                        <TableCell>Created</TableCell>
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
@@ -431,6 +433,9 @@ function Users(props) {
                                 }
                               </Grid>
                             ))}
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
                           </TableCell>
                           <TableCell>
                             <IconButton title="edit" onClick={() => handleEdit(user)}>
@@ -532,6 +537,17 @@ function Users(props) {
             className={classes.input}
             onChange={handleEmailChange}
           />
+          {userEditing && userEditing.createdAt && (
+          <Grid container spacing={2}>
+            <Grid item>
+              <Typography variant="outline">Created</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="outline"> 
+                {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
+              </Typography>
+            </Grid>
+          </Grid>)}
           <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
             <Grid item role="list">
               <Typography variant="outline">Roles</Typography>
