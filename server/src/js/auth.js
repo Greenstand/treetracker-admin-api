@@ -341,6 +341,12 @@ const isAuth = (req, res, next) => {
     const userSession = decodedToken;
     req.user = userSession;
     const roles = userSession.role;
+    if (url.match(/\/auth\/check_token/)) {
+      //cuz can decode token,pass
+      console.log('auth check');
+      res.status(200).json({});
+      return;
+    }
     if (url.match(/\/auth\/(?!login).*/)) {
       //if role is admin, then can do auth stuff
       if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
@@ -391,7 +397,8 @@ const isAuth = (req, res, next) => {
       error: new Error('No permission'),
     });
     //res.status(200).json([user]);
-  } catch {
+  } catch (e) {
+    console.warn(e);
     res.status(401).json({
       error: new Error('Invalid request!'),
     });

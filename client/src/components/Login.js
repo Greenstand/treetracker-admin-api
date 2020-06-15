@@ -70,8 +70,25 @@ const Login = (props) => {
   const [loading, setLoading] = React.useState(false)
   const [nameFocus, setNameFocus] = React.useState(false)
   const [passwordFocus, setPasswordFocus] = React.useState(false)
+  const [isRemember, setRemember] = React.useState(false)
 
   React.useEffect(() => {
+    //try to load token
+    async function load() {
+      const token = JSON.parse(localStorage.getItem('token'))
+      const user = JSON.parse(localStorage.getItem('user'))
+      if (token) {
+        const response = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/check_token`, {
+          headers: { Authorization: token },
+        })
+        if (response.status === 200) {
+          //valid token
+          appContext.login(user, token)
+        }
+      }
+    }
+    load()
+
     return () => {
       setLoading(false)
     }
@@ -105,6 +122,11 @@ const Login = (props) => {
         if (res.status === 200) {
           const token = res.data.token
           const user = res.data.user
+          //remember
+          if (isRemember) {
+            localStorage.setItem('token', JSON.stringify(token))
+            localStorage.setItem('user', JSON.stringify(user))
+          }
           appContext.login(user, token)
           setLoading(true)
         } else {
@@ -199,16 +221,26 @@ const Login = (props) => {
           <Grid container justify="space-between">
             <Grid item>
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
+                control={
+                  <Checkbox
+                    name="remember"
+                    checked={isRemember}
+                    onClick={() => setRemember(!isRemember)}
+                    value="remember"
+                    color="primary"
+                  />
+                }
                 label="remember me"
               />
             </Grid>
             <Grid item>
+              {/*
               <Box className={classes.forgetPassword}>
                 <Link href="/reset_password" variant="body2">
                   Forgot password?
                 </Link>
               </Box>
+              */}
             </Grid>
           </Grid>
 
