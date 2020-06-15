@@ -120,13 +120,13 @@ const Login = (props) => {
         if (res.status === 200) {
           const token = res.data.token
           const user = res.data.user
-          appContext.login(user, token)
-          setLoading(true)
           //remember
           if (isRemember) {
             localStorage.setItem('token', JSON.stringify(token))
             localStorage.setItem('user', JSON.stringify(user))
           }
+          appContext.login(user, token)
+          setLoading(true)
         } else {
           setErrorMessage('Invalid user name or password!')
           setLoading(false)
@@ -218,11 +218,13 @@ const Login = (props) => {
               />
             </Grid>
             <Grid item>
+              {/*
               <Box className={classes.forgetPassword}>
                 <Link href="/reset_password" variant="body2">
                   Forgot password?
                 </Link>
               </Box>
+              */}
             </Grid>
           </Grid>
 
