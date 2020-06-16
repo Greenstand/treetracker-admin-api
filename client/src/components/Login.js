@@ -109,6 +109,9 @@ const Login = (props) => {
   function handleSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
+    setPasswordFocus(true)
+    setNameFocus(true)
+
     if (!loading) {
       setLoading(true)
     }
@@ -183,12 +186,7 @@ const Login = (props) => {
             onFocus={() => {
               setNameFocus(true)
             }}
-            onBlur={() => {
-              setNameFocus(false)
-            }}
-            helperText={
-              userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
-            }
+            helperText={nameFocus ? 'Field is required' : '' /*touched.email ? errors.email : ""*/}
             error={nameFocus && userName === '' /*touched.email && Boolean(errors.email)*/}
             onChange={handleUsernameChange}
             value={userName}
@@ -206,11 +204,8 @@ const Login = (props) => {
             onFocus={() => {
               setPasswordFocus(true)
             }}
-            onBlur={() => {
-              setPasswordFocus(false)
-            }}
             helperText={
-              password === '' ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
+              passwordFocus ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
             }
             error={
               passwordFocus && password === '' /*touched.password && Boolean(errors.password)*/
