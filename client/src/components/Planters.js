@@ -429,6 +429,11 @@ function Detail(props){
             <Typography variant="subtitle1" >Organization</Typography>
             <Typography variant="body1" >{props.planter.organization || "---" }</Typography>
           </Grid>
+          <Divider />
+          <Grid container direction="column" className={classes.box}>
+            <Typography variant="subtitle1" >Organization ID</Typography>
+            <Typography variant="body1" >{props.planter.organizationId || "---"}</Typography>
+          </Grid>
         </Grid>
       </Grid>
     </Drawer>
