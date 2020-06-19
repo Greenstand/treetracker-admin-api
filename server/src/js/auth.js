@@ -25,6 +25,16 @@ const PERMISSIONS = {
   PLANTER_MANAGER: 3,
 };
 
+const POLICIES = {
+  SUPER_PERMISSION: 'super_permission',
+  LIST_USER: 'list_user',
+  MANAGER_USER: 'manager_user',
+  LIST_TREE: 'list_tree',
+  APPROVE_TREE: 'approve_tree',
+  LIST_PLANTER: 'list_planter',
+  MANAGE_PLANTER: 'manage_planter',
+};
+
 const user = {
   id: 1,
   username: 'dadiorchen',
@@ -299,7 +309,6 @@ router.post('/admin_users/', async (req, res, next) => {
 async function init() {
   console.log('Begin init...');
   const result = await pool.query(`select * from admin_user `);
-  console.log(policy.policies[0]);
 
   if (result.rows.length > 0) {
     console.log('There are accounts in admin user, quit.');
@@ -362,6 +371,7 @@ const isAuth = (req, res, next) => {
     const userSession = decodedToken;
     req.user = userSession;
     const roles = userSession.role;
+    const policies = userSession.policy;
     if (url.match(/\/auth\/check_token/)) {
       //cuz can decode token,pass
       console.log('auth check');
@@ -370,7 +380,11 @@ const isAuth = (req, res, next) => {
     }
     if (url.match(/\/auth\/(?!login).*/)) {
       //if role is admin, then can do auth stuff
-      if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
+      // if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
+      //   next();
+      //   return;
+      // }
+      if (policies.some(r => r.name === POLICIES.SUPER_PERMISSION)) {
         next();
         return;
       } else {
@@ -385,9 +399,17 @@ const isAuth = (req, res, next) => {
         return;
       } else if (url.match(/\/api\/trees.*/)) {
         if (
-          roles.includes(PERMISSIONS.ADMIN) ||
-          roles.includes(PERMISSIONS.TREE_AUDITOR)
+          policies.some(
+            r =>
+              r.name === POLICIES.SUPER_PERMISSION ||
+              r.name === POLICIES.LIST_TREE ||
+              r.name === POLICIES.APPROVE_TREE,
+          )
         ) {
+          // (
+          //   roles.includes(PERMISSIONS.ADMIN) ||
+          //   roles.includes(PERMISSIONS.TREE_AUDITOR)
+          // )
           next();
           return;
         } else {
@@ -398,9 +420,17 @@ const isAuth = (req, res, next) => {
         }
       } else if (url.match(/\/api\/planter.*/)) {
         if (
-          roles.includes(PERMISSIONS.ADMIN) ||
-          roles.includes(PERMISSIONS.PLANTER_MANAGER)
+          policies.some(
+            r =>
+              r.name === POLICIES.SUPER_PERMISSION ||
+              r.name === POLICIES.LIST_PLANTER ||
+              r.name === POLICIES.MANAGE_PLANTER,
+          )
         ) {
+          // (
+          //   roles.includes(PERMISSIONS.ADMIN) ||
+          //   roles.includes(PERMISSIONS.PLANTER_MANAGER)
+          // )
           next();
           return;
         } else {
