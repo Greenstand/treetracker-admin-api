@@ -141,6 +141,7 @@ function Users(props) {
   //  ]
   const [userEditing, setUserEditing] = React.useState(undefined)
   const [userPassword, setUserPassword] = React.useState(undefined)
+  const [userDelete, setUserDelete] = React.useState(undefined)
   const [newPassword, setNewPassword] = React.useState('')
   const [permissions, setPermissions] = React.useState([])
   const [isPermissionsShow, setPermissionsShown] = React.useState(false)
@@ -178,6 +179,42 @@ function Users(props) {
     setUserEditing(user)
     setLeft(permissions.filter((p) => user.role.every((r) => r !== p.id)))
     setRight(permissions.filter((p) => user.role.some((r) => r === p.id)))
+  }
+
+  function handleDelete(user){
+    setUserDelete(user)
+  }
+
+  async function handleDeleteConfirm(){
+  try {
+      let res = await axios.delete(
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userDelete.id}`,
+        {
+          ...userDelete,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      )
+      if (res.status === 204) {
+        setUserDelete(undefined)
+        handleDeleteCancel()
+        load()
+      } else {
+        console.error('delete fail:', res)
+        setErrorMessage('An error occured while deleting user. Contact system admin.')
+        return
+      }
+    }
+    catch (e) {
+      console.error(e)
+      setErrorMessage('An error occured while deleting user. Contact system admin.')
+    }
+    
+  }
+
+  function handleDeleteCancel(){
+    setUserDelete(undefined)
   }
 
   function handlePasswordClose() {
@@ -254,7 +291,7 @@ function Users(props) {
   )
 
   async function handleSave() {
-    if(userEditing.userName === '' || userEditing.right === undefined || userEditing.right.length === 0){
+    if(userEditing.userName === '' || right === undefined || right.length === 0){
       setErrorMessage('Missing Field')
       return
     }
@@ -468,7 +505,7 @@ function Users(props) {
                             <IconButton title="edit" onClick={() => handleEdit(user)}>
                               <Edit />
                             </IconButton>
-                            <IconButton>
+                            <IconButton title="delete" onClick={() => handleDelete(user)}>
                               <Delete />
                             </IconButton>
                             <IconButton
@@ -714,6 +751,32 @@ function Users(props) {
           <Button onClick={handlePasswordClose}>Cancel</Button>
           <Button onClick={handleGenerate} variant="contained" color="primary">
             Generate
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={userDelete !== undefined}
+        onClose={handleDeleteCancel}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">Delete User</DialogTitle>
+        <DialogContent>
+          <Grid item xs="11">
+            <Typography className={classes.note}>
+              {`Are you sure you want to delete user \
+              ${(userDelete && userDelete.userName) || ""}?`}
+            </Typography>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Typography color="error">
+            {errorMessage}
+          </Typography>
+          <Button onClick={handleDeleteCancel} variant="contained" color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm}>
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

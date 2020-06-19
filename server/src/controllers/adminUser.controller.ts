@@ -83,4 +83,18 @@ export class AdminUserController {
     await this.adminUserRepository.updateById(id, adminUser);
   }
 
+  @del('/admin_user/{id}', {
+    responses: {
+      '204': {
+        description: 'AdminUser DELETE success',
+      },
+    },
+  })
+  async deleteById(
+    @param.path.number('id') id: number,
+    @requestBody() adminUser: AdminUser,
+  ): Promise<void> {
+    await this.adminUserRepository.deleteById(id);
+  }
+
 }

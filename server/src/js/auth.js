@@ -207,6 +207,23 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
   }
 });
 
+router.delete('/admin_users/:userId', async (req, res, next) => {
+  try {
+    //roles
+    let deletestatement = `delete from admin_user_role where admin_user_id = ${req.params.userId}`;
+    console.log('delete:', deletestatement);
+    let result = await pool.query(deletestatement);
+    //user
+    deletestatement = `delete from admin_user where admin_user_id = ${req.params.userId}`;
+    console.log('delete:', deletestatement);
+    result = await pool.query(deletestatement);
+    res.status(204).json();
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
 router.get('/admin_users/', async (req, res, next) => {
   try {
     let result = await pool.query(`select * from admin_user`);
