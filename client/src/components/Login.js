@@ -68,6 +68,8 @@ const Login = (props) => {
   const [password, setPassword] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [nameFocus, setNameFocus] = React.useState(false)
+  const [passwordFocus, setPasswordFocus] = React.useState(false)
   const [isRemember, setRemember] = React.useState(false)
 
   React.useEffect(() => {
@@ -107,6 +109,9 @@ const Login = (props) => {
   function handleSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
+    setPasswordFocus(true)
+    setNameFocus(true)
+
     if (!loading) {
       setLoading(true)
     }
@@ -178,10 +183,11 @@ const Login = (props) => {
             label="userName"
             name="userName"
             autoComplete="userName"
-            helperText={
-              userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
-            }
-            error={userName === '' /*touched.email && Boolean(errors.email)*/}
+            onFocus={() => {
+              setNameFocus(true)
+            }}
+            helperText={nameFocus ? 'Field is required' : '' /*touched.email ? errors.email : ""*/}
+            error={nameFocus && userName === '' /*touched.email && Boolean(errors.email)*/}
             onChange={handleUsernameChange}
             value={userName}
           />
@@ -195,10 +201,15 @@ const Login = (props) => {
             type="password"
             id="password"
             autoComplete="current-password"
+            onFocus={() => {
+              setPasswordFocus(true)
+            }}
             helperText={
-              password === '' ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
+              passwordFocus ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
             }
-            error={password === '' /*touched.password && Boolean(errors.password)*/}
+            error={
+              passwordFocus && password === '' /*touched.password && Boolean(errors.password)*/
+            }
             onChange={handlePasswordChange}
             value={password}
           />

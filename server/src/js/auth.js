@@ -307,8 +307,8 @@ async function init() {
   );
   await pool.query(
     `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email, active) ` +
-      `values ( 1, 'admin', 'Admin', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org'),` +
-      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org')`,
+      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org', true),` +
+      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true)`,
   );
   await pool.query(
     `insert into admin_user_role (id, role_id, admin_user_id) ` +
