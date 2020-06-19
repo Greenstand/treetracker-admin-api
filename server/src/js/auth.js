@@ -93,7 +93,7 @@ router.get('/permissions', async function login(req, res, next) {
 router.post('/login', async function login(req, res, next) {
   try {
     //try to init, in case of first visit
-    await init();
+    // await init();
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
@@ -116,15 +116,22 @@ router.post('/login', async function login(req, res, next) {
         `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
       );
       userLogin.role = result.rows.map(r => r.role_id);
+      //get policies
+      result = await pool.query(
+        `select * from admin_role where id = ${userLogin.role[0]}`,
+      );
+      userLogin.policy = result.rows.map(r => r.policy)[0];
+      //-> otherwise a nested array[[{}, {}] ]
     }
 
     if (userLogin) {
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {userName, firstName, lastName, email, role} = userLogin;
+      const {userName, firstName, lastName, email, role, policy} = userLogin;
+      console.log(userLogin);
       return res.json({
         token,
-        user: {userName, firstName, lastName, email, role},
+        user: {userName, firstName, lastName, email, role, policy},
       });
     } else {
       return res.status(401).json();
@@ -294,10 +301,10 @@ async function init() {
   const result = await pool.query(`select * from admin_user `);
   console.log(policy.policies[0]);
 
-  // if (result.rows.length > 0) {
-  //   console.log('There are accounts in admin user, quit.');
-  //   return;
-  // }
+  if (result.rows.length > 0) {
+    console.log('There are accounts in admin user, quit.');
+    return;
+  }
   console.log('clean...');
   await pool.query('delete from admin_user');
   await pool.query('delete from admin_user_role');
