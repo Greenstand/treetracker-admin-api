@@ -20,6 +20,9 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
+import FormHelperText from "@material-ui/core/FormHelperText"
+import FormControl from "@material-ui/core/FormControl"
+import FormLabel from "@material-ui/core/FormLabel"
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -143,6 +146,7 @@ function Users(props) {
   const [isPermissionsShow, setPermissionsShown] = React.useState(false)
   const [users, setUsers] = React.useState([])
   const [copyMsg, setCopyMsg] = React.useState('')
+  const [errorMessage, setErrorMessage] = React.useState('')
   const passwordRef = React.useRef(null)
 
   async function load() {
@@ -250,43 +254,62 @@ function Users(props) {
   )
 
   async function handleSave() {
+    if(userEditing.userName === '' || userEditing.right === undefined || userEditing.right.length === 0){
+      setErrorMessage('Missing Field')
+      return
+    }
     //upload
     if (userEditing.id === undefined) {
       //add
-      let res = await axios.post(
-        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/`,
-        {
-          ...userEditing,
-          role: right.map((e) => e.id),
-        },
-        {
-          headers: { Authorization: token },
+      try {
+        let res = await axios.post(
+          `${process.env.REACT_APP_API_ROOT}/auth/admin_users/`,
+          {
+            ...userEditing,
+            role: right.map((e) => e.id),
+          },
+          {
+            headers: { Authorization: token },
+          }
+        )
+        if (res.status === 201) {
+          setUserEditing(undefined)
+          load()
+        } else {
+          console.error('load fail:', res)
+          setErrorMessage('Failed to Create User')
+          return
         }
-      )
-      if (res.status === 201) {
-        setUserEditing(undefined)
-        load()
-      } else {
-        console.error('load fail:', res)
-        return
       }
+      catch (e) {
+        console.error(e)
+        setErrorMessage('Failed to Create User')
+      }
+      
     } else {
-      let res = await axios.patch(
-        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userEditing.id}`,
-        {
-          ...userEditing,
-          role: right.map((e) => e.id),
-        },
-        {
-          headers: { Authorization: token },
+      try {
+        let res = await axios.patch(
+          `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userEditing.id}`,
+          {
+            ...userEditing,
+            role: right.map((e) => e.id),
+          },
+          {
+            headers: { Authorization: token },
+          }
+        )
+        if (res.status === 200) {
+          setUserEditing(undefined)
+          load()
+        } else {
+          console.error('load fail:', res)
+          setErrorMessage('Failed to Update User')
+          return
         }
-      )
-      if (res.status === 200) {
-        setUserEditing(undefined)
-        load()
-      } else {
-        console.error('load fail:', res)
-        return
+      }
+      catch (e) {
+        console.error(e)
+        setErrorMessage('Failed to Update User')
       }
     }
   }
@@ -347,6 +370,10 @@ function Users(props) {
   }
 
   function handleUserDetailClose() {
+    setErrorMessage('')
+    setRight([])
+    setLeft(permissions)
+    setChecked([])
     setUserEditing(undefined)
   }
 
@@ -475,11 +502,14 @@ function Users(props) {
         </DialogContentText>
         */}
           <TextField
+            required
+            error={userEditing && userEditing.userName === ''}
             autoFocus
             id="userName"
             label="Username"
             type="text"
             variant="outlined"
+            helperText = {userEditing && userEditing.userName === '' ? "Field is Required" : ""}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -548,62 +578,73 @@ function Users(props) {
               </Typography>
             </Grid>
           </Grid>)}
-          <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
-            <Grid item role="list">
-              <Typography variant="outline">Roles</Typography>
-              {customList(left)}
-            </Grid>
-            <Grid item>
-              <Grid container direction="column" alignItems="center">
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleAllRight}
-                  disabled={left.length === 0}
-                  aria-label="move all right"
-                >
-                  ≫
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleCheckedRight}
-                  disabled={leftChecked.length === 0}
-                  aria-label="move selected right"
-                >
-                  &gt;
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleCheckedLeft}
-                  disabled={rightChecked.length === 0}
-                  aria-label="move selected left"
-                >
-                  &lt;
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleAllLeft}
-                  disabled={right.length === 0}
-                  aria-label="move all left"
-                >
-                  ≪
-                </Button>
+          <FormControl error={right.length === 0}>
+            <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
+              <Grid item role="list">
+                <FormLabel variant="outline">Roles</FormLabel>
+                {/* <Typography variant="outline">Roles</Typography> */}
+                {customList(left)}
+              </Grid>
+              <Grid item>
+                <Grid container direction="column" alignItems="center">
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleAllRight}
+                    disabled={left.length === 0}
+                    aria-label="move all right"
+                  >
+                    ≫
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleCheckedRight}
+                    disabled={leftChecked.length === 0}
+                    aria-label="move selected right"
+                  >
+                    &gt;
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleCheckedLeft}
+                    disabled={rightChecked.length === 0}
+                    aria-label="move selected left"
+                  >
+                    &lt;
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleAllLeft}
+                    disabled={right.length === 0}
+                    aria-label="move all left"
+                  >
+                    ≪
+                  </Button>
+                </Grid>
+              </Grid>
+              <Grid item role="list">
+                <FormLabel variant="outline">Selected</FormLabel>
+                {/* <Typography variant="outline">Selected</Typography> */}
+                {customList(right)}
               </Grid>
             </Grid>
-            <Grid item role="list">
-              <Typography variant="outline">Selected</Typography>
-              {customList(right)}
-            </Grid>
-          </Grid>
+            {right.length === 0 && 
+            <FormHelperText>
+              At Least One Role Must be Selected
+            </FormHelperText>}
+          </FormControl>
         </DialogContent>
         <DialogActions>
+          <Typography variant="subtitle2" color="error">
+            {errorMessage}
+          </Typography>
           <Button onClick={handleUserDetailClose}>Cancel</Button>
           <Button onClick={handleSave} variant="contained" color="primary">
             Save
