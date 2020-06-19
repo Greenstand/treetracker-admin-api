@@ -8,6 +8,7 @@ const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const db = require('../datasources/treetracker.datasource.json');
+const policy = require('../policy.json');
 
 const app = express();
 //const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
@@ -291,24 +292,36 @@ router.post('/admin_users/', async (req, res, next) => {
 async function init() {
   console.log('Begin init...');
   const result = await pool.query(`select * from admin_user `);
-  if (result.rows.length > 0) {
-    console.log('There are accounts in admin user, quit.');
-    return;
-  }
+  console.log(policy.policies[0]);
+
+  // if (result.rows.length > 0) {
+  //   console.log('There are accounts in admin user, quit.');
+  //   return;
+  // }
   console.log('clean...');
   await pool.query('delete from admin_user');
   await pool.query('delete from admin_user_role');
   await pool.query('delete from admin_role');
+
   await pool.query(
-    `insert into admin_role (id, role_name, description) ` +
-      `values (1, 'Admin', 'The super administrator role, having all permissions'),` +
-      `(2, 'Tree Manager', 'Check, verify, manage trees'),` +
-      `(3, 'Planter Manager', 'Check, manage planters')`,
+    `insert into admin_role (id, role_name, description, policy) ` +
+      `values (1, 'Admin', 'The super administrator role, having all permissions','${JSON.stringify(
+        [policy.policies[0], policy.policies[1], policy.policies[2]],
+      )}'),` +
+      `(2, 'Tree Manager', 'Check, verify, manage trees','${JSON.stringify([
+        policy.policies[3],
+        policy.policies[4],
+      ])}'),` +
+      `(3, 'Planter Manager', 'Check, manage planters','${JSON.stringify([
+        policy.policies[5],
+        policy.policies[6],
+      ])}')`,
   );
+
   await pool.query(
     `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email, active) ` +
-      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org'),` +
-      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org')`,
+      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org', true),` +
+      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', false)`,
   );
   await pool.query(
     `insert into admin_user_role (id, role_id, admin_user_id) ` +
