@@ -21,16 +21,22 @@ const auditMiddleware = (request, response, next) => {
     response.on('finish', async function() {
       try {
         //console.log('req:', req);
-        console.log('req.header:', request.headers);
-        const audit = new Audit();
-        await audit.did(request, response);
+        //console.log('req.header:', request.headers);
+        //just audit when success
+        assert(response.statusCode);
+        if (/2\d\d/.test(response.statusCode)) {
+          const audit = new Audit();
+          await audit.did(request, response);
+        } else {
+          console.log('quit when failed');
+        }
       } catch (e) {
         console.error(e);
         next(e);
       }
     });
     response.json = data => {
-      console.log('data:', data);
+      //console.log('data:', data);
       // For Async call, handle the promise and then set the data to `oldJson`
       if (data && data.then != undefined) {
         // Resetting json to original to avoid cyclic call.

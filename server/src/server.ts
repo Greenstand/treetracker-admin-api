@@ -22,17 +22,6 @@ export class ExpressServer {
     this.app.use(express.json());
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
-    this.app.use(function(req, res, next){
-      console.warn("bingo!!!!");
-      res.on('finish', function(){
-        console.log("Finished " + res.headersSent); // for example
-        console.log("Finished " + res.statusCode);  // for example
-        // Do whatever you want
-      });
-      next();
-    });
-
-
     // Expose the front-end assets via Express, not as LB4 route
     this.app.use("/api", auth.isAuth);
     this.app.use("/auth", auth.isAuth);
