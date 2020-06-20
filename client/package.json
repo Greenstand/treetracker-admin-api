@@ -11,6 +11,7 @@
     "@material-ui/styles": "^4.3.0",
     "@material-ui/system": "^4.3.2",
     "@rematch/core": "*",
+    "assert": "^2.0.0",
     "axios": "*",
     "classnames": "*",
     "cypress-react-unit-test": "^4.2.3",
