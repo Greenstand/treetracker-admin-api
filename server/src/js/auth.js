@@ -8,6 +8,8 @@ const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const db = require('../datasources/treetracker.datasource.json');
+const assert = require('assert').strict;
+const Audit = require('./Audit');
 
 const app = express();
 //const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
@@ -101,6 +103,7 @@ router.post('/login', async function login(req, res, next) {
     ); /*TODO check if user name exists*/
 
     const user_entity = user_rows.rows[0];
+    assert(user_entity.salt);
     const hash = sha512(password, user_entity.salt);
 
     let result = await pool.query(
@@ -121,7 +124,9 @@ router.post('/login', async function login(req, res, next) {
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
       const {userName, firstName, lastName, email, role} = userLogin;
-      return res.json({
+      //      const audit = new Audit();
+      //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
+      res.json({
         token,
         user: {userName, firstName, lastName, email, role},
       });
