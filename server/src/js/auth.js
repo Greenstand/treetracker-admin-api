@@ -123,12 +123,12 @@ router.post('/login', async function login(req, res, next) {
     if (userLogin) {
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {userName, firstName, lastName, email, role} = userLogin;
+      const {id, userName, firstName, lastName, email, role} = userLogin;
       //      const audit = new Audit();
       //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
       res.json({
         token,
-        user: {userName, firstName, lastName, email, role},
+        user: {id, userName, firstName, lastName, email, role},
       });
     } else {
       return res.status(401).json();
@@ -345,6 +345,7 @@ const isAuth = (req, res, next) => {
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
+    //inject the user extract from token to request object
     req.user = userSession;
     const roles = userSession.role;
     if (url.match(/\/auth\/check_token/)) {
