@@ -72,7 +72,7 @@ const Login = (props) => {
   const [passwordFocus, setPasswordFocus] = React.useState(false)
   const [isRemember, setRemember] = React.useState(false)
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     //try to load token
     async function load() {
       const token = JSON.parse(localStorage.getItem('token'))
@@ -88,7 +88,9 @@ const Login = (props) => {
       }
     }
     load()
+  })
 
+  React.useEffect(() => {
     return () => {
       setLoading(false)
     }
