@@ -18,7 +18,7 @@ import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
 import { AppContext } from './MainFrame'
 import axios from 'axios'
-import dateformat		from 'dateformat';
+import dateformat from 'dateformat'
 
 const style = (theme) => ({
   box: {
@@ -178,7 +178,7 @@ function Account(props) {
         </Grid>
         <Grid item xs={9}>
           <Grid container className={classes.rightBox}>
-            <Grid item xs="12">
+            <Grid item xs={12}>
               <Grid container className={classes.titleBox}>
                 <Grid item>
                   <AccountIcon className={classes.accountIcon} />
