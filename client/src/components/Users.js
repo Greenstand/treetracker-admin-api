@@ -314,13 +314,13 @@ function Users(props) {
           load()
         } else {
           console.error('load fail:', res)
-          setErrorMessage('Failed to Create User')
+          setErrorMessage('An error occured while creating user. Please contact the system admin.')
           return
         }
       }
       catch (e) {
         console.error(e)
-        setErrorMessage('Failed to Create User')
+        setErrorMessage('An error occured while creating user. Please contact the system admin.')
       }
       
     } else {
@@ -340,13 +340,13 @@ function Users(props) {
           load()
         } else {
           console.error('load fail:', res)
-          setErrorMessage('Failed to Update User')
+          setErrorMessage('An error occured while updating user. Please contact the system admin.')
           return
         }
       }
       catch (e) {
         console.error(e)
-        setErrorMessage('Failed to Update User')
+        setErrorMessage('An error occured while updating user. Please contact the system admin.')
       }
     }
   }
