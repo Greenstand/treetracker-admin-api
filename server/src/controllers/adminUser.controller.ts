@@ -92,7 +92,6 @@ export class AdminUserController {
   })
   async deleteById(
     @param.path.number('id') id: number,
-    // @requestBody() adminUser: AdminUser,
   ): Promise<void> {
     await this.adminUserRepository.deleteById(id);
   }

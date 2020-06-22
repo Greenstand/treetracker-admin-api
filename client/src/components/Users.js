@@ -218,8 +218,7 @@ function Users(props) {
         setErrorMessage('An error occured while deleting user. Please contact the system admin.')
         return
       }
-    }
-    catch (e) {
+    } catch (e) {
       console.error(e)
       setErrorMessage('An error occured while deleting user. Please contact the system admin.')
     }
@@ -822,7 +821,7 @@ function Users(props) {
           <Grid item xs="11">
             <Typography className={classes.note}>
               {`Are you sure you want to delete user \
-              ${(userDelete && userDelete.userName) || ""}?`}
+              ${(userDelete && userDelete.userName) || ''}?`}
             </Typography>
           </Grid>
         </DialogContent>
