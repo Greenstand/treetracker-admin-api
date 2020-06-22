@@ -20,9 +20,12 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
-import FormHelperText from "@material-ui/core/FormHelperText"
-import FormControl from "@material-ui/core/FormControl"
-import FormLabel from "@material-ui/core/FormLabel"
+import FormHelperText from '@material-ui/core/FormHelperText'
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Radio from '@material-ui/core/Radio'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -37,7 +40,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
 import { AppContext } from './MainFrame'
 import pwdGenerator from 'generate-password'
-import dateformat		from 'dateformat';
+import dateformat from 'dateformat'
 
 const style = (theme) => ({
   box: {
@@ -95,6 +98,15 @@ const style = (theme) => ({
     color: theme.palette.primary.main,
     position: 'relative',
     bottom: 5,
+  },
+  radioButton: {
+    '&$radioChecked': { color: theme.palette.primary.main },
+  },
+  radioChecked: {},
+  radioGroup: {
+    position: 'relative',
+    bottom: 12,
+    left: 10,
   },
 })
 
@@ -293,7 +305,7 @@ function Users(props) {
   )
 
   async function handleSave() {
-    if(userEditing.userName === '' || right === undefined || right.length === 0){
+    if (userEditing.userName === '' || right === undefined || right.length === 0) {
       setErrorMessage('Missing Field')
       return
     }
@@ -319,12 +331,10 @@ function Users(props) {
           setErrorMessage('An error occured while creating user. Please contact the system admin.')
           return
         }
-      }
-      catch (e) {
+      } catch (e) {
         console.error(e)
         setErrorMessage('An error occured while creating user. Please contact the system admin.')
       }
-      
     } else {
       try {
         let res = await axios.patch(
@@ -345,8 +355,7 @@ function Users(props) {
           setErrorMessage('An error occured while updating user. Please contact the system admin.')
           return
         }
-      }
-      catch (e) {
+      } catch (e) {
         console.error(e)
         setErrorMessage('An error occured while updating user. Please contact the system admin.')
       }
@@ -401,6 +410,12 @@ function Users(props) {
 
   function handleEmailChange(e) {
     setUserEditing({ ...userEditing, email: e.target.value })
+  }
+
+  function handleActiveChange(e) {
+    //convert to boolean
+    let isTrueSet = e.target.value === 'true'
+    setUserEditing({ ...userEditing, active: isTrueSet })
   }
 
   function handleAddUser() {
@@ -534,12 +549,6 @@ function Users(props) {
       >
         <DialogTitle id="form-dialog-title">User Detail</DialogTitle>
         <DialogContent>
-          {/*
-        <DialogContentText>
-          To subscribe to this website, please enter your email address here. We will send updates
-          occasionally.
-        </DialogContentText>
-        */}
           <TextField
             required
             error={userEditing && userEditing.userName === ''}
@@ -548,7 +557,7 @@ function Users(props) {
             label="Username"
             type="text"
             variant="outlined"
-            helperText = {userEditing && userEditing.userName === '' ? "Field is Required" : ""}
+            helperText={userEditing && userEditing.userName === '' ? 'Field is Required' : ''}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -606,19 +615,67 @@ function Users(props) {
             className={classes.input}
             onChange={handleEmailChange}
           />
+          <FormControl component="fieldset" className={classes.formControl}>
+            <Grid container>
+              <Grid item>
+                <FormLabel component="legend">Active:</FormLabel>
+              </Grid>
+              <Grid item>
+                <RadioGroup
+                  aria-label="active-state"
+                  name="active-state"
+                  className={classes.radioGroup}
+                  value={(userEditing && userEditing.active) || ''}
+                  onChange={handleActiveChange}
+                >
+                  <Grid container>
+                    <Grid item>
+                      <FormControlLabel
+                        value="true"
+                        control={
+                          <Radio
+                            classes={{ root: classes.radioButton, checked: classes.radioChecked }}
+                          />
+                        }
+                        label="Active"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <FormControlLabel
+                        value="false"
+                        control={
+                          <Radio
+                            classes={{ root: classes.radioButton, checked: classes.radioChecked }}
+                          />
+                        }
+                        label="Inactive"
+                      />
+                    </Grid>
+                  </Grid>
+                </RadioGroup>
+              </Grid>
+            </Grid>
+          </FormControl>
           {userEditing && userEditing.createdAt && (
-          <Grid container spacing={2}>
-            <Grid item>
-              <Typography variant="outline">Created</Typography>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Typography variant="outline">Created</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="outline">
+                  {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography variant="outline"> 
-                {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
-              </Typography>
-            </Grid>
-          </Grid>)}
+          )}
           <FormControl error={right.length === 0}>
-            <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
+            <Grid
+              container
+              spacing={2}
+              justify="center"
+              alignItems="center"
+              className={classes.root}
+            >
               <Grid item role="list">
                 <FormLabel variant="outline">Roles</FormLabel>
                 {/* <Typography variant="outline">Roles</Typography> */}
@@ -674,10 +731,9 @@ function Users(props) {
                 {customList(right)}
               </Grid>
             </Grid>
-            {right.length === 0 && 
-            <FormHelperText>
-              At Least One Role Must be Selected
-            </FormHelperText>}
+            {right.length === 0 && (
+              <FormHelperText>At Least One Role Must be Selected</FormHelperText>
+            )}
           </FormControl>
         </DialogContent>
         <DialogActions>
