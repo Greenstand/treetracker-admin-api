@@ -137,11 +137,11 @@ router.post('/login', async function login(req, res, next) {
     if (userLogin) {
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {userName, firstName, lastName, email, role, policy} = userLogin;
+      const {id, userName, firstName, lastName, email, role, policy} = userLogin;
       console.log(userLogin);
       return res.json({
         token,
-        user: {userName, firstName, lastName, email, role, policy},
+        user: {id, userName, firstName, lastName, email, role, policy},
       });
     } else {
       return res.status(401).json();
@@ -232,7 +232,7 @@ router.delete('/admin_users/:userId', async (req, res, next) => {
     console.log('delete:', deletestatement);
     let result = await pool.query(deletestatement);
     //user
-    deletestatement = `delete from admin_user where admin_user_id = ${req.params.userId}`;
+    deletestatement = `delete from admin_user where id = ${req.params.userId}`;
     console.log('delete:', deletestatement);
     result = await pool.query(deletestatement);
     res.status(204).json();

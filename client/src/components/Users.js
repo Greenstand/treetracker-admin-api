@@ -186,12 +186,13 @@ function Users(props) {
   }
 
   async function handleDeleteConfirm(){
-  try {
+    if (userDelete.id == user.id){
+      setErrorMessage('Cannot delete active user.')
+      return
+    }
+    try {
       let res = await axios.delete(
         `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userDelete.id}`,
-        {
-          ...userDelete,
-        },
         {
           headers: { Authorization: token },
         }
@@ -202,19 +203,20 @@ function Users(props) {
         load()
       } else {
         console.error('delete fail:', res)
-        setErrorMessage('An error occured while deleting user. Contact system admin.')
+        setErrorMessage('An error occured while deleting user. Please contact the system admin.')
         return
       }
     }
     catch (e) {
       console.error(e)
-      setErrorMessage('An error occured while deleting user. Contact system admin.')
+      setErrorMessage('An error occured while deleting user. Please contact the system admin.')
     }
     
   }
 
   function handleDeleteCancel(){
     setUserDelete(undefined)
+    setErrorMessage('')
   }
 
   function handlePasswordClose() {
