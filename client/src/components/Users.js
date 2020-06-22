@@ -211,7 +211,8 @@ function Users(props) {
       )
       if (res.status === 204) {
         setUserDelete(undefined)
-        handleDeleteCancel()
+        setUserDelete(undefined)
+        setErrorMessage('')
         load()
       } else {
         console.error('delete fail:', res)
