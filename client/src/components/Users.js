@@ -211,7 +211,6 @@ function Users(props) {
       )
       if (res.status === 204) {
         setUserDelete(undefined)
-        setUserDelete(undefined)
         setErrorMessage('')
         load()
       } else {
