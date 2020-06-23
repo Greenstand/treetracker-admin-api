@@ -8,6 +8,7 @@ const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const db = require('../datasources/treetracker.datasource.json');
+const policy = require('../policy.json');
 
 const app = express();
 //const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
@@ -22,6 +23,16 @@ const PERMISSIONS = {
   ADMIN: 1,
   TREE_AUDITOR: 2,
   PLANTER_MANAGER: 3,
+};
+
+const POLICIES = {
+  SUPER_PERMISSION: 'super_permission',
+  LIST_USER: 'list_user',
+  MANAGER_USER: 'manager_user',
+  LIST_TREE: 'list_tree',
+  APPROVE_TREE: 'approve_tree',
+  LIST_PLANTER: 'list_planter',
+  MANAGE_PLANTER: 'manage_planter',
 };
 
 const user = {
@@ -92,7 +103,7 @@ router.get('/permissions', async function login(req, res, next) {
 router.post('/login', async function login(req, res, next) {
   try {
     //try to init, in case of first visit
-    await init();
+    // await init();
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
@@ -115,14 +126,22 @@ router.post('/login', async function login(req, res, next) {
         `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
       );
       userLogin.role = result.rows.map(r => r.role_id);
+      //get policies
+      result = await pool.query(
+        `select * from admin_role where id = ${userLogin.role[0]}`,
+      );
+      userLogin.policy = result.rows.map(r => r.policy)[0];
+      //-> otherwise a nested array[[{}, {}] ]
     }
 
     if (userLogin) {
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
+      const {userName, firstName, lastName, email, role, policy} = userLogin;
+      console.log(userLogin);
       return res.json({
         token,
-        user: userLogin,
+        user: {userName, firstName, lastName, email, role, policy},
       });
     } else {
       return res.status(401).json();
@@ -225,6 +244,25 @@ router.get('/admin_users/', async (req, res, next) => {
   }
 });
 
+router.post('/validate/', async (req, res, next) => {
+  try {
+    const {password} = req.body;
+    const token = req.headers.authorization;
+    const decodedToken = jwt.verify(token, jwtSecret);
+    const userSession = decodedToken;
+    const hash = sha512(password, userSession.salt);
+
+    if (hash === userSession.passwordHash) {
+      return res.status(200).json();
+    } else {
+      return res.status(401).json();
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json();
+  }
+});
+
 router.post('/admin_users/', async (req, res, next) => {
   try {
     req.body.passwordHash = req.body.password;
@@ -271,6 +309,7 @@ router.post('/admin_users/', async (req, res, next) => {
 async function init() {
   console.log('Begin init...');
   const result = await pool.query(`select * from admin_user `);
+
   if (result.rows.length > 0) {
     console.log('There are accounts in admin user, quit.');
     return;
@@ -279,16 +318,26 @@ async function init() {
   await pool.query('delete from admin_user');
   await pool.query('delete from admin_user_role');
   await pool.query('delete from admin_role');
+
   await pool.query(
-    `insert into admin_role (id, role_name, description) ` +
-      `values (1, 'Admin', 'The super administrator role, having all permissions'),` +
-      `(2, 'Tree Manager', 'Check, verify, manage trees'),` +
-      `(3, 'Planter Manager', 'Check, manage planters')`,
+    `insert into admin_role (id, role_name, description, policy) ` +
+      `values (1, 'Admin', 'The super administrator role, having all permissions','${JSON.stringify(
+        [policy.policies[0], policy.policies[1], policy.policies[2]],
+      )}'),` +
+      `(2, 'Tree Manager', 'Check, verify, manage trees','${JSON.stringify([
+        policy.policies[3],
+        policy.policies[4],
+      ])}'),` +
+      `(3, 'Planter Manager', 'Check, manage planters','${JSON.stringify([
+        policy.policies[5],
+        policy.policies[6],
+      ])}')`,
   );
+
   await pool.query(
-    `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email) ` +
-      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org'),` +
-      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org')`,
+    `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email, active) ` +
+      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org', true),` +
+      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true)`,
   );
   await pool.query(
     `insert into admin_user_role (id, role_id, admin_user_id) ` +
@@ -322,9 +371,20 @@ const isAuth = (req, res, next) => {
     const userSession = decodedToken;
     req.user = userSession;
     const roles = userSession.role;
+    const policies = userSession.policy;
+    if (url.match(/\/auth\/check_token/)) {
+      //cuz can decode token,pass
+      console.log('auth check');
+      res.status(200).json({});
+      return;
+    }
     if (url.match(/\/auth\/(?!login).*/)) {
       //if role is admin, then can do auth stuff
-      if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
+      // if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
+      //   next();
+      //   return;
+      // }
+      if (policies.some(r => r.name === POLICIES.SUPER_PERMISSION)) {
         next();
         return;
       } else {
@@ -339,9 +399,17 @@ const isAuth = (req, res, next) => {
         return;
       } else if (url.match(/\/api\/trees.*/)) {
         if (
-          roles.includes(PERMISSIONS.ADMIN) ||
-          roles.includes(PERMISSIONS.TREE_AUDITOR)
+          policies.some(
+            r =>
+              r.name === POLICIES.SUPER_PERMISSION ||
+              r.name === POLICIES.LIST_TREE ||
+              r.name === POLICIES.APPROVE_TREE,
+          )
         ) {
+          // (
+          //   roles.includes(PERMISSIONS.ADMIN) ||
+          //   roles.includes(PERMISSIONS.TREE_AUDITOR)
+          // )
           next();
           return;
         } else {
@@ -352,9 +420,17 @@ const isAuth = (req, res, next) => {
         }
       } else if (url.match(/\/api\/planter.*/)) {
         if (
-          roles.includes(PERMISSIONS.ADMIN) ||
-          roles.includes(PERMISSIONS.PLANTER_MANAGER)
+          policies.some(
+            r =>
+              r.name === POLICIES.SUPER_PERMISSION ||
+              r.name === POLICIES.LIST_PLANTER ||
+              r.name === POLICIES.MANAGE_PLANTER,
+          )
         ) {
+          // (
+          //   roles.includes(PERMISSIONS.ADMIN) ||
+          //   roles.includes(PERMISSIONS.PLANTER_MANAGER)
+          // )
           next();
           return;
         } else {
@@ -372,7 +448,8 @@ const isAuth = (req, res, next) => {
       error: new Error('No permission'),
     });
     //res.status(200).json([user]);
-  } catch {
+  } catch (e) {
+    console.warn(e);
     res.status(401).json({
       error: new Error('Invalid request!'),
     });

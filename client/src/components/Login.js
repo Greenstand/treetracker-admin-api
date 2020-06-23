@@ -68,6 +68,27 @@ const Login = (props) => {
   const [password, setPassword] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [nameFocus, setNameFocus] = React.useState(false)
+  const [passwordFocus, setPasswordFocus] = React.useState(false)
+  const [isRemember, setRemember] = React.useState(false)
+
+  React.useLayoutEffect(() => {
+    //try to load token
+    async function load() {
+      const token = JSON.parse(localStorage.getItem('token'))
+      const user = JSON.parse(localStorage.getItem('user'))
+      if (token) {
+        const response = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/check_token`, {
+          headers: { Authorization: token },
+        })
+        if (response.status === 200) {
+          //valid token
+          appContext.login(user, token)
+        }
+      }
+    }
+    load()
+  })
 
   React.useEffect(() => {
     return () => {
@@ -90,6 +111,9 @@ const Login = (props) => {
   function handleSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
+    setPasswordFocus(true)
+    setNameFocus(true)
+
     if (!loading) {
       setLoading(true)
     }
@@ -103,6 +127,11 @@ const Login = (props) => {
         if (res.status === 200) {
           const token = res.data.token
           const user = res.data.user
+          //remember
+          if (isRemember) {
+            localStorage.setItem('token', JSON.stringify(token))
+            localStorage.setItem('user', JSON.stringify(user))
+          }
           appContext.login(user, token)
           setLoading(true)
         } else {
@@ -156,10 +185,11 @@ const Login = (props) => {
             label="userName"
             name="userName"
             autoComplete="userName"
-            helperText={
-              userName === '' ? 'Field is required' : '' /*touched.email ? errors.email : ""*/
-            }
-            error={userName === '' /*touched.email && Boolean(errors.email)*/}
+            onFocus={() => {
+              setNameFocus(true)
+            }}
+            helperText={nameFocus ? 'Field is required' : '' /*touched.email ? errors.email : ""*/}
+            error={nameFocus && userName === '' /*touched.email && Boolean(errors.email)*/}
             onChange={handleUsernameChange}
             value={userName}
           />
@@ -173,26 +203,41 @@ const Login = (props) => {
             type="password"
             id="password"
             autoComplete="current-password"
+            onFocus={() => {
+              setPasswordFocus(true)
+            }}
             helperText={
-              password === '' ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
+              passwordFocus ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
             }
-            error={password === '' /*touched.password && Boolean(errors.password)*/}
+            error={
+              passwordFocus && password === '' /*touched.password && Boolean(errors.password)*/
+            }
             onChange={handlePasswordChange}
             value={password}
           />
           <Grid container justify="space-between">
             <Grid item>
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
+                control={
+                  <Checkbox
+                    name="remember"
+                    checked={isRemember}
+                    onClick={() => setRemember(!isRemember)}
+                    value="remember"
+                    color="primary"
+                  />
+                }
                 label="remember me"
               />
             </Grid>
             <Grid item>
+              {/*
               <Box className={classes.forgetPassword}>
                 <Link href="/reset_password" variant="body2">
                   Forgot password?
                 </Link>
               </Box>
+              */}
             </Grid>
           </Grid>
 

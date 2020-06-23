@@ -20,6 +20,12 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
+import FormHelperText from '@material-ui/core/FormHelperText'
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Radio from '@material-ui/core/Radio'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -30,9 +36,11 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
 import { AppContext } from './MainFrame'
 import pwdGenerator from 'generate-password'
+import dateformat from 'dateformat'
 
 const style = (theme) => ({
   box: {
@@ -81,6 +89,24 @@ const style = (theme) => ({
     backgroundColor: 'lightgray',
     marginBottom: theme.spacing(4),
     padding: theme.spacing(2),
+  },
+  copyIcon: {
+    position: 'relative',
+    bottom: 20,
+  },
+  copyMsg: {
+    color: theme.palette.primary.main,
+    position: 'relative',
+    bottom: 5,
+  },
+  radioButton: {
+    '&$radioChecked': { color: theme.palette.primary.main },
+  },
+  radioChecked: {},
+  radioGroup: {
+    position: 'relative',
+    bottom: 12,
+    left: 10,
   },
 })
 
@@ -131,6 +157,9 @@ function Users(props) {
   const [permissions, setPermissions] = React.useState([])
   const [isPermissionsShow, setPermissionsShown] = React.useState(false)
   const [users, setUsers] = React.useState([])
+  const [copyMsg, setCopyMsg] = React.useState('')
+  const [errorMessage, setErrorMessage] = React.useState('')
+  const passwordRef = React.useRef(null)
 
   async function load() {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
@@ -165,6 +194,7 @@ function Users(props) {
 
   function handlePasswordClose() {
     setUserPassword(undefined)
+    setCopyMsg('')
   }
 
   function handleClose() {}
@@ -236,43 +266,59 @@ function Users(props) {
   )
 
   async function handleSave() {
+    if (userEditing.userName === '' || right === undefined || right.length === 0) {
+      setErrorMessage('Missing Field')
+      return
+    }
     //upload
     if (userEditing.id === undefined) {
       //add
-      let res = await axios.post(
-        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/`,
-        {
-          ...userEditing,
-          role: right.map((e) => e.id),
-        },
-        {
-          headers: { Authorization: token },
+      try {
+        let res = await axios.post(
+          `${process.env.REACT_APP_API_ROOT}/auth/admin_users/`,
+          {
+            ...userEditing,
+            role: right.map((e) => e.id),
+          },
+          {
+            headers: { Authorization: token },
+          }
+        )
+        if (res.status === 201) {
+          setUserEditing(undefined)
+          load()
+        } else {
+          console.error('load fail:', res)
+          setErrorMessage('An error occured while creating user. Please contact the system admin.')
+          return
         }
-      )
-      if (res.status === 201) {
-        setUserEditing(undefined)
-        load()
-      } else {
-        console.error('load fail:', res)
-        return
+      } catch (e) {
+        console.error(e)
+        setErrorMessage('An error occured while creating user. Please contact the system admin.')
       }
     } else {
-      let res = await axios.patch(
-        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userEditing.id}`,
-        {
-          ...userEditing,
-          role: right.map((e) => e.id),
-        },
-        {
-          headers: { Authorization: token },
+      try {
+        let res = await axios.patch(
+          `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userEditing.id}`,
+          {
+            ...userEditing,
+            role: right.map((e) => e.id),
+          },
+          {
+            headers: { Authorization: token },
+          }
+        )
+        if (res.status === 200) {
+          setUserEditing(undefined)
+          load()
+        } else {
+          console.error('load fail:', res)
+          setErrorMessage('An error occured while updating user. Please contact the system admin.')
+          return
         }
-      )
-      if (res.status === 200) {
-        setUserEditing(undefined)
-        load()
-      } else {
-        console.error('load fail:', res)
-        return
+      } catch (e) {
+        console.error(e)
+        setErrorMessage('An error occured while updating user. Please contact the system admin.')
       }
     }
   }
@@ -327,13 +373,30 @@ function Users(props) {
     setUserEditing({ ...userEditing, email: e.target.value })
   }
 
+  function handleActiveChange(e) {
+    //convert to boolean
+    let isTrueSet = e.target.value === 'true'
+    setUserEditing({ ...userEditing, active: isTrueSet })
+  }
+
   function handleAddUser() {
     setUserEditing({})
     setLeft(permissions)
   }
 
   function handleUserDetailClose() {
+    setErrorMessage('')
+    setRight([])
+    setLeft(permissions)
+    setChecked([])
     setUserEditing(undefined)
+  }
+
+  const handleCopy = () => {
+    /*get the deep nested <input> tag from <TextField/> */
+    passwordRef.current.childNodes[1].childNodes[0].select()
+    document.execCommand('copy')
+    setCopyMsg('Copied!')
   }
 
   return (
@@ -374,7 +437,7 @@ function Users(props) {
                   <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Userame</TableCell>
+                        <TableCell>Username</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell>
@@ -387,6 +450,7 @@ function Users(props) {
                             </Grid>
                           </Grid>
                         </TableCell>
+                        <TableCell>Created</TableCell>
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
@@ -411,6 +475,9 @@ function Users(props) {
                                 }
                               </Grid>
                             ))}
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
                           </TableCell>
                           <TableCell>
                             <IconButton title="edit" onClick={() => handleEdit(user)}>
@@ -443,18 +510,15 @@ function Users(props) {
       >
         <DialogTitle id="form-dialog-title">User Detail</DialogTitle>
         <DialogContent>
-          {/*
-        <DialogContentText>
-          To subscribe to this website, please enter your email address here. We will send updates
-          occasionally.
-        </DialogContentText>
-        */}
           <TextField
+            required
+            error={userEditing && userEditing.userName === ''}
             autoFocus
             id="userName"
             label="Username"
             type="text"
             variant="outlined"
+            helperText={userEditing && userEditing.userName === '' ? 'Field is Required' : ''}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -512,62 +576,131 @@ function Users(props) {
             className={classes.input}
             onChange={handleEmailChange}
           />
-          <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
-            <Grid item role="list">
-              <Typography variant="outline">Roles</Typography>
-              {customList(left)}
-            </Grid>
-            <Grid item>
-              <Grid container direction="column" alignItems="center">
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleAllRight}
-                  disabled={left.length === 0}
-                  aria-label="move all right"
+          <FormControl component="fieldset" className={classes.formControl}>
+            <Grid container>
+              <Grid item>
+                <FormLabel component="legend">Active:</FormLabel>
+              </Grid>
+              <Grid item>
+                <RadioGroup
+                  aria-label="active-state"
+                  name="active-state"
+                  className={classes.radioGroup}
+                  value={(userEditing && userEditing.active) || ''}
+                  onChange={handleActiveChange}
                 >
-                  ≫
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleCheckedRight}
-                  disabled={leftChecked.length === 0}
-                  aria-label="move selected right"
-                >
-                  &gt;
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleCheckedLeft}
-                  disabled={rightChecked.length === 0}
-                  aria-label="move selected left"
-                >
-                  &lt;
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className={classes.button}
-                  onClick={handleAllLeft}
-                  disabled={right.length === 0}
-                  aria-label="move all left"
-                >
-                  ≪
-                </Button>
+                  <Grid container>
+                    <Grid item>
+                      <FormControlLabel
+                        value="true"
+                        control={
+                          <Radio
+                            classes={{ root: classes.radioButton, checked: classes.radioChecked }}
+                          />
+                        }
+                        label="Active"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <FormControlLabel
+                        value="false"
+                        control={
+                          <Radio
+                            classes={{ root: classes.radioButton, checked: classes.radioChecked }}
+                          />
+                        }
+                        label="Inactive"
+                      />
+                    </Grid>
+                  </Grid>
+                </RadioGroup>
               </Grid>
             </Grid>
-            <Grid item role="list">
-              <Typography variant="outline">Selected</Typography>
-              {customList(right)}
+          </FormControl>
+          {userEditing && userEditing.createdAt && (
+            <Grid container spacing={2}>
+              <Grid item>
+                <Typography variant="outline">Created</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="outline">
+                  {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
+                </Typography>
+              </Grid>
             </Grid>
-          </Grid>
+          )}
+          <FormControl error={right.length === 0}>
+            <Grid
+              container
+              spacing={2}
+              justify="center"
+              alignItems="center"
+              className={classes.root}
+            >
+              <Grid item role="list">
+                <FormLabel variant="outline">Roles</FormLabel>
+                {/* <Typography variant="outline">Roles</Typography> */}
+                {customList(left)}
+              </Grid>
+              <Grid item>
+                <Grid container direction="column" alignItems="center">
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleAllRight}
+                    disabled={left.length === 0}
+                    aria-label="move all right"
+                  >
+                    ≫
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleCheckedRight}
+                    disabled={leftChecked.length === 0}
+                    aria-label="move selected right"
+                  >
+                    &gt;
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleCheckedLeft}
+                    disabled={rightChecked.length === 0}
+                    aria-label="move selected left"
+                  >
+                    &lt;
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={handleAllLeft}
+                    disabled={right.length === 0}
+                    aria-label="move all left"
+                  >
+                    ≪
+                  </Button>
+                </Grid>
+              </Grid>
+              <Grid item role="list">
+                <FormLabel variant="outline">Selected</FormLabel>
+                {/* <Typography variant="outline">Selected</Typography> */}
+                {customList(right)}
+              </Grid>
+            </Grid>
+            {right.length === 0 && (
+              <FormHelperText>At Least One Role Must be Selected</FormHelperText>
+            )}
+          </FormControl>
         </DialogContent>
         <DialogActions>
+          <Typography variant="subtitle2" color="error">
+            {errorMessage}
+          </Typography>
           <Button onClick={handleUserDetailClose}>Cancel</Button>
           <Button onClick={handleSave} variant="contained" color="primary">
             Save
@@ -598,21 +731,39 @@ function Users(props) {
               </Typography>
             </Grid>
           </Grid>
-          <TextField
-            autoFocus
-            id="newPassword"
-            label="Please input new password"
-            type="text"
-            variant="outlined"
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className={classes.input}
-            helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
-          />
+          <Grid container direction="row" alignItems="center" wrap="nowrap">
+            <Grid item>
+              <TextField
+                autoFocus
+                id="newPassword"
+                label="Please input new password"
+                type="text"
+                variant="outlined"
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                ref={passwordRef}
+                className={classes.input}
+                helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
+              />
+            </Grid>
+            {document.queryCommandSupported('copy') && (
+              <Grid item>
+                <IconButton
+                  title="copy"
+                  aria-label="copy"
+                  className={classes.copyIcon}
+                  onClick={handleCopy}
+                >
+                  <FileCopyIcon />
+                </IconButton>
+                <Typography className={classes.copyMsg}>{copyMsg}</Typography>
+              </Grid>
+            )}
+          </Grid>
           <Box height={20} />
         </DialogContent>
         <DialogActions>
