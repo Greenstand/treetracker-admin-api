@@ -519,9 +519,15 @@ const verity = {
 					treeImagesSelected,
 				})
 			} else if (isCmd || isCtrl) {
-				const treeImagesSelected		= state.verity.treeImagesSelected.filter(function(tree) {
-					return tree !== treeId
-				})
+				// Toggle the selection state
+				let treeImagesSelected;
+				if (state.verity.treeImagesSelected.find(el => el === treeId)) {
+					treeImagesSelected = state.verity.treeImagesSelected.filter(function(tree) {
+						return tree !== treeId
+					})
+				} else {
+					treeImagesSelected = [...state.verity.treeImagesSelected, treeId]
+				}
 				this.set({
 					treeImagesSelected,
 				})

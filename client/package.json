@@ -37,7 +37,8 @@
     "react-redux": "*",
     "react-scripts": "*",
     "recompose": "*",
-    "typeface-roboto": "*"
+    "typeface-roboto": "*",
+    "zxcvbn": "^4.4.2"
   },
   "scripts": {
     "start": "cross-env PORT=3001 react-scripts start",
