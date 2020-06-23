@@ -53,7 +53,7 @@ describe('Audit', () => {
       //
       expect(query).toHaveBeenCalledWith(
         expect.stringMatching(
-          /insert\s+into.*audit.*555.*(127.0.0.1).*(node-superagent).*login.*/i,
+          /insert\s+into.*audit.*admin_user_id.*555.*(127.0.0.1).*(node-superagent).*login.*/i,
         ),
       );
     });

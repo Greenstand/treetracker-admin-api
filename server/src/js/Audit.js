@@ -109,7 +109,7 @@ class Audit {
     assert(operation);
     assert(operator);
     //console.warn('res:', res);
-    const sql = `insert into audit ("operator", platform, ip, browser, organization, operation) values (${operator}, 'admin_panel', '${host}', '${userAgent}', 'greenstand', '${JSON.stringify(
+    const sql = `insert into audit ("admin_user_id", platform, ip, browser, organization, operation) values (${operator}, 'admin_panel', '${host}', '${userAgent}', 'greenstand', '${JSON.stringify(
       operation,
     )}')`;
     console.debug('audit sql:', sql);
