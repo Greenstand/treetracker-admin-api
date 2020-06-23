@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles'
 import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
 import { AppContext } from './MainFrame'
+import axios from 'axios' 
 
 const style = (theme) => ({
   box: {
@@ -49,11 +50,43 @@ const style = (theme) => ({
 function Account(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
-  const { user } = appContext
+  const { user, token } = appContext 
+
 
   function handleLogout(){
     appContext.logout();
   }
+
+
+  const [permissions, setPermissions] = React.useState([])
+  const [users, setUsers] = React.useState([])
+ 
+  //loading permission from server
+  async function load() {
+    let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
+      headers: { Authorization: token },
+    })
+    if (res.status === 200) {
+      setPermissions(res.data)
+      console.log(res.data);
+    } else {
+      console.error('load fail:', res)
+      return
+    }
+    res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/admin_users`, {
+      headers: { Authorization: token },
+    })
+    if (res.status === 200) {
+      setUsers(res.data)
+    } else {
+      console.error('load fail:', res)
+      return
+    }
+  }
+
+  React.useEffect(() => {
+    load()
+  }, [])
 
   return (
     <Grid container className={classes.box}>
@@ -76,7 +109,7 @@ function Account(props) {
             <Grid container direction="column" className={classes.bodyBox}>
               <Grid item>
                 <Typography className={classes.title}>Username</Typography>
-                <Typography className={classes.item}>{user.username}</Typography>
+                <Typography className={classes.item}>{user.userName}</Typography>
               </Grid>
               <Grid item>
                 <Typography className={classes.title}>Name</Typography>
@@ -91,8 +124,17 @@ function Account(props) {
               <Grid item>
                 <Typography className={classes.title}>Role</Typography>
                 <Typography className={classes.item}>
-                  {user.role.map((e) => (
-                    <span>{e.name}/</span>
+                  {users.map((user) => ( 
+                    user.role.map((r, i) => (
+                      <Grid key={i}>
+                        {
+                          permissions.reduce(
+                            (a, c) => a || (c.id === r ? c : undefined),
+                            undefined
+                          ).roleName
+                        }
+                      </Grid>
+                      ))
                   ))}
                 </Typography>
               </Grid>
