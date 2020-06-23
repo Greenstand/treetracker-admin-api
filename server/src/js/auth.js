@@ -137,11 +137,11 @@ router.post('/login', async function login(req, res, next) {
     if (userLogin) {
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {userName, firstName, lastName, email, role, policy} = userLogin;
+      const {id, userName, firstName, lastName, email, role, policy} = userLogin;
       console.log(userLogin);
       return res.json({
         token,
-        user: {userName, firstName, lastName, email, role, policy},
+        user: {id, userName, firstName, lastName, email, role, policy},
       });
     } else {
       return res.status(401).json();
@@ -219,6 +219,21 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
       }
     }
     res.status(200).json();
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+router.delete('/admin_users/:userId', async (req, res, next) => {
+  try {
+    let deleteQuery = `delete from admin_user_role where admin_user_id = ${req.params.userId}`;
+    console.log('delete:', deleteQuery);
+    let result = await pool.query(deleteQuery);
+    deleteQuery = `delete from admin_user where id = ${req.params.userId}`;
+    console.log('delete:', deleteQuery);
+    result = await pool.query(deleteQuery);
+    res.status(204).json();
   } catch (e) {
     console.error(e);
     res.status(500).json();
