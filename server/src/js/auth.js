@@ -361,7 +361,9 @@ const isAuth = (req, res, next) => {
   //white list
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
-  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || url.startsWith('/api/explorer/')) {
+  const isDevEnvironment = utils.getEnvironment() === 'development';
+  const isApiExplorerReq = isDevEnvironment && url.startsWith('/api/explorer/');
+  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || isApiExplorerReq) {
     next();
     return;
   }
