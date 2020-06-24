@@ -501,7 +501,7 @@ function Users(props) {
                           <TableCell component="th" scope="row">
                             {user.firstName} {user.lastName}
                           </TableCell>
-                          <TableCell>{user.status}</TableCell>
+                          <TableCell>{user.active===true?'active':'inactive'}</TableCell>
                           <TableCell>
                             {user.role.map((r, i) => (
                               <Grid key={i}>
