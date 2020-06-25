@@ -88,8 +88,18 @@ function Home(props) {
     //      },
     //    ])
     //      .enter()
-    g.append('cricle').attr('cx', 20).attr('cy', 20).style('fill', 'purple')
-    g.insert(logoElement.node().cloneNode(true))
+    //    g.append('cricle').attr('cx', 20).attr('cy', 20).style('fill', 'purple')
+    //    g.insert(logoElement.node().cloneNode(true))
+    const htmlCode = d3.select('#logoDiv').node().innerHTML
+    assert(htmlCode.match(/<svg.*/))
+    g.append('g')
+      .html(htmlCode)
+      .attr('transform', 'scale(0)')
+      .attr('transform-origin', '31 39')
+      .transition()
+      .duration(5000)
+      .ease(d3.easeElastic)
+      .attr('transform', 'scale(1)')
   }
 
   React.useEffect(() => {
@@ -110,7 +120,7 @@ function Home(props) {
             Welcome to Greenstand Admin Panel
           </Typography>
           */}
-          {logo}
+          <div id="logoDiv">{logo}</div>
           <svg viewBox="0 0 500 500" width="100%" height="100%">
             <g id="trees" />
             <circle cx="50" cy="50" r="4" />
