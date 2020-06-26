@@ -177,6 +177,7 @@ function Filter(props) {
         value={planterIdentifier}
         onChange={(e) => setPlanterIdentifier(e.target.value)}
       />
+      {/*
       <GSInputLabel text="Status" />
       <TextField
         select
@@ -193,6 +194,7 @@ function Filter(props) {
           </MenuItem>
         ))}
       </TextField>
+      */}
       <GSInputLabel text="Approved" />
       <TextField
         select
