@@ -71,6 +71,13 @@ const style = (theme) => ({
     padding: theme.spacing(4),
     //paddingTop: '25%', //theme.spacing(50),
   },
+  title: {
+    color: "#76BB23",
+    fontSize: 42,
+    fontFamily: "Lato,Roboto,Helvetica,Arial,sans-serif",
+    fontWeight: "400",
+    lineHeight: "1.235",
+  },
 })
 
 function Home(props) {
@@ -93,30 +100,20 @@ function Home(props) {
     //    g.insert(logoElement.node().cloneNode(true))
     const htmlCode = d3.select('#logoDiv').node().innerHTML
     assert(htmlCode.match(/<svg.*/))
-    const buds = Array.from(new Array(100)).map((_,i) => {
-      return {
-        x: Math.round(Math.random() * 800) + 20,
-        y: Math.round(Math.random() * 900) + 20,
-        delay: Math.random() * 1000 * 4,
-      }
-    });
 
-    g.selectAll('g')
-      .data(buds)
-      .enter()
-      .append('g')
-      .attr('transform', d => `translate(${d.x} ${d.y})`)
+
+    g.append('g')
+      .attr('transform', `translate(80 95)`)
       .append('g')
       .html(htmlCode)
       //original size: 58, 73
       .attr('transform', `translate(${-58/2} ${-73/2}), scale(0)`)
       .attr('transform-origin', `${58/2} ${73/2} `)
       .transition()
-      .delay(d => d.delay)
+      .delay(1000)
       .duration(1000)
-      .ease(d3.easeElasticOut.amplitude(.6).period(0.3))
-      .attr('transform', `translate(${-58/2} ${-73/2}), scale(.5)`)
-
+      .ease(d3.easeElasticOut.amplitude(1).period(0.2))
+      .attr('transform', `translate(${-58/2} ${-73/2}), scale(1.2)`)
   }
 
   React.useEffect(() => {
@@ -133,12 +130,12 @@ function Home(props) {
       <Grid item xs={9}>
         <Grid container className={classes.welcomeBox} justify="center">
           <div id="logoDiv" style={{display:'none'}}>{logo}</div>
-          <svg viewBox="0 0 500 500" width="100%" height="100%">
+          <svg viewBox="0 0 600 200" width="600" height="200">
             <g id="trees" />
+            <g transform="translate(100, 100)">
+              <text className={classes.title} >Greenstand Admin Panel</text>
+            </g>
           </svg>
-          <Typography variant="h4" color="primary">
-            Welcome to Greenstand Admin Panel
-          </Typography>
         </Grid>
       </Grid>
     </Grid>
