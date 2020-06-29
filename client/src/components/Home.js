@@ -68,6 +68,7 @@ const style = (theme) => ({
   rightBox: {},
   welcomeBox: {
     height: '100%',
+    padding: theme.spacing(4),
     //paddingTop: '25%', //theme.spacing(50),
   },
 })
@@ -93,13 +94,17 @@ function Home(props) {
     const htmlCode = d3.select('#logoDiv').node().innerHTML
     assert(htmlCode.match(/<svg.*/))
     g.append('g')
+      .attr('transform', 'translate(200 200)')
+      .append('g')
       .html(htmlCode)
-      .attr('transform', 'scale(0)')
-      .attr('transform-origin', '31 39')
+      //original size: 58, 73
+      .attr('transform', `translate(${-58/2} ${-73/2}), scale(0)`)
+      .attr('transform-origin', `${58/2} ${73/2} `)
       .transition()
-      .duration(5000)
-      .ease(d3.easeElastic)
-      .attr('transform', 'scale(1)')
+      .duration(1000)
+      .ease(d3.easeElasticOut.amplitude(.6).period(0.3))
+      .attr('transform', `translate(${-58/2} ${-73/2}), scale(.5)`)
+
   }
 
   React.useEffect(() => {
