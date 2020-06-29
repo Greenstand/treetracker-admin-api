@@ -93,14 +93,26 @@ function Home(props) {
     //    g.insert(logoElement.node().cloneNode(true))
     const htmlCode = d3.select('#logoDiv').node().innerHTML
     assert(htmlCode.match(/<svg.*/))
-    g.append('g')
-      .attr('transform', 'translate(200 200)')
+    const buds = Array.from(new Array(100)).map((_,i) => {
+      return {
+        x: Math.round(Math.random() * 800) + 20,
+        y: Math.round(Math.random() * 900) + 20,
+        delay: Math.random() * 1000 * 4,
+      }
+    });
+
+    g.selectAll('g')
+      .data(buds)
+      .enter()
+      .append('g')
+      .attr('transform', d => `translate(${d.x} ${d.y})`)
       .append('g')
       .html(htmlCode)
       //original size: 58, 73
       .attr('transform', `translate(${-58/2} ${-73/2}), scale(0)`)
       .attr('transform-origin', `${58/2} ${73/2} `)
       .transition()
+      .delay(d => d.delay)
       .duration(1000)
       .ease(d3.easeElasticOut.amplitude(.6).period(0.3))
       .attr('transform', `translate(${-58/2} ${-73/2}), scale(.5)`)
@@ -120,16 +132,13 @@ function Home(props) {
       </Grid>
       <Grid item xs={9}>
         <Grid container className={classes.welcomeBox} justify="center">
-          {/*
+          <div id="logoDiv" style={{display:'none'}}>{logo}</div>
+          <svg viewBox="0 0 500 500" width="100%" height="100%">
+            <g id="trees" />
+          </svg>
           <Typography variant="h4" color="primary">
             Welcome to Greenstand Admin Panel
           </Typography>
-          */}
-          <div id="logoDiv">{logo}</div>
-          <svg viewBox="0 0 500 500" width="100%" height="100%">
-            <g id="trees" />
-            <circle cx="50" cy="50" r="4" />
-          </svg>
         </Grid>
       </Grid>
     </Grid>
