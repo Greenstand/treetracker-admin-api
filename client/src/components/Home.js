@@ -89,15 +89,6 @@ function Home(props) {
     assert(logoElement.node())
     const g = d3.select('#trees')
     log.info('g:', g)
-    //    g.data([
-    //      {
-    //        x: 100,
-    //        y: 100,
-    //      },
-    //    ])
-    //      .enter()
-    //    g.append('cricle').attr('cx', 20).attr('cy', 20).style('fill', 'purple')
-    //    g.insert(logoElement.node().cloneNode(true))
     const htmlCode = d3.select('#logoDiv').node().innerHTML
     assert(htmlCode.match(/<svg.*/))
 
@@ -114,6 +105,14 @@ function Home(props) {
       .duration(1000)
       .ease(d3.easeElasticOut.amplitude(1).period(0.2))
       .attr('transform', `translate(${-58/2} ${-73/2}), scale(1.2)`)
+
+    d3.select('#text')
+      .attr('transform', `translate(0 0)`)
+      .transition()
+      .delay(1000)
+      .duration(1000)
+      .ease(d3.easeElasticOut.amplitude(1).period(0.2))
+      .attr('transform', `translate(0, 4)`)
   }
 
   React.useEffect(() => {
@@ -133,7 +132,7 @@ function Home(props) {
           <svg viewBox="0 0 600 200" width="600" height="200">
             <g id="trees" />
             <g transform="translate(100, 100)">
-              <text className={classes.title} >Greenstand Admin Panel</text>
+              <text id="text" className={classes.title} >Greenstand Admin Panel</text>
             </g>
           </svg>
         </Grid>
