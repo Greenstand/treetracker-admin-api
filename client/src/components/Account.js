@@ -18,7 +18,7 @@ import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
 import { AppContext } from './MainFrame'
 import axios from 'axios'
-import dateformat		from 'dateformat';
+import dateformat from 'dateformat'
 
 const style = (theme) => ({
   box: {
@@ -168,6 +168,37 @@ function Account(props) {
     return result
   }
 
+
+  const [permissions, setPermissions] = React.useState([])
+  const [users, setUsers] = React.useState([])
+ 
+  //loading permission from server
+  async function load() {
+    let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
+      headers: { Authorization: token },
+    })
+    if (res.status === 200) {
+      setPermissions(res.data)
+      console.log(res.data);
+    } else {
+      console.error('load fail:', res)
+      return
+    }
+    res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/admin_users`, {
+      headers: { Authorization: token },
+    })
+    if (res.status === 200) {
+      setUsers(res.data)
+    } else {
+      console.error('load fail:', res)
+      return
+    }
+  }
+
+  React.useEffect(() => {
+    load()
+  }, [])
+
   return (
     <>
       <Grid container className={classes.box}>
@@ -178,7 +209,7 @@ function Account(props) {
         </Grid>
         <Grid item xs={9}>
           <Grid container className={classes.rightBox}>
-            <Grid item xs="12">
+            <Grid item xs={12}>
               <Grid container className={classes.titleBox}>
                 <Grid item>
                   <AccountIcon className={classes.accountIcon} />
@@ -205,9 +236,18 @@ function Account(props) {
                 <Grid item>
                   <Typography className={classes.title}>Role</Typography>
                   <Typography className={classes.item}>
-                    {user.role.map((e) => (
-                      <span>{e.name}/</span>
-                    ))}
+                    {users.map((user) => ( 
+                    user.role.map((r, i) => (
+                      <Grid key={i}>
+                        {
+                          permissions.reduce(
+                            (a, c) => a || (c.id === r ? c : undefined),
+                            undefined
+                          ).roleName
+                        }
+                      </Grid>
+                      ))
+                  ))}
                   </Typography>
                 </Grid>
                 <Grid item>
