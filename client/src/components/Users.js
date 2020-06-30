@@ -34,7 +34,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
 import { AppContext } from './MainFrame'
 import pwdGenerator from 'generate-password'
-import dateformat		from 'dateformat';
+import dateformat from 'dateformat'
 
 const style = (theme) => ({
   box: {
@@ -265,6 +265,7 @@ function Users(props) {
       )
       if (res.status === 201) {
         setUserEditing(undefined)
+        setRight([])
         load()
       } else {
         console.error('load fail:', res)
@@ -283,6 +284,7 @@ function Users(props) {
       )
       if (res.status === 200) {
         setUserEditing(undefined)
+        setRight([])
         load()
       } else {
         console.error('load fail:', res)
@@ -348,6 +350,7 @@ function Users(props) {
 
   function handleUserDetailClose() {
     setUserEditing(undefined)
+    setRight([])
   }
 
   const handleCopy = () => {
@@ -538,16 +541,17 @@ function Users(props) {
             onChange={handleEmailChange}
           />
           {userEditing && userEditing.createdAt && (
-          <Grid container spacing={2}>
-            <Grid item>
-              <Typography variant="outline">Created</Typography>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Typography variant="outline">Created</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="outline">
+                  {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography variant="outline"> 
-                {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
-              </Typography>
-            </Grid>
-          </Grid>)}
+          )}
           <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
             <Grid item role="list">
               <Typography variant="outline">Roles</Typography>
