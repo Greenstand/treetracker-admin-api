@@ -4,7 +4,7 @@
 const {Pool, Client} = require('pg');
 const log = require('loglevel');
 const db = require('../datasources/treetracker.datasource.json');
-const assert = require('assert').strict;
+//const assert = require('assert').strict;
 
 const operations = {
   login: {
@@ -23,7 +23,7 @@ const auditMiddleware = (request, response, next) => {
         //console.log('req:', req);
         //console.log('req.header:', request.headers);
         //just audit when success
-        assert(response.statusCode);
+        //assert(response.statusCode);
         if (/2\d\d/.test(response.statusCode)) {
           const audit = new Audit();
           await audit.did(request, response);
@@ -71,31 +71,31 @@ class Audit {
   }
 
   async did(req, res) {
-    assert(req);
-    assert(req.headers);
-    assert(req.headers.host);
-    assert(req.headers['user-agent']);
+    //assert(req);
+    //assert(req.headers);
+    //assert(req.headers.host);
+    //assert(req.headers['user-agent']);
     const host = req.headers['x-real-ip'] || req.headers.host.match(/(.*):(.*)/)[1];
     const userAgent = req.headers['user-agent'];
     let operation;
     let operator;
     const url = req.originalUrl;
-    assert(url);
+    //assert(url);
     if (/\/auth\/login/.test(url)) {
       console.info('login event');
       operation = operations.login;
-      assert(res.myData);
-      assert(!isNaN(res.myData.user.id), res.myData.user.id);
+      //assert(res.myData);
+      //assert(!isNaN(res.myData.user.id), res.myData.user.id);
       operator = res.myData.user.id;
     } else if (/.*\/api\/trees\/\d+/.test(url)) {
       console.info('tree event');
-      assert(req.method, req.method);
-      assert(req.user);
-      assert(req.user.id);
+      //assert(req.method, req.method);
+      //assert(req.user);
+      //assert(req.user.id);
       operator = req.user.id;
       if (req.method.match(/patch/i)) {
         console.info('verify event');
-        assert(req.body.id, req.body.id);
+        //assert(req.body.id, req.body.id);
         operation = operations.tree_verify;
         operation.payload = req.body;
       } else {
@@ -106,8 +106,8 @@ class Audit {
       console.log('no need audit', url);
       return;
     }
-    assert(operation);
-    assert(operator);
+    //assert(operation);
+    //assert(operator);
     //console.warn('res:', res);
     const sql = `insert into audit ("admin_user_id", platform, ip, browser, organization, operation) values (${operator}, 'admin_panel', '${host}', '${userAgent}', 'greenstand', '${JSON.stringify(
       operation,

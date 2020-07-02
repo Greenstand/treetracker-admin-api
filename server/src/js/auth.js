@@ -8,7 +8,7 @@ const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const db = require('../datasources/treetracker.datasource.json');
-const assert = require('assert').strict;
+//const assert = require('assert').strict;
 const Audit = require('./Audit');
 
 const app = express();
@@ -103,7 +103,7 @@ router.post('/login', async function login(req, res, next) {
     ); /*TODO check if user name exists*/
 
     const user_entity = user_rows.rows[0];
-    assert(user_entity.salt);
+    //assert(user_entity.salt);
     const hash = sha512(password, user_entity.salt);
 
     let result = await pool.query(
@@ -113,7 +113,7 @@ router.post('/login', async function login(req, res, next) {
     if (result.rows.length === 1) {
       userLogin = utils.convertCamel(result.rows[0]);
       //load role
-      console.assert(userLogin.id >= 0, 'id?', userLogin);
+      //console.assert(userLogin.id >= 0, 'id?', userLogin);
       result = await pool.query(
         `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
       );
