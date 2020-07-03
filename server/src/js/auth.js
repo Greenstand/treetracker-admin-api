@@ -18,7 +18,6 @@ const app = express();
 //const pool = new Pool({ connectionString: "postgresql://doadmin:g7a1fey4jeqao9mg@db-postgresql-sfo2-40397-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker?ssl=true"});
 const pool = new Pool({connectionString: db.url});
 const jwtSecret = config.jwtSecret;
-console.log(jwtSecret);
 
 const PERMISSIONS = {
   ADMIN: 1,
