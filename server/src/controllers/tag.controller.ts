@@ -84,7 +84,7 @@ export class TagController {
     await this.tagRepository.updateById(id, tag);
   }
 
-  @post('/tags/', {
+  @post('/tags', {
     responses: {
       '204': {
         description: 'Tag POST success',
@@ -94,6 +94,11 @@ export class TagController {
   async create(
     @requestBody() tag: Tag,
   ): Promise<Tag> {
+    // Only create the tag if it doesn't already exist
+    const match = await this.tagRepository.findOne({where:{tagName:{ilike: tag.tagName}}});
+    if (match) {
+      return match;
+    }
     return await this.tagRepository.create(tag);
   }
 

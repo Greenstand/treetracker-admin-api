@@ -417,6 +417,9 @@ const isAuth = (req, res, next) => {
       } else if (url.match(/\/api\/tags.*/)) {
         next();
         return;
+      } else if (url.match(/\/api\/tree_tags.*/)) {
+        next();
+        return;
       } else if (url.match(/\/api\/trees.*/)) {
         if (
           policies.some(

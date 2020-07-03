@@ -1,6 +1,6 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'tree_tags'}}})
+@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'tag'}}})
 export class Tag extends Entity {
   @property({
     type: Number,
@@ -14,10 +14,23 @@ export class Tag extends Entity {
   @property({
     type: String,
     required: false,
-    length: 45,
-    postgresql: {"columnName":"value","dataType":"character varying","dataLength":45,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {"columnName":"tag_name","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
   })
-  value: String;
+  tagName: String;
+
+  @property({
+    type: Boolean,
+    required: false,
+    postgresql: {"columnName":"active","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  active: String;
+
+  @property({
+    type: Boolean,
+    required: false,
+    postgresql: {"columnName":"public","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+  })
+  public: String;
 
   // Define well-known properties here
 
