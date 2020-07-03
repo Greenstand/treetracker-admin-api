@@ -246,15 +246,17 @@ const verity = {
           payload.approveAction.age,
           payload.approveAction.captureApprovalTag,
 					payload.approveAction.speciesId,
-					payload.approveAction.tags,
-        )
+				)
       }else{
         log.debug('reject')
         await api.rejectTreeImage(
           payload.id, 
-          payload.approveAction.rejectionReason
+          payload.approveAction.rejectionReason,
         )
-      }
+			}
+			
+			await api.createTreeTags(payload.id, payload.approveAction.tags)
+			
 			this.approved(payload.id)
       return true
     },

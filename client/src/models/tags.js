@@ -14,7 +14,7 @@ const tags = {
 	reducers: {
 		setTagList(state, tagList){
       const sortedTagList = tagList.slice().sort(
-        (a,b) => a.value.localeCompare(b.value)
+        (a,b) => a.tagName.localeCompare(b.tagName)
       )
       return {
         ...state,
@@ -30,23 +30,27 @@ const tags = {
 	},
 	effects: {
     async getTags(filter){
-      const tagList = await api.getTags(filter)
-      log.debug('load tags from api:', tagList.length)
-      this.setTagList(tagList)
+      if (filter && filter.length) {
+        const tagList = await api.getTags(filter)
+        log.debug('load tags from api:', tagList.length)
+        this.setTagList(tagList)
+      } else {
+        this.setTagList([])
+      }
     },
     onChange(tags){
       console.log('on change:"', tags, '"')
       this.setTagInput(tags)
     },
     /*
-     * check for new tags in tagInput and add them to the tagList
+     * check for new tags in tagInput and add them to the database
      */
-    updateTagList(payload, state){
-      state.tags.tagInput.forEach(async t => {
-        const value = t.value;
-        const tag = await api.createTag(value)
-        console.debug('created new tag:', tag.value)
+    createTags(payload, state){
+      const savedTags = state.tags.tagInput.map(async t => {
+        return api.createTag(t)
       })
+
+      return Promise.all(savedTags)
     },
 	},
 }

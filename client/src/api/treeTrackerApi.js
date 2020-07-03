@@ -163,8 +163,10 @@ export default {
    * get tag list
    */
   getTags(filter) {
-    const filterString = filter ? `?filter[where][value][ilike]=%${filter}%` : '';
-    const query = `${process.env.REACT_APP_API_ROOT}/api/tags${filterString}`;
+    const filterString =
+      `filter[limit]=25&` +
+      (filter ? `filter[where][tagName][ilike]=${filter}%` : '');
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags?${filterString}`;
     return fetch(query, {
       method: "GET",
       headers: { 
@@ -178,7 +180,7 @@ export default {
   /*
    * create new tag
    */
-  createTag(value) {
+  createTag(tagName) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/tags`;
     return fetch(query, {
       method: "POST",
@@ -187,9 +189,33 @@ export default {
         Authorization: session.token ,
       },
       body: JSON.stringify({
-        value,
+        tagName,
+        active: true,
+        public: true,
       }),
     })
       .then(handleResponse)
       .catch(handleError);
-  },};
+  },
+  /*
+   * create new tree tags
+   */
+  async createTreeTags(treeId, tags) {
+    return tags.map(t => {
+      const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags`;
+      return fetch(query, {
+        method: "POST",
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+        body: JSON.stringify({
+          treeId: treeId,
+          tagId: t.id,
+        }),
+      })
+      .then(handleResponse)
+      .catch(handleError);
+    });
+  },
+};
