@@ -142,11 +142,11 @@ router.post('/login', async function login(req, res, next) {
   }
 });
 
-// load roles and policy, can bea easily extended
+// load roles and policy (permissions)
 async function loadUserPermissions(userId) {
     const userDetails = {};
     let result;
-    //load role
+    //get role
     result = await pool.query(
       `select * from admin_user_role where admin_user_id = ${userId}`,
     );
@@ -156,7 +156,6 @@ async function loadUserPermissions(userId) {
       `select * from admin_role where id = ${userDetails.role[0]}`,
     );
     userDetails.policy = result.rows.map(r => r.policy)[0];
-    //-> otherwise a nested array[[{}, {}] ]
     return userDetails;
 }
 
