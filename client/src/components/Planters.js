@@ -320,7 +320,7 @@ function Planter (props){
         >
           <CardContent className={classes.cardContent}>
             {planter.imageUrl &&
-              <CardMedia className={classes.cardMedia} image={planter.logoUrl} />
+              <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
             }
             {!planter.imageUrl &&
               <CardMedia className={classes.cardMedia} >
@@ -399,11 +399,17 @@ function Detail(props){
             </Grid>
           </Grid>
           <Grid item>
-            <CardMedia className={classes.cardMedia} >
-              <Grid container className={classes.personBox} >
-                <Person className={classes.person} />
-              </Grid>
-            </CardMedia>
+
+            {planter.imageUrl &&
+              <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
+            }
+            {!planter.imageUrl &&
+              <CardMedia className={classes.cardMedia} >
+                <Grid container className={classes.personBox} >
+                  <Person className={classes.person} />
+                </Grid>
+              </CardMedia>
+            }
           </Grid>
           <Grid item className={classes.box} >
             <Typography variant="h5" color="primary" className={classes.name} >{props.planter.firstName} {props.planter.lastName}</Typography>

@@ -8,7 +8,7 @@ const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const db = require('../datasources/treetracker.datasource.json');
-const assert = require('assert').strict;
+//const assert = require('assert').strict;
 const Audit = require('./Audit');
 
 const app = express();
@@ -18,7 +18,6 @@ const app = express();
 //const pool = new Pool({ connectionString: "postgresql://doadmin:g7a1fey4jeqao9mg@db-postgresql-sfo2-40397-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker?ssl=true"});
 const pool = new Pool({connectionString: db.url});
 const jwtSecret = config.jwtSecret;
-console.log(jwtSecret);
 
 const PERMISSIONS = {
   ADMIN: 1,
@@ -103,7 +102,7 @@ router.post('/login', async function login(req, res, next) {
     ); /*TODO check if user name exists*/
 
     const user_entity = user_rows.rows[0];
-    assert(user_entity.salt);
+    //assert(user_entity.salt);
     const hash = sha512(password, user_entity.salt);
 
     let result = await pool.query(
@@ -113,7 +112,7 @@ router.post('/login', async function login(req, res, next) {
     if (result.rows.length === 1) {
       userLogin = utils.convertCamel(result.rows[0]);
       //load role
-      console.assert(userLogin.id >= 0, 'id?', userLogin);
+      //console.assert(userLogin.id >= 0, 'id?', userLogin);
       result = await pool.query(
         `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
       );
@@ -312,7 +311,7 @@ async function init() {
   );
   await pool.query(
     `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email, active) ` +
-      `values ( 1, 'admin', 'Admin', 'Panel', 'b6d86a90ad11945342ca3253e90a817dd6d3c76f1c97a7eda3ea8dea758f2dce527afe6016bf861623b4caecd8464332d91553cb093aa5b5165b1b58744af13e', 'aLWYuZ','admin@greenstand.org', true),` +
+      `values ( 1, 'admin', 'Admin', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org', true),` +
       `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true)`,
   );
   await pool.query(
