@@ -2,8 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import ChipInput from 'material-ui-chip-input'
 import Autosuggest from 'react-autosuggest'
-// import match from 'autosuggest-highlight/match'
-// import parse from 'autosuggest-highlight/parse'
 import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
 import { makeStyles } from '@material-ui/core/styles';
@@ -40,8 +38,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 function renderSuggestion (suggestion, { query, isHighlighted }) {
-  // const matches = match(suggestion.value, query)
-  // const parts = parse(suggestion.value, matches)
 
   return (
     <MenuItem
@@ -51,17 +47,6 @@ function renderSuggestion (suggestion, { query, isHighlighted }) {
     >
       <div>
         {suggestion.value}
-        {/* {parts.map((part, index) => {
-           return part.highlight ? (
-            <span key={String(index)} style={{ fontWeight: 500 }}>
-              {part.text}
-            </span>
-          ) : (
-            <span key={String(index)}>
-              {part.text}
-            </span>
-          )
-        })} */}
       </div>
     </MenuItem>
   )
