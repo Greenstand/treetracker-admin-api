@@ -38,10 +38,6 @@ const tags = {
         this.setTagList([])
       }
     },
-    onChange(tags){
-      console.log('on change:"', tags, '"')
-      this.setTagInput(tags)
-    },
     /*
      * check for new tags in tagInput and add them to the database
      */
