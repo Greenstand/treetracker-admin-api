@@ -3,6 +3,7 @@
  */
 import * as loglevel from 'loglevel'
 import api from '../api/treeTrackerApi'
+import * as _ from 'lodash';
 
 const log		= loglevel.getLogger('../models/tags')
 
@@ -12,15 +13,15 @@ const tags = {
     tagInput: [],
 	},
 	reducers: {
-		setTagList(state, tagList){
-      const sortedTagList = tagList.slice().sort(
+    appendToTagList(state, tags){
+      const sortedTagList = _.unionBy(state.tagList, tags, 'id').sort(
         (a,b) => a.tagName.localeCompare(b.tagName)
       )
       return {
         ...state,
         tagList: sortedTagList,
-      };
-		},
+      }
+    },
     setTagInput(state, tags){
       return {
         ...state,
@@ -29,13 +30,14 @@ const tags = {
     },
 	},
 	effects: {
+    /*
+     * Lazy-load tags on demand and append to existing lists
+     */
     async getTags(filter){
       if (filter && filter.length) {
-        const tagList = await api.getTags(filter)
-        log.debug('load tags from api:', tagList.length)
-        this.setTagList(tagList)
-      } else {
-        this.setTagList([])
+        const newTags = await api.getTags(filter)
+        log.debug('load more tags from api:', newTags.length)
+        this.appendToTagList(newTags)
       }
     },
     /*

@@ -210,7 +210,7 @@ export default {
           Authorization: session.token ,
         },
         body: JSON.stringify({
-          treeId: treeId,
+          treeId,
           tagId: t.id,
         }),
       })

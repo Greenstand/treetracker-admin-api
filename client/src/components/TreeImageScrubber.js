@@ -632,8 +632,8 @@ function SidePanel(props){
           />
         </Grid>
         <Grid>
-          <Typography variant='h6'>Tags</Typography>
-          <TreeTags/>
+          <Typography variant='h6'>Additional tags</Typography>
+          <TreeTags placeholder='Add other text tags'/>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <Tabs 
