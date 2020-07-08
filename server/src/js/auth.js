@@ -332,7 +332,7 @@ router.post('/init', async (req, res, next) => {
   }
 });
 
-const isAuth = (req, res, next) => {
+const isAuth = async (req, res, next) => {
   //white list
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
@@ -342,16 +342,42 @@ const isAuth = (req, res, next) => {
   }
   try {
     const token = req.headers.authorization;
+    console.log(token);
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
     //inject the user extract from token to request object
     req.user = userSession;
+    console.log(userSession);
     const roles = userSession.role;
-    if (url.match(/\/auth\/check_token/)) {
-      //cuz can decode token,pass
-      console.log('auth check');
-      res.status(200).json({});
-      return;
+    if (url.match(/\/auth\/check_session/)) {
+      //get the updated token in case pwd is changed
+      let user_id = req.query.id;
+      console.log(user_id);
+      let result = await pool.query(
+        `select * from admin_user where id = '${user_id}'`,
+      );
+      if (result.rows.length === 1) {
+        let update_userSession = utils.convertCamel(result.rows[0]);
+        console.log(
+          '1',
+          update_userSession.passwordHash,
+          '2',
+          userSession.passwordHash,
+          '3',
+          update_userSession.passwordHash === userSession.passwordHash,
+        );
+        if (update_userSession.passwordHash === userSession.passwordHash) {
+          //cuz can decode token,pass
+          console.log('auth check');
+          res.status(200).json({});
+          return;
+        } else {
+          res.status(401).json({
+            error: new Error('Session expired'),
+          });
+          return;
+        }
+      }
     }
     if (url.match(/\/auth\/(?!login).*/)) {
       //if role is admin, then can do auth stuff

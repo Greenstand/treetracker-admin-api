@@ -77,10 +77,13 @@ const Login = (props) => {
     async function load() {
       const token = JSON.parse(localStorage.getItem('token'))
       const user = JSON.parse(localStorage.getItem('user'))
-      if (token) {
-        const response = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/check_token`, {
-          headers: { Authorization: token },
-        })
+      if (token && user) {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_ROOT}/auth/check_session?id=${user.id}`,
+          {
+            headers: { Authorization: token },
+          }
+        )
         if (response.status === 200) {
           //valid token
           appContext.login(user, token)
