@@ -85,8 +85,15 @@ const Login = (props) => {
           }
         )
         if (response.status === 200) {
-          //valid token
-          appContext.login(user, token)
+          console.log(response)
+          if (response.data.token === undefined) {
+            //the role not change
+            appContext.login(user, token)
+          } else {
+            //role changes, update the token
+            localStorage.setItem('token', JSON.stringify(response.data.token))
+            appContext.login(user, response.data.token)
+          }
         }
       }
     }

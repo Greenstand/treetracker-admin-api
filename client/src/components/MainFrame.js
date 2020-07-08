@@ -135,7 +135,6 @@ export default function Mainframe() {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
     },
-    isChanged: () => {},
     user,
     token,
   }
