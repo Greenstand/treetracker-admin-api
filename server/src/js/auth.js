@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
+const {helper} = require('./helper');
 const db = require('../datasources/treetracker.datasource.json');
 //const assert = require('assert').strict;
 const Audit = require('./Audit');
@@ -332,7 +333,7 @@ router.post('/init', async (req, res, next) => {
   }
 });
 
-const isAuth = (req, res, next) => {
+const isAuth = async (req, res, next) => {
   //white list
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
@@ -347,11 +348,40 @@ const isAuth = (req, res, next) => {
     //inject the user extract from token to request object
     req.user = userSession;
     const roles = userSession.role;
-    if (url.match(/\/auth\/check_token/)) {
-      //cuz can decode token,pass
-      console.log('auth check');
-      res.status(200).json({});
-      return;
+    if (url.match(/\/auth\/check_session/)) {
+      let user_id = req.query.id;
+      console.log(user_id);
+      let result = await pool.query(
+        `select * from admin_user where id = '${user_id}'`,
+      );
+      if (result.rows.length === 1) {
+        let update_userSession = utils.convertCamel(result.rows[0]);
+        //compare wuth the updated pwd in case pwd is changed
+        if (update_userSession.passwordHash === userSession.passwordHash) {
+          /*get the role for updated usersession* */
+          let updated_role = await pool.query(
+            `select * from admin_user_role where admin_user_id = ${user_id}`,
+          );
+          update_userSession.role = updated_role.rows.map(r => r.role_id);
+          //compare wuth the updated role in case role is changed
+          if (helper.needRoleUpdate(update_userSession, userSession)) {
+            //reassign token with updated role if role changes
+            const new_token = jwt.sign(update_userSession, jwtSecret);
+            res.status(200).json({token: new_token});
+            return;
+          } else {
+            console.log('auth check');
+            /*no role change */
+            res.status(200).json({});
+            return;
+          }
+        } else {
+          res.status(401).json({
+            error: new Error('Session expired'),
+          });
+          return;
+        }
+      }
     }
     if (url.match(/\/auth\/(?!login).*/)) {
       //if role is admin, then can do auth stuff
