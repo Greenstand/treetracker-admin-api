@@ -264,10 +264,9 @@ const TreeImageScrubber = (props) => {
     }
 
     /*
-     * check tags
+     * create/retrieve tags
      */
-    approveAction.tags = props.tagState.tagInput
-    console.log('tags:', props.tagState.tagInput)
+    approveAction.tags = await props.tagDispatch.createTags()
 
     const result = await props.verityDispatch.approveAll({approveAction});
     if (!result) {

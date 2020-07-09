@@ -170,7 +170,8 @@ const TreeTags = (props) => {
         onBeforeAdd: (chip) => handleBeforeAddChip(chip),
         onAdd: (chip) => handleAddChip(chip),
         onDelete: (chip, index) => handleDeleteChip(chip, index),
-        pattern: TAG_PATTERN
+        pattern: TAG_PATTERN,
+        placeholder: props.placeholder,
       }}
     />
   )
