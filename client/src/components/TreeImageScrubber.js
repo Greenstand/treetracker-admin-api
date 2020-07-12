@@ -46,6 +46,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
 import Navbar from "./Navbar";
+import TreeTags from './TreeTags';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -225,6 +226,11 @@ const TreeImageScrubber = (props) => {
     window.open(url, '_blank').opener = null;
   }
 
+  function resetApprovalFields() {
+    props.tagDispatch.setTagInput([])
+    props.speciesDispatch.setSpeciesInput('')
+  }
+
   async function handleSubmit(approveAction){
     console.log('approveAction:', approveAction)
     //check selection
@@ -256,9 +262,17 @@ const TreeImageScrubber = (props) => {
         approveAction.speciesId = speciesId
         console.log('species id:', speciesId)
     }
+
+    /*
+     * create/retrieve tags
+     */
+    approveAction.tags = await props.tagDispatch.createTags()
+
     const result = await props.verityDispatch.approveAll({approveAction});
     if (!result) {
       window.alert('sorry, failed to approve some picture');
+    } else {
+      resetApprovalFields();
     }
     props.verityDispatch.loadTreeImages();
   }
@@ -616,6 +630,10 @@ function SidePanel(props){
             ref={speciesRef}
           />
         </Grid>
+        <Grid>
+          <Typography variant='h6'>Additional tags</Typography>
+          <TreeTags placeholder='Add other text tags'/>
+        </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <Tabs 
             indicatorColor='primary'
@@ -711,10 +729,12 @@ export default connect(
   state => ({
     verityState: state.verity,
     speciesState: state.species,
+    tagState: state.tags,
   }),
   //dispatch
   dispatch => ({
     verityDispatch: dispatch.verity,
     speciesDispatch: dispatch.species,
+    tagDispatch: dispatch.tags,
   })
 )(TreeImageScrubber);
