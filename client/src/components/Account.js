@@ -221,7 +221,7 @@ function Account(props) {
               <Grid container direction="column" className={classes.bodyBox}>
                 <Grid item>
                   <Typography className={classes.title}>Username</Typography>
-                  <Typography className={classes.item}>{user.userName}</Typography>
+                  <Typography className={classes.item}>{user.username}</Typography>
                 </Grid>
                 <Grid item>
                   <Typography className={classes.title}>Name</Typography>
