@@ -59,6 +59,7 @@ const styles = theme => {
     textField: {
       marginTop: 15,
       width: 142,
+	  paddingBottom:2,
     },
     textFieldSelect: {
       marginTop: 17,

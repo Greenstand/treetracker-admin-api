@@ -43,6 +43,7 @@ export default {
     age,
     captureApprovalTag,
     speciesId,
+    tags,
   ) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
@@ -66,7 +67,7 @@ export default {
       .then(handleResponse)
       .catch(handleError);
   },
-  rejectTreeImage(id, rejectionReason) {
+  rejectTreeImage(id, rejectionReason, tags) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
     return fetch(query, {
       method: "PATCH",
@@ -157,5 +158,64 @@ export default {
     })
       .then(handleResponse)
       .catch(handleError);
+  },
+  /*
+   * get tag list
+   */
+  getTags(filter) {
+    const filterString =
+      `filter[limit]=25&` +
+      (filter ? `filter[where][tagName][ilike]=${filter}%` : '');
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags?${filterString}`;
+    return fetch(query, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
+   * create new tag
+   */
+  createTag(tagName) {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags`;
+    return fetch(query, {
+      method: "POST",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+      body: JSON.stringify({
+        tagName,
+        active: true,
+        public: true,
+      }),
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
+   * create new tree tags
+   */
+  async createTreeTags(treeId, tags) {
+    return tags.map(t => {
+      const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags`;
+      return fetch(query, {
+        method: "POST",
+        headers: { 
+          "content-type": "application/json" ,
+          Authorization: session.token ,
+        },
+        body: JSON.stringify({
+          treeId,
+          tagId: t.id,
+        }),
+      })
+      .then(handleResponse)
+      .catch(handleError);
+    });
   },
 };

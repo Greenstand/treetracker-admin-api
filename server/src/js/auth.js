@@ -117,40 +117,47 @@ router.post('/login', async function login(req, res, next) {
     let result = await pool.query(
       `select * from admin_user where user_name = '${userName}' and password_hash = '${hash}'`,
     );
-    let userLogin;
-    if (result.rows.length === 1) {
-      userLogin = utils.convertCamel(result.rows[0]);
-      //load role
-      console.assert(userLogin.id >= 0, 'id?', userLogin);
-      result = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
-      );
-      userLogin.role = result.rows.map(r => r.role_id);
-      //get policies
-      result = await pool.query(
-        `select * from admin_role where id = ${userLogin.role[0]}`,
-      );
-      userLogin.policy = result.rows.map(r => r.policy)[0];
-      //-> otherwise a nested array[[{}, {}] ]
-    }
 
-    if (userLogin) {
+    let userLogin = result.rows.length === 1 ? utils.convertCamel(result.rows[0]) : null;
+
+    // If user exists in db AND user is active
+    // query remaining details and return
+    if (userLogin && userLogin.active) {
+      const userDetails = await loadUserPermissions(userLogin.id);
+      userLogin = {...userLogin, ...userDetails };
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {userName, firstName, lastName, email, role, policy} = userLogin;
+      const {id, userName, firstName, lastName, email, role, policy} = userLogin;
       console.log(userLogin);
+      
       return res.json({
         token,
-        user: {userName, firstName, lastName, email, role, policy},
+        user: {id, userName, firstName, lastName, email, role, policy},
       });
-    } else {
-      return res.status(401).json();
-    }
+    } 
+    return res.status(401).json();
   } catch (err) {
     console.error(err);
     next(err);
   }
 });
+
+// load roles and policy (permissions)
+async function loadUserPermissions(userId) {
+    const userDetails = {};
+    let result;
+    //get role
+    result = await pool.query(
+      `select * from admin_user_role where admin_user_id = ${userId}`,
+    );
+    userDetails.role = result.rows.map(r => r.role_id);
+    //get policies
+    result = await pool.query(
+      `select * from admin_role where id = ${userDetails.role[0]}`,
+    );
+    userDetails.policy = result.rows.map(r => r.policy)[0];
+    return userDetails;
+}
 
 router.get('/test', async function login(req, res, next) {
   res.send('OK');
@@ -219,6 +226,21 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
       }
     }
     res.status(200).json();
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+router.delete('/admin_users/:userId', async (req, res, next) => {
+  try {
+    let deleteQuery = `delete from admin_user_role where admin_user_id = ${req.params.userId}`;
+    console.log('delete:', deleteQuery);
+    let result = await pool.query(deleteQuery);
+    deleteQuery = `delete from admin_user where id = ${req.params.userId}`;
+    console.log('delete:', deleteQuery);
+    result = await pool.query(deleteQuery);
+    res.status(204).json();
   } catch (e) {
     console.error(e);
     res.status(500).json();
@@ -361,7 +383,9 @@ const isAuth = (req, res, next) => {
   //white list
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
-  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init') {
+  const isDevEnvironment = utils.getEnvironment() === 'development';
+  const isApiExplorerReq = isDevEnvironment && url.startsWith('/api/explorer/');
+  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || isApiExplorerReq) {
     next();
     return;
   }
@@ -395,6 +419,12 @@ const isAuth = (req, res, next) => {
       }
     } else if (url.match(/\/api\/.*/)) {
       if (url.match(/\/api\/species.*/)) {
+        next();
+        return;
+      } else if (url.match(/\/api\/tags.*/)) {
+        next();
+        return;
+      } else if (url.match(/\/api\/tree_tags.*/)) {
         next();
         return;
       } else if (url.match(/\/api\/trees.*/)) {
