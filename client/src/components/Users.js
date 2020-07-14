@@ -360,6 +360,46 @@ function Users(props) {
     setCopyMsg('Copied!')
   }
 
+  function mapSortedUsrs(users, option = 'id') {
+    const sortedUsrs = users.sort((a, b) => a[option] - b[option])
+    return mapUsrs(sortedUsrs)
+  }
+
+  function mapUsrs(users) {
+    return users.map((user) => (
+      <TableRow key={user.userName} role="listitem">
+        <TableCell component="th" scope="row">
+          {user.userName}
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {user.firstName} {user.lastName}
+        </TableCell>
+        <TableCell>{user.status}</TableCell>
+        <TableCell>
+          {user.role.map((r, i) => (
+            <Grid key={i}>
+              {permissions.reduce((a, c) => a || (c.id === r ? c : undefined), undefined).roleName}
+            </Grid>
+          ))}
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
+        </TableCell>
+        <TableCell>
+          <IconButton title="edit" onClick={() => handleEdit(user)}>
+            <Edit />
+          </IconButton>
+          <IconButton>
+            <Delete />
+          </IconButton>
+          <IconButton title="generate password" onClick={() => handleGeneratePassword(user)}>
+            <VpnKey />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+    ))
+  }
+
   return (
     <>
       <Grid container className={classes.box}>
@@ -415,48 +455,7 @@ function Users(props) {
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody>
-                      {users.map((user) => (
-                        <TableRow key={user.userName} role="listitem">
-                          <TableCell component="th" scope="row">
-                            {user.userName}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            {user.firstName} {user.lastName}
-                          </TableCell>
-                          <TableCell>{user.status}</TableCell>
-                          <TableCell>
-                            {user.role.map((r, i) => (
-                              <Grid key={i}>
-                                {
-                                  permissions.reduce(
-                                    (a, c) => a || (c.id === r ? c : undefined),
-                                    undefined
-                                  ).roleName
-                                }
-                              </Grid>
-                            ))}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
-                          </TableCell>
-                          <TableCell>
-                            <IconButton title="edit" onClick={() => handleEdit(user)}>
-                              <Edit />
-                            </IconButton>
-                            <IconButton>
-                              <Delete />
-                            </IconButton>
-                            <IconButton
-                              title="generate password"
-                              onClick={() => handleGeneratePassword(user)}
-                            >
-                              <VpnKey />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
+                    <TableBody>{mapSortedUsrs(users)}</TableBody>
                   </Table>
                 </TableContainer>
               </Grid>
