@@ -78,7 +78,6 @@ function FilterTopPlanter(props) {
   const [personId, setPersonId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  //editted
   const [organizationId, setOrganizationId] = useState("");
 
 
@@ -88,7 +87,6 @@ function FilterTopPlanter(props) {
     setFirstName("");
     setId("");
     setLastName("");
-    //editted
     setOrganizationId("");
     props.onSubmit && props.onSubmit(filter);
   }
