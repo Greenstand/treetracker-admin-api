@@ -78,6 +78,7 @@ function FilterTopPlanter(props) {
   const [personId, setPersonId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [organizationId, setOrganizationId] = useState("");
 
 
   function handleClear() {
@@ -86,6 +87,7 @@ function FilterTopPlanter(props) {
     setFirstName("");
     setId("");
     setLastName("");
+    setOrganizationId("");
     props.onSubmit && props.onSubmit(filter);
   }
 
@@ -95,6 +97,7 @@ function FilterTopPlanter(props) {
       id,
       firstName,
       lastName,
+      organizationId,
     });
     props.onSubmit && props.onSubmit(filter);
   }
@@ -121,6 +124,13 @@ function FilterTopPlanter(props) {
               placeholder='Person ID'
               value={personId}
               onChange={e => setPersonId(e.target.value)}
+            />
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='Organization ID'
+              placeholder='Organization ID'
+              value={organizationId}
+              onChange={e => setOrganizationId(e.target.value)}
             />
             <TextField
               className={`${classes.textField} ${classes.filterElement}`}
