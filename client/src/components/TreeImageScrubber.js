@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, Fragment } from 'react';
 import clsx from 'clsx';
 import Tooltip from '@material-ui/core/Tooltip';
 import { connect } from 'react-redux';
@@ -16,6 +16,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
+import Chip from '@material-ui/core/Chip';
 
 import { selectedHighlightColor } from '../common/variables.js';
 import * as loglevel from 'loglevel';
@@ -38,6 +39,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Species from './Species';
+import dateformat from 'dateformat';
 
 import Filter, { FILTER_WIDTH } from './Filter';
 import FilterTop from './FilterTop';
@@ -523,23 +525,26 @@ const TreeImageScrubber = (props) => {
         open={dialog.isOpen}
         TransitionComponent={Transition}
         onClose={handleDialogClose}
+        maxWidth='xl'
+        fullWidth={true}
       >
-        <DialogTitle>Tree Detail</DialogTitle>
         <DialogContent>
-          <img src={dialog.tree.imageUrl} />
+          <Grid container>
+            <Grid item>
+              <img style={{maxWidth: '100%'}} src={dialog.tree.imageUrl} />
+            </Grid>
+            <Grid item xs='4'>
+              <Typography variant='h4'>
+                Tree Detail
+              </Typography>
+              <Grid direction='row'>
+                {TreeDetail({tree: dialog.tree})}
+              </Grid>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
-          <Grid container justify="space-between" >
-            <Grid item>
-              <Typography variant='body2' color="primary" gutterBottom>
-                Tree #{dialog.tree.id}, 
-                Planter #{dialog.tree.planterId}, 
-                Device #{dialog.tree.deviceId}
-              </Typography>
-              <Typography variant='body2' color="primary" gutterBottom>
-                Created time: {dialog.tree.timeCreated}, 
-              </Typography>
-            </Grid>
+          <Grid container justify='end'>
             <Grid item>
               <Button onClick={handleDialogClose}>Close</Button>
             </Grid>
@@ -549,6 +554,46 @@ const TreeImageScrubber = (props) => {
     </React.Fragment>
   )
 };
+
+function TreeDetail(props){
+  const tree = props.tree;
+  const tags = [
+    tree.morphology,
+    tree.age,
+    tree.captureApprovalTag,
+    tree.rejectionReason,
+  ]
+  .filter(tag => !!tag);
+
+  return (
+    <Grid item>
+      {[
+        ['Tree ID', tree.id],
+        ['Planter ID', tree.planterId],
+        ['Device ID', tree.deviceId],
+        ['Planter Identifier', tree.planterIdentifier],
+        ['Approved', tree.isApproved ? 'true' : 'false'],
+        ['Active', tree.active ? 'true' : 'false'],
+        ['Status', tree.status],
+        ['Species', tree.species],
+        ['Created', dateformat(tree.timeCreated, 'yyyy-mm-dd HH:MM Z')],
+      ].map(row => 
+        <Grid item key={row[0]} container>
+          <Grid item xs='6'>{row[0]}:</Grid>
+          <Grid item xs='6'>{row[1] || '-'}</Grid>
+        </Grid>
+      )}
+      <Typography variant='h5'>
+        Tags
+      </Typography>
+      {
+        tags.length === 0 ? 'none' : tags.map(tag => 
+          <Chip key={tag} label={tag}/>
+        )
+      }
+    </Grid>
+  )
+}
 
 function SidePanel(props){
   const classes = useStyles(props);
