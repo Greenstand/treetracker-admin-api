@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   LinearProgress,
   Checkbox,
@@ -17,8 +17,9 @@ import {
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import IconLogo from './IconLogo'
 import { withStyles } from '@material-ui/core/styles'
-import { AppContext } from './MainFrame'
+import { AppContext } from './Context'
 import classNames from 'classnames'
+import { Redirect } from 'react-router-dom'
 
 import axios from 'axios'
 //import { useAuth } from "../context/auth";
@@ -140,7 +141,11 @@ const Login = (props) => {
             localStorage.setItem('token', JSON.stringify(token))
             localStorage.setItem('user', JSON.stringify(user))
           }
+          appContext.getContext()
+          console.log('1')
           appContext.login(user, token)
+          console.log('2')
+
           setLoading(true)
         } else {
           setErrorMessage('Invalid user name or password!')
@@ -155,6 +160,10 @@ const Login = (props) => {
       }
     })()
     return false
+  }
+
+  if (appContext.user && appContext.token) {
+    return <Redirect to="/" />
   }
 
   if (isSubmitting) {
