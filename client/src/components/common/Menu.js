@@ -12,12 +12,14 @@ import IconGroup from '@material-ui/icons/Group'
 import IconCompareArrows from '@material-ui/icons/CompareArrows'
 import IconPermIdentity from '@material-ui/icons/PermIdentity'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
+import HomeIcon from '@material-ui/icons/Home'
 import ListItemText from '@material-ui/core/ListItemText'
 import Box from '@material-ui/core/Box'
 import { useTheme } from '@material-ui/styles'
 import IconLogo from '../IconLogo'
 import { AppContext } from '../Context'
 import { PERMISSIONS, hasPermission } from '../../models/auth'
+import { Link } from 'react-router-dom'
 
 export const MENU_WIDTH = 232
 
@@ -58,6 +60,10 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: 700,
     },
   },
+  linkItemText: {
+    textDecoration: 'none',
+    color: theme.palette.primary.main,
+  },
 }))
 
 export default function GSMenu(props) {
@@ -68,42 +74,56 @@ export default function GSMenu(props) {
 
   const menus = [
     {
+      name: 'Home',
+      linkTo: '/',
+      icon: HomeIcon,
+      disabled: false,
+    },
+    {
       name: 'Monitor',
+      linkTo: '/',
       icon: IconShowChart,
       disabled: true,
     },
     {
       name: 'Verify',
+      linkTo: 'verify',
       icon: IconThumbsUpDown,
       disabled: !hasPermission(user, [PERMISSIONS.ADMIN, PERMISSIONS.TREE_AUDIT]),
     },
     {
       name: 'Trees',
+      linkTo: '/trees',
       icon: IconNature,
       disabled: !hasPermission(user, [PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
     },
     {
       name: 'Planters',
+      linkTo: 'planters',
       icon: IconGroup,
       disabled: !hasPermission(user, [PERMISSIONS.PLANTER, PERMISSIONS.ADMIN]),
     },
     {
       name: 'Payments',
+      linkTo: '/',
       icon: IconCompareArrows,
       disabled: true,
     },
     {
       name: 'Settings',
+      linkTo: '/',
       icon: IconSettings,
       disabled: true,
     },
     {
       name: 'User Manager',
+      linkTo: '/usermanager',
       icon: IconGroup,
       disabled: !hasPermission(user, PERMISSIONS.ADMIN),
     },
     {
       name: 'Account',
+      linkTo: '/account',
       icon: IconPermIdentity,
       disabled: false,
     },
@@ -123,7 +143,11 @@ export default function GSMenu(props) {
           disabled={item.disabled}
         >
           <ListItemIcon className={classes.listItemIcon}>{item.icon && <item.icon />}</ListItemIcon>
-          <ListItemText className={classes.listItemText}>{item.name}</ListItemText>
+          <ListItemText className={classes.listItemText}>
+            <Link className={classes.linkItemText} to={`${item.linkTo}`}>
+              {item.name}
+            </Link>
+          </ListItemText>
         </MenuItem>
       ))}
     </>
