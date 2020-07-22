@@ -182,7 +182,7 @@ function Account(props) {
         </Grid>
         <Grid item xs={9}>
           <Grid container className={classes.rightBox}>
-            <Grid item xs="12">
+            <Grid item xs={12}>
               <Grid container className={classes.titleBox}>
                 <Grid item>
                   <AccountIcon className={classes.accountIcon} />
@@ -210,7 +210,7 @@ function Account(props) {
                   <Typography className={classes.title}>Role</Typography>
                   <Typography className={classes.item}>
                     {user.role.map((e) => (
-                      <span>{e.name}/</span>
+                      <span key={e.name}>{e.name}/</span>
                     ))}
                   </Typography>
                 </Grid>
