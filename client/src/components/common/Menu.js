@@ -1,8 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
-import Paper from '@material-ui/core/Paper'
-import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import IconSettings from '@material-ui/icons/Settings'
 import IconShowChart from '@material-ui/icons/ShowChart'
@@ -139,7 +137,6 @@ export default function GSMenu(props) {
           key={i}
           className={classes.menuItem}
           selected={props.active === item.name}
-          onClick={() => appContext.handleMenuChange(item.name)}
           disabled={item.disabled}
         >
           <ListItemIcon className={classes.listItemIcon}>{item.icon && <item.icon />}</ListItemIcon>

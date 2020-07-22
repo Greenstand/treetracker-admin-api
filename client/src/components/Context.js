@@ -1,31 +1,16 @@
 import React from 'react'
 import { session } from '../models/auth'
 
-export const AppContext = React.createContext({
-  menuName: '',
-  user: undefined,
-})
+export const AppContext = React.createContext({})
 
 export const AppProvider = (props) => {
-  const [menuName, setMenuName] = React.useState(/* default menu */ 'Login')
-  const refContainer = React.useRef()
   const [user, setUser] = React.useState(undefined)
   const [token, setToken] = React.useState(undefined)
 
   const context = {
-    menuName,
-    handleMenuChange: (n) => {
-      console.log('Set menu to:', n)
-      setMenuName(n)
-    },
-    handleHome: () => {
-      console.log('Go to home')
-      setMenuName('Home')
-    },
     login: (user, token) => {
       setUser(user)
       setToken(token)
-      console.log(user, token)
       session.token = token
     },
     logout: () => {
@@ -36,9 +21,6 @@ export const AppProvider = (props) => {
     },
     user,
     token,
-    getContext: () => {
-      console.log('get the context!')
-    },
   }
 
   return <AppContext.Provider value={context}>{props.children}</AppContext.Provider>

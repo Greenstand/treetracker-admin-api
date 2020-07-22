@@ -20,11 +20,8 @@ import { withStyles } from '@material-ui/core/styles'
 import { AppContext } from './Context'
 import classNames from 'classnames'
 import { Redirect } from 'react-router-dom'
-
 import axios from 'axios'
-//import { useAuth } from "../context/auth";
-//import Copyright from "components/Copyright";
-//import { useHistory } from "react-router-dom";
+// import Copyright from 'components/Copyright'
 
 const styles = (theme) => ({
   paper: {
@@ -141,11 +138,7 @@ const Login = (props) => {
             localStorage.setItem('token', JSON.stringify(token))
             localStorage.setItem('user', JSON.stringify(user))
           }
-          appContext.getContext()
-          console.log('1')
           appContext.login(user, token)
-          console.log('2')
-
           setLoading(true)
         } else {
           setErrorMessage('Invalid user name or password!')

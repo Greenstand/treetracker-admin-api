@@ -118,24 +118,7 @@ function Users(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
   const { user, token } = appContext
-  //  const users = [
-  //    {
-  //      userName: 'dadiorchen',
-  //      firstName: 'Dadior',
-  //      lastName: 'Chen',
-  //      email: 'dadiorchen@outlook.com',
-  //      role: [
-  //        {
-  //          id: 0,
-  //          name: 'admin',
-  //        },
-  //        {
-  //          id: 1,
-  //          name: 'Tree Auditor',
-  //        },
-  //      ],
-  //    },
-  //  ]
+
   const [userEditing, setUserEditing] = React.useState(undefined)
   const [userPassword, setUserPassword] = React.useState(undefined)
   const [newPassword, setNewPassword] = React.useState('')
