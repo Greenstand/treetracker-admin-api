@@ -586,54 +586,6 @@ function SidePanel(props){
       elevation={11}
     >
       <Grid container direction={'column'} className={classes.sidePanelContainer}>
-        <Grid>
-          <Typography variant='h5' >Tags</Typography>
-        </Grid>
-        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
-          <RadioGroup value={morphology} className={classes.radioGroup}>
-            <FormControlLabel 
-              value='seedling' 
-              onClick={() => handleMorphology('seedling')} 
-              control={<Radio/>} 
-              label='Seedling' />
-            <FormControlLabel 
-              value='direct_seedling' 
-              control={<Radio/>} 
-              onClick={() => handleMorphology('direct_seedling')}
-              label='Direct seeding' />
-            <FormControlLabel 
-              onClick={() => handleMorphology('fmnr')}
-              value='fmnr' control={<Radio/>} label='Pruned/tied (FMNR)' />
-          </RadioGroup>
-        </Grid>
-        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
-          <RadioGroup value={age} className={classes.radioGroup}>
-            <FormControlLabel 
-              onClick={() => handleAge('new_tree')}
-              value='new_tree' control={<Radio/>} label='New tree(s)' />
-            <FormControlLabel 
-              onClick={() => handleAge('over_two_years')}
-              value='over_two_years' control={<Radio/>} label='> 2 years old' />
-          </RadioGroup>
-        </Grid>
-        {/*
-        <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
-          <RadioGroup className={classes.radioGroup}>
-            <FormControlLabel disabled value='Create token' control={<Radio/>} label='Create token' />
-            <FormControlLabel disabled value='No token' control={<Radio/>} label='No token' />
-          </RadioGroup>
-        </Grid>
-        */}
-        <Grid>
-          <Typography variant='h6'>Species (if known)</Typography>
-          <Species
-            ref={speciesRef}
-          />
-        </Grid>
-        <Grid>
-          <Typography variant='h6'>Additional tags</Typography>
-          <TreeTags placeholder='Add other text tags'/>
-        </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <Tabs 
             indicatorColor='primary'
@@ -654,34 +606,84 @@ function SidePanel(props){
             />
           </Tabs>
           {switchApprove === 0 &&
-            <RadioGroup
-              value={captureApprovalTag}
-            >
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('simple_leaf')}
-                value='simple_leaf' control={<Radio/>} label='Simple leaf' />
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('complex_leaf')}
-                value='complex_leaf' control={<Radio/>} label='Complex leaf' />
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('acacia_like')}
-                value='acacia_like' control={<Radio/>} label='Acacia-like' />
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('conifer')}
-                value='conifer' control={<Radio/>} label='Conifer' />
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('fruit')}
-                value='fruit' control={<Radio/>} label='Fruit' />
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('mangrove')}
-                value='mangrove' control={<Radio/>} label='Mangrove' />
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('palm')}
-                value='palm' control={<Radio/>} label='Palm' />
-              <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('timber')}
-                value='timber' control={<Radio/>} label='Timber' />
-            </RadioGroup>
+            <Grid container direction={'column'} className={classes.sidePanelContainer}>
+              <Grid>
+                <Typography variant='h6' >Tags</Typography>
+              </Grid>
+              <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+                <RadioGroup value={morphology} className={classes.radioGroup}>
+                  <FormControlLabel 
+                    value='seedling' 
+                    onClick={() => handleMorphology('seedling')} 
+                    control={<Radio/>} 
+                    label='Seedling' />
+                  <FormControlLabel 
+                    value='direct_seedling' 
+                    control={<Radio/>} 
+                    onClick={() => handleMorphology('direct_seedling')}
+                    label='Direct seeding' />
+                  <FormControlLabel 
+                    onClick={() => handleMorphology('fmnr')}
+                    value='fmnr' control={<Radio/>} label='Pruned/tied (FMNR)' />
+                </RadioGroup>
+              </Grid>
+              <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+                <RadioGroup value={age} className={classes.radioGroup}>
+                  <FormControlLabel 
+                    onClick={() => handleAge('new_tree')}
+                    value='new_tree' control={<Radio/>} label='New tree(s)' />
+                  <FormControlLabel 
+                    onClick={() => handleAge('over_two_years')}
+                    value='over_two_years' control={<Radio/>} label='> 2 years old' />
+                </RadioGroup>
+              </Grid>
+                  {/*
+                  <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
+                    <RadioGroup className={classes.radioGroup}>
+                      <FormControlLabel disabled value='Create token' control={<Radio/>} label='Create token' />
+                      <FormControlLabel disabled value='No token' control={<Radio/>} label='No token' />
+                    </RadioGroup>
+                  </Grid>
+                  */}
+              <Grid>
+                <Typography variant='h6'>Species (if known)</Typography>
+                <Species
+                  ref={speciesRef}
+                />
+              </Grid>
+              <Grid>
+                <Typography variant='h6'>Additional tags</Typography>
+                <TreeTags placeholder='Add other text tags'/>
+              </Grid>
+              <RadioGroup
+                value={captureApprovalTag}
+              >
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('simple_leaf')}
+                  value='simple_leaf' control={<Radio/>} label='Simple leaf' />
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('complex_leaf')}
+                  value='complex_leaf' control={<Radio/>} label='Complex leaf' />
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('acacia_like')}
+                  value='acacia_like' control={<Radio/>} label='Acacia-like' />
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('conifer')}
+                  value='conifer' control={<Radio/>} label='Conifer' />
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('fruit')}
+                  value='fruit' control={<Radio/>} label='Fruit' />
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('mangrove')}
+                  value='mangrove' control={<Radio/>} label='Mangrove' />
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('palm')}
+                  value='palm' control={<Radio/>} label='Palm' />
+                <FormControlLabel 
+                  onClick={() => handleCaptureApprovalTag('timber')}
+                  value='timber' control={<Radio/>} label='Timber' />
+              </RadioGroup>
+            </Grid>
           }
           {switchApprove === 1 &&
             <RadioGroup
