@@ -302,8 +302,7 @@ function Users(props) {
       </List>
     </Paper>
   )
-
-  async function handleSave() {
+ async function handleSave() {
     if (userEditing.userName === '' || right === undefined || right.length === 0) {
       setErrorMessage('Missing Field')
       return
@@ -311,52 +310,42 @@ function Users(props) {
     //upload
     if (userEditing.id === undefined) {
       //add
-      try {
-        let res = await axios.post(
-          `${process.env.REACT_APP_API_ROOT}/auth/admin_users/`,
-          {
-            ...userEditing,
-            role: right.map((e) => e.id),
-          },
-          {
-            headers: { Authorization: token },
-          }
-        )
-        if (res.status === 201) {
-          setUserEditing(undefined)
-          load()
-        } else {
-          console.error('load fail:', res)
-          setErrorMessage('An error occured while creating user. Please contact the system admin.')
-          return
+      let res = await axios.post(
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/`,
+        {
+          ...userEditing,
+          role: right.map((e) => e.id),
+        },
+        {
+          headers: { Authorization: token },
         }
-      } catch (e) {
-        console.error(e)
-        setErrorMessage('An error occured while creating user. Please contact the system admin.')
+      )
+      if (res.status === 201) {
+        setUserEditing(undefined)
+        setRight([])
+        load()
+      } else {
+        console.error('load fail:', res)
+        return
       }
     } else {
-      try {
-        let res = await axios.patch(
-          `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userEditing.id}`,
-          {
-            ...userEditing,
-            role: right.map((e) => e.id),
-          },
-          {
-            headers: { Authorization: token },
-          }
-        )
-        if (res.status === 200) {
-          setUserEditing(undefined)
-          load()
-        } else {
-          console.error('load fail:', res)
-          setErrorMessage('An error occured while updating user. Please contact the system admin.')
-          return
+      let res = await axios.patch(
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userEditing.id}`,
+        {
+          ...userEditing,
+          role: right.map((e) => e.id),
+        },
+        {
+          headers: { Authorization: token },
         }
-      } catch (e) {
-        console.error(e)
-        setErrorMessage('An error occured while updating user. Please contact the system admin.')
+      )
+      if (res.status === 200) {
+        setUserEditing(undefined)
+        setRight([])
+        load()
+      } else {
+        console.error('load fail:', res)
+        return
       }
     }
   }
@@ -428,6 +417,7 @@ function Users(props) {
     setLeft(permissions)
     setChecked([])
     setUserEditing(undefined)
+    setRight([])
   }
 
   const handleCopy = () => {
@@ -435,6 +425,46 @@ function Users(props) {
     passwordRef.current.childNodes[1].childNodes[0].select()
     document.execCommand('copy')
     setCopyMsg('Copied!')
+  }
+
+  function mapSortedUsrs(users, option = 'id') {
+    const sortedUsrs = users.sort((a, b) => a[option] - b[option])
+    return mapUsrs(sortedUsrs)
+  }
+
+  function mapUsrs(users) {
+    return users.map((user) => (
+      <TableRow key={user.userName} role="listitem">
+        <TableCell component="th" scope="row">
+          {user.userName}
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {user.firstName} {user.lastName}
+        </TableCell>
+        <TableCell>{user.status}</TableCell>
+        <TableCell>
+          {user.role.map((r, i) => (
+            <Grid key={i}>
+              {permissions.reduce((a, c) => a || (c.id === r ? c : undefined), undefined).roleName}
+            </Grid>
+          ))}
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
+        </TableCell>
+        <TableCell>
+          <IconButton title="edit" onClick={() => handleEdit(user)}>
+            <Edit />
+          </IconButton>
+          <IconButton>
+            <Delete />
+          </IconButton>
+          <IconButton title="generate password" onClick={() => handleGeneratePassword(user)}>
+            <VpnKey />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+    ))
   }
 
   return (
@@ -492,48 +522,7 @@ function Users(props) {
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody>
-                      {users.map((user) => (
-                        <TableRow key={user.userName} role="listitem">
-                          <TableCell component="th" scope="row">
-                            {user.userName}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            {user.firstName} {user.lastName}
-                          </TableCell>
-                          <TableCell>{user.active===true?'active':'inactive'}</TableCell>
-                          <TableCell>
-                            {user.role.map((r, i) => (
-                              <Grid key={i}>
-                                {
-                                  permissions.reduce(
-                                    (a, c) => a || (c.id === r ? c : undefined),
-                                    undefined
-                                  ).roleName
-                                }
-                              </Grid>
-                            ))}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
-                          </TableCell>
-                          <TableCell>
-                            <IconButton title="edit" onClick={() => handleEdit(user)}>
-                              <Edit />
-                            </IconButton>
-                            <IconButton title="delete" onClick={() => handleDelete(user)}>
-                              <Delete />
-                            </IconButton>
-                            <IconButton
-                              title="generate password"
-                              onClick={() => handleGeneratePassword(user)}
-                            >
-                              <VpnKey />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
+                    <TableBody>{mapSortedUsrs(users)}</TableBody>
                   </Table>
                 </TableContainer>
               </Grid>
@@ -548,15 +537,18 @@ function Users(props) {
       >
         <DialogTitle id="form-dialog-title">User Detail</DialogTitle>
         <DialogContent>
+          {/*
+        <DialogContentText>
+          To subscribe to this website, please enter your email address here. We will send updates
+          occasionally.
+        </DialogContentText>
+        */}
           <TextField
-            required
-            error={userEditing && userEditing.userName === ''}
             autoFocus
             id="userName"
             label="Username"
             type="text"
             variant="outlined"
-            helperText={userEditing && userEditing.userName === '' ? 'Field is Required' : ''}
             fullWidth
             InputLabelProps={{
               shrink: true,
@@ -614,47 +606,6 @@ function Users(props) {
             className={classes.input}
             onChange={handleEmailChange}
           />
-          <FormControl component="fieldset" className={classes.formControl}>
-            <Grid container>
-              <Grid item>
-                <FormLabel component="legend">Active:</FormLabel>
-              </Grid>
-              <Grid item>
-                <RadioGroup
-                  aria-label="active-state"
-                  name="active-state"
-                  className={classes.radioGroup}
-                  value={(userEditing && userEditing.active) || ''}
-                  onChange={handleActiveChange}
-                >
-                  <Grid container>
-                    <Grid item>
-                      <FormControlLabel
-                        value="true"
-                        control={
-                          <Radio
-                            classes={{ root: classes.radioButton, checked: classes.radioChecked }}
-                          />
-                        }
-                        label="Active"
-                      />
-                    </Grid>
-                    <Grid item>
-                      <FormControlLabel
-                        value="false"
-                        control={
-                          <Radio
-                            classes={{ root: classes.radioButton, checked: classes.radioChecked }}
-                          />
-                        }
-                        label="Inactive"
-                      />
-                    </Grid>
-                  </Grid>
-                </RadioGroup>
-              </Grid>
-            </Grid>
-          </FormControl>
           {userEditing && userEditing.createdAt && (
             <Grid container spacing={2}>
               <Grid item>
@@ -667,78 +618,62 @@ function Users(props) {
               </Grid>
             </Grid>
           )}
-          <FormControl error={right.length === 0}>
-            <Grid
-              container
-              spacing={2}
-              justify="center"
-              alignItems="center"
-              className={classes.root}
-            >
-              <Grid item role="list">
-                <FormLabel variant="outline">Roles</FormLabel>
-                {/* <Typography variant="outline">Roles</Typography> */}
-                {customList(left)}
-              </Grid>
-              <Grid item>
-                <Grid container direction="column" alignItems="center">
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    className={classes.button}
-                    onClick={handleAllRight}
-                    disabled={left.length === 0}
-                    aria-label="move all right"
-                  >
-                    ≫
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    className={classes.button}
-                    onClick={handleCheckedRight}
-                    disabled={leftChecked.length === 0}
-                    aria-label="move selected right"
-                  >
-                    &gt;
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    className={classes.button}
-                    onClick={handleCheckedLeft}
-                    disabled={rightChecked.length === 0}
-                    aria-label="move selected left"
-                  >
-                    &lt;
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    className={classes.button}
-                    onClick={handleAllLeft}
-                    disabled={right.length === 0}
-                    aria-label="move all left"
-                  >
-                    ≪
-                  </Button>
-                </Grid>
-              </Grid>
-              <Grid item role="list">
-                <FormLabel variant="outline">Selected</FormLabel>
-                {/* <Typography variant="outline">Selected</Typography> */}
-                {customList(right)}
+          <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
+            <Grid item role="list">
+              <Typography variant="outline">Roles</Typography>
+              {customList(left)}
+            </Grid>
+            <Grid item>
+              <Grid container direction="column" alignItems="center">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                  onClick={handleAllRight}
+                  disabled={left.length === 0}
+                  aria-label="move all right"
+                >
+                  ≫
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                  onClick={handleCheckedRight}
+                  disabled={leftChecked.length === 0}
+                  aria-label="move selected right"
+                >
+                  &gt;
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                  onClick={handleCheckedLeft}
+                  disabled={rightChecked.length === 0}
+                  aria-label="move selected left"
+                >
+                  &lt;
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                  onClick={handleAllLeft}
+                  disabled={right.length === 0}
+                  aria-label="move all left"
+                >
+                  ≪
+                </Button>
               </Grid>
             </Grid>
-            {right.length === 0 && (
-              <FormHelperText>At Least One Role Must be Selected</FormHelperText>
-            )}
-          </FormControl>
+            <Grid item role="list">
+              <Typography variant="outline">Selected</Typography>
+              {customList(right)}
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
-          <Typography variant="subtitle2" color="error">
-            {errorMessage}
-          </Typography>
           <Button onClick={handleUserDetailClose}>Cancel</Button>
           <Button onClick={handleSave} variant="contained" color="primary">
             Save

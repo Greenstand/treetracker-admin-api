@@ -305,19 +305,23 @@ const TreeImageScrubber = (props) => {
     return props.verityState.treeImagesSelected.indexOf(id) >= 0
   }
 
-  const placeholderImages = Array(props.verityState.pageSize).fill().map((_, index) => {
-    return {
-      id: index,
-      placeholder: true,
-    };
-  });
-
   const treeImages = props.verityState.treeImages.filter((tree, index) => {
     return index >= props.verityState.currentPage * props.verityState.pageSize &&
            index < (props.verityState.currentPage+1) * props.verityState.pageSize;
   });
 
-  const treeImageItems = (props.verityState.isLoading ? placeholderImages : treeImages)
+  const placeholderImages =
+    props.verityState.isLoading ?
+      Array(props.verityState.pageSize - treeImages.length)
+      .fill().map((_, index) => {
+        return {
+          id: index,
+          placeholder: true,
+        };
+      })
+    : [];
+
+  const treeImageItems = treeImages.concat(placeholderImages)
     .map(tree => {
       return (
         <Grid item xs={12} sm={6} md={4} xl={3}>
@@ -371,8 +375,7 @@ const TreeImageScrubber = (props) => {
           </div>
         </Grid>
       );
-    }
-  );
+    });
 
   function handleFilterClick() {
     if (isFilterShown) {
