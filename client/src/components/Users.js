@@ -32,7 +32,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
-import { AppContext } from './MainFrame'
+import { AppContext } from './Context'
 import pwdGenerator from 'generate-password'
 import dateformat from 'dateformat'
 

@@ -146,12 +146,6 @@ export default function Mainframe() {
   return (
     <AppContext.Provider value={context}>
       <Grid container wrap="nowrap">
-        <Grid item>{/* hide menu 
-				<Menu
-					active={menuName}
-					onClick={handleMenuClick}
-				/>
-        */}</Grid>
         <Grid
           item
           style={{

@@ -26,16 +26,16 @@ export const AppProvider = (props) => {
       console.log('Go to home')
       setMenuName('Home')
     },
-    login: (theUser, token) => {
-      setUser(theUser)
+    login: (user, token) => {
+      setUser(user)
       setToken(token)
-      console.log(theUser, token)
+      console.log(user, token)
       // setMenuName('Home')
       session.token = token
     },
     logout: () => {
       setUser(undefined)
-      setMenuName('Login')
+      // setMenuName('Login')
       session.token = undefined
       localStorage.removeItem('token')
       localStorage.removeItem('user')

@@ -79,8 +79,8 @@ export default function Routers() {
             }}
           >
             <Switch>
-              <Route exact path="/" component={Home} />
               <Route path="/login" component={Login} />
+              <PrivateRoute exact path="/" component={Home} />
               <PrivateRoute path="/trees" component={Trees} />
               <PrivateRoute path="/users" component={Users} />
               <PrivateRoute path="/treetest" component={Trees} />
@@ -91,6 +91,9 @@ export default function Routers() {
                   <TreeImageScrubber getScrollContainerRef={() => refContainer.current} />
                 )}
               />
+              <PrivateRoute path="/planters" component={Planters} />
+              <PrivateRoute path="/account" component={Account} />
+
               {/* <Route path="/trees" component={Trees} /> */}
               {/* 
         <Route path="/users" component={Users} />
