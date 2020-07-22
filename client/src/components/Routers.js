@@ -87,23 +87,11 @@ export default function Routers() {
               <PrivateRoute path="/trees" component={Trees} />
               <PrivateRoute
                 path="/verify"
-                render={() => (
-                  <TreeImageScrubber getScrollContainerRef={() => refContainer.current} />
-                )}
+                component={TreeImageScrubber}
+                getScrollContainerRef={() => refContainer.current}
               />
               <PrivateRoute path="/planters" component={Planters} />
               <PrivateRoute path="/account" component={Account} />
-
-              {/* <Route path="/trees" component={Trees} /> */}
-              {/* 
-        <Route path="/users" component={Users} />
-        <Route path="/treetest" component={Trees} />
-        <Route
-          path="/verify"
-          render={() => (
-            <TreeImageScrubber getScrollContainerRef={() => appContext.refContainer.current} />
-          )}
-        /> */}
             </Switch>
           </Grid>
         </Grid>

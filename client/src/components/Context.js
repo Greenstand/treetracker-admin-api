@@ -3,12 +3,8 @@ import { session } from '../models/auth'
 
 export const AppContext = React.createContext({
   menuName: '',
-  // handleMenuChange: () => {},
-  // handleHome: () => {},
-  //login user
   user: undefined,
 })
-// export { AppContext }
 
 export const AppProvider = (props) => {
   const [menuName, setMenuName] = React.useState(/* default menu */ 'Login')
@@ -30,12 +26,10 @@ export const AppProvider = (props) => {
       setUser(user)
       setToken(token)
       console.log(user, token)
-      // setMenuName('Home')
       session.token = token
     },
     logout: () => {
       setUser(undefined)
-      // setMenuName('Login')
       session.token = undefined
       localStorage.removeItem('token')
       localStorage.removeItem('user')
