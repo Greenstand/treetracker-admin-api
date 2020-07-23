@@ -32,7 +32,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 import axios from 'axios'
-import { AppContext } from './MainFrame'
+import { AppContext } from './Context'
 import pwdGenerator from 'generate-password'
 import dateformat from 'dateformat'
 
@@ -118,24 +118,7 @@ function Users(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
   const { user, token } = appContext
-  //  const users = [
-  //    {
-  //      userName: 'dadiorchen',
-  //      firstName: 'Dadior',
-  //      lastName: 'Chen',
-  //      email: 'dadiorchen@outlook.com',
-  //      role: [
-  //        {
-  //          id: 0,
-  //          name: 'admin',
-  //        },
-  //        {
-  //          id: 1,
-  //          name: 'Tree Auditor',
-  //        },
-  //      ],
-  //    },
-  //  ]
+
   const [userEditing, setUserEditing] = React.useState(undefined)
   const [userPassword, setUserPassword] = React.useState(undefined)
   const [newPassword, setNewPassword] = React.useState('')

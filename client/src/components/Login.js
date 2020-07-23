@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   LinearProgress,
   Checkbox,
@@ -17,13 +17,11 @@ import {
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import IconLogo from './IconLogo'
 import { withStyles } from '@material-ui/core/styles'
-import { AppContext } from './MainFrame'
+import { AppContext } from './Context'
 import classNames from 'classnames'
-
+import { Redirect } from 'react-router-dom'
 import axios from 'axios'
-//import { useAuth } from "../context/auth";
-//import Copyright from "components/Copyright";
-//import { useHistory } from "react-router-dom";
+// import Copyright from 'components/Copyright'
 
 const styles = (theme) => ({
   paper: {
@@ -155,6 +153,10 @@ const Login = (props) => {
       }
     })()
     return false
+  }
+
+  if (appContext.user && appContext.token) {
+    return <Redirect to="/" />
   }
 
   if (isSubmitting) {

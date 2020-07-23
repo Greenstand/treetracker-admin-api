@@ -35,6 +35,8 @@
     "react-dom": "*",
     "react-infinite": "*",
     "react-redux": "*",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "*",
     "recompose": "*",
     "typeface-roboto": "*",
