@@ -529,18 +529,17 @@ const TreeImageScrubber = (props) => {
         TransitionComponent={Transition}
         onClose={handleDialogClose}
         maxWidth='xl'
-        fullWidth={true}
       >
         <DialogContent>
-          <Grid container>
+          <Grid container spacing='4' wrap='nowrap'>
             <Grid item>
               <img style={{maxWidth: '100%'}} src={dialog.tree.imageUrl} />
             </Grid>
-            <Grid item xs='4'>
+            <Grid item style={{minWidth: '240px'}} spacing='2'>
               <Typography variant='h4'>
                 Tree Detail
               </Typography>
-              <Grid direction='row'>
+              <Grid container direction='row' spacing='4'>
                 {TreeDetail({tree: dialog.tree})}
               </Grid>
             </Grid>
@@ -569,7 +568,7 @@ function TreeDetail(props){
   .filter(tag => !!tag);
 
   return (
-    <Grid item>
+    <Grid item container direction='column' spacing='4'>
       {[
         ['Tree ID', tree.id],
         ['Planter ID', tree.planterId],
@@ -580,20 +579,22 @@ function TreeDetail(props){
         ['Status', tree.status],
         ['Species', tree.species],
         ['Created', dateformat(tree.timeCreated, 'yyyy-mm-dd HH:MM Z')],
-      ].map(row => 
-        <Grid item key={row[0]} container>
-          <Grid item xs='6'>{row[0]}:</Grid>
-          <Grid item xs='6'>{row[1] || '-'}</Grid>
+      ].map(attribute => 
+        <Grid item key={attribute[0]}>
+          <Typography variant='h6'>{attribute[0]}</Typography>
+          <Typography variant='body1'>{attribute[1] || '-'}</Typography>
         </Grid>
       )}
-      <Typography variant='h5'>
-        Tags
-      </Typography>
-      {
-        tags.length === 0 ? 'none' : tags.map(tag => 
-          <Chip key={tag} label={tag}/>
-        )
-      }
+      <Grid item>
+        <Typography variant='h6'>
+          Tags
+        </Typography>
+        {
+          tags.length === 0 ? <Typography variant='body1'>none</Typography> : tags.map(tag => 
+            <Chip key={tag} label={tag}/>
+          )
+        }
+      </Grid>
     </Grid>
   )
 }
