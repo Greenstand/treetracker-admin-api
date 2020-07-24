@@ -167,6 +167,10 @@ const useStyles = makeStyles(theme => ({
   tooltip: {
     maxWidth: 'none',
   },
+  MuiDialogActionsSpacing: {
+  paddingLeft : '16px',
+  paddingRight : '16px',
+  },
 
 }));
 
@@ -530,7 +534,7 @@ const TreeImageScrubber = (props) => {
         </DialogContent>
         <DialogActions>
           <Grid container justify="space-between" >
-            <Grid item>
+            <Grid item className={classes.MuiDialogActionsSpacing}>
               <Typography variant='body2' color="primary" gutterBottom>
                 Tree #{dialog.tree.id}, 
                 Planter #{dialog.tree.planterId}, 
