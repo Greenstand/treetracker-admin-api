@@ -309,19 +309,23 @@ const TreeImageScrubber = (props) => {
     return props.verityState.treeImagesSelected.indexOf(id) >= 0
   }
 
-  const placeholderImages = Array(props.verityState.pageSize).fill().map((_, index) => {
-    return {
-      id: index,
-      placeholder: true,
-    };
-  });
-
   const treeImages = props.verityState.treeImages.filter((tree, index) => {
     return index >= props.verityState.currentPage * props.verityState.pageSize &&
            index < (props.verityState.currentPage+1) * props.verityState.pageSize;
   });
 
-  const treeImageItems = (props.verityState.isLoading ? placeholderImages : treeImages)
+  const placeholderImages =
+    props.verityState.isLoading ?
+      Array(props.verityState.pageSize - treeImages.length)
+      .fill().map((_, index) => {
+        return {
+          id: index,
+          placeholder: true,
+        };
+      })
+    : [];
+
+  const treeImageItems = treeImages.concat(placeholderImages)
     .map(tree => {
       return (
         <Grid item xs={12} sm={6} md={4} xl={3}>
@@ -375,8 +379,7 @@ const TreeImageScrubber = (props) => {
           </div>
         </Grid>
       );
-    }
-  );
+    });
 
   function handleFilterClick() {
     if (isFilterShown) {
@@ -559,7 +562,7 @@ function SidePanel(props){
   const [switchApprove, handleSwitchApprove] = React.useState(0)
   const [morphology, handleMorphology] = React.useState('seedling')
   const [age, handleAge] = React.useState('new_tree')
-  const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_lead')
+  const [captureApprovalTag, handleCaptureApprovalTag] = React.useState('simple_leaf')
   const [rejectionReason, handleRejectionReason] = React.useState('not_tree')
   const speciesRef = React.useRef(null)
 
@@ -662,8 +665,8 @@ function SidePanel(props){
               value={captureApprovalTag}
             >
               <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('simple_lead')}
-                value='simple_lead' control={<Radio/>} label='Simple leaf' />
+                onClick={() => handleCaptureApprovalTag('simple_leaf')}
+                value='simple_leaf' control={<Radio/>} label='Simple leaf' />
               <FormControlLabel 
                 onClick={() => handleCaptureApprovalTag('complex_leaf')}
                 value='complex_leaf' control={<Radio/>} label='Complex leaf' />
@@ -680,8 +683,8 @@ function SidePanel(props){
                 onClick={() => handleCaptureApprovalTag('mangrove')}
                 value='mangrove' control={<Radio/>} label='Mangrove' />
               <FormControlLabel 
-                onClick={() => handleCaptureApprovalTag('plam')}
-                value='plam' control={<Radio/>} label='Palm' />
+                onClick={() => handleCaptureApprovalTag('palm')}
+                value='palm' control={<Radio/>} label='Palm' />
               <FormControlLabel 
                 onClick={() => handleCaptureApprovalTag('timber')}
                 value='timber' control={<Radio/>} label='Timber' />
