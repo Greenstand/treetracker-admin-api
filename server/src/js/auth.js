@@ -395,7 +395,7 @@ const isAuth = async (req, res, next) => {
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
-  const isApiExplorerReq = isDevEnvironment && url.startsWith('/api/explorer/');
+  const isApiExplorerReq = isDevEnvironment && url.startsWith('/api/explorer');
   if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || isApiExplorerReq) {
     next();
     return;
