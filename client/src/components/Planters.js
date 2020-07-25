@@ -51,6 +51,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import Navbar from "./Navbar";
+import PlanterDetail from "./PlanterDetail"
 
 const log = require('loglevel').getLogger('../components/Planters')
 
@@ -299,7 +300,7 @@ const Planters = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      <Detail open={isDetailShown} planter={planterDetail} onClose={() => setDetailShown(false)} />
+      <PlanterDetail open={isDetailShown} planter={planterDetail} onClose={() => setDetailShown(false)} />
     </React.Fragment>
   )
 }
@@ -343,109 +344,6 @@ function Planter (props){
   )
 }
 export {Planter};
-
-
-const useDetailStyle = makeStyles(theme => ({
-  root: {
-    width: 441,
-  },
-  box: {
-    padding: theme.spacing(4),
-  },
-  cardMedia: {
-    height: "378px",
-  },
-  personBox: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "lightgray",
-    height: "100%",
-  },
-  person: {
-    height: 180,
-    width: 180,
-    fill: "gray",
-  },
-  name: {
-    textTransform: "capitalize",
-  },
-}));
-
-function Detail(props){
-  const classes = useDetailStyle();
-  const {
-    planter,
-  } = props;
-
-  return(
-    <Drawer anchor="right" open={props.open} onClose={props.onClose}>
-      <Grid className={classes.root} >
-        <Grid container direction="column">
-          <Grid item>
-            <Grid container justify="space-between" alignItems="center" >
-              <Grid item>
-                <Box m={4} >
-                  <Typography color="primary" variant="h6" >
-                    Planter Detail
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item>
-                <IconButton>
-                  <Close onClick={() => props.onClose()} />
-                </IconButton>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-
-            {planter.imageUrl &&
-              <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
-            }
-            {!planter.imageUrl &&
-              <CardMedia className={classes.cardMedia} >
-                <Grid container className={classes.personBox} >
-                  <Person className={classes.person} />
-                </Grid>
-              </CardMedia>
-            }
-          </Grid>
-          <Grid item className={classes.box} >
-            <Typography variant="h5" color="primary" className={classes.name} >{props.planter.firstName} {props.planter.lastName}</Typography>
-            <Typography variant="body2">ID:{props.planter.id}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Email address</Typography>
-            <Typography variant="body1" >{props.planter.email || "---"}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Phone number</Typography>
-            <Typography variant="body1" >{props.planter.phone || "---"}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Person ID</Typography>
-            <Typography variant="body1" >{props.planter.personId || "---"}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Organization</Typography>
-            <Typography variant="body1" >{props.planter.organization || "---" }</Typography>
-          </Grid>
-          <Divider />
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Organization ID</Typography>
-            <Typography variant="body1" >{props.planter.organizationId || "---"}</Typography>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Drawer>
-  )
-}
-export {Detail}
 
 export default connect(
   //state
