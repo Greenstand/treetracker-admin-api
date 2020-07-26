@@ -66,7 +66,7 @@ function buildInsertFields(obj){
 }
 
 function getEnvironment(){
-  return process.env.NODE_ENV || 'development';
+  return process.env.NODE_ENV;
 }
 
 exports.utils = {

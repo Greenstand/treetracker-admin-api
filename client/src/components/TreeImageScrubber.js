@@ -169,6 +169,10 @@ const useStyles = makeStyles(theme => ({
   tooltip: {
     maxWidth: 'none',
   },
+  MuiDialogActionsSpacing: {
+  paddingLeft : '16px',
+  paddingRight : '16px',
+  },
 
 }));
 

@@ -131,8 +131,6 @@ router.post('/login', async function login(req, res, next) {
       userLogin.role = result.rows.map(r => r.role_id);
     }
 
-    let userLogin = result.rows.length === 1 ? utils.convertCamel(result.rows[0]) : null;
-
     // If user exists in db AND user is active
     // query remaining details and return
     if (userLogin && userLogin.active) {
@@ -397,7 +395,7 @@ const isAuth = async (req, res, next) => {
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
-  const isApiExplorerReq = isDevEnvironment && url.startsWith('/api/explorer/');
+  const isApiExplorerReq = isDevEnvironment;
   if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || isApiExplorerReq) {
     next();
     return;

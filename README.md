@@ -166,8 +166,12 @@ So the React App would connect to http://localhost:3000 for API server.
 
 ```
 cd server
-npm start
+NODE_ENV=development ./node_modules/.bin/nodemon
 ```
+
+NOTE: To set NODE_ENV=development is just for Loopback API explorer is available, we can visit it at: http://localhost:3000/api/explorer.
+
+And using nodemon to run the server rather than 'npm start' is for getting the ability to automatically refresh the server after files changing.
 
 - Start client:
 
