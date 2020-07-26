@@ -10,11 +10,6 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button'; // replace with icons down the line
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import Chip from '@material-ui/core/Chip';
 
@@ -39,7 +34,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Species from './Species';
-import dateformat from 'dateformat';
 
 import Filter, { FILTER_WIDTH } from './Filter';
 import FilterTop from './FilterTop';
@@ -49,6 +43,7 @@ import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
 import Navbar from "./Navbar";
 import TreeTags from './TreeTags';
+import TreeDetailDialog from './TreeDetailDialog';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -528,80 +523,16 @@ const TreeImageScrubber = (props) => {
             className={classes.snackbar}
           />
         )}
-      <Dialog
+
+      <TreeDetailDialog
         open={dialog.isOpen}
         TransitionComponent={Transition}
         onClose={handleDialogClose}
-        maxWidth='xl'
-      >
-        <DialogContent>
-          <Grid container spacing='4' wrap='nowrap'>
-            <Grid item>
-              <img style={{maxWidth: '100%'}} src={dialog.tree.imageUrl} />
-            </Grid>
-            <Grid item style={{minWidth: '240px'}} spacing='2'>
-              <Typography variant='h4'>
-                Tree Detail
-              </Typography>
-              <Grid container direction='row' spacing='4'>
-                {TreeDetail({tree: dialog.tree})}
-              </Grid>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Grid container justify='end'>
-            <Grid item>
-              <Button onClick={handleDialogClose}>Close</Button>
-            </Grid>
-          </Grid>
-        </DialogActions>
-      </Dialog>
+        tree={dialog.tree}
+      />
     </React.Fragment>
   )
 };
-
-function TreeDetail(props){
-  const tree = props.tree;
-  const tags = [
-    tree.morphology,
-    tree.age,
-    tree.captureApprovalTag,
-    tree.rejectionReason,
-  ]
-  .filter(tag => !!tag);
-
-  return (
-    <Grid item container direction='column' spacing='4'>
-      {[
-        ['Tree ID', tree.id],
-        ['Planter ID', tree.planterId],
-        ['Device ID', tree.deviceId],
-        ['Planter Identifier', tree.planterIdentifier],
-        ['Approved', tree.isApproved ? 'true' : 'false'],
-        ['Active', tree.active ? 'true' : 'false'],
-        ['Status', tree.status],
-        ['Species', tree.species],
-        ['Created', dateformat(tree.timeCreated, 'yyyy-mm-dd HH:MM Z')],
-      ].map(attribute => 
-        <Grid item key={attribute[0]}>
-          <Typography variant='h6'>{attribute[0]}</Typography>
-          <Typography variant='body1'>{attribute[1] || '-'}</Typography>
-        </Grid>
-      )}
-      <Grid item>
-        <Typography variant='h6'>
-          Tags
-        </Typography>
-        {
-          tags.length === 0 ? <Typography variant='body1'>none</Typography> : tags.map(tag => 
-            <Chip key={tag} label={tag}/>
-          )
-        }
-      </Grid>
-    </Grid>
-  )
-}
 
 function SidePanel(props){
   const classes = useStyles(props);

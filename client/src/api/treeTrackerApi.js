@@ -139,6 +139,21 @@ export default {
       .catch(handleError);
   },
   /*
+   * get species by id
+   */
+  getSpeciesById(id) {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species/${id}`;
+    return fetch(query, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
    * create new species
    */
   createSpecies(name) {

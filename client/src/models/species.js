@@ -3,6 +3,7 @@
  */
 import * as loglevel		from 'loglevel'
 import api		from '../api/treeTrackerApi'
+import treeTrackerApi from '../api/treeTrackerApi'
 
 const log		= loglevel.getLogger('../models/species')
 
@@ -10,6 +11,7 @@ const species = {
 	state: {
 		speciesList: [],
     speciesInput: '',
+    speciesById: null,
 	},
 	reducers		: {
 		setSpeciseList(state, speciesList){
@@ -27,6 +29,12 @@ const species = {
         speciesInput: text,
       }
     },
+    setSpeciesById(state, speciesById){
+      return {
+        ...state,
+        speciesById,
+      }
+    }
 	},
 	effects		: {
     async loadSpeciesList(){
@@ -74,6 +82,14 @@ const species = {
           }, undefined)
       }
     },
+    /*
+     * get the species details by id
+     */
+    async getSpeciesById(id){
+      treeTrackerApi.getSpeciesById(id).then((res) => {
+        this.setSpeciesById(res.data)
+      })
+    }
 	},
 }
 
