@@ -12,24 +12,30 @@ on:
 #     branches: [ master ]
 
 jobs:
-  build:
-    name: build Client Side of Admin Panel
+  client: #Job ID Name
+    name: Build Client Side of Admin Panel
     runs-on: ubuntu-latest
-
+    env:
+      #Switch to client directory for this job
+      working-directory: ./client
     # To consider in the future: build with several versions of node
     
     # Use node version 12.x
     steps:
     # Required for workflow
     - uses: actions/checkout@v2
-      with: 
-        repository: uchan3/treetracker-admin  #{owner}/{repo}
+      # with: 
+        # repository: uchan3/treetracker-admin  #{owner}/{repo}
     # Takes Node.js version and configures for runner
     - name: Use Node.js 12.x
       uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - run: cd client/
+    # Test that individual npm commands work with specified working directory.
+    # TODO: Consider using multi-line commands in future.
     - run: npm ci #For installing versions specific to package-lock.json
+      working-directory: ${{env.working-directory}}
     - run: npm run build --if-present
+      working-directory: ${{env.working-directory}}
     - run: npm test
+      working-directory: ${{env.working-directory}}
