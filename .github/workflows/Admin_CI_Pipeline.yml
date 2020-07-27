@@ -33,7 +33,7 @@ jobs:
         node-version: '12.x'
     # Test that individual npm commands work with specified working directory.
     # TODO: Consider using multi-line commands in future.
-    - run: npm ci #For installing versions specific to package-lock.json
+    - run: npm install
       working-directory: ${{env.working-directory}}
     - run: npm run build --if-present
       working-directory: ${{env.working-directory}}
