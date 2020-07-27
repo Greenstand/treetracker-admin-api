@@ -23,13 +23,13 @@ jobs:
     # Required for workflow
     - uses: actions/checkout@v2
       with: 
-        repository: uchan3/treetracker-admin/client
-        
+        repository: uchan3/treetracker-admin  #{owner}/{repo}
     # Takes Node.js version and configures for runner
     - name: Use Node.js 12.x
       uses: actions/setup-node@v1
       with:
         node-version: '12.x'
+    - run: cd client/
     - run: npm ci #For installing versions specific to package-lock.json
     - run: npm run build --if-present
     - run: npm test
