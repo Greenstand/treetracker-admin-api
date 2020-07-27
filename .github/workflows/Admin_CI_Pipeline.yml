@@ -6,25 +6,33 @@ name: Admin Panel CI/CD Pipeline
 on:
   push:
     branches:
+      # - master. Recommiting appears to solve problem. 
       - Urey_GitHub_Actions
 #   pull_request:
 #     branches: [ master ]
 
 jobs:
   build:
-
+    name: build application
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x]
-
+    # To consider in the future
+    # strategy:
+    #   matrix:
+    #     node-version: [12.x, 14.x]
+    
+    # Use node version 12.x
     steps:
+    # Required for workflow
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    # - name: Use Node.js ${{ matrix.node-version }}
+    
+    # Takes Node.js version and configures for runner
+    - name: Use Node.js 12.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
+        node-version: '12.x'
+    - name: Install dependencies. 
+      run: npm ci #For installing versions specific to package-lock.json
     - run: npm run build --if-present
     - run: npm test
