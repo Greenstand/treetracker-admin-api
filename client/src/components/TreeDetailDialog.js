@@ -18,6 +18,7 @@ import Snackbar from '@material-ui/core/Snackbar'
 import FileCopy from '@material-ui/icons/FileCopy'
 import CloseIcon from '@material-ui/icons/Close'
 
+
 const useStyles = makeStyles((theme) => ({
   chipRoot: {
     display: 'flex',
@@ -38,24 +39,19 @@ function TreeDetailDialog(props) {
   const textAreaRef = useRef(null);
 
   useEffect(() => {
-    props.getTreeAsync(props.tree.id)
+    props.getTreeDetail(props.tree.id)
   }, [props.tree])
 
+  /*
+   * Render the most complete tree detail we have
+   */
   useEffect(() => {
-    if (props.fullTree.id) {
-      setRenderTree(props.fullTree)
-      if (props.fullTree.speciesId && !props.fullTree.species) {
-        // This aggregation should ideally be done on the server side
-        props.getSpeciesById(props.fullTree.speciesId)
-      }
+    if (props.treeDetail.tree) {
+      setRenderTree(props.treeDetail.tree)
     } else {
       setRenderTree(props.tree)
     }
-  }, [props.fullTree, props.tree])
-
-  useEffect(() => {
-    setRenderTree({...renderTree, species: props.species})
-  }, [props.species])
+  }, [props.treeDetail, props.tree])
 
   function handleClose() {
     props.clearTree()
@@ -63,12 +59,13 @@ function TreeDetailDialog(props) {
   }
   
   function Tags(props) {
-    const { tree } = props
-    const treeTags = [
+    const { tree, species, treeTags } = props
+    const allTags = [
       tree.morphology,
       tree.age,
       tree.captureApprovalTag,
       tree.rejectionReason,
+      ...treeTags.map(t => t.tagName)
     ]
     .filter(tag => !!tag)
 
@@ -118,7 +115,7 @@ function TreeDetailDialog(props) {
           { label: 'Approved', value: tree.isApproved ? 'true' : 'false' },
           { label: 'Active', value: tree.active ? 'true' : 'false' },
           { label: 'Status', value: tree.status },
-          { label: 'Species', value: tree.species },
+          { label: 'Species', value: species && species.name },
           { label: 'Created', value: dateCreated.toLocaleString() },
         ].map(item =>
           <Fragment>
@@ -139,9 +136,9 @@ function TreeDetailDialog(props) {
             Tags
           </Typography>
           {
-            treeTags.length === 0 ? <Typography variant='body1'>none</Typography> :
+            allTags.length === 0 ? <Typography variant='body1'>---</Typography> :
             <div className={classes.chipRoot}>
-              {treeTags.map(tag => <Chip key={tag} label={tag} className={classes.chip}/>)}
+              {allTags.map(tag => <Chip key={tag} label={tag} className={classes.chip}/>)}
             </div>
           }
         </Grid>
@@ -180,9 +177,9 @@ function TreeDetailDialog(props) {
           <Grid item>
             <img alt={`Tree ${renderTree}`} style={{maxWidth: '100%'}} src={renderTree.imageUrl} />
           </Grid>
-          <Grid item style={{minWidth: '240px'}} spacing={2}>
+          <Grid item style={{width: '300px'}} spacing={2}>
             <Grid container direction='row' spacing={4}>
-              <Tags tree={renderTree}/>
+              <Tags tree={renderTree} species={props.treeDetail.species} treeTags={props.treeDetail.tags}/>
             </Grid>
           </Grid>
         </Grid>
@@ -196,14 +193,12 @@ function TreeDetailDialog(props) {
 }
 
 const mapState = (state) => ({
-  fullTree: state.trees.tree,
-  species: state.species.speciesById,
+  treeDetail: state.treeDetail,
 })
 
 const mapDispatch = (dispatch) => ({
-  getTreeAsync: (id) => dispatch.trees.getTreeAsync(id),
-  clearTree: () => dispatch.trees.getTree({}),
-  getSpeciesById: (id) => dispatch.species.getSpeciesById(id),
+  getTreeDetail: (id) => dispatch.treeDetail.getTreeDetail(id),
+  clearTree: () => dispatch.treeDetail.reset(),
 })
 
 export default compose(
