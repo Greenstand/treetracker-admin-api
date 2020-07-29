@@ -23,9 +23,14 @@ const useStyles = makeStyles((theme) => ({
   chipRoot: {
     display: 'flex',
     flexWrap: 'wrap',
+    margin: theme.spacing(0, -1)
   },
   chip: {
     margin: theme.spacing(0.5),
+    fontSize: '0.7rem',
+  },
+  copyButton: {
+    margin: theme.spacing(-2, 0),
   },
 }))
 
@@ -88,6 +93,7 @@ function TreeDetailDialog(props) {
 
       return (
         <IconButton
+          className={classes.copyButton}
           title='Copy to clipboard'
           onClick={(e) => {
             navigator.clipboard.writeText(value)
