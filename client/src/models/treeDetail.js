@@ -32,13 +32,13 @@ const treeDetail = {
     async getTreeDetail(id) {
       this.reset()
       
-      return [
+      return Promise.all([
         this.getTree(id).then(tree => { this.getSpecies(tree && tree.speciesId) }),
         this.getTags(id),
-      ]
+      ])
     },
     async getTree(id) {
-      if (!id) {
+      if (id == null) {
         log.debug('getTree called with no id')
         return Promise.resolve(STATE_EMPTY.tree)
       }
@@ -49,7 +49,7 @@ const treeDetail = {
       })
     },
     async getSpecies(speciesId) {
-      if (!speciesId) {
+      if (speciesId == null) {
         log.debug('getSpecies called with no speciesId')
         return Promise.resolve(STATE_EMPTY.speciesId)
       }
@@ -60,7 +60,7 @@ const treeDetail = {
       })
     },
     async getTags(treeId) {
-      if (!treeId) {
+      if (treeId == null) {
         log.debug('getTags called with no treeId')
         return Promise.resolve(STATE_EMPTY.tags)
       }
