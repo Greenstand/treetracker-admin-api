@@ -39,3 +39,31 @@ jobs:
       working-directory: ${{env.working-directory}}
     - run: npm test
       working-directory: ${{env.working-directory}}
+
+  server: #Job ID Name
+    name: Build Server Side of Admin Panel
+    runs-on: ubuntu-latest
+    env:
+      #Switch to server directory for this job
+      working-directory: ./server
+    # To consider in the future: build with several versions of node
+    
+    # Use node version 12.x
+    steps:
+    # Required for workflow
+    - uses: actions/checkout@v2
+      # with: 
+        # repository: uchan3/treetracker-admin  #{owner}/{repo}
+    # Takes Node.js version and configures for runner
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    # Test that individual npm commands work with specified working directory.
+    # TODO: Consider using multi-line commands in future.
+    - run: npm install
+      working-directory: ${{env.working-directory}}
+    - run: npm run build --if-present
+      working-directory: ${{env.working-directory}}
+    - run: npm test
+      working-directory: ${{env.working-directory}}
