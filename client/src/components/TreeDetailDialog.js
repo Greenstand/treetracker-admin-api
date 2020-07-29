@@ -59,6 +59,8 @@ function TreeDetailDialog(props) {
   }, [props.treeDetail, props.tree])
 
   function handleClose() {
+    setSnackbarOpen(false)
+    setSnackbarLabel('')
     props.clearTree()
     props.onClose()
   }
@@ -161,8 +163,8 @@ function TreeDetailDialog(props) {
           color='primary'
           action={
             <Fragment>
-              <IconButton size="small" aria-label="close" onClick={handleSnackbarClose}>
-                <CloseIcon fontSize="small" />
+              <IconButton size='small' aria-label='close' onClick={handleSnackbarClose}>
+                <CloseIcon fontSize='small' />
               </IconButton>
             </Fragment>
           }
