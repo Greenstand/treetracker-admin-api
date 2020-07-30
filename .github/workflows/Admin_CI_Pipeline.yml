@@ -18,7 +18,6 @@ jobs:
     env:
       #Switch to client directory for this job
       working-directory: ./client
-      CI: 'false'
     # To consider in the future: build with several versions of node
     
     # Use node version 12.x
@@ -37,8 +36,7 @@ jobs:
     - run: npm install
       working-directory: ${{env.working-directory}}
     - run: npm run build --if-present
-      working-directory: ${{env.working-directory}}
-      CI: ${{env.CI}} #change CI from true to false 
+      working-directory: ${{env.working-directory}}  
     - run: npm test
       working-directory: ${{env.working-directory}}
 
