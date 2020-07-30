@@ -81,7 +81,7 @@
     "jest": "^26.1.0",
     "nodemon": "^2.0.4",
     "ts-jest": "^26.1.4",
-    "typescript": "~3.5.2"
+    "typescript": "^3.9.7"
   },
   "nodemonConfig": {
     "watch": [

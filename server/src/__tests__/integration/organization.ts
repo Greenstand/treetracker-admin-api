@@ -68,15 +68,11 @@ describe("Orgnaization", () => {
 
     it.only("shoulbe be able request /api/trees", async () => {
       const response = await request(server.app)
-        .get("/api/trees")
+        .get("/api/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0")
         .set('Authorization', token);
       expect(response.statusCode).toBe(200);
     });
 
-  });
-
-
-  it(`can login with account ${seed.users.test.username}`, async () => {
   });
 
   it(`can login with organization account ${seed.users.organization1}`, async () => {
