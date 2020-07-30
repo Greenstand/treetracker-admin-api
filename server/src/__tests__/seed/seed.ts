@@ -48,3 +48,4 @@ describe("Seed data into DB", () => {
 
 });
 
+export {};
