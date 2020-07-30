@@ -130,7 +130,7 @@ const trees = {
       })
     },
     async getTreeAsync(id) {
-      const query = `${process.env.REACT_APP_API_ROOT}/api/Trees/${id}`
+      const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`
       Axios.get(query, {
         headers: {
           'content-type': 'application/json',

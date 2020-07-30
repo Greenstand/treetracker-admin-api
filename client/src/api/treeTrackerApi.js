@@ -123,11 +123,34 @@ export default {
         }
     }).then(handleResponse).catch(handleError);
   },
+  getTreeById(id) {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
+    return fetch(query, {
+      headers: {
+        Authorization: session.token,
+      }
+    }).then(handleResponse).catch(handleError);
+  },
   /*
    * get species list
    */
   getSpecies() {
     const query = `${process.env.REACT_APP_API_ROOT}/api/species`;
+    return fetch(query, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
+   * get species by id
+   */
+  getSpeciesById(id) {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species/${id}`;
     return fetch(query, {
       method: "GET",
       headers: { 
@@ -178,6 +201,21 @@ export default {
       .catch(handleError);
   },
   /*
+   * get tag by id
+   */
+  getTagById(id) {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags/${id}`;
+    return fetch(query, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+  /*
    * create new tag
    */
   createTag(tagName) {
@@ -217,5 +255,23 @@ export default {
       .then(handleResponse)
       .catch(handleError);
     });
+  },
+  /*
+   * get tags for a given tree
+   */
+  getTreeTags({treeId, tagId}) {
+    const filterString = 
+      (treeId ? `filter[where][treeId]=${treeId}` : '') +
+      (tagId ? `&filter[where][tagId]=${tagId}` : '');
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags?${filterString}`;
+    return fetch(query, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError);
   },
 };

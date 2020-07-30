@@ -35,6 +35,9 @@ const useStyles = makeStyles(theme => ({
     '&.MuiOutlinedInput-root': {
       padding: theme.spacing(2,0,0,2),
     },
+    '.MuiChip-root': {
+      fontSize: '0.7rem',
+    },
   },
 }))
 
