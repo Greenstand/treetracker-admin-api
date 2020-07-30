@@ -1,13 +1,14 @@
 //import {once} from 'events';
 import {Request, Response} from 'express';
 import cors from "cors";
-//TODO import better
-import express = require('express');
 import * as http from 'http';
 import * as path from 'path';
 import {ApplicationConfig, TreetrackerAdminApiApplication} from './application';
 const {auth} = require('./js/auth.js');
 const {auditMiddleware} = require('./js/Audit');
+
+//TODO import better
+const express = require('express');
 
 export {ApplicationConfig};
 
