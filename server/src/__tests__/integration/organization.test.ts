@@ -24,14 +24,25 @@ describe("Orgnaization", () => {
 
 
   it("login", async () => {
-    const server = new ExpressServer(options);
+    const config = {
+      rest: {
+        port: +(process.env.NODE_PORT || 3000),
+        host: process.env.HOST || 'localhost',
+        openApiSpec: {
+          // useful when used with OpenAPI-to-GraphQL to locate your application
+          setServersFromRequest: true,
+        },
+        // Use the LB4 application as a route. It should not be listening.
+        listenOnStart: false,
+      },
+    };
+    const server = new ExpressServer(config);
     await server.boot();
-    await server.start();
     await server.lbApp.start();
     const response = request(server.app).post(
       "/auth/login",
     );
-    token
+    console.log(response);
   });
 
 });
