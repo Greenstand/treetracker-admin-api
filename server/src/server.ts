@@ -7,6 +7,7 @@ import express from 'express';
 import {ApplicationConfig, TreetrackerAdminApiApplication} from './application';
 const {auth} = require('./js/auth.js');
 const {auditMiddleware} = require('./js/Audit');
+const listEndpoints = require('express-list-endpoints')
 
 //TODO import better
 //const express = require('express').default;
@@ -43,6 +44,9 @@ export class ExpressServer {
 
     // Serve static files in the public folder
     this.app.use(express.static(path.join(__dirname, '../public')));
+
+
+    console.log("print:", listEndpoints(this.app));
   }
 
   public async boot() {

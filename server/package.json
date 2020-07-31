@@ -27,9 +27,9 @@
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "migrate": "node ./dist/migrate",
     "prestart": "npm run clean && npm run build",
-    "start": "node .",
+    "start": "DEBUG=loopback:*,express:* node .",
     "prepublishOnly": "npm run test",
-    "jest": "jest --watchAll --runInBand"
+    "jest": "DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand"
   },
   "repository": {
     "type": "git"
@@ -56,6 +56,7 @@
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "expect": "^26.1.0",
+    "express-list-endpoints": "^5.0.0",
     "generate-password": "^1.5.1",
     "jsonwebtoken": "^8.5.1",
     "loglevel": "^1.6.8",

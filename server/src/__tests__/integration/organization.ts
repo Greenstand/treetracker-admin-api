@@ -16,6 +16,8 @@ describe("Orgnaization", () => {
   let server;
 
   beforeAll(async () => {
+    console.log("before All3...");
+    await seed.clear();
     await seed.seed();
     const config = {
       rest: {
@@ -30,9 +32,21 @@ describe("Orgnaization", () => {
       },
     };
     server = new ExpressServer(config);
+  }, 1000*60*5);
+
+  
+
+  it.only("server", async () => {
     await server.boot();
-    await server.lbApp.start();
-  });
+    await server.start();
+    //await server.lbApp.start();
+    //console.log("print after start:", listEndpoints(this.app));
+    console.log("finish start.");
+    await new Promise(r => {
+      console.log("waiting.....");
+      setTimeout(() => {console.log("waited some time.");r()}, 1000 * 60 * 5);
+    });
+  }, 1000 *60*5);
 
   afterAll(async () => {
     await seed.clear();
@@ -51,10 +65,11 @@ describe("Orgnaization", () => {
 
   
 
-  describe(`Login with account ${seed.users.test.username}`, () => {
+  describe.skip(`Login with account ${seed.users.test.username}`, () => {
     let token;
 
     beforeEach(async () => {
+    console.log("before each...");
       const response = await request(server.app)
         .post("/auth/login")
         .send({
@@ -66,12 +81,17 @@ describe("Orgnaization", () => {
       token = response.body.token;
     });
 
-    it.only("shoulbe be able request /api/trees", async () => {
+    it("shoulbe be able request /api/trees", async () => {
+      console.log("it it...");
+      await new Promise(r => {
+        console.log("waiting.....");
+        setTimeout(() => {console.log("waited some time.");r()}, 1000 * 60 * 5);
+      });
       const response = await request(server.app)
         .get("/api/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0")
         .set('Authorization', token);
       expect(response.statusCode).toBe(200);
-    });
+    }, 1000 * 60 * 5);
 
   });
 
