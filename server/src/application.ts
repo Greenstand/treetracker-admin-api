@@ -23,7 +23,7 @@ export class TreetrackerAdminApiApplication extends BootMixin(
 
     this.component(RestExplorerComponent);
 
-    this.projectRoot = __dirname + "/../dist";
+    this.projectRoot = options.projectRoot || __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
