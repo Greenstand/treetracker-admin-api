@@ -394,7 +394,6 @@ router.post('/init', async (req, res, next) => {
 
 const isAuth = async (req, res, next) => {
   //white list
-  console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
   const isApiExplorerReq = isDevEnvironment;
@@ -473,7 +472,6 @@ const isAuth = async (req, res, next) => {
         next();
         return;
       } else if (url.match(/\/api\/trees.*/)) {
-        console.error("trees in");
         if (
           policies.some(
             r =>
@@ -486,7 +484,6 @@ const isAuth = async (req, res, next) => {
           //   roles.includes(PERMISSIONS.ADMIN) ||
           //   roles.includes(PERMISSIONS.TREE_AUDITOR)
           // )
-          console.error("trees 200");
           next();
           return;
         } else {

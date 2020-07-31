@@ -16,7 +16,6 @@ describe("Orgnaization", () => {
   let server;
 
   beforeAll(async () => {
-    console.log("before All3...");
     await seed.clear();
     await seed.seed();
     const config = {
@@ -37,21 +36,7 @@ describe("Orgnaization", () => {
     server = new ExpressServer(config);
     await server.boot();
     await server.lbApp.start();
-  }, 1000*60*5);
-
-  
-
-//  it.only("server", async () => {
-//    await server.boot();
-//    await server.start();
-//    //await server.lbApp.start();
-//    //console.log("print after start:", listEndpoints(this.app));
-//    console.log("finish start.");
-//    await new Promise(r => {
-//      console.log("waiting.....");
-//      setTimeout(() => {console.log("waited some time.");r()}, 1000 * 60 * 5);
-//    });
-//  }, 1000 *60*5);
+  });
 
   afterAll(async () => {
     await seed.clear();
@@ -74,7 +59,6 @@ describe("Orgnaization", () => {
     let token;
 
     beforeEach(async () => {
-    console.log("before each...");
       const response = await request(server.app)
         .post("/auth/login")
         .send({
@@ -86,12 +70,18 @@ describe("Orgnaization", () => {
       token = response.body.token;
     });
 
-    it.only("shoulbe be able request /api/trees", async () => {
-      console.log("it it...");
+    it("shoulbe be able request /api/trees", async () => {
       const response = await request(server.app)
         .get("/api/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0")
         .set('Authorization', token);
       expect(response.statusCode).toBe(200);
+    });
+
+    it("shoulbe be denied requesting /api/planters", async () => {
+      const response = await request(server.app)
+        .get("/api/planter/count")
+        .set('Authorization', token);
+      expect(response.statusCode).toBe(401);
     });
 
   });

@@ -29,7 +29,8 @@
     "prestart": "npm run clean && npm run build",
     "start": "DEBUG=loopback:*,express:* node .",
     "prepublishOnly": "npm run test",
-    "jest": "DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand"
+    "jest": "jest --watchAll --runInBand",
+    "jest:debug": "DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand"
   },
   "repository": {
     "type": "git"
