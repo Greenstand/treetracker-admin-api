@@ -411,6 +411,12 @@ const isAuth = async (req, res, next) => {
     expect(userSession.policy).toBeInstanceOf(Object);
     const policies = userSession.policy.policies;
     expect(policies).toBeInstanceOf(Array);
+    const organizations = userSession.policy.organizations;
+    organizations && organizations.every(o => expect(o).toMatchObject({
+      name: expect.any(String),
+      id: expect.any(String),
+    }));
+    let matcher;
     if (url.match(/\/auth\/check_session/)) {
       let user_id = req.query.id;
       console.log(user_id);
@@ -471,27 +477,37 @@ const isAuth = async (req, res, next) => {
       } else if (url.match(/\/api\/tree_tags.*/)) {
         next();
         return;
-      } else if (url.match(/\/api\/trees.*/)) {
-        if (
-          policies.some(
-            r =>
-              r.name === POLICIES.SUPER_PERMISSION ||
-              r.name === POLICIES.LIST_TREE ||
-              r.name === POLICIES.APPROVE_TREE,
-          )
-        ) {
-          // (
-          //   roles.includes(PERMISSIONS.ADMIN) ||
-          //   roles.includes(PERMISSIONS.TREE_AUDITOR)
-          // )
+      } else if (matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/)) {
+        if(matcher[1]){
+          //organization case
+          const id = parseInt(matcher[2]);
           next();
           return;
-        } else {
-          console.error("trees 401");
-          res.status(401).json({
-            error: new Error('No permission'),
-          });
-          return;
+        }else{
+          //normal case
+          //organizational user can not visit it directly
+          if(organizations && organizations.length > 0){
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
+          if (
+            policies.some(
+              r =>
+                r.name === POLICIES.SUPER_PERMISSION ||
+                r.name === POLICIES.LIST_TREE ||
+                r.name === POLICIES.APPROVE_TREE,
+            )
+          ) {
+            next();
+            return;
+          } else {
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
         }
       } else if (url.match(/\/api\/planter.*/)) {
         if (
@@ -502,10 +518,6 @@ const isAuth = async (req, res, next) => {
               r.name === POLICIES.MANAGE_PLANTER,
           )
         ) {
-          // (
-          //   roles.includes(PERMISSIONS.ADMIN) ||
-          //   roles.includes(PERMISSIONS.PLANTER_MANAGER)
-          // )
           next();
           return;
         } else {

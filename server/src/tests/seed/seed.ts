@@ -6,6 +6,8 @@ const {Pool, Client} = require('pg');
 const pool = new Pool({connectionString: db.url});
 const policy = require('../../policy.json');
 
+
+
 const users = {
   admin: {
     username: "admin",
@@ -21,6 +23,13 @@ const users = {
   },
 }
 
+const description = 
+`
+---------------- story -------------------
+accounts:
+  ${Object.values(users).map(e => "acount:" + e.username + " password:" + e.password).join("\n")}
+`
+
 async function seed(){
   let sql = 
     `insert into admin_role (id, role_name, description, policy) ` +
@@ -34,7 +43,7 @@ async function seed(){
         policies: [policy.policies[5],policy.policies[6],],
       })}'),` + 
       `(4, 'Organization Tree Manager', 'Check, manage planters','${JSON.stringify({
-        policies: [policy.policies[5],policy.policies[6],],
+        policies: [policy.policies[3],policy.policies[4],],
         organizations: [{
           name: "xxx",
           id: "123",
@@ -74,5 +83,6 @@ module.exports = {
   seed,
   clear,
   users,
+  description,
 }
 

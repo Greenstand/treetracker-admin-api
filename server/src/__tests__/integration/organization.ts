@@ -12,6 +12,8 @@ import {ApplicationConfig, ExpressServer} from '../../server';
 const request = require("supertest");
 const seed = require("../../tests/seed/seed.ts");
 
+console.log(seed.description);
+
 describe("Orgnaization", () => {
   let server;
 
@@ -86,24 +88,46 @@ describe("Orgnaization", () => {
 
   });
 
-  it(`can login with organization account ${seed.users.organization1}`, async () => {
-    const response = await request(server.app)
-      .post("/auth/login")
-      .send({
-        userName: seed.users.organization1.username,
-        password: seed.users.organization1.password,
-      });
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toMatchObject({
-      token: expect.any(String),
-      user: {
-        policy: {
-          organizations: expect.any(Array),
-          policies: expect.any(Array),
+
+  describe(`can login with organization account ${seed.users.organization1}`, () => {
+    let token;
+
+    beforeAll(async () => {
+      const response = await request(server.app)
+        .post("/auth/login")
+        .send({
+          userName: seed.users.organization1.username,
+          password: seed.users.organization1.password,
+        });
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toMatchObject({
+        token: expect.any(String),
+        user: {
+          policy: {
+            organizations: expect.any(Array),
+            policies: expect.any(Array),
+          },
         },
-      },
+      });
+      token = response.body.token;
     });
+
+    it("Should be able to request /api/organization/xxx/trees", async () => {
+      const response = await request(server.app)
+        .get(`/api/organization/1/trees?`)
+        .set('Authorization', token);
+      expect(response.statusCode).toBe(200);
+    });
+
+    it("Should not be able to request /api/trees", async () => {
+      const response = await request(server.app)
+        .get("/api/trees?")
+        .set('Authorization', token);
+      expect(response.statusCode).toBe(401);
+    });
+
   });
+
 
 });
 
