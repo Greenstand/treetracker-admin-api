@@ -89,22 +89,25 @@ describe("Orgnaization", () => {
   });
 
 
-  describe(`can login with organization account ${seed.users.organization1}`, () => {
+  describe(`can login with organization account ${seed.users.freetown}`, () => {
     let token;
 
     beforeAll(async () => {
       const response = await request(server.app)
         .post("/auth/login")
         .send({
-          userName: seed.users.organization1.username,
-          password: seed.users.organization1.password,
+          userName: seed.users.freetown.username,
+          password: seed.users.freetown.password,
         });
       expect(response.statusCode).toBe(200);
       expect(response.body).toMatchObject({
         token: expect.any(String),
         user: {
           policy: {
-            organizations: expect.any(Array),
+            organization: {
+              name: expect.any(String),
+              id: expect.any(Number),
+            },
             policies: expect.any(Array),
           },
         },

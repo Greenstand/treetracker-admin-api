@@ -10,16 +10,59 @@ const policy = require('../../policy.json');
 
 const users = {
   admin: {
+    id: 1,
     username: "admin",
     password: "admin",
   },
   test: {
+    id: 2,
     username: "test",
     password: "admin",
   },
-  organization1: {
-    username: "organization1",
+  freetown: {
+    id: 3,
+    username: "freetown",
     password: "admin",
+    policies: [3,4],
+  },
+}
+
+const roles = {
+  admin: {
+    id: 1,
+    name: "Admin",
+    description: 'The super administrator role, having all permissions',
+    policy: {
+      policies: [policy.policies[0], policy.policies[1], policy.policies[2]],
+    },
+  },
+  treeManager: {
+    id: 2,
+    name: "Tree Manager",
+    description: 'Check, verify, manage trees',
+    policy: {
+        policies: [policy.policies[3],policy.policies[4]],
+    },
+  },
+  planterManager: {
+    id: 3,
+    name: "Planter Manager",
+    description: "Check, manage planters",
+    policy: {
+      policies: [policy.policies[5],policy.policies[6],],
+    },
+  },
+  freetownManager: {
+    id: 4,
+    name: "Freetown Manager", 
+    description: "Manager for oranization freetown",
+    policy: {
+      policies: [policy.policies[3],policy.policies[4],],
+      organization: {
+        name: "xxx",
+        id: 1,
+      },
+    },
   },
 }
 
@@ -27,28 +70,19 @@ const description =
 `
 ---------------- story -------------------
 accounts:
-  ${Object.values(users).map(e => "acount:" + e.username + " password:" + e.password).join("\n")}
+  ${JSON.stringify(users, null, 2)}
+
+roles: 
+  ${JSON.stringify(roles, null, 2)}
 `
 
 async function seed(){
   let sql = 
     `insert into admin_role (id, role_name, description, policy) ` +
-      `values (1, 'Admin', 'The super administrator role, having all permissions','${JSON.stringify({
-        policies: [policy.policies[0], policy.policies[1], policy.policies[2]],
-      })}'),` +
-      `(2, 'Tree Manager', 'Check, verify, manage trees','${JSON.stringify({
-        policies: [policy.policies[3],policy.policies[4]],
-      })}'),` +
-      `(3, 'Planter Manager', 'Check, manage planters','${JSON.stringify({
-        policies: [policy.policies[5],policy.policies[6],],
-      })}'),` + 
-      `(4, 'Organization Tree Manager', 'Check, manage planters','${JSON.stringify({
-        policies: [policy.policies[3],policy.policies[4],],
-        organizations: [{
-          name: "xxx",
-          id: "123",
-        }],
-      })}')`;
+      `values` + 
+      Object.values(roles).map( role => {
+        return `(${role.id}, '${role.name}','${role.description}','${JSON.stringify(role.policy)}')`
+      }).join(','); 
   console.log("sql:", sql);
   await pool.query(
     sql
@@ -60,7 +94,7 @@ async function seed(){
       `( 1, 'admin', 'Admin', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org', true),` +
       `( 2, 'test', 'Test', 'Test', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','test@greenstand.org', true),` +
 //      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true),` +
-      `(3, 'organization1', 'organization1', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org', true)`
+      `(3, 'freetown', 'organization1', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org', true)`
   );
 
   await pool.query(
@@ -83,6 +117,7 @@ module.exports = {
   seed,
   clear,
   users,
+  roles,
   description,
 }
 

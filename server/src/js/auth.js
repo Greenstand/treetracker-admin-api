@@ -411,11 +411,11 @@ const isAuth = async (req, res, next) => {
     expect(userSession.policy).toBeInstanceOf(Object);
     const policies = userSession.policy.policies;
     expect(policies).toBeInstanceOf(Array);
-    const organizations = userSession.policy.organizations;
-    organizations && organizations.every(o => expect(o).toMatchObject({
+    const organization = userSession.policy.organization;
+    organization && expect(organization).toMatchObject({
       name: expect.any(String),
-      id: expect.any(String),
-    }));
+      id: expect.any(Number),
+    });
     let matcher;
     if (url.match(/\/auth\/check_session/)) {
       let user_id = req.query.id;
@@ -486,7 +486,7 @@ const isAuth = async (req, res, next) => {
         }else{
           //normal case
           //organizational user can not visit it directly
-          if(organizations && organizations.length > 0){
+          if(organization && organization.id > 0){
             res.status(401).json({
               error: new Error('No permission'),
             });
