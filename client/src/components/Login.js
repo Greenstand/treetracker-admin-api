@@ -89,7 +89,7 @@ const Login = (props) => {
       }
     }
     load()
-  }, [])
+  }, [appContext])
 
   React.useEffect(() => {
     return () => {
