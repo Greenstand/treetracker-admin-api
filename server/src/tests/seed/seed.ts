@@ -85,6 +85,9 @@ accounts:
 
 roles: 
   ${JSON.stringify(roles, null, 2)}
+
+trees:
+  ${JSON.stringify(trees, null, 2)}
 `
 
 async function seed(){

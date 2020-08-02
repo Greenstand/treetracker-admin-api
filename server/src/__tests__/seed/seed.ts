@@ -28,11 +28,11 @@ describe("Seed data into DB", () => {
   it("Should have organization user", async () => {
     let r = await pool.query({
       text: `select * from admin_user where user_name = $1`,
-      values: ['organization1']
+      values: [seed.users.freetown.username]
     });
     expect(r).toMatchObject({
       rows: [{
-        user_name: "organization1",
+        user_name: seed.users.freetown.username,
       }],
     });
   });
