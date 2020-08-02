@@ -27,11 +27,11 @@
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "migrate": "node ./dist/migrate",
     "prestart": "npm run clean && npm run build",
-    "start": "DEBUG=loopback:*,express:* node .",
+    "start": "DEBUG=loopback:*,express:* nodemon .",
     "prepublishOnly": "npm run test",
     "jest": "jest --watchAll --runInBand",
     "jest:debug": "DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand",
-    "watch": "onchange 'src/**/*.ts' -- npm run build"
+    "watch": "onchange 'src/controllers/**/*.ts' 'src/models/**/*.ts' 'src/repositories/**/*.ts' -- npm run build"
   },
   "repository": {
     "type": "git"

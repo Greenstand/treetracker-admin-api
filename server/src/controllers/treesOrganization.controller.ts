@@ -15,6 +15,7 @@ import {
   put,
   del,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
@@ -74,8 +75,15 @@ export class TreesOrganizationController {
       },
     },
   })
-  async findById(@param.path.number('id') id: number): Promise<Trees> {
-    return await this.treesRepository.findById(id);
+  async findById(
+    @param.path.number('organizationId') organizationId: number,
+    @param.path.number('id') id: number
+  ): Promise<Trees> {
+    const result = await this.treesRepository.findById(id);
+    if(result.deviceId !== organizationId){
+      throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
+    }
+    return result;
   }
 
   // this route is for finding trees within a radius of a lat/lon point
