@@ -52,9 +52,17 @@ export class TreesOrganizationController {
     },
   })
   async find(
+    @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
   ): Promise<Trees[]> {
-    console.log(filter, filter?filter.where:null);
+    if(filter){
+      //filter should be to deal with the organization, but here is just for 
+      //demonstration
+      filter.where = {
+        deviceId: organizationId,
+      }
+    }
+    console.log("filter:", filter, filter?filter.where:null);
     return await this.treesRepository.find(filter);
   }
 
