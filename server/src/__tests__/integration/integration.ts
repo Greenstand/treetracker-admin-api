@@ -3,18 +3,12 @@
  */
 import {ApplicationConfig, ExpressServer} from '../../server';
 
-//export async function main(options: ApplicationConfig = {}) {
-//  const server = new ExpressServer(options);
-//  await server.boot();
-//  await server.start();
-//  console.log('Server is running.');
-//}
 const request = require("supertest");
 const seed = require("../../tests/seed/seed.ts");
 
 console.log(seed.description);
 
-describe("Orgnaization", () => {
+describe("Integration", () => {
   let server;
 
   beforeAll(async () => {
@@ -91,7 +85,7 @@ describe("Orgnaization", () => {
   });
 
 
-  describe(`can login with organization account ${seed.users.freetown}`, () => {
+  describe(`can login with organization account ${seed.users.freetown.username}`, () => {
     let token;
 
     beforeAll(async () => {
