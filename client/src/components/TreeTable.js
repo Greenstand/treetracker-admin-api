@@ -70,16 +70,19 @@ const columns = [
     attr: 'payment',
     label: 'Payment',
     noSort: true,
+    renderer: () => 'pending',
   },
   {
     attr: 'country',
     label: 'Country',
     noSort: true,
+    renderer: () => 'pending',
   },
   {
     attr: 'speciesId',
     label: 'Species',
-    noSort: true
+    noSort: true,
+    renderer: () => 'pending',
   },
   {
     attr: 'status',
@@ -88,9 +91,7 @@ const columns = [
   {
     attr: 'timeCreated',
     label: 'Created',
-    renderer: val => {
-      return Date(Date.fromUtc(val)).toLocaleString()
-    },
+    renderer: val => Date(Date.fromUtc(val)).toLocaleString(),
   },
 ]
 

@@ -66,7 +66,9 @@ const trees = {
         process.env.REACT_APP_API_ROOT
       }/api/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
         page * rowsPerPage
-      }&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true&filter[where][active]=true&field[imageURL]`
+      }&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true` +
+      `&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true` +
+      `&filter[where][active]=true&field[imageURL]`
       Axios.get(query, {
         headers: {
           'content-type': 'application/json',
@@ -104,7 +106,8 @@ const trees = {
           process.env.REACT_APP_API_ROOT
         }/api/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
           page * rowsPerPage
-        }&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true&&filter[where][active]=true` +
+        }&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true` +
+        `&filter[fields][planterId]=true&filter[where][active]=true` +
         (filter ? filter.getBackloopString() : '')
       response = await Axios.get(query, {
         headers: {
@@ -184,7 +187,8 @@ const trees = {
         payload.orderBy
       } ${newOrder}&filter[limit]=${rowsPerPage}&filter[skip]=${
         page * rowsPerPage
-      }&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true`
+      }&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true` +
+      `&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true`
       Axios.get(query, {
         headers: {
           'content-type': 'application/json',
