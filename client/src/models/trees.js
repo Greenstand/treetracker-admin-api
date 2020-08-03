@@ -4,6 +4,7 @@ import { session } from '../models/auth'
 const trees = {
   state: {
     data: [],
+    treeCount: 0,
     selected: [],
     tree: {},
     numSelected: 0,
@@ -84,7 +85,6 @@ const trees = {
       })
     },
     async getTreesAsync({ page, rowsPerPage, orderBy = 'id', order = 'asc', filter }) {
-      console.error('filter:', filter)
       /*
        * first load the page count
        */

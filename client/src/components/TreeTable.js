@@ -22,12 +22,13 @@ import TreeDetails from './TreeDetails.js'
 const styles = (theme) => ({
   root: {
     position: 'relative',
-    top: '88px',
-    paddingLeft: '70px',
+    paddingLeft: theme.spacing(16),
     overflowX: 'auto',
   },
-  myTable: {
+  tableContainer: {
     width: `calc(100vw  - ${FILTER_WIDTH + theme.spacing(4)}px)`,
+    overflowY: 'auto',
+    height: '100%',
   },
   tableRow: {
     cursor: 'pointer',
@@ -60,11 +61,11 @@ const styles = (theme) => ({
 const columns = [
   {
     attr: 'id',
-    label: 'Tree id',
+    label: 'Tree ID',
   },
   {
     attr: 'planterId',
-    label: 'Planter',
+    label: 'Planter ID',
   },
   {
     attr: 'payment',
@@ -91,7 +92,10 @@ const columns = [
   {
     attr: 'timeCreated',
     label: 'Created',
-    renderer: val => Date(Date.fromUtc(val)).toLocaleString(),
+    renderer: val => {
+      const dateCreated = new Date(Date.parse(val))
+      return dateCreated.toLocaleString()
+    }
   },
 ]
 
@@ -188,11 +192,11 @@ class TreeTable extends Component {
     const { orderBy, order } = this.state
 
     return (
-      <div>
+      <div className={classes.tableContainer}>
         <Typography variant="h5" className={classes.title}>
           Trees
         </Typography>
-        <Table className={classes.myTable}>
+        <Table>
           <TableHead>
             <TableRow>
               {columns.map(({ attr, label, noSort }, index) => (
