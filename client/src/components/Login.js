@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
-  LinearProgress,
   Checkbox,
   Grid,
   Box,
@@ -8,22 +7,16 @@ import {
   FormControlLabel,
   CssBaseline,
   Button,
-  Avatar,
   Typography,
   Container,
-  Link,
   CircularProgress,
 } from '@material-ui/core'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import IconLogo from './IconLogo'
 import { withStyles } from '@material-ui/core/styles'
 import { AppContext } from './MainFrame'
 import classNames from 'classnames'
 
 import axios from 'axios'
-//import { useAuth } from "../context/auth";
-//import Copyright from "components/Copyright";
-//import { useHistory } from "react-router-dom";
 
 const styles = (theme) => ({
   paper: {
@@ -60,16 +53,14 @@ const styles = (theme) => ({
 })
 
 const Login = (props) => {
-  //const { setAuthToken } = useAuth();
   const appContext = React.useContext(AppContext)
-  const { touched, errors, isSubmitting, handleChange: onChange, handleBlur: onBlur } = {}
   const { classes } = props
   const [userName, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
   const [loading, setLoading] = React.useState(false)
-  const [nameFocus, setNameFocus] = React.useState(false)
-  const [passwordFocus, setPasswordFocus] = React.useState(false)
+  const [usernameBlurred, setUsernameBlurred] = React.useState(false)
+  const [passwordBlurred, setPasswordBlurred] = React.useState(false)
   const [isRemember, setRemember] = React.useState(false)
 
   React.useLayoutEffect(() => {
@@ -98,13 +89,17 @@ const Login = (props) => {
       }
     }
     load()
-  })
+  }, [appContext])
 
   React.useEffect(() => {
     return () => {
       setLoading(false)
     }
   }, [])
+
+  React.useEffect(() => {
+    setErrorMessage('')
+  }, [userName, password])
 
   const submitClassname = classNames({
     [classes.submit]: loading,
@@ -118,17 +113,40 @@ const Login = (props) => {
     setPassword(e.target.value)
   }
 
+  function handleUsernameFocus() {
+    setUsernameBlurred(false)
+  }
+
+  function handlePasswordFocus() {
+    setPasswordBlurred(false)
+  }
+
+  function handleUsernameBlur() {
+    setUsernameBlurred(true)
+  }
+
+  function handlePasswordBlur() {
+    setPasswordBlurred(true)
+  }
+
+  function wasUsernameLeftBlank() {
+    return usernameBlurred && userName === ''
+  }
+
+  function wasPasswordLeftBlank() {
+    return passwordBlurred && password === ''
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     e.stopPropagation()
-    setPasswordFocus(true)
-    setNameFocus(true)
+    setPasswordBlurred(true)
+    setUsernameBlurred(true)
 
     if (!loading) {
       setLoading(true)
     }
     ;(async () => {
-      //TODO login request
       try {
         const res = await axios.post(`${process.env.REACT_APP_API_ROOT}/auth/login`, {
           userName,
@@ -145,13 +163,13 @@ const Login = (props) => {
           appContext.login(user, token)
           setLoading(true)
         } else {
-          setErrorMessage('Invalid user name or password!')
+          setErrorMessage('Invalid username or password')
           setLoading(false)
         }
       } catch (e) {
         console.error(e)
         setErrorMessage(
-          'Can not login, please check your username passowrd or contact the admin ...'
+          'Could not log in. Please check your username and password or contact the admin.'
         )
         setLoading(false)
       }
@@ -159,32 +177,13 @@ const Login = (props) => {
     return false
   }
 
-  if (isSubmitting) {
-    return (
-      <Typography component="h3" variant="h5">
-        <LinearProgress />
-        Vent venligst...
-      </Typography>
-    )
-  }
-
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        {/*
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        */}
         <IconLogo />
         <Box m={2} />
         <Typography variant="h2">Admin Panel</Typography>
-        {/*
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        */}
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
           <TextField
             variant="outlined"
@@ -192,14 +191,13 @@ const Login = (props) => {
             required
             fullWidth
             id="userName"
-            label="userName"
+            label="Username"
             name="userName"
             autoComplete="userName"
-            onFocus={() => {
-              setNameFocus(true)
-            }}
-            helperText={nameFocus ? 'Field is required' : '' /*touched.email ? errors.email : ""*/}
-            error={nameFocus && userName === '' /*touched.email && Boolean(errors.email)*/}
+            onFocus={handleUsernameFocus}
+            onBlur={handleUsernameBlur}
+            helperText={wasUsernameLeftBlank() ? 'Field is required' : '' }
+            error={wasUsernameLeftBlank()}
             onChange={handleUsernameChange}
             value={userName}
           />
@@ -209,19 +207,16 @@ const Login = (props) => {
             required
             fullWidth
             name="password"
-            label="password"
+            label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
-            onFocus={() => {
-              setPasswordFocus(true)
-            }}
+            onFocus={handlePasswordFocus}
+            onBlur={handlePasswordBlur}
             helperText={
-              passwordFocus ? 'Field is required' : '' /*touched.password ? errors.password : ""*/
+              wasPasswordLeftBlank() ? 'Field is required' : ''
             }
-            error={
-              passwordFocus && password === '' /*touched.password && Boolean(errors.password)*/
-            }
+            error={wasPasswordLeftBlank()}
             onChange={handlePasswordChange}
             value={password}
           />
@@ -237,7 +232,7 @@ const Login = (props) => {
                     color="primary"
                   />
                 }
-                label="remember me"
+                label="Remember me"
               />
             </Grid>
             <Grid item>
@@ -260,21 +255,11 @@ const Login = (props) => {
             variant="contained"
             color="primary"
             disabled={loading}
-            // className={classes.submit}
             className={submitClassname}
           >
-            <Typography className={classes.submitText}>LOGIN</Typography>
+            <Typography className={classes.submitText}>LOG IN</Typography>
           </Button>
           {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-          {/*
-          <Grid container justify="center">
-            <Grid item>
-              <Link href="/signup" variant="body2">
-                {"Har du ikke en konto? Opret bruger"}
-              </Link>
-            </Grid>
-          </Grid>
-          */}
         </form>
       </div>
     </Container>
