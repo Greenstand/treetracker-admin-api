@@ -1,5 +1,6 @@
 import Axios from 'axios'
 import { session } from '../models/auth'
+import FilterModel from '../models/Filter'
 
 const trees = {
   state: {
@@ -10,13 +11,14 @@ const trees = {
     numSelected: 0,
     page: 0,
     rowsPerPage: 25,
-    order: 'desc',
+    order: 'asc',
     orderBy: 'id',
     allIds: [],
     byId: {},
     displayDrawer: {
       isOpen: false,
     },
+    filter: new FilterModel(),
   },
   reducers: {
     selectAll(state) {
@@ -25,13 +27,11 @@ const trees = {
     getTree(state, tree) {
       return { ...state, tree }
     },
-    getTrees(state, payload, { rowsPerPage, order, orderBy }) {
+    getTrees(state, payload, request) {
       return {
         ...state,
         data: payload,
-        rowsPerPage: rowsPerPage,
-        order: order,
-        orderBy: orderBy,
+        ...request,
       }
     },
     receiveTreeCount(state, payload) {
@@ -84,10 +84,14 @@ const trees = {
         })
       })
     },
-    async getTreesAsync({ page, rowsPerPage, orderBy = 'id', order = 'asc', filter }) {
+    async getTreesAsync(payload, rootState) {
+      // Destruct payload and fill in any gaps from rootState.trees
+      const { page, rowsPerPage, filter, orderBy, order } = { ...rootState.trees, ...payload }
+
       /*
        * first load the page count
        */
+      
       let response = await Axios.get(
         `${process.env.REACT_APP_API_ROOT}/api/trees/count?` +
           (filter ? filter.getBackloopString(false) : ''),
@@ -116,9 +120,11 @@ const trees = {
         },
       })
       this.getTrees(response.data, {
-        rowsPerPage: rowsPerPage,
-        orderBy: orderBy,
-        order: order,
+        page,
+        rowsPerPage,
+        orderBy,
+        order,
+        filter,
       })
     },
     async requestTreeCount(payload, rootState) {
@@ -180,29 +186,6 @@ const trees = {
       })
     },
     async showTree(id) {},
-    async sortTrees(payload, rootState) {
-      const { page, rowsPerPage, order } = rootState.trees
-      const newOrder = order === 'asc' ? 'desc' : 'asc'
-      const query = `${process.env.REACT_APP_API_ROOT}/api/trees?filter[order]=${
-        payload.orderBy
-      } ${newOrder}&filter[limit]=${rowsPerPage}&filter[skip]=${
-        page * rowsPerPage
-      }&filter[fields][lat]=true&filter[fields][lon]=true&filter[fields][id]=true` +
-      `&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true`
-      Axios.get(query, {
-        headers: {
-          'content-type': 'application/json',
-          Authorization: session.token,
-        },
-      }).then((response) => {
-        this.getTrees(response.data, {
-          page: page,
-          rowsPerPage: rowsPerPage,
-          orderBy: payload.orderBy,
-          order: newOrder,
-        })
-      })
-    },
   },
 }
 
