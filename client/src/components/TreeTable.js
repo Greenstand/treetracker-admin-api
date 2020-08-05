@@ -3,10 +3,10 @@ import compose from 'recompose/compose'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import MUIDataTable from 'mui-datatables'
-import dateformat from 'dateformat'
 import Filter, { FILTER_WIDTH } from './Filter'
 import FilterModel from '../models/Filter'
 import { MENU_WIDTH } from './common/Menu'
+import { getDateTimeStringLocale } from '../common/locale'
 
 import Drawer from '@material-ui/core/Drawer'
 
@@ -150,7 +150,7 @@ class TreeTable extends Component {
         name: 'timeCreated',
         label: 'Created',
         options: {
-          customBodyRender: (v) => `${dateformat(v, 'm/d/yyyy h:Mtt')}`,
+          customBodyRender: (v) => `${getDateTimeStringLocale(v)}`,
         },
       },
     ]
