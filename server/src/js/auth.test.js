@@ -13,10 +13,17 @@ Pool.mockImplementation(() => ({
 }));
 const {auth} = require('./auth.js');
 
+jest.mock('./Audit');
+const Audit = require('./Audit');
+const audit = {
+  did: jest.fn(),
+};
+Audit.mockImplementation(() => audit);
+
 describe('auth', () => {
   let app;
 
-  it("Check the config", () => {
+  it('Check the config', () => {
     expect(Pool).toHaveBeenCalledWith({
       connectionString: expect.stringMatching(/postgres(ql)?:\/\/.*/),
     });
@@ -80,11 +87,9 @@ describe('auth', () => {
   });
 
   it('/auth/login fail', async () => {
-    query
-      .mockReturnValueOnce({
-        rows: [
-        ],
-      });
+    query.mockReturnValueOnce({
+      rows: [],
+    });
     const response = await request(app)
       .post('/auth/login')
       .send({
@@ -103,26 +108,48 @@ describe('auth', () => {
     let token;
 
     beforeEach(async () => {
-    query
-      .mockReturnValueOnce({
-        rows: [
-          {
-            id: 0,
-            user_name: 'dadiorchen',
-            first_name: 'Dadior',
-          },
-        ],
-      })
-      .mockReturnValueOnce({
-        rows: [
-          {
-            role_id: 1,
-          },
-          {
-            role_id: 2,
-          },
-        ],
-      });
+      query
+        .mockReset()
+        .mockReturnValueOnce({
+          rows: [
+            {
+              id: 0,
+              user_name: 'dadiorchen',
+              first_name: 'Dadior',
+              salt: 'xxx',
+            },
+          ],
+        })
+        .mockReturnValueOnce({
+          rows: [
+            {
+              id: 0,
+              user_name: 'dadiorchen',
+              first_name: 'Dadior',
+              salt: 'xxx',
+            },
+          ],
+        })
+        .mockReturnValueOnce({
+          rows: [
+            {
+              id: 0,
+              user_name: 'dadiorchen',
+              first_name: 'Dadior',
+              salt: 'xxx',
+            },
+          ],
+        })
+        .mockReturnValueOnce({
+          rows: [
+            {
+              role_id: 1,
+            },
+            {
+              role_id: 2,
+            },
+          ],
+        });
       const response = await request(app)
         .post('/auth/login')
         .send({
@@ -135,17 +162,24 @@ describe('auth', () => {
       token = response.body.token;
     });
 
+    it.only('audit(login) should be called', () => {
+      expect(audit.did).toHaveBeenCalledWith(
+        expect.any(Number),
+        Audit.TYPE.LOGIN,
+        expect.anything(),
+      );
+    });
+
     it('/permissions', async () => {
-      query
-        .mockReturnValueOnce({
-          rows: [
-            {
-              id: 0,
-              role_name: 'role1',
-              description: 'role description',
-            },
-          ],
-        })
+      query.mockReturnValueOnce({
+        rows: [
+          {
+            id: 0,
+            role_name: 'role1',
+            description: 'role description',
+          },
+        ],
+      });
       const res = await request(app)
         .get('/auth/permissions')
         .set('Authorization', token);
@@ -177,7 +211,7 @@ describe('auth', () => {
               role_id: 1,
             },
           ],
-        })
+        });
       const res = await request(app)
         .get('/auth/admin_users')
         .set('Authorization', token);
@@ -204,12 +238,13 @@ describe('auth', () => {
       };
 
       beforeEach(async () => {
-        query
-          .mockReturnValueOnce({
-            rows: [{
+        query.mockReturnValueOnce({
+          rows: [
+            {
               id: 1,
-            }],
-          });
+            },
+          ],
+        });
         const res = await request(app)
           .post('/auth/admin_users')
           .set('Authorization', token)
@@ -231,14 +266,15 @@ describe('auth', () => {
         it('should get new info', async () => {
           query
             .mockReturnValueOnce({
-              rows: [{
-                id: 1,
-                email: "new@q.com",
-              }],
+              rows: [
+                {
+                  id: 1,
+                  email: 'new@q.com',
+                },
+              ],
             })
             .mockReturnValueOnce({
-              rows: [{
-              }],
+              rows: [{}],
             });
           const res = await request(app)
             .get('/auth/admin_users/3')
@@ -259,8 +295,7 @@ describe('auth', () => {
           expect(res.statusCode).toBe(200);
         });
 
-        it('', async () => {
-        });
+        it('', async () => {});
       });
     });
   });

@@ -18,7 +18,7 @@ import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
 import { AppContext } from './MainFrame'
 import axios from 'axios'
-import dateformat from 'dateformat'
+import { getDateTimeStringLocale } from '../common/locale'
 
 const style = (theme) => ({
   box: {
@@ -120,6 +120,10 @@ function Account(props) {
       if (res.status === 200) {
         /*WARN!no update on the appContext here*/
         setErrorMessage('Success!')
+        /* remove Remember me and force re-login */
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        appContext.logout()
       } else {
         console.error('load fail:', res)
         return
@@ -253,7 +257,7 @@ function Account(props) {
                 <Grid item>
                   <Typography className={classes.title}>Created</Typography>
                   <Typography className={classes.item}>
-                    {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
+                    {getDateTimeStringLocale(user.createdAt)}
                   </Typography>
                 </Grid>
                 <Grid item xs="8">
