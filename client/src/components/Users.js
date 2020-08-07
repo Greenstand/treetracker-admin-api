@@ -41,6 +41,7 @@ import axios from 'axios'
 import { AppContext } from './MainFrame'
 import pwdGenerator from 'generate-password'
 import dateformat from 'dateformat'
+import { getDateTimeStringLocale } from '../common/locale'
 
 const style = (theme) => ({
   box: {
@@ -450,7 +451,7 @@ function Users(props) {
           ))}
         </TableCell>
         <TableCell component="th" scope="row">
-          {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
+          {getDateTimeStringLocale(user.createdAt)}
         </TableCell>
         <TableCell>
           <IconButton title="edit" onClick={() => handleEdit(user)}>
@@ -613,7 +614,7 @@ function Users(props) {
               </Grid>
               <Grid item>
                 <Typography variant="outline">
-                  {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
+                  {userEditing && getDateTimeStringLocale(userEditing.createdAt)}
                 </Typography>
               </Grid>
             </Grid>

@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@material-ui/core'
 
+import { getDateTimeStringLocale } from '../common/locale'
 import Filter, { FILTER_WIDTH } from './Filter'
 import TreeDetails from './TreeDetails.js'
 
@@ -91,10 +92,7 @@ const columns = [
   {
     attr: 'timeCreated',
     label: 'Created',
-    renderer: val => {
-      const dateCreated = new Date(Date.parse(val))
-      return dateCreated.toLocaleString()
-    }
+    renderer: val => getDateTimeStringLocale(val)
   },
 ]
 
