@@ -118,18 +118,20 @@ function Filter(props) {
         <Grid item>
           <Typography variant="h5">Filters</Typography>
         </Grid>
-        <Grid item>
-          <IconButton
-            color="primary"
-            classes={{
-              colorPrimary: classes.close,
-            }}
-            onClick={handleCloseClick}
-          >
-            <IconClose />
-          </IconButton>
+        {props.onClose &&
+          <Grid item>
+            <IconButton
+              color="primary"
+              classes={{
+                colorPrimary: classes.close,
+              }}
+              onClick={handleCloseClick}
+            >
+              <IconClose />
+            </IconButton>
+          </Grid>
+        }
         </Grid>
-      </Grid>
       <Button variant="outlined" color="primary" onClick={handleSubmit}>
         Apply Filters
       </Button>

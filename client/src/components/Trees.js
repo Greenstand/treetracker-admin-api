@@ -1,12 +1,11 @@
 /*
 Trees
 
-Trees is a contaier component (no visual representation of it's own and concerned with
+Trees is a container component (no visual representation of its own and concerned with
 handling the comms between the tree view components and the store/models)
 
 */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
@@ -14,20 +13,18 @@ import Grid from '@material-ui/core/Grid';
 import Navbar from './Navbar';
 import TreeTable from './TreeTable';
 
-const Trees = props => ({
-  render () {
-    return (
-      <Grid container direction="column">
-        <Grid item>
-          <Navbar />
-        </Grid>
-        <Grid item>
-          <TreeTable />
-        </Grid>
+function Trees(props) {
+  return (
+    <Grid container direction="column" style={{flexWrap: 'nowrap', height: '100%' }}>
+      <Grid item>
+        <Navbar />
       </Grid>
-    )
-  }
-})
+      <Grid item container style={{height: '100%', overflow: 'hidden'}}>
+        <TreeTable />
+      </Grid>
+    </Grid>
+  )
+}
 
 const mapState = state => {
   return { state: state }
