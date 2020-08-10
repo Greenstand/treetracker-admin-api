@@ -1,8 +1,6 @@
 import React		from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer		from '@material-ui/core/Drawer';
-import Paper		from '@material-ui/core/Paper';
-import Menu		from '@material-ui/core/Menu';
 import MenuItem		from '@material-ui/core/MenuItem';
 import IconSettings		from '@material-ui/icons/Settings';
 import IconShowChart	from '@material-ui/icons/ShowChart';

@@ -1,7 +1,4 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import compose from 'recompose/compose'
-import { connect } from 'react-redux'
+import React from 'react'
 
 const TreeDetails = props => {
   let { tree } = props

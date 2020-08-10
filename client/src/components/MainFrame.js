@@ -3,7 +3,6 @@
  */
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Menu from './common/Menu'
 import Filter from './Filter'
 import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'

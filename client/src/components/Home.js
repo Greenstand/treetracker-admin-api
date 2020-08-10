@@ -1,13 +1,10 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
-import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
 import Menu from './common/Menu'
 import * as d3 from 'd3'
 import log from 'loglevel'
-import { ReactComponent as Logo } from './images/logo.svg'
 import assert from 'assert'
 
 const logo = (

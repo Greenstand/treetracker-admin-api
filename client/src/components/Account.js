@@ -9,7 +9,6 @@ import {
   DialogActions,
   DialogContent,
   TextField,
-  DialogContentText,
   DialogTitle,
   CircularProgress,
 } from '@material-ui/core'

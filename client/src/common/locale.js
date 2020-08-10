@@ -1,5 +1,4 @@
 import enLocale from 'date-fns/locale/en-US';
-import DateFnsUtils from '@date-io/date-fns';
 import dateformat from 'dateformat'
 
 // Per default set to EN

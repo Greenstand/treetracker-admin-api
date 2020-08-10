@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function TreeDetailDialog(props) {
-  const { open, TransitionComponent, onClose, tree } = props
+  const { open, TransitionComponent, tree } = props
 
   const [ snackbarOpen, setSnackbarOpen ] = useState(false)
   const [ snackbarLabel, setSnackbarLabel ] = useState('')
