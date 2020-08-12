@@ -6,6 +6,8 @@ import {RestExplorerComponent} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as path from 'path';
 import {MySequence} from './sequence';
+import { TreetrackerDataSource } from './datasources';
+import { prototype } from 'events';
 
 export {ApplicationConfig};
 
@@ -21,6 +23,18 @@ export class TreetrackerAdminApiApplication extends BootMixin(
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
 
+    // Inject datasource. 
+    this.dataSource(new TreetrackerDataSource({
+      name: process.env.DB_NAME, 
+      connector: process.env.DB_CONNECTOR, 
+      url: process.env.DB_URL, 
+      host: process.env.DB_HOST, 
+      port: process.env.DB_PORT, 
+      user: process.env.DB_USER, 
+      password: process.env.DB_PASSWORD, 
+      database: process.env.DB_DATABASE
+    }));
+    
     this.component(RestExplorerComponent);
 
     this.projectRoot = __dirname;
