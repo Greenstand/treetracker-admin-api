@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { ThemeProvider } from '@material-ui/core/styles'
-import MainFrame from './components/MainFrame'
+import Routers from './components/Routers'
 import theme from './components/common/theme'
+import { AppProvider } from './components/Context'
+import { BrowserRouter } from 'react-router-dom'
 import {setLocaleLanguage} from './common/locale'
 
 class App extends Component {
@@ -16,7 +18,13 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={theme}>
-        <MainFrame />
+        <>
+          <BrowserRouter>
+            <AppProvider>
+              <Routers />
+            </AppProvider>
+          </BrowserRouter>
+        </>
       </ThemeProvider>
     )
   }

@@ -60,6 +60,14 @@ const planters = {
      *  pageNumber,
      * }
      */
+    async getPlanter(payload, state){
+      this.setIsLoading(true);
+      const planter = await api.getPlanter(payload.id);
+      this.setPlanters([planter, ...state.planters.planters]);
+      this.setIsLoading(false);
+      return planter;
+    },
+
     async load(payload, state){
       this.setIsLoading(true);
       const planters = await api.getPlanters({
