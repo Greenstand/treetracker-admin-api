@@ -11,6 +11,7 @@ export default function IconLogo(){
 				maxHeight		: 32,
         marginBottom: '-6px'
 			}}
-			src={require('./images/logo.png')} />
+			src={require('./images/logo.png')}
+			alt='Greenstand logo'/>
 	)
 }

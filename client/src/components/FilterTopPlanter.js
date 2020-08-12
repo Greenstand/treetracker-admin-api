@@ -10,7 +10,6 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FilterModel from '../models/FilterPlanter';
-import dateformat from 'dateformat';
 import GSInputLabel from './common/InputLabel';
 import classNames from 'classnames';
 import DateFnsUtils from '@date-io/date-fns';
@@ -59,6 +58,7 @@ const styles = theme => {
     textField: {
       marginTop: 15,
       width: 142,
+	  paddingBottom:2,
     },
     textFieldSelect: {
       marginTop: 17,
@@ -77,6 +77,7 @@ function FilterTopPlanter(props) {
   const [personId, setPersonId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [organizationId, setOrganizationId] = useState("");
 
 
   function handleClear() {
@@ -85,6 +86,7 @@ function FilterTopPlanter(props) {
     setFirstName("");
     setId("");
     setLastName("");
+    setOrganizationId("");
     props.onSubmit && props.onSubmit(filter);
   }
 
@@ -94,6 +96,7 @@ function FilterTopPlanter(props) {
       id,
       firstName,
       lastName,
+      organizationId,
     });
     props.onSubmit && props.onSubmit(filter);
   }
@@ -120,6 +123,13 @@ function FilterTopPlanter(props) {
               placeholder='Person ID'
               value={personId}
               onChange={e => setPersonId(e.target.value)}
+            />
+            <TextField
+              className={`${classes.textField} ${classes.filterElement}`}
+              label='Organization ID'
+              placeholder='Organization ID'
+              value={organizationId}
+              onChange={e => setOrganizationId(e.target.value)}
             />
             <TextField
               className={`${classes.textField} ${classes.filterElement}`}

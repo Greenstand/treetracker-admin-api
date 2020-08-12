@@ -65,9 +65,14 @@ function buildInsertFields(obj){
   return `(${fields.join(',')}) values (${values.join(',')})`;
 }
 
+function getEnvironment(){
+  return process.env.NODE_ENV;
+}
+
 exports.utils = {
   convertCamel,
   convertDB,
   buildUpdateFields,
-  buildInsertFields
+  buildInsertFields,
+  getEnvironment
 }

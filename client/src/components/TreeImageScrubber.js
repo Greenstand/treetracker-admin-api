@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, Fragment } from 'react';
 import clsx from 'clsx';
 import Tooltip from '@material-ui/core/Tooltip';
 import { connect } from 'react-redux';
@@ -10,12 +10,8 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button'; // replace with icons down the line
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
+import Chip from '@material-ui/core/Chip';
 
 import { selectedHighlightColor } from '../common/variables.js';
 import * as loglevel from 'loglevel';
@@ -48,6 +44,8 @@ import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
 import Navbar from "./Navbar";
 import PlanterDetail from "./PlanterDetail"
+import TreeTags from './TreeTags';
+import TreeDetailDialog from './TreeDetailDialog';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -168,6 +166,10 @@ const useStyles = makeStyles(theme => ({
   tooltip: {
     maxWidth: 'none',
   },
+  MuiDialogActionsSpacing: {
+  paddingLeft : '16px',
+  paddingRight : '16px',
+  },
 
 }));
 
@@ -228,6 +230,11 @@ const TreeImageScrubber = (props) => {
     window.open(url, '_blank').opener = null;
   }
 
+  function resetApprovalFields() {
+    props.tagDispatch.setTagInput([])
+    props.speciesDispatch.setSpeciesInput('')
+  }
+
   async function handleSubmit(approveAction){
     console.log('approveAction:', approveAction)
     //check selection
@@ -259,9 +266,17 @@ const TreeImageScrubber = (props) => {
         approveAction.speciesId = speciesId
         console.log('species id:', speciesId)
     }
+
+    /*
+     * create/retrieve tags
+     */
+    approveAction.tags = await props.tagDispatch.createTags()
+
     const result = await props.verityDispatch.approveAll({approveAction});
     if (!result) {
       window.alert('sorry, failed to approve some picture');
+    } else {
+      resetApprovalFields();
     }
     props.verityDispatch.loadTreeImages();
   }
@@ -543,33 +558,12 @@ const TreeImageScrubber = (props) => {
         planter={planterDetail.planter} 
         onClose={() => handlePlanterDetailClose()} 
       />
-      <Dialog
+      <TreeDetailDialog
         open={dialog.isOpen}
         TransitionComponent={Transition}
         onClose={handleDialogClose}
-      >
-        <DialogTitle>Tree Detail</DialogTitle>
-        <DialogContent>
-          <img src={dialog.tree.imageUrl} />
-        </DialogContent>
-        <DialogActions>
-          <Grid container justify="space-between" >
-            <Grid item>
-              <Typography variant='body2' color="primary" gutterBottom>
-                Tree #{dialog.tree.id}, 
-                Planter #{dialog.tree.planterId}, 
-                Device #{dialog.tree.deviceId}
-              </Typography>
-              <Typography variant='body2' color="primary" gutterBottom>
-                Created time: {dialog.tree.timeCreated}, 
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Button onClick={handleDialogClose}>Close</Button>
-            </Grid>
-          </Grid>
-        </DialogActions>
-      </Dialog>
+        tree={dialog.tree}
+      />
     </React.Fragment>
   )
 };
@@ -653,6 +647,10 @@ function SidePanel(props){
           <Species
             ref={speciesRef}
           />
+        </Grid>
+        <Grid>
+          <Typography variant='h6'>Additional tags</Typography>
+          <TreeTags placeholder='Add other text tags'/>
         </Grid>
         <Grid className={`${classes.bottomLine} ${classes.sidePanelItem}`}>
           <Tabs 
@@ -750,11 +748,13 @@ export default connect(
     verityState: state.verity,
     speciesState: state.species,
     plantersState: state.planters,
+    tagState: state.tags,
   }),
   //dispatch
   dispatch => ({
     verityDispatch: dispatch.verity,
     speciesDispatch: dispatch.species,
     plantersDispatch: dispatch.planters,
+    tagDispatch: dispatch.tags,
   })
 )(TreeImageScrubber);

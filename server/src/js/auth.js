@@ -9,6 +9,7 @@ const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const {helper} = require('./helper');
 const db = require('../datasources/treetracker.datasource.json');
+const policy = require('../policy.json');
 //const assert = require('assert').strict;
 const Audit = require('./Audit');
 
@@ -24,6 +25,16 @@ const PERMISSIONS = {
   ADMIN: 1,
   TREE_AUDITOR: 2,
   PLANTER_MANAGER: 3,
+};
+
+const POLICIES = {
+  SUPER_PERMISSION: 'super_permission',
+  LIST_USER: 'list_user',
+  MANAGER_USER: 'manager_user',
+  LIST_TREE: 'list_tree',
+  APPROVE_TREE: 'approve_tree',
+  LIST_PLANTER: 'list_planter',
+  MANAGE_PLANTER: 'manage_planter',
 };
 
 const user = {
@@ -94,7 +105,7 @@ router.get('/permissions', async function login(req, res, next) {
 router.post('/login', async function login(req, res, next) {
   try {
     //try to init, in case of first visit
-    await init();
+    // await init();
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
@@ -120,24 +131,44 @@ router.post('/login', async function login(req, res, next) {
       userLogin.role = result.rows.map(r => r.role_id);
     }
 
-    if (userLogin) {
+    // If user exists in db AND user is active
+    // query remaining details and return
+    if (userLogin && userLogin.active) {
+      const userDetails = await loadUserPermissions(userLogin.id);
+      userLogin = {...userLogin, ...userDetails };
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {id, userName, firstName, lastName, email, role} = userLogin;
+      const {id, userName, firstName, lastName, email, role, policy} = userLogin;
       //      const audit = new Audit();
       //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
       res.json({
         token,
-        user: {id, userName, firstName, lastName, email, role},
+        user: {id, userName, firstName, lastName, email, role, policy},
       });
-    } else {
-      return res.status(401).json();
-    }
+    } 
+    return res.status(401).json();
   } catch (err) {
     console.error(err);
     next(err);
   }
 });
+
+// load roles and policy (permissions)
+async function loadUserPermissions(userId) {
+    const userDetails = {};
+    let result;
+    //get role
+    result = await pool.query(
+      `select * from admin_user_role where admin_user_id = ${userId}`,
+    );
+    userDetails.role = result.rows.map(r => r.role_id);
+    //get policies
+    result = await pool.query(
+      `select * from admin_role where id = ${userDetails.role[0]}`,
+    );
+    userDetails.policy = result.rows.map(r => r.policy)[0];
+    return userDetails;
+}
 
 router.get('/test', async function login(req, res, next) {
   res.send('OK');
@@ -206,6 +237,21 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
       }
     }
     res.status(200).json();
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
+
+router.delete('/admin_users/:userId', async (req, res, next) => {
+  try {
+    let deleteQuery = `delete from admin_user_role where admin_user_id = ${req.params.userId}`;
+    console.log('delete:', deleteQuery);
+    let result = await pool.query(deleteQuery);
+    deleteQuery = `delete from admin_user where id = ${req.params.userId}`;
+    console.log('delete:', deleteQuery);
+    result = await pool.query(deleteQuery);
+    res.status(204).json();
   } catch (e) {
     console.error(e);
     res.status(500).json();
@@ -296,6 +342,7 @@ router.post('/admin_users/', async (req, res, next) => {
 async function init() {
   console.log('Begin init...');
   const result = await pool.query(`select * from admin_user `);
+
   if (result.rows.length > 0) {
     console.log('There are accounts in admin user, quit.');
     return;
@@ -304,12 +351,22 @@ async function init() {
   await pool.query('delete from admin_user');
   await pool.query('delete from admin_user_role');
   await pool.query('delete from admin_role');
+
   await pool.query(
-    `insert into admin_role (id, role_name, description) ` +
-      `values (1, 'Admin', 'The super administrator role, having all permissions'),` +
-      `(2, 'Tree Manager', 'Check, verify, manage trees'),` +
-      `(3, 'Planter Manager', 'Check, manage planters')`,
+    `insert into admin_role (id, role_name, description, policy) ` +
+      `values (1, 'Admin', 'The super administrator role, having all permissions','${JSON.stringify(
+        [policy.policies[0], policy.policies[1], policy.policies[2]],
+      )}'),` +
+      `(2, 'Tree Manager', 'Check, verify, manage trees','${JSON.stringify([
+        policy.policies[3],
+        policy.policies[4],
+      ])}'),` +
+      `(3, 'Planter Manager', 'Check, manage planters','${JSON.stringify([
+        policy.policies[5],
+        policy.policies[6],
+      ])}')`,
   );
+
   await pool.query(
     `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email, active) ` +
       `values ( 1, 'admin', 'Admin', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org', true),` +
@@ -337,7 +394,9 @@ const isAuth = async (req, res, next) => {
   //white list
   //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
-  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init') {
+  const isDevEnvironment = utils.getEnvironment() === 'development';
+  const isApiExplorerReq = isDevEnvironment;
+  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || isApiExplorerReq) {
     next();
     return;
   }
@@ -348,6 +407,7 @@ const isAuth = async (req, res, next) => {
     //inject the user extract from token to request object
     req.user = userSession;
     const roles = userSession.role;
+    const policies = userSession.policy;
     if (url.match(/\/auth\/check_session/)) {
       let user_id = req.query.id;
       console.log(user_id);
@@ -385,7 +445,11 @@ const isAuth = async (req, res, next) => {
     }
     if (url.match(/\/auth\/(?!login).*/)) {
       //if role is admin, then can do auth stuff
-      if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
+      // if (userSession.role.some(r => r === PERMISSIONS.ADMIN)) {
+      //   next();
+      //   return;
+      // }
+      if (policies.some(r => r.name === POLICIES.SUPER_PERMISSION)) {
         next();
         return;
       } else {
@@ -398,11 +462,25 @@ const isAuth = async (req, res, next) => {
       if (url.match(/\/api\/species.*/)) {
         next();
         return;
+      } else if (url.match(/\/api\/tags.*/)) {
+        next();
+        return;
+      } else if (url.match(/\/api\/tree_tags.*/)) {
+        next();
+        return;
       } else if (url.match(/\/api\/trees.*/)) {
         if (
-          roles.includes(PERMISSIONS.ADMIN) ||
-          roles.includes(PERMISSIONS.TREE_AUDITOR)
+          policies.some(
+            r =>
+              r.name === POLICIES.SUPER_PERMISSION ||
+              r.name === POLICIES.LIST_TREE ||
+              r.name === POLICIES.APPROVE_TREE,
+          )
         ) {
+          // (
+          //   roles.includes(PERMISSIONS.ADMIN) ||
+          //   roles.includes(PERMISSIONS.TREE_AUDITOR)
+          // )
           next();
           return;
         } else {
@@ -413,9 +491,17 @@ const isAuth = async (req, res, next) => {
         }
       } else if (url.match(/\/api\/planter.*/)) {
         if (
-          roles.includes(PERMISSIONS.ADMIN) ||
-          roles.includes(PERMISSIONS.PLANTER_MANAGER)
+          policies.some(
+            r =>
+              r.name === POLICIES.SUPER_PERMISSION ||
+              r.name === POLICIES.LIST_PLANTER ||
+              r.name === POLICIES.MANAGE_PLANTER,
+          )
         ) {
+          // (
+          //   roles.includes(PERMISSIONS.ADMIN) ||
+          //   roles.includes(PERMISSIONS.PLANTER_MANAGER)
+          // )
           next();
           return;
         } else {

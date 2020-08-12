@@ -20,6 +20,12 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import IconButton from '@material-ui/core/IconButton'
 import TextField from '@material-ui/core/TextField'
+import FormHelperText from '@material-ui/core/FormHelperText'
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Radio from '@material-ui/core/Radio'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -35,6 +41,7 @@ import axios from 'axios'
 import { AppContext } from './Context'
 import pwdGenerator from 'generate-password'
 import dateformat from 'dateformat'
+import { getDateTimeStringLocale } from '../common/locale'
 
 const style = (theme) => ({
   box: {
@@ -93,6 +100,15 @@ const style = (theme) => ({
     position: 'relative',
     bottom: 5,
   },
+  radioButton: {
+    '&$radioChecked': { color: theme.palette.primary.main },
+  },
+  radioChecked: {},
+  radioGroup: {
+    position: 'relative',
+    bottom: 12,
+    left: 10,
+  },
 })
 
 function not(a, b) {
@@ -121,11 +137,13 @@ function Users(props) {
 
   const [userEditing, setUserEditing] = React.useState(undefined)
   const [userPassword, setUserPassword] = React.useState(undefined)
+  const [userDelete, setUserDelete] = React.useState(undefined)
   const [newPassword, setNewPassword] = React.useState('')
   const [permissions, setPermissions] = React.useState([])
   const [isPermissionsShow, setPermissionsShown] = React.useState(false)
   const [users, setUsers] = React.useState([])
   const [copyMsg, setCopyMsg] = React.useState('')
+  const [errorMessage, setErrorMessage] = React.useState('')
   const passwordRef = React.useRef(null)
 
   async function load() {
@@ -157,6 +175,42 @@ function Users(props) {
     setUserEditing(user)
     setLeft(permissions.filter((p) => user.role.every((r) => r !== p.id)))
     setRight(permissions.filter((p) => user.role.some((r) => r === p.id)))
+  }
+
+  function handleDelete(user) {
+    setUserDelete(user)
+  }
+
+  async function handleDeleteConfirm() {
+    if (userDelete.id == user.id) {
+      setErrorMessage('Cannot delete active user.')
+      return
+    }
+    try {
+      let res = await axios.delete(
+        `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userDelete.id}`,
+        {
+          headers: { Authorization: token },
+        }
+      )
+      if (res.status === 204) {
+        setUserDelete(undefined)
+        setErrorMessage('')
+        load()
+      } else {
+        console.error('delete fail:', res)
+        setErrorMessage('An error occured while deleting user. Please contact the system admin.')
+        return
+      }
+    } catch (e) {
+      console.error(e)
+      setErrorMessage('An error occured while deleting user. Please contact the system admin.')
+    }
+  }
+
+  function handleDeleteCancel() {
+    setUserDelete(undefined)
+    setErrorMessage('')
   }
 
   function handlePasswordClose() {
@@ -231,8 +285,11 @@ function Users(props) {
       </List>
     </Paper>
   )
-
   async function handleSave() {
+    if (userEditing.userName === '' || right === undefined || right.length === 0) {
+      setErrorMessage('Missing Field')
+      return
+    }
     //upload
     if (userEditing.id === undefined) {
       //add
@@ -326,12 +383,22 @@ function Users(props) {
     setUserEditing({ ...userEditing, email: e.target.value })
   }
 
+  function handleActiveChange(e) {
+    //convert to boolean
+    let isTrueSet = e.target.value === 'true'
+    setUserEditing({ ...userEditing, active: isTrueSet })
+  }
+
   function handleAddUser() {
     setUserEditing({})
     setLeft(permissions)
   }
 
   function handleUserDetailClose() {
+    setErrorMessage('')
+    setRight([])
+    setLeft(permissions)
+    setChecked([])
     setUserEditing(undefined)
     setRight([])
   }
@@ -341,6 +408,10 @@ function Users(props) {
     passwordRef.current.childNodes[1].childNodes[0].select()
     document.execCommand('copy')
     setCopyMsg('Copied!')
+  }
+
+  const handleError = (userEditing, key) => {
+    return userEditing && userEditing[key] && /\s/.test(userEditing[key]) ? true : false
   }
 
   function mapSortedUsrs(users, option = 'id') {
@@ -366,7 +437,7 @@ function Users(props) {
           ))}
         </TableCell>
         <TableCell component="th" scope="row">
-          {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
+          {getDateTimeStringLocale(user.createdAt)}
         </TableCell>
         <TableCell>
           <IconButton title="edit" onClick={() => handleEdit(user)}>
@@ -471,6 +542,8 @@ function Users(props) {
             }}
             disabled={userEditing && userEditing.id !== undefined ? true : false}
             value={(userEditing && userEditing.userName) || ''}
+            error={handleError(userEditing, ['userName'])}
+            helperText={handleError(userEditing, ['userName']) ? 'No space allowed' : ''}
             className={classes.input}
             onChange={handleUsernameChange}
           />
@@ -529,7 +602,7 @@ function Users(props) {
               </Grid>
               <Grid item>
                 <Typography variant="outline">
-                  {userEditing && dateformat(userEditing.createdAt, 'm/d/yyyy h:MMtt')}
+                  {userEditing && getDateTimeStringLocale(userEditing.createdAt)}
                 </Typography>
               </Grid>
             </Grid>
@@ -660,6 +733,28 @@ function Users(props) {
           <Button onClick={handleGenerate} variant="contained" color="primary">
             Generate
           </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={userDelete !== undefined}
+        onClose={handleDeleteCancel}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">Delete User</DialogTitle>
+        <DialogContent>
+          <Grid item xs="11">
+            <Typography className={classes.note}>
+              {`Are you sure you want to delete user \
+              ${(userDelete && userDelete.userName) || ''}?`}
+            </Typography>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Typography color="error">{errorMessage}</Typography>
+          <Button onClick={handleDeleteCancel} variant="contained" color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm}>Delete</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={isPermissionsShow} onClose={handleClose} aria-labelledby="form-dialog-title">
