@@ -8,6 +8,7 @@ import Login from './Login'
 import Account from './Account'
 import Home from './Home'
 import Users from './Users'
+import SpeciesMgt from './SpeciesMgt'
 import { AppProvider, AppContext } from './Context'
 import PrivateRoute from './PrivateRoute'
 import TreeTest from './TreeTest'
@@ -43,6 +44,7 @@ export default function Routers() {
               component={TreeImageScrubber}
               getScrollContainerRef={() => refContainer.current}
             />
+            <PrivateRoute path="/species" component={SpeciesMgt} />
             <PrivateRoute path="/planters" component={Planters} />
             <PrivateRoute path="/account" component={Account} />
           </Switch>

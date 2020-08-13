@@ -9,6 +9,7 @@ import IconNature from '@material-ui/icons/Nature'
 import IconGroup from '@material-ui/icons/Group'
 import IconCompareArrows from '@material-ui/icons/CompareArrows'
 import IconPermIdentity from '@material-ui/icons/PermIdentity'
+import CategoryIcon from '@material-ui/icons/Category'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import HomeIcon from '@material-ui/icons/Home'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -106,6 +107,12 @@ export default function GSMenu(props) {
       linkTo: '/',
       icon: IconCompareArrows,
       disabled: true,
+    },
+    {
+      name: 'Species',
+      linkTo: '/species',
+      icon: CategoryIcon,
+      disabled: !hasPermission(user, [PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
     },
     {
       name: 'Settings',
