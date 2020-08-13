@@ -66,6 +66,15 @@ const roles = {
   },
 }
 
+
+const entities = [
+  {
+    id: 1,
+    type: 'o',
+    name: 'freetown',
+  },
+]
+
 const trees = [
   {
     id: 1,
@@ -81,15 +90,9 @@ const trees = [
 //  },
   {
     id: 3,
+    //
+    planter_id: undefined,
     planting_organization_id: 1,
-  },
-]
-
-const entities = [
-  {
-    id: 1,
-    type: 'o',
-    name: 'freetown',
   },
 ]
 

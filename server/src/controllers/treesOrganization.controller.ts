@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
+//import expect from "../utils/expect.js";
+const expect : any = require("../utils/expect.js").default;
 
 export class TreesOrganizationController {
   constructor(
@@ -56,6 +58,9 @@ export class TreesOrganizationController {
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
   ): Promise<Trees[]> {
+    expect(this.treesRepository).property("execute").defined();
+    const result = await this.treesRepository.execute(`select * from entity where id = ${organizationId}`, []);
+    expect(result).lengthOf.above(0);
     if(filter){
       //filter should be to deal with the organization, but here is just for 
       //demonstration

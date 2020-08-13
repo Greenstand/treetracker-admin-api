@@ -63,6 +63,15 @@ describe("Seed data into DB", () => {
     expect(r.rows.length).toBe(3);
   });
 
+//  it("", async () => {
+//    let r = await pool.query({
+//      text: `select * from getEntityRelationshipChildren(1)`,
+//      values: []
+//    });
+//    console.log("result:!:", r);
+//    expect(r.rows.length).toBe(3);
+//  });
+
 
 });
 
