@@ -2,9 +2,11 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import {
   Grid,
+  TableContainer,
   Table,
   TableHead,
   TableBody,
+  TableFooter,
   TableRow,
   TableCell,
   Drawer,
@@ -12,6 +14,7 @@ import {
   TableSortLabel,
   Typography,
   IconButton,
+  Paper,
 } from '@material-ui/core'
 import Navbar from './Navbar'
 import { connect } from 'react-redux'
@@ -43,8 +46,14 @@ const SpeciesTable = (props) => {
 
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
-  // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage)
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
 
+  // const loadTrees(payload) {
+  //   this.props.getTreesAsync(payload).then(() => {
+  //     this.scrollRef.current.scrollTo(0,0)
+  //   })
+  // }
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -55,7 +64,10 @@ const SpeciesTable = (props) => {
   }
 
   const getSpecies = () => {
-    return props.speciesState.speciesList.map((specie) => (
+    return (rowsPerPage > 0
+      ? props.speciesState.speciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : props.speciesState.speciesList
+    ).map((specie) => (
       <TableRow key={specie.id} role="listitem">
         <TableCell component="th" scope="row">
           {specie.id}
@@ -78,8 +90,7 @@ const SpeciesTable = (props) => {
     return (
       <TablePagination
         component="div"
-        count={100}
-        // count={speciesCount}
+        count={props.speciesState.speciesList.length}
         rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
         colSpan={3}
         page={page}
@@ -92,53 +103,33 @@ const SpeciesTable = (props) => {
 
   return (
     <div>
-      <Grid container direction="row" justify="space-between" alignItems="center">
+      {/* <Grid container direction="row" justify="space-between" alignItems="center">
         <Typography variant="h5">Trees</Typography>
         {tablePagination()}
-      </Grid>
-      {/* <Table>
-        <TableHead>
-          <TableRow>
-            {columns.map(({ attr, label, noSort }, index) => (
-              <TableCell key={attr} sortDirection={orderBy === attr ? order : false}>
-                <TableSortLabel
-                  active={orderBy === attr}
-                  direction={orderBy === attr ? order : 'asc'}
-                  onClick={this.createSortHandler(attr)}
-                  disabled={noSort}
-                >
-                  {label}
-                </TableSortLabel>
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {treesArray.map((tree) => (
-            <TableRow
-              key={tree.id}
-              onClick={this.createToggleDrawerHandler(tree.id)}
-              className={classes.tableRow}
-            >
-              {columns.map(({ attr, label, renderer }, index) => (
-                <TableCell key={attr}>{renderer ? renderer(tree[attr]) : tree[attr]}</TableCell>
-              ))}
+      </Grid> */}
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Operations</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table> */}
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Operations</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>{getSpecies()}</TableBody>
-      </Table>
-      {tablePagination()}
+          </TableHead>
+          <TableBody>
+            {getSpecies()}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 53 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
+          </TableBody>
+          <TableFooter>
+            <TableRow> {tablePagination()}</TableRow>{' '}
+          </TableFooter>
+        </Table>
+      </TableContainer>
     </div>
   )
 }
