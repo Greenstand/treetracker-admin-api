@@ -1,53 +1,28 @@
 /*
  * Planter page
  */
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect} from 'react'
 import clsx from 'clsx'
-import Tooltip from '@material-ui/core/Tooltip'
 import { connect } from 'react-redux'
-import compose from 'recompose/compose'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
-import Button from '@material-ui/core/Button' // replace with icons down the line
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import Slide from '@material-ui/core/Slide'
 import TablePagination from '@material-ui/core/TablePagination'
 
 import { selectedHighlightColor } from '../common/variables.js'
-import * as loglevel from 'loglevel'
 import Grid from '@material-ui/core/Grid'
-import AppBar from '@material-ui/core/AppBar'
-import Modal from '@material-ui/core/Modal'
-import LinearProgress from '@material-ui/core/LinearProgress'
 import IconFilter from '@material-ui/icons/FilterList'
-import Image from '@material-ui/icons/Image'
 import IconButton from '@material-ui/core/IconButton'
 import Box from '@material-ui/core/Box'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Snackbar from '@material-ui/core/Snackbar'
 import Drawer from '@material-ui/core/Drawer'
-import Toolbar from '@material-ui/core/Toolbar'
-import RadioGroup from '@material-ui/core/RadioGroup'
-import Radio from '@material-ui/core/Radio'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import TextField from '@material-ui/core/TextField'
-import Species from './Species'
 import Close from "@material-ui/icons/Close";
 
 import FilterTopPlanter from './FilterTopPlanter'
 import FilterPlanter from '../models/FilterPlanter'
-import IconLogo from './IconLogo'
-import Avatar from "@material-ui/core/Avatar";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import Navbar from "./Navbar";
