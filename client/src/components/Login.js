@@ -182,14 +182,6 @@ const Login = (props) => {
     return <Redirect to="/" />
   }
 
-  if (isSubmitting) {
-    return (
-      <Typography component="h3" variant="h5">
-        <LinearProgress />
-        Vent venligst...
-      </Typography>
-    )
-  }
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
