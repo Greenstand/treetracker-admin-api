@@ -55,12 +55,12 @@ export class Planter extends Entity {
   })
   pwdResetRequired?: Boolean;
 
-  @property({
-    type: String,
-    required: false,
-    postgresql: {"columnName":"salt","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
-  })
-  salt?: String;
+  // @property({
+  //   type: String,
+  //   required: false,
+  //   postgresql: {"columnName":"salt","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
+  // })
+  // salt?: String;
 
   @property({
     type: String,

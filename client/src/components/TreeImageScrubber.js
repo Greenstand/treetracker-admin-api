@@ -31,9 +31,11 @@ import Species from './Species';
 import FilterTop from './FilterTop';
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg';
 import CheckIcon from '@material-ui/icons/Check';
+import Person from "@material-ui/icons/Person";
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
 import Navbar from "./Navbar";
+import PlanterDetail from "./PlanterDetail"
 import TreeTags from './TreeTags';
 import TreeDetailDialog from './TreeDetailDialog';
 
@@ -174,6 +176,7 @@ const TreeImageScrubber = (props) => {
   const [complete, setComplete] = React.useState(0);
   const [isFilterShown, setFilterShown] = React.useState(false);
   const [dialog, setDialog] = React.useState({isOpen: false, tree: {}});
+  const [planterDetail, setPlanterDetail] = React.useState({isOpen: false, planter: {}})
   const refContainer = React.useRef();
 
   /*
@@ -270,6 +273,29 @@ const TreeImageScrubber = (props) => {
     props.verityDispatch.loadTreeImages();
   }
 
+  async function handlePlanterDetail(e, tree){
+    e.preventDefault();
+    e.stopPropagation();
+    var planter = props.plantersState.planters.find(x => x.id == tree.planterId);
+    if (!planter) {
+      planter = await props.plantersDispatch.getPlanter({id: tree.planterId});
+    }
+    if(!planter){
+      window.alert(`Planter not found id:${tree.planterId}`)
+    }
+    setPlanterDetail({
+      isOpen: true, 
+      planter: planter,
+    });
+  }
+
+  function handlePlanterDetailClose(){
+    setPlanterDetail({
+      isOpen: false,
+      planter: {},
+    })
+  }
+
   function handleDialog(e, tree){
     e.preventDefault();
     e.stopPropagation();
@@ -349,6 +375,10 @@ const TreeImageScrubber = (props) => {
                   justify='flex-end'
                   container>
                   <Grid item>
+                    <Person
+                      color='primary'
+                      onClick={e => handlePlanterDetail(e, tree)}
+                    />
                     <Image
                       color='primary'
                       onClick={e => handleDialog(e, tree)}
@@ -515,7 +545,11 @@ const TreeImageScrubber = (props) => {
             className={classes.snackbar}
           />
         )}
-
+      <PlanterDetail 
+        open={planterDetail.isOpen} 
+        planter={planterDetail.planter} 
+        onClose={() => handlePlanterDetailClose()} 
+      />
       <TreeDetailDialog
         open={dialog.isOpen}
         TransitionComponent={Transition}
@@ -705,12 +739,14 @@ export default connect(
   state => ({
     verityState: state.verity,
     speciesState: state.species,
+    plantersState: state.planters,
     tagState: state.tags,
   }),
   //dispatch
   dispatch => ({
     verityDispatch: dispatch.verity,
     speciesDispatch: dispatch.species,
+    plantersDispatch: dispatch.planters,
     tagDispatch: dispatch.tags,
   })
 )(TreeImageScrubber);

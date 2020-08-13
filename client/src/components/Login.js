@@ -13,10 +13,11 @@ import {
 } from '@material-ui/core'
 import IconLogo from './IconLogo'
 import { withStyles } from '@material-ui/core/styles'
-import { AppContext } from './MainFrame'
+import { AppContext } from './Context'
 import classNames from 'classnames'
-
+import { Redirect } from 'react-router-dom'
 import axios from 'axios'
+// import Copyright from 'components/Copyright'
 
 const styles = (theme) => ({
   paper: {
@@ -177,6 +178,18 @@ const Login = (props) => {
     return false
   }
 
+  if (appContext.user && appContext.token) {
+    return <Redirect to="/" />
+  }
+
+  if (isSubmitting) {
+    return (
+      <Typography component="h3" variant="h5">
+        <LinearProgress />
+        Vent venligst...
+      </Typography>
+    )
+  }
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />

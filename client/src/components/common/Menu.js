@@ -1,150 +1,168 @@
-import React		from 'react'
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer		from '@material-ui/core/Drawer';
-import MenuItem		from '@material-ui/core/MenuItem';
-import IconSettings		from '@material-ui/icons/Settings';
-import IconShowChart	from '@material-ui/icons/ShowChart';
-import IconThumbsUpDown		from '@material-ui/icons/ThumbsUpDown';
-import IconNature		from '@material-ui/icons/Nature';
-import IconGroup		from '@material-ui/icons/Group';
-import IconCompareArrows		from'@material-ui/icons/CompareArrows';
-import IconPermIdentity		from '@material-ui/icons/PermIdentity';
-import ListItemIcon		from '@material-ui/core/ListItemIcon';
-import ListItemText		from '@material-ui/core/ListItemText';
-import Box		from '@material-ui/core/Box';
-import {useTheme, }		from '@material-ui/styles';
-import IconLogo		from '../IconLogo';
-import {AppContext} from "../MainFrame";
-import {PERMISSIONS, hasPermission} from "../../models/auth";
+import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import Drawer from '@material-ui/core/Drawer'
+import MenuItem from '@material-ui/core/MenuItem'
+import IconSettings from '@material-ui/icons/Settings'
+import IconShowChart from '@material-ui/icons/ShowChart'
+import IconThumbsUpDown from '@material-ui/icons/ThumbsUpDown'
+import IconNature from '@material-ui/icons/Nature'
+import IconGroup from '@material-ui/icons/Group'
+import IconCompareArrows from '@material-ui/icons/CompareArrows'
+import IconPermIdentity from '@material-ui/icons/PermIdentity'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import HomeIcon from '@material-ui/icons/Home'
+import ListItemText from '@material-ui/core/ListItemText'
+import Box from '@material-ui/core/Box'
+import { useTheme } from '@material-ui/styles'
+import IconLogo from '../IconLogo'
+import { AppContext } from '../Context'
+import { PERMISSIONS, hasPermission } from '../../models/auth'
+import { Link } from 'react-router-dom'
 
-export const MENU_WIDTH		= 232
+export const MENU_WIDTH = 232
 
-const useStyles		= makeStyles(theme => ({
-	drawer		: {
-	},
-	drawerPaper		: {
-		width		: MENU_WIDTH,
-		position		: 'inherit',
-		height		: '100vh',
-	},
-	menuItem		: {
-		'&:hover'		: {
-			backgroundColor		: theme.palette.primary.lightVery,
-			'& .MuiListItemIcon-root, & .MuiListItemText-primary'		: {
-				color		: theme.palette.primary.main,
-			},
-			'& .MuiListItemIcon-root'		: {
-				color		: theme.palette.primary.main,
-			},
-		},
-		borderTopRightRadius		: 25,
-		borderBottomRightRadius		: 25,
-		marginRight		: 35,
-		'&.Mui-selected'		: {
-			color		: theme.palette.primary.main,
-			fontWeight		: 400,
-			backgroundColor		: theme.palette.action.hover,
-		},
-		'&.Mui-selected .MuiListItemIcon-root'		: {
-			color		: theme.palette.primary.main,
-		},
-	},
-	listItemIcon		: {
-		minWidth		: 46,
-	},
-	listItemText		: {
-		'& .MuiTypography-body1'		: {
-			fontWeight		: 700,
-		},
-	},
+const useStyles = makeStyles((theme) => ({
+  drawer: {},
+  drawerPaper: {
+    width: MENU_WIDTH,
+    position: 'inherit',
+    height: '100vh',
+  },
+  menuItem: {
+    '&:hover': {
+      backgroundColor: theme.palette.primary.lightVery,
+      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+        color: theme.palette.primary.main,
+      },
+      '& .MuiListItemIcon-root': {
+        color: theme.palette.primary.main,
+      },
+    },
+    borderTopRightRadius: 25,
+    borderBottomRightRadius: 25,
+    marginRight: 35,
+    '&.Mui-selected': {
+      color: theme.palette.primary.main,
+      fontWeight: 400,
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&.Mui-selected .MuiListItemIcon-root': {
+      color: theme.palette.primary.main,
+    },
+  },
+  listItemIcon: {
+    minWidth: 46,
+  },
+  listItemText: {
+    '& .MuiTypography-body1': {
+      fontWeight: 700,
+    },
+  },
+  linkItemText: {
+    textDecoration: 'none',
+    color: theme.palette.primary.main,
+  },
 }))
 
+export default function GSMenu(props) {
+  const classes = useStyles()
+  const theme = useTheme()
+  const appContext = React.useContext(AppContext)
+  const { user } = appContext
 
-export default function GSMenu(props){
-	const classes		= useStyles()
-	const theme		= useTheme()
-  const appContext = React.useContext(AppContext);
-  const { user} = appContext;
-
-  const menus		= [
+  const menus = [
     {
-      name		: 'Monitor',
-      icon		: IconShowChart,
-      disabled		: true,
-    },{
-      name		: 'Verify',
-      icon		: IconThumbsUpDown,
-      disabled		: !hasPermission(user,[PERMISSIONS.ADMIN, PERMISSIONS.TREE_AUDIT]),
-    },{
-      name		: 'Trees',
-      icon		: IconNature,
-      disabled		: !hasPermission(user,[PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
-    },{
-      name		: 'Planters',
-      icon		: IconGroup,
-      disabled		: !hasPermission(user,[PERMISSIONS.PLANTER, PERMISSIONS.ADMIN]),
-    },{
-      name		: 'Payments',
-      icon		: IconCompareArrows,
-      disabled		: true,
-    },{
-      name		: 'Settings',
-      icon		: IconSettings,
-      disabled		: true,
-    },{
-      name		: 'User Manager',
-      icon		: IconGroup,
-      disabled		: !hasPermission(user,PERMISSIONS.ADMIN),
-    },{
-      name		: 'Account',
-      icon		: IconPermIdentity,
-      disabled		: false,
-    }
+      name: 'Home',
+      linkTo: '/',
+      icon: HomeIcon,
+      disabled: false,
+    },
+    {
+      name: 'Monitor',
+      linkTo: '/',
+      icon: IconShowChart,
+      disabled: true,
+    },
+    {
+      name: 'Verify',
+      linkTo: 'verify',
+      icon: IconThumbsUpDown,
+      disabled: !hasPermission(user, [PERMISSIONS.ADMIN, PERMISSIONS.TREE_AUDIT]),
+    },
+    {
+      name: 'Trees',
+      linkTo: '/trees',
+      icon: IconNature,
+      disabled: !hasPermission(user, [PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
+    },
+    {
+      name: 'Planters',
+      linkTo: 'planters',
+      icon: IconGroup,
+      disabled: !hasPermission(user, [PERMISSIONS.PLANTER, PERMISSIONS.ADMIN]),
+    },
+    {
+      name: 'Payments',
+      linkTo: '/',
+      icon: IconCompareArrows,
+      disabled: true,
+    },
+    {
+      name: 'Settings',
+      linkTo: '/',
+      icon: IconSettings,
+      disabled: true,
+    },
+    {
+      name: 'User Manager',
+      linkTo: '/usermanager',
+      icon: IconGroup,
+      disabled: !hasPermission(user, PERMISSIONS.ADMIN),
+    },
+    {
+      name: 'Account',
+      linkTo: '/account',
+      icon: IconPermIdentity,
+      disabled: false,
+    },
   ]
-  const menu = 
-      <>
-				<Box p={4} >
-					<IconLogo/>
-				</Box>
-				<Box height={20} />
-				{menus.map((item,i) => (
-					<MenuItem
-            key={i}
-						className={classes.menuItem}
-						selected={props.active === item.name}
-						onClick={() => appContext.handleMenuChange(item.name)}
-						disabled={item.disabled}
-					>
-						<ListItemIcon
-							className={classes.listItemIcon}
-						>
-							{item.icon && <item.icon/>}
-						</ListItemIcon>
-						<ListItemText
-							className={classes.listItemText}
-						>
-							{item.name}
-						</ListItemText>
-					</MenuItem>
-				))}
-      </>;
+  const menu = (
+    <>
+      <Box p={4}>
+        <IconLogo />
+      </Box>
+      <Box height={20} />
+      {menus.map((item, i) => (
+        <MenuItem
+          key={i}
+          className={classes.menuItem}
+          selected={props.active === item.name}
+          disabled={item.disabled}
+        >
+          <ListItemIcon className={classes.listItemIcon}>{item.icon && <item.icon />}</ListItemIcon>
+          <ListItemText className={classes.listItemText}>
+            <Link className={classes.linkItemText} to={`${item.linkTo}`}>
+              {item.name}
+            </Link>
+          </ListItemText>
+        </MenuItem>
+      ))}
+    </>
+  )
 
-	return(
-    props.variant === "plain"?
-      <>
-        {menu}
-      </>
-    :
-			<Drawer
-				PaperProps={{
-					elevation		: 5,
-				}}
-				className={classes.drawer}
-				classes={{paper:classes.drawerPaper}}
-        onClose={props.onClose}
-        open={true}
-			>
-        {menu}
-			</Drawer>
-	)
+  return props.variant === 'plain' ? (
+    <>{menu}</>
+  ) : (
+    <Drawer
+      PaperProps={{
+        elevation: 5,
+      }}
+      className={classes.drawer}
+      classes={{ paper: classes.drawerPaper }}
+      onClose={props.onClose}
+      open={true}
+    >
+      {menu}
+    </Drawer>
+  )
 }

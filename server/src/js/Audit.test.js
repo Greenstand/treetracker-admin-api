@@ -67,7 +67,7 @@ describe('Audit', () => {
           active: true,
           age: 'new_tree',
           approved: true,
-          captureApprovalTag: 'simple_lead',
+          captureApprovalTag: 'simple_leaf',
           id: 20866,
           morphology: 'seedling',
         });

@@ -69,11 +69,11 @@ const style = (theme) => ({
     paddingTop: '20%', //theme.spacing(50),
   },
   title: {
-    fill: "#9f9f9f",
+    fill: '#9f9f9f',
     fontSize: 48,
-    fontFamily: "Lato,Roboto,Helvetica,Arial,sans-serif",
-    fontWeight: "400",
-    lineHeight: "1.235",
+    fontFamily: 'Lato,Roboto,Helvetica,Arial,sans-serif',
+    fontWeight: '400',
+    lineHeight: '1.235',
   },
 })
 
@@ -89,19 +89,18 @@ function Home(props) {
     const htmlCode = d3.select('#logoDiv').node().innerHTML
     assert(htmlCode.match(/<svg.*/))
 
-
     g.append('g')
       .attr('transform', `translate(80 92)`)
       .append('g')
       .html(htmlCode)
       //original size: 58, 73
-      .attr('transform', `translate(${-58/2} ${-73/2}), scale(0)`)
-      .attr('transform-origin', `${58/2} ${73/2} `)
+      .attr('transform', `translate(${-58 / 2} ${-73 / 2}), scale(0)`)
+      .attr('transform-origin', `${58 / 2} ${73 / 2} `)
       .transition()
       .delay(2000)
       .duration(1000)
       .ease(d3.easeElasticOut.amplitude(1).period(0.2))
-      .attr('transform', `translate(${-58/2} ${-73/2}), scale(1.4)`)
+      .attr('transform', `translate(${-58 / 2} ${-73 / 2}), scale(1.4)`)
 
     d3.select('#text')
       .attr('transform', `translate(0 0)`)
@@ -125,11 +124,15 @@ function Home(props) {
       </Grid>
       <Grid item xs={9}>
         <Grid container className={classes.welcomeBox} justify="center">
-          <div id="logoDiv" style={{display:'none'}}>{logo}</div>
+          <div id="logoDiv" style={{ display: 'none' }}>
+            {logo}
+          </div>
           <svg viewBox="0 0 700 200" width="700" height="200">
             <g id="trees" />
             <g transform="translate(100, 100)">
-              <text id="text" className={classes.title} >Greenstand Admin Panel</text>
+              <text id="text" className={classes.title}>
+                Greenstand Admin Panel
+              </text>
             </g>
           </svg>
         </Grid>
