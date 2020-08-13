@@ -60,7 +60,7 @@ export class TreesOrganizationController {
       //filter should be to deal with the organization, but here is just for 
       //demonstration
       filter.where = {
-        deviceId: organizationId,
+        plantingOrganizationId: organizationId,
       }
     }
     console.log("filter:", filter, filter?filter.where:null);
@@ -80,7 +80,7 @@ export class TreesOrganizationController {
     @param.path.number('id') id: number
   ): Promise<Trees> {
     const result = await this.treesRepository.findById(id);
-    if(result.deviceId !== organizationId){
+    if(result.plantingOrganizationId !== organizationId){
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     }
     return result;

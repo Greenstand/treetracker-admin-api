@@ -6,6 +6,8 @@ const pool = new Pool({connectionString: db.url});
 describe("Seed data into DB", () => {
 
   beforeAll(async () => {
+//    console.log("The DB story:");
+//    console.log(seed.description);
     await seed.seed();
   });
 
@@ -43,6 +45,22 @@ describe("Seed data into DB", () => {
       values: []
     });
     expect(r.rows.length).toBeGreaterThan(0);
+  });
+
+  it("Should have an entity, it is an organization", async () => {
+    let r = await pool.query({
+      text: `select * from entity where type = 'o' `,
+      values: []
+    });
+    expect(r.rows.length).toBeGreaterThan(0);
+  });
+
+  it("Should have 4 trees", async () => {
+    let r = await pool.query({
+      text: `select * from trees`,
+      values: []
+    });
+    expect(r.rows.length).toBe(3);
   });
 
 

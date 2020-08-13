@@ -75,19 +75,38 @@ const trees = [
     //just for demonstration
     device_id: 1,
   },
+//  {
+//    id: 3,
+//    planter_id: 1,
+//  },
+  {
+    id: 3,
+    planting_organization_id: 1,
+  },
+]
+
+const entities = [
+  {
+    id: 1,
+    type: 'o',
+    name: 'freetown',
+  },
 ]
 
 const description = 
 `
 ---------------- story -------------------
-accounts:
+admin user accounts:
   ${JSON.stringify(users, null, 2)}
 
-roles: 
+admin roles: 
   ${JSON.stringify(roles, null, 2)}
 
 trees:
   ${JSON.stringify(trees, null, 2)}
+
+entities: 
+  ${JSON.stringify(entities, null, 2)}
 `
 
 async function seed(){
@@ -120,15 +139,27 @@ async function seed(){
       `(4, 4, 3)`
   );
 
+  //entity: organization free town
+  await pool.query({
+    text: `insert into entity
+    (id, type, name)
+    values ` + 
+    entities.map(entity => {
+      return `(${entity.id}, '${entity.type}', '${entity.name}')`
+    }).join(","),
+    values: []
+  });
+
   await pool.query({
     text: `insert into trees
-    (id, time_created, time_updated, device_id)
+    (id, time_created, time_updated, device_id, planter_id, planting_organization_id)
     values ` + 
     trees.map(tree => {
-      return `(${tree.id}, $1, $1, ${tree.device_id || null})`
+      return `(${tree.id}, $1, $1, ${tree.device_id || null}, ${tree.planter_id || null},${tree.planting_organization_id || null})`
     }).join(","),
     values: [new Date()]
   });
+
 }
 
 async function clear(){
@@ -136,6 +167,7 @@ async function clear(){
   await pool.query('delete from admin_user_role');
   await pool.query('delete from admin_role');
   await pool.query('delete from trees');
+  await pool.query('delete from entity');
 }
 
 module.exports = {
