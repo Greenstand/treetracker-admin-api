@@ -66,6 +66,16 @@ describe("Integration", () => {
       token = response.body.token;
     });
 
+    it("shoulbe be able request /api/trees/count, and get 4 trees", async () => {
+      const response = await request(server.app)
+        .get("/api/trees/count?filter[offset]=0&filter[limit]=100&filter[skip]=0")
+        .set('Authorization', token);
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toMatchObject({
+        count: 4,
+      });
+    });
+
     it("shoulbe be able request /api/trees, and get 4 trees", async () => {
       const response = await request(server.app)
         .get("/api/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0")
@@ -125,6 +135,17 @@ describe("Integration", () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveLength(2);
     });
+
+    it(`shoulbe be able request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/count, and get 2 trees`, async () => {
+      const response = await request(server.app)
+        .get(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/count?filter[offset]=0&filter[limit]=100&filter[skip]=0`)
+        .set('Authorization', token);
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toMatchObject({
+        count: 2
+      });
+    });
+
 
     it(`Should be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/3 ,cuz this tree belong to this organization`, async () => {
       const response = await request(server.app)

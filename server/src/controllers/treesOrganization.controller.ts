@@ -28,7 +28,7 @@ export class TreesOrganizationController {
     public treesRepository : TreesRepository,
   ) {}
 
-  @get('/organization/{oganizationId}/trees/count', {
+  @get('/organization/{organizationId}/trees/count', {
     responses: {
       '200': {
         description: 'Trees model count',
@@ -37,8 +37,17 @@ export class TreesOrganizationController {
     },
   })
   async count(
+    @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
   ): Promise<Count> {
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    where = {
+      ...where,
+      plantingOrganizationId : {
+        inq: entityIds,
+      }
+    }
+    console.warn("where:", where);
     return await this.treesRepository.count(where);
   }
 
@@ -63,6 +72,7 @@ export class TreesOrganizationController {
       //filter should be to deal with the organization, but here is just for 
       //demonstration
       filter.where = {
+        ...filter.where,
         plantingOrganizationId: {
           inq: entityIds,
         },
@@ -85,7 +95,8 @@ export class TreesOrganizationController {
     @param.path.number('id') id: number
   ): Promise<Trees> {
     const result = await this.treesRepository.findById(id);
-    if(result.plantingOrganizationId !== organizationId){
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    if(!entityIds.includes(result.plantingOrganizationId || -1)){
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     }
     return result;
