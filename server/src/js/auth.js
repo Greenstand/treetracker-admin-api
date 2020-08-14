@@ -482,8 +482,22 @@ const isAuth = async (req, res, next) => {
         if(matcher[1]){
           //organization case
           const id = parseInt(matcher[2]);
-          next();
-          return;
+          if (
+            policies.some(
+              r =>
+                r.name === POLICIES.SUPER_PERMISSION ||
+                r.name === POLICIES.LIST_TREE ||
+                r.name === POLICIES.APPROVE_TREE,
+            )
+          ) {
+            next();
+            return;
+          } else {
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
         }else{
           //normal case
           //organizational user can not visit it directly
@@ -514,8 +528,22 @@ const isAuth = async (req, res, next) => {
         if(matcher[1]){
           //organization case
           const id = parseInt(matcher[2]);
-          next();
-          return;
+          if (
+            policies.some(
+              r =>
+                r.name === POLICIES.SUPER_PERMISSION ||
+                r.name === POLICIES.LIST_PLANTER ||
+                r.name === POLICIES.MANAGE_PLANTER,
+            )
+          ) {
+            next();
+            return;
+          } else {
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
         }else{
           //normal case
           //organizational user can not visit it directly

@@ -1,5 +1,5 @@
 
-describe("Organzation", () => {
+describe("Organization", () => {
   before(() => {
     cy.visit("/");
     cy.contains(/Log in/i);
@@ -12,10 +12,13 @@ describe("Organzation", () => {
     cy.contains(/Greenstand admin panel/i);
   });
 
-
-
-  it("", () => {
+  it("verify", () => {
     cy.contains(/verify/i)
+      .click();
+  });
+
+  it("planter", () => {
+    cy.contains(/planter/i)
       .click();
   });
 });

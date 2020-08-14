@@ -57,7 +57,7 @@ const roles = {
     name: "Freetown Manager", 
     description: "Manager for oranization freetown",
     policy: {
-      policies: [policy.policies[3],policy.policies[4],],
+      policies: [policy.policies[3],policy.policies[4],policy.policies[5],policy.policies[6],],
       organization: {
         name: "freetown",
         id: 1,
