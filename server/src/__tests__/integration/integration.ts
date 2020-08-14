@@ -66,13 +66,13 @@ describe("Integration", () => {
       token = response.body.token;
     });
 
-    it("shoulbe be able request /api/trees, and get 3 trees", async () => {
+    it("shoulbe be able request /api/trees, and get 4 trees", async () => {
       const response = await request(server.app)
         .get("/api/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0")
         .set('Authorization', token);
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeInstanceOf(Array)
-      expect(response.body).toHaveLength(3);
+      expect(response.body).toHaveLength(4);
     });
 
     it("shoulbe not be able to request /api/planters", async () => {
@@ -118,12 +118,12 @@ describe("Integration", () => {
       expect(response.statusCode).toBe(401);
     });
 
-    it(`Should be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees and get 1 trees`, async () => {
+    it(`Should be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees and get 2 trees`, async () => {
       const response = await request(server.app)
         .get(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0`)
         .set('Authorization', token);
       expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveLength(1);
+      expect(response.body).toHaveLength(2);
     });
 
     it(`Should be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/3 ,cuz this tree belong to this organization`, async () => {

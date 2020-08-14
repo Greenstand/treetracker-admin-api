@@ -72,6 +72,18 @@ const entities = [
     id: 1,
     type: 'o',
     name: 'freetown',
+  },{
+    id: 2,
+    type: "p",
+    name: "freetownStaffA",
+  }
+]
+
+const entity_relationship = [
+  {
+    id: 1,
+    parent_id: 1,
+    child_id: 2,
   },
 ]
 
@@ -93,6 +105,12 @@ const trees = [
     //
     planter_id: undefined,
     planting_organization_id: 1,
+  },
+  {
+    id: 4,
+    //
+    planter_id: undefined,
+    planting_organization_id: 2,
   },
 ]
 
@@ -142,13 +160,22 @@ async function seed(){
       `(4, 4, 3)`
   );
 
-  //entity: organization free town
   await pool.query({
     text: `insert into entity
     (id, type, name)
     values ` + 
     entities.map(entity => {
       return `(${entity.id}, '${entity.type}', '${entity.name}')`
+    }).join(","),
+    values: []
+  });
+
+  await pool.query({
+    text: `insert into entity_relationship
+    (id, parent_id, child_id, type, role)
+    values ` + 
+    entity_relationship.map(e => {
+      return `(${e.id}, '${e.parent_id}', '${e.child_id}', 'test', 'test')`
     }).join(","),
     values: []
   });
@@ -171,6 +198,7 @@ async function clear(){
   await pool.query('delete from admin_role');
   await pool.query('delete from trees');
   await pool.query('delete from entity');
+  await pool.query('delete from entity_relationship');
 }
 
 module.exports = {

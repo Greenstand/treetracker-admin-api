@@ -60,17 +60,17 @@ describe("Seed data into DB", () => {
       text: `select * from trees`,
       values: []
     });
-    expect(r.rows.length).toBe(3);
+    expect(r.rows.length).toBe(4);
   });
 
-//  it("", async () => {
-//    let r = await pool.query({
-//      text: `select * from getEntityRelationshipChildren(1)`,
-//      values: []
-//    });
-//    console.log("result:!:", r);
-//    expect(r.rows.length).toBe(3);
-//  });
+  it("Freetown should get 2 entity id as children", async () => {
+    let r = await pool.query({
+      text: `select * from getEntityRelationshipChildren(1)`,
+      values: []
+    });
+    console.log("result:!:", r);
+    expect(r.rows.length).toBe(2);
+  });
 
 
 });

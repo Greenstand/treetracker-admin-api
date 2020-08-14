@@ -59,13 +59,14 @@ export class TreesOrganizationController {
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
   ): Promise<Trees[]> {
     expect(this.treesRepository).property("execute").defined();
-    const result = await this.treesRepository.execute(`select * from entity where id = ${organizationId}`, []);
-    expect(result).lengthOf.above(0);
+    const result = await this.treesRepository.execute(`select * from getEntityRelationshipChildren(${organizationId})`, []);
     if(filter){
       //filter should be to deal with the organization, but here is just for 
       //demonstration
       filter.where = {
-        plantingOrganizationId: organizationId,
+        plantingOrganizationId: {
+          inq: result.map(e => e.entity_id),
+        },
       }
     }
     console.log("filter:", filter, filter?filter.where:null);
