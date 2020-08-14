@@ -154,7 +154,9 @@ export class TreesOrganizationController {
     if(!entityIds.includes(result.plantingOrganizationId || -1)){
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     }
+
     await this.treesRepository.updateById(id, trees);
+
   }
 
 }
