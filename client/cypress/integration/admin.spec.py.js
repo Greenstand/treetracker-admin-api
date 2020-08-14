@@ -1,6 +1,6 @@
 
 describe("Organzation", () => {
-  before(() => {
+  beforeEach(() => {
     cy.visit("/");
     cy.contains(/Log in/i);
     cy.findInputByLabel("Username")
@@ -12,10 +12,13 @@ describe("Organzation", () => {
     cy.contains(/Greenstand admin panel/i);
   });
 
-
-
-  it("", () => {
+  it("verify", () => {
     cy.contains(/verify/i)
+      .click();
+  });
+
+  it("planter", () => {
+    cy.contains(/planter/i)
       .click();
   });
 });

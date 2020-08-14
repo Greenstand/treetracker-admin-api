@@ -1,6 +1,6 @@
 
 describe("Organization", () => {
-  before(() => {
+  beforeEach(() => {
     cy.visit("/");
     cy.contains(/Log in/i);
     cy.findInputByLabel("Username")
