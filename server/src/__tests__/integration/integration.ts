@@ -157,10 +157,32 @@ describe("Integration", () => {
       });
     });
 
+    it(`Should be able to PATCH /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/3 `, async () => {
+      const response = await request(server.app)
+        .patch(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/3`)
+        .set('Authorization', token)
+        .send({
+          active: false,
+        });
+      expect(response.statusCode).toBe(204);
+      expect(response.body).toMatchObject({
+      });
+    });
+
     it(`Should not be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/1 ,cuz this tree doesn't belong to this organization`, async () => {
       const response = await request(server.app)
         .get(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/1`)
         .set('Authorization', token);
+      expect(response.statusCode).toBe(401);
+    });
+
+    it(`Should not be able to PATCH /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/1 `, async () => {
+      const response = await request(server.app)
+        .patch(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/1`)
+        .set('Authorization', token)
+        .send({
+          active: false,
+        });
       expect(response.statusCode).toBe(401);
     });
 

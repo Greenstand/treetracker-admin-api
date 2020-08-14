@@ -47,7 +47,6 @@ export class TreesOrganizationController {
         inq: entityIds,
       }
     }
-    console.warn("where:", where);
     return await this.treesRepository.count(where);
   }
 
@@ -146,9 +145,15 @@ export class TreesOrganizationController {
     },
   })
   async updateById(
+    @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
     @requestBody() trees: Trees,
   ): Promise<void> {
+    const result = await this.treesRepository.findById(id);
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    if(!entityIds.includes(result.plantingOrganizationId || -1)){
+      throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
+    }
     await this.treesRepository.updateById(id, trees);
   }
 
