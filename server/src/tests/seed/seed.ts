@@ -87,6 +87,19 @@ const entity_relationship = [
   },
 ]
 
+const planters = {
+  freetownPlanterA: {
+    id: 1,
+    first_name: "freetownPlanterA",
+    person_id: 2,
+  },
+  PlanterB: {
+    id: 2,
+    first_name: "PlanterB",
+    person_id: undefined
+  },
+}
+
 const trees = [
   {
     id: 1,
@@ -123,11 +136,14 @@ admin user accounts:
 admin roles: 
   ${JSON.stringify(roles, null, 2)}
 
-trees:
-  ${JSON.stringify(trees, null, 2)}
-
 entities: 
   ${JSON.stringify(entities, null, 2)}
+
+planters: 
+  ${JSON.stringify(planters, null, 2)}
+
+trees:
+  ${JSON.stringify(trees, null, 2)}
 `
 
 async function seed(){
@@ -180,6 +196,17 @@ async function seed(){
     values: []
   });
 
+  //planter
+  await pool.query({
+    text: `insert into planter
+    (id, first_name, last_name, person_id)
+    values ` + 
+    Object.values(planters).map(e => {
+      return `(${e.id}, '${e.first_name}', 'test', ${e.person_id || null})`
+    }).join(","),
+    values: []
+  });
+
   await pool.query({
     text: `insert into trees
     (id, time_created, time_updated, device_id, planter_id, planting_organization_id)
@@ -197,6 +224,7 @@ async function clear(){
   await pool.query('delete from admin_user_role');
   await pool.query('delete from admin_role');
   await pool.query('delete from trees');
+  await pool.query('delete from planter');
   await pool.query('delete from entity');
   await pool.query('delete from entity_relationship');
 }

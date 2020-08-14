@@ -510,22 +510,38 @@ const isAuth = async (req, res, next) => {
             return;
           }
         }
-      } else if (url.match(/\/api\/planter.*/)) {
-        if (
-          policies.some(
-            r =>
-              r.name === POLICIES.SUPER_PERMISSION ||
-              r.name === POLICIES.LIST_PLANTER ||
-              r.name === POLICIES.MANAGE_PLANTER,
-          )
-        ) {
+      } else if (matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/)) {
+        if(matcher[1]){
+          //organization case
+          const id = parseInt(matcher[2]);
           next();
           return;
-        } else {
-          res.status(401).json({
-            error: new Error('No permission'),
-          });
-          return;
+        }else{
+          //normal case
+          //organizational user can not visit it directly
+          if(organization && organization.id > 0){
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }else{
+            if (
+              policies.some(
+                r =>
+                  r.name === POLICIES.SUPER_PERMISSION ||
+                  r.name === POLICIES.LIST_PLANTER ||
+                  r.name === POLICIES.MANAGE_PLANTER,
+              )
+            ) {
+              next();
+              return;
+            } else {
+              res.status(401).json({
+                error: new Error('No permission'),
+              });
+              return;
+            }
+          }
         }
       }
     } else {

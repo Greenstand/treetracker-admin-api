@@ -55,6 +55,14 @@ describe("Seed data into DB", () => {
     expect(r.rows.length).toBeGreaterThan(0);
   });
 
+  it("Should have 2 planter", async () => {
+    let r = await pool.query({
+      text: `select * from planter`,
+      values: []
+    });
+    expect(r.rows.length).toBe(2);
+  });
+
   it("Should have 4 trees", async () => {
     let r = await pool.query({
       text: `select * from trees`,
