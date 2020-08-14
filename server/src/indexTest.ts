@@ -6,6 +6,7 @@ const seed = require("./tests/seed/seed");
 export async function main(options: ApplicationConfig = {}) {
   //seed data
   console.log("seeding data...");
+  await seed.clear();
   await seed.seed();
   const server = new ExpressServer(options);
   await server.boot();

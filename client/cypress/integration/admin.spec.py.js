@@ -4,7 +4,7 @@ describe("Organzation", () => {
     cy.visit("/");
     cy.contains(/Log in/i);
     cy.findInputByLabel("Username")
-      .type("freetown");
+      .type("admin");
     cy.findInputByLabel("Password")
       .type("admin");
     cy.contains(/log in/i)

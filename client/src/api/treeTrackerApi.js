@@ -1,6 +1,15 @@
 import { handleResponse, handleError } from "./apiUtils";
 import {session} from "../models/auth";
 
+
+function getOrganization(){
+  if(session.user?.policy?.organization?.id){
+    return `organization/${session.user?.policy?.organization?.id}/`;
+  }else{
+    return "";
+  }
+}
+
 export default {
   getTreeImages({
     skip,
@@ -11,7 +20,7 @@ export default {
     filter
   }) {
     const query =
-      `${process.env.REACT_APP_API_ROOT}/api/trees?` +
+      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?` +
       `filter[order]=${orderBy} ${order}&` +
       `filter[limit]=${rowsPerPage}&` +
       `filter[skip]=${skip}&` +
@@ -45,7 +54,7 @@ export default {
     speciesId,
     tags,
   ) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { 
@@ -68,7 +77,7 @@ export default {
       .catch(handleError);
   },
   rejectTreeImage(id, rejectionReason, tags) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { 
@@ -91,7 +100,7 @@ export default {
    * to rollback from a wrong approving
    */
   undoTreeImage(id) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
     return fetch(query, {
       method: "PATCH",
       headers: { 
@@ -108,7 +117,7 @@ export default {
       .catch(handleError);
   },
   getUnverifiedTreeCount() {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/count?where[approved]=false&where[active]=true`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?where[approved]=false&where[active]=true`;
     return fetch(query,{
         headers: {
           Authorization: session.token ,
@@ -116,7 +125,7 @@ export default {
     }).then(handleResponse).catch(handleError);
   },
   getTreeCount(filter) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/count?${filter.getBackloopString(false)}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?${filter.getBackloopString(false)}`;
     return fetch(query, {
         headers: {
           Authorization: session.token ,
@@ -124,7 +133,7 @@ export default {
     }).then(handleResponse).catch(handleError);
   },
   getTreeById(id) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
     return fetch(query, {
       headers: {
         Authorization: session.token,

@@ -22,6 +22,16 @@ import { Link } from 'react-router-dom'
 
 export const MENU_WIDTH = 232
 
+const POLICIES = {
+  SUPER_PERMISSION: 'super_permission',
+  LIST_USER: 'list_user',
+  MANAGER_USER: 'manager_user',
+  LIST_TREE: 'list_tree',
+  APPROVE_TREE: 'approve_tree',
+  LIST_PLANTER: 'list_planter',
+  MANAGE_PLANTER: 'manage_planter',
+};
+
 const useStyles = makeStyles((theme) => ({
   drawer: {},
   drawerPaper: {
@@ -70,6 +80,7 @@ export default function GSMenu(props) {
   const theme = useTheme()
   const appContext = React.useContext(AppContext)
   const { user } = appContext
+  console.log("user:", user);
 
   const menus = [
     {
@@ -88,19 +99,34 @@ export default function GSMenu(props) {
       name: 'Verify',
       linkTo: 'verify',
       icon: IconThumbsUpDown,
-      disabled: !hasPermission(user, [PERMISSIONS.ADMIN, PERMISSIONS.TREE_AUDIT]),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.LIST_TREE,
+          POLICIES.APPROVE_TREE,
+        ]),
     },
     {
       name: 'Trees',
       linkTo: '/trees',
       icon: IconNature,
-      disabled: !hasPermission(user, [PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.TREE_AUDIT,
+          
+        ]),
     },
     {
       name: 'Planters',
       linkTo: 'planters',
       icon: IconGroup,
-      disabled: !hasPermission(user, [PERMISSIONS.PLANTER, PERMISSIONS.ADMIN]),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.LIST_PLANTER,
+          
+        ]),
     },
     {
       name: 'Payments',
@@ -112,7 +138,11 @@ export default function GSMenu(props) {
       name: 'Species',
       linkTo: '/species',
       icon: CategoryIcon,
-      disabled: !hasPermission(user, [PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.LIST_TREE,
+        ]),
     },
     {
       name: 'Settings',
@@ -124,7 +154,10 @@ export default function GSMenu(props) {
       name: 'User Manager',
       linkTo: '/usermanager',
       icon: IconGroup,
-      disabled: !hasPermission(user, PERMISSIONS.ADMIN),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+        ]),
     },
     {
       name: 'Account',
