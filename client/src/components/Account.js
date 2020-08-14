@@ -9,16 +9,15 @@ import {
   DialogActions,
   DialogContent,
   TextField,
-  DialogContentText,
   DialogTitle,
   CircularProgress,
 } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import Menu from './common/Menu'
 import AccountIcon from '@material-ui/icons/Person'
-import { AppContext } from './MainFrame'
+import { AppContext } from './Context'
 import axios from 'axios'
-import dateformat from 'dateformat'
+import { getDateTimeStringLocale } from '../common/locale'
 
 const style = (theme) => ({
   box: {
@@ -257,7 +256,7 @@ function Account(props) {
                 <Grid item>
                   <Typography className={classes.title}>Created</Typography>
                   <Typography className={classes.item}>
-                    {dateformat(user.createdAt, 'm/d/yyyy h:MMtt')}
+                    {getDateTimeStringLocale(user.createdAt)}
                   </Typography>
                 </Grid>
                 <Grid item xs="8">

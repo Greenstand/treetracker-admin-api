@@ -1,8 +1,6 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect} from 'react';
 import clsx from 'clsx';
-import Tooltip from '@material-ui/core/Tooltip';
 import { connect } from 'react-redux';
-import compose from 'recompose/compose';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -10,15 +8,9 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button'; // replace with icons down the line
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
 import { selectedHighlightColor } from '../common/variables.js';
-import * as loglevel from 'loglevel';
 import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
 import Modal from '@material-ui/core/Modal';
@@ -26,12 +18,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import IconFilter from '@material-ui/icons/FilterList';
 import Image from '@material-ui/icons/Image';
 import IconButton from '@material-ui/core/IconButton';
-import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Snackbar from '@material-ui/core/Snackbar';
 import Drawer from '@material-ui/core/Drawer';
-import Toolbar from '@material-ui/core/Toolbar';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import Tabs from '@material-ui/core/Tabs';
@@ -39,14 +28,16 @@ import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Species from './Species';
 
-import Filter, { FILTER_WIDTH } from './Filter';
 import FilterTop from './FilterTop';
 import { ReactComponent as TreePin } from '../components/images/highlightedPinNoStick.svg';
 import CheckIcon from '@material-ui/icons/Check';
+import Person from "@material-ui/icons/Person";
 import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
 import Navbar from "./Navbar";
+import PlanterDetail from "./PlanterDetail"
 import TreeTags from './TreeTags';
+import TreeDetailDialog from './TreeDetailDialog';
 
 const log = require('loglevel').getLogger('../components/TreeImageScrubber');
 
@@ -185,6 +176,7 @@ const TreeImageScrubber = (props) => {
   const [complete, setComplete] = React.useState(0);
   const [isFilterShown, setFilterShown] = React.useState(false);
   const [dialog, setDialog] = React.useState({isOpen: false, tree: {}});
+  const [planterDetail, setPlanterDetail] = React.useState({isOpen: false, planter: {}})
   const refContainer = React.useRef();
 
   /*
@@ -281,6 +273,29 @@ const TreeImageScrubber = (props) => {
     props.verityDispatch.loadTreeImages();
   }
 
+  async function handlePlanterDetail(e, tree){
+    e.preventDefault();
+    e.stopPropagation();
+    var planter = props.plantersState.planters.find(x => x.id == tree.planterId);
+    if (!planter) {
+      planter = await props.plantersDispatch.getPlanter({id: tree.planterId});
+    }
+    if(!planter){
+      window.alert(`Planter not found id:${tree.planterId}`)
+    }
+    setPlanterDetail({
+      isOpen: true, 
+      planter: planter,
+    });
+  }
+
+  function handlePlanterDetailClose(){
+    setPlanterDetail({
+      isOpen: false,
+      planter: {},
+    })
+  }
+
   function handleDialog(e, tree){
     e.preventDefault();
     e.stopPropagation();
@@ -360,6 +375,10 @@ const TreeImageScrubber = (props) => {
                   justify='flex-end'
                   container>
                   <Grid item>
+                    <Person
+                      color='primary'
+                      onClick={e => handlePlanterDetail(e, tree)}
+                    />
                     <Image
                       color='primary'
                       onClick={e => handleDialog(e, tree)}
@@ -526,33 +545,17 @@ const TreeImageScrubber = (props) => {
             className={classes.snackbar}
           />
         )}
-      <Dialog
+      <PlanterDetail 
+        open={planterDetail.isOpen} 
+        planter={planterDetail.planter} 
+        onClose={() => handlePlanterDetailClose()} 
+      />
+      <TreeDetailDialog
         open={dialog.isOpen}
         TransitionComponent={Transition}
         onClose={handleDialogClose}
-      >
-        <DialogTitle>Tree Detail</DialogTitle>
-        <DialogContent>
-          <img src={dialog.tree.imageUrl} />
-        </DialogContent>
-        <DialogActions>
-          <Grid container justify="space-between" >
-            <Grid item className={classes.MuiDialogActionsSpacing}>
-              <Typography variant='body2' color="primary" gutterBottom>
-                Tree #{dialog.tree.id}, 
-                Planter #{dialog.tree.planterId}, 
-                Device #{dialog.tree.deviceId}
-              </Typography>
-              <Typography variant='body2' color="primary" gutterBottom>
-                Created time: {dialog.tree.timeCreated}, 
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Button onClick={handleDialogClose}>Close</Button>
-            </Grid>
-          </Grid>
-        </DialogActions>
-      </Dialog>
+        tree={dialog.tree}
+      />
     </React.Fragment>
   )
 };
@@ -736,12 +739,14 @@ export default connect(
   state => ({
     verityState: state.verity,
     speciesState: state.species,
+    plantersState: state.planters,
     tagState: state.tags,
   }),
   //dispatch
   dispatch => ({
     verityDispatch: dispatch.verity,
     speciesDispatch: dispatch.species,
+    plantersDispatch: dispatch.planters,
     tagDispatch: dispatch.tags,
   })
 )(TreeImageScrubber);
