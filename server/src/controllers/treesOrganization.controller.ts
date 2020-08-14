@@ -58,14 +58,13 @@ export class TreesOrganizationController {
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
   ): Promise<Trees[]> {
-    expect(this.treesRepository).property("execute").defined();
-    const result = await this.treesRepository.execute(`select * from getEntityRelationshipChildren(${organizationId})`, []);
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
     if(filter){
       //filter should be to deal with the organization, but here is just for 
       //demonstration
       filter.where = {
         plantingOrganizationId: {
-          inq: result.map(e => e.entity_id),
+          inq: entityIds,
         },
       }
     }
