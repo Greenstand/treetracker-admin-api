@@ -25,9 +25,9 @@
     "migrate": "node ./dist/migrate",
     "prestart": "npm run clean && npm run build",
     "start": "DEBUG=loopback:*,express:* node .",
-    "startTest": "npm run build && node ./dist/indexTest.js",
+    "startTest": "NODE_DB=test npm run build && node ./dist/indexTest.js",
     "prepublishOnly": "npm run test",
-    "test": "jest --watchAll --runInBand",
+    "test": "NODE_DB=test jest --watchAll --runInBand",
     "test:debug": "DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand",
     "watch": "onchange 'src/controllers/**/*.ts' 'src/models/**/*.ts' 'src/repositories/**/*.ts' -- npm run build"
   },

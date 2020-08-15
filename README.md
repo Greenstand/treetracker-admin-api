@@ -369,6 +369,12 @@ To run test:
 
 On server, we used a combination of JS and Typescript, and, because the Loopback would load services/controllers from the typescript output folder (dist), so it get tricky to test.
 
+For the goal of protecting the db, when running test, we will use a separate database. Please put the database datasource file on this location:
+
+```
+[project root dir]/server/src/datasources/treetrackerTest.datasource.json
+```
+
 To run test:
 
 ```

@@ -17,7 +17,7 @@ describe("Admin", () => {
       .click();
   });
 
-  it.skip("planter", () => {
+  it("planter", () => {
     cy.contains(/planter/i)
       .click();
   });
