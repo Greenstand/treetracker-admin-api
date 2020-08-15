@@ -1,5 +1,5 @@
 
-describe("Organzation", () => {
+describe("Admin", () => {
   beforeEach(() => {
     cy.visit("/");
     cy.contains(/Log in/i);
@@ -17,7 +17,7 @@ describe("Organzation", () => {
       .click();
   });
 
-  it("planter", () => {
+  it.skip("planter", () => {
     cy.contains(/planter/i)
       .click();
   });
