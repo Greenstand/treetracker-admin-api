@@ -403,7 +403,6 @@ const isAuth = async (req, res, next) => {
   }
   try {
     const token = req.headers.authorization;
-    console.log("the token:", token, req.originalUrl);
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
     //inject the user extract from token to request object
@@ -581,7 +580,7 @@ const isAuth = async (req, res, next) => {
     });
     //res.status(200).json([user]);
   } catch (e) {
-    console.warn(e, "req:", req.originalUrl, req.headers);
+    console.warn(e);
     res.status(401).json({
       error: new Error('Invalid request!'),
     });

@@ -1,4 +1,4 @@
-import myExpect from "./expect";
+const myExpect = require("./expect").default;
 
 describe("expect", () => {
 
@@ -82,6 +82,10 @@ describe("expect", () => {
 
   it("{a: [1, 2]}}", () => {
     myExpect({a: [1,2]}).match({a: myExpect.any(Array)});
+  });
+
+  it("[1, 2]", () => {
+    myExpect([1,2]).match([myExpect.any(Number)]);
   });
 
   it("{a:1} to.has.property('a').which.is.defined().that.is.number()", () => {

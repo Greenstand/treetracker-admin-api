@@ -21,4 +21,11 @@ export class TreesRepository extends DefaultCrudRepository<
     const result = await this.execute(`select * from getEntityRelationshipChildren(${organizationId})`, []);
     return result.map(e => e.entity_id);
   }
+
+  async getPlanterIdsByOrganizationId(organizationId : Number):Promise<Array<Number>>{
+    expect(organizationId).number();
+    expect(this).property("execute").defined();
+    const result = await this.execute(`select * from planter where person_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`, []);
+    return result.map(e => e.id);
+  }
 }

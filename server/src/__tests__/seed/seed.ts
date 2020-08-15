@@ -63,12 +63,12 @@ describe("Seed data into DB", () => {
     expect(r.rows.length).toBe(2);
   });
 
-  it("Should have 4 trees", async () => {
+  it("Should have 5 trees", async () => {
     let r = await pool.query({
       text: `select * from trees`,
       values: []
     });
-    expect(r.rows.length).toBe(4);
+    expect(r.rows.length).toBe(5);
   });
 
   it("Freetown should get 2 entity id as children", async () => {

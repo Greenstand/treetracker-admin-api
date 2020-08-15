@@ -41,11 +41,17 @@ export class TreesOrganizationController {
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
   ): Promise<Count> {
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
     where = {
       ...where,
-      plantingOrganizationId : {
-        inq: entityIds,
-      }
+      or: [
+            {
+              plantingOrganizationId: { inq: entityIds},
+            },
+            {
+              planterId: { inq: planterIds},
+            }
+      ]
     }
     return await this.treesRepository.count(where);
   }
@@ -67,14 +73,21 @@ export class TreesOrganizationController {
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
   ): Promise<Trees[]> {
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
+    expect(planterIds).a(expect.any(Array));
     if(filter){
       //filter should be to deal with the organization, but here is just for 
       //demonstration
       filter.where = {
         ...filter.where,
-        plantingOrganizationId: {
-          inq: entityIds,
-        },
+        or: [
+              {
+                plantingOrganizationId: { inq: entityIds},
+              },
+              {
+                planterId: { inq: planterIds},
+              }
+        ]
       }
     }
     console.log("filter:", filter, filter?filter.where:null);
@@ -95,7 +108,12 @@ export class TreesOrganizationController {
   ): Promise<Trees> {
     const result = await this.treesRepository.findById(id);
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    if(!entityIds.includes(result.plantingOrganizationId || -1)){
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
+    if(
+      !entityIds.includes(result.plantingOrganizationId || -1)
+      &&
+      !planterIds.includes(result.planterId || -1)
+    ){
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     }
     return result;
@@ -151,7 +169,12 @@ export class TreesOrganizationController {
   ): Promise<void> {
     const result = await this.treesRepository.findById(id);
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    if(!entityIds.includes(result.plantingOrganizationId || -1)){
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
+    if(
+      !entityIds.includes(result.plantingOrganizationId || -1)
+      &&
+      !planterIds.includes(result.planterId || -1)
+    ){
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     }
 

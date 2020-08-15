@@ -66,23 +66,23 @@ describe("Integration", () => {
       token = response.body.token;
     });
 
-    it("shoulbe be able request /api/trees/count, and get 4 trees", async () => {
+    it("shoulbe be able request /api/trees/count, and get 5 trees", async () => {
       const response = await request(server.app)
         .get("/api/trees/count?filter[offset]=0&filter[limit]=100&filter[skip]=0")
         .set('Authorization', token);
       expect(response.statusCode).toBe(200);
       expect(response.body).toMatchObject({
-        count: 4,
+        count: 5,
       });
     });
 
-    it("shoulbe be able request /api/trees, and get 4 trees", async () => {
+    it("shoulbe be able request /api/trees, and get 5 trees", async () => {
       const response = await request(server.app)
         .get("/api/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0")
         .set('Authorization', token);
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeInstanceOf(Array)
-      expect(response.body).toHaveLength(4);
+      expect(response.body).toHaveLength(5);
     });
 
     it("shoulbe not be able to request /api/planters", async () => {
@@ -129,21 +129,21 @@ describe("Integration", () => {
         expect(response.statusCode).toBe(401);
       });
 
-      it(`Should be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees and get 2 trees`, async () => {
+      it(`Should be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees and get 3 trees`, async () => {
         const response = await request(server.app)
           .get(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees?filter[offset]=0&filter[limit]=100&filter[skip]=0`)
           .set('Authorization', token);
         expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveLength(2);
+        expect(response.body).toHaveLength(3);
       });
 
-      it(`shoulbe be able request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/count, and get 2 trees`, async () => {
+      it(`shoulbe be able request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/count, and get 3 trees`, async () => {
         const response = await request(server.app)
           .get(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/count?filter[offset]=0&filter[limit]=100&filter[skip]=0`)
           .set('Authorization', token);
         expect(response.statusCode).toBe(200);
         expect(response.body).toMatchObject({
-          count: 2
+          count: 3
         });
       });
 
@@ -161,6 +161,28 @@ describe("Integration", () => {
       it(`Should be able to PATCH /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/3 `, async () => {
         const response = await request(server.app)
           .patch(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/3`)
+          .set('Authorization', token)
+          .send({
+            active: false,
+          });
+        expect(response.statusCode).toBe(204);
+        expect(response.body).toMatchObject({
+        });
+      });
+
+      it(`Should be able to request /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/5 ,cuz this tree belong to this organization`, async () => {
+        const response = await request(server.app)
+          .get(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/5`)
+          .set('Authorization', token);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toMatchObject({
+          id: 5,
+        });
+      });
+
+      it(`Should be able to PATCH /api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/5 `, async () => {
+        const response = await request(server.app)
+          .patch(`/api/organization/${seed.roles.freetownManager.policy.organization.id}/trees/5`)
           .set('Authorization', token)
           .send({
             active: false,
