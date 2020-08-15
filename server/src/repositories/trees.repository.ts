@@ -2,7 +2,7 @@ import {DefaultCrudRepository} from '@loopback/repository';
 import {Trees, TreesRelations} from '../models';
 import {TreetrackerDataSource} from '../datasources';
 import {inject} from '@loopback/core';
-const expect : any = require("../utils/expect.js").default;
+const expect : any = require("expect-runtime");
 
 export class TreesRepository extends DefaultCrudRepository<
   Trees,
@@ -24,8 +24,8 @@ export class TreesRepository extends DefaultCrudRepository<
 
   async getPlanterIdsByOrganizationId(organizationId : Number):Promise<Array<Number>>{
     expect(organizationId).number();
-    expect(this).property("execute").defined();
     const result = await this.execute(`select * from planter where person_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`, []);
+    expect(result).match([{id: expect.any(Number)}]);
     return result.map(e => e.id);
   }
 }

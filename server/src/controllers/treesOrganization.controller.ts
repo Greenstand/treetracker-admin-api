@@ -19,8 +19,7 @@ import {
 } from '@loopback/rest';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
-//import expect from "../utils/expect.js";
-const expect : any = require("../utils/expect.js").default;
+const expect : any = require("expect-runtime");
 
 export class TreesOrganizationController {
   constructor(

@@ -19,7 +19,7 @@ import {
 } from '@loopback/rest';
 import {Planter} from '../models';
 import {PlanterRepository, TreesRepository} from '../repositories';
-const expect : any = require("../utils/expect.js").default;
+const expect : any = require("expect-runtime");
 
 export class PlanterOrganizationController {
   constructor(
