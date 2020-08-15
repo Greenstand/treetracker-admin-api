@@ -24,16 +24,15 @@ export class TreetrackerAdminApiApplication extends BootMixin(
     this.static('/', path.join(__dirname, '../public'));
 
     // Inject datasource. 
-    this.dataSource(new TreetrackerDataSource({
+    // First, bind configuration to treetracker source.
+    this.bind('datasources.config.treetracker').to({
       name: process.env.DB_NAME, 
       connector: process.env.DB_CONNECTOR, 
       url: process.env.DB_URL, 
-      host: process.env.DB_HOST, 
       port: process.env.DB_PORT, 
-      user: process.env.DB_USER, 
-      password: process.env.DB_PASSWORD, 
-      database: process.env.DB_DATABASE
-    }));
+    });
+    // Then, bind treetracker source to TreetrackerDataSource Class. 
+    this.bind('datasources.treetracker').toClass(TreetrackerDataSource);
     
     this.component(RestExplorerComponent);
 

@@ -1,0 +1,10 @@
+{
+    "name": "name_test",
+    "connector": "connector_test",
+    "url": "url_test",
+    "host": "",
+    "port": "port_test",
+    "user": "",
+    "password": "",
+    "database": ""
+  }
