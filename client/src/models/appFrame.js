@@ -1,4 +1,3 @@
-import { dispatch } from "@rematch/core";
 
 const appFrame = {
   state: {
