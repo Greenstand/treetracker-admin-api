@@ -9,12 +9,18 @@ import {
   TableFooter,
   TableRow,
   TableCell,
+  TextField,
+  Typography,
   Button,
   TablePagination,
-  Typography,
   IconButton,
   Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@material-ui/core'
+import Edit from '@material-ui/icons/Edit'
 
 import Menu from './common/Menu'
 import { withStyles } from '@material-ui/core/styles'
@@ -48,10 +54,10 @@ const styles = (theme) => ({
   input: {
     margin: theme.spacing(0, 1, 4, 1),
   },
-  firstName: {
+  name: {
     marginRight: theme.spacing(1),
   },
-  lastName: {
+  desc: {
     marginRight: theme.spacing(1),
   },
   paper: {
@@ -88,16 +94,20 @@ const styles = (theme) => ({
 })
 
 const SpecieTable = (props) => {
-  React.useEffect(() => {
-    props.speciesDispatch.loadSpeciesList()
-    console.log(props.speciesState.speciesList)
-  }, [])
   const { classes } = props
 
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [isEdit, setIsEdit] = React.useState(false)
+  const [specieEdit, setSpecieEdit] = React.useState(undefined)
+  const [finishEdit, setFinishEdit] = React.useState(true)
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
+
+  React.useEffect(() => {
+    props.speciesDispatch.loadSpeciesList()
+    console.log(props.speciesState.speciesList)
+  }, [])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -106,6 +116,11 @@ const SpecieTable = (props) => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
+  }
+
+  const handleEdit = (specie) => {
+    setSpecieEdit(specie)
+    setIsEdit(true)
   }
 
   const getSpecies = () => {
@@ -122,9 +137,9 @@ const SpecieTable = (props) => {
         </TableCell>
         <TableCell>{specie.desc}</TableCell>
         <TableCell>
-          {/* <IconButton title="edit" onClick={() => handleEdit(user)}>
+          <IconButton title="edit" onClick={() => handleEdit(specie)}>
             <Edit />
-          </IconButton> */}
+          </IconButton>
           <IconButton>{/* <Delete /> */}</IconButton>
         </TableCell>
       </TableRow>
@@ -205,7 +220,99 @@ const SpecieTable = (props) => {
           </Grid>
         </Grid>
       </Grid>
+      <EditModal
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        specieEdit={specieEdit}
+        setSpecieEdit={setSpecieEdit}
+        setFinishEdit={setFinishEdit}
+        styles={{ ...classes }}
+        editSpecie={props.speciesDispatch.editSpecie}
+        loadSpeciesList={props.speciesDispatch.loadSpeciesList}
+      />
     </>
+  )
+}
+
+const EditModal = ({
+  isEdit,
+  setIsEdit,
+  specieEdit,
+  setSpecieEdit,
+  setFinishEdit,
+  styles,
+  loadSpeciesList,
+  editSpecie,
+}) => {
+  const onNameChange = (e) => {
+    console.log(e.target.value)
+    setSpecieEdit({ ...specieEdit, name: e.target.value })
+  }
+
+  const onDescChange = (e) => {
+    console.log(e.target.value)
+    setSpecieEdit({ ...specieEdit, desc: e.target.value })
+  }
+
+  const handleEditDetailClose = () => {
+    setIsEdit(false)
+    setSpecieEdit(undefined)
+  }
+
+  const handleSave = async () => {
+    setIsEdit(false)
+    await editSpecie({ id: specieEdit.id, name: specieEdit.name, desc: specieEdit.desc })
+    loadSpeciesList()
+    setFinishEdit(false)
+    setSpecieEdit(undefined)
+  }
+
+  return (
+    <Dialog open={isEdit} aria-labelledby="form-dialog-title">
+      <DialogTitle id="form-dialog-title">Specie Detail</DialogTitle>
+      <DialogContent>
+        <Grid container>
+          <Grid item className={styles.name}>
+            <TextField
+              autoFocus
+              id="name"
+              label="Name"
+              type="text"
+              variant="outlined"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={(specieEdit && specieEdit.name) || ''}
+              className={styles.input}
+              onChange={onNameChange}
+            />
+          </Grid>
+          <Grid item className={styles.desc}>
+            <TextField
+              autoFocus
+              id="desc"
+              label="Description"
+              type="text"
+              variant="outlined"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={(specieEdit && specieEdit.desc) || ''}
+              className={styles.input}
+              onChange={onDescChange}
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleEditDetailClose}>Cancel</Button>
+        <Button onClick={handleSave} variant="contained" color="primary">
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 
