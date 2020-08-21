@@ -1,14 +1,10 @@
-import { handleResponse, handleError } from "./apiUtils";
+import { 
+  handleResponse, 
+  handleError,
+  getOrganization,
+} from "./apiUtils";
 import {session} from "../models/auth";
 
-
-function getOrganization(){
-  if(session.user?.policy?.organization?.id){
-    return `organization/${session.user?.policy?.organization?.id}/`;
-  }else{
-    return "";
-  }
-}
 
 export default {
   getTreeImages({

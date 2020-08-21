@@ -1,3 +1,5 @@
+import {session} from "../models/auth";
+
 export async function handleResponse(response) {
   if (response.status === 204) return {};
   if (response.ok) return response.json();
@@ -16,3 +18,12 @@ export function handleError(error) {
   console.error("API call failed. " + error);
   throw error;
 }
+
+export function getOrganization(){
+  if(session.user?.policy?.organization?.id){
+    return `organization/${session.user?.policy?.organization?.id}/`;
+  }else{
+    return "";
+  }
+}
+
