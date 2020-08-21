@@ -8,7 +8,7 @@ import FilterModel		from './Filter';
 const log		= loglevel.getLogger('../models/verity')
 
 const verity = {
-	state		 : {
+	state: {
 		treeImages		: [],
 		/*
 		 * The array of all current selected trees, user click to select true
@@ -43,13 +43,19 @@ const verity = {
 		/*
 		 * The default value means: image not approved yet, and not rejected yet too
 		 */
-		filter		: new FilterModel({
-			approved		: false,
-			active		: true,
+		filter: new FilterModel({
+			approved: false,
+			active: true,
+    }),
+    unprocessedFilter: new FilterModel({
+      approved: false,
+      rejected: false,
+      active: true,
 		}),
-		treeCount: 0,
+    treeCount: 0,
+    unprocessedTreeCount: null,
 	},
-	reducers		: {
+	reducers: {
 		appendTreeImages(state, treeImages){
       let newTreeImages = [...state.treeImages, ...treeImages]
       let newState = {
@@ -100,7 +106,13 @@ const verity = {
             ...state,
             treeCount,
         };
-		},
+    },
+    setUnprocessedTreeCount(state, unprocessedTreeCount) {
+      return {
+          ...state,
+          unprocessedTreeCount,
+      };
+    },
 		setApproveAllComplete(state, approveAllComplete){
 			return {
 				...state,
@@ -226,9 +238,9 @@ const verity = {
     /*
      * Sat Apr 11 17:23:16 CST 2020
      * use new method to replace old ones: approveTreeImage, rejectTreeImage
-     * add approveAction to indicate if it's approve or reject, and other 
+     * add approveAction to indicate if it's approve or reject, and other
      * arguments
-     * 
+     *
      * payload: {
      *  id,
      *  approveAction,
@@ -250,13 +262,13 @@ const verity = {
       }else{
         log.debug('reject')
         await api.rejectTreeImage(
-          payload.id, 
+          payload.id,
           payload.approveAction.rejectionReason,
         )
 			}
-			
+
 			await api.createTreeTags(payload.id, payload.approveAction.tags)
-			
+
 			this.approved(payload.id)
       return true
     },
@@ -467,6 +479,16 @@ const verity = {
         this.setTreeCount(result.count)
         return true
     },
+
+    /*
+     * gets and sets count for trees with no tag data (entirely unprocessed)
+     */
+    async getUnprocessedTreeCount(payload, state) {
+      const result = await api.getTreeCount(state.verity.unprocessedFilter)
+      this.setUnprocessedTreeCount(result.count)
+      return true
+    },
+
 		/*
 		 * to select trees
 		 * payload:

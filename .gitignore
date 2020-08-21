@@ -13,6 +13,7 @@
 .DS_Store
 .vs
 .idea
+.history
 .project
 .vscode
 .strong-pm

@@ -87,6 +87,29 @@ const trees = {
         })
       })
     },
+
+    async getTreeCount(payload, state) {
+       // Destruct payload and fill in any gaps from rootState.trees
+       const { filter } = { ...state.trees, ...payload }
+
+       /*
+        * first load the page count
+        */
+
+       let response = await Axios.get(
+         `${process.env.REACT_APP_API_ROOT}/api/trees/count?` +
+           (filter ? filter.getBackloopString(false) : ''),
+         {
+           headers: {
+             'content-type': 'application/json',
+             Authorization: session.token,
+           },
+         }
+       )
+       const data = response.data
+       this.receiveTreeCount(data)
+    },
+
     async getTreesAsync(payload, rootState) {
       // Destruct payload and fill in any gaps from rootState.trees
       const { page, rowsPerPage, filter, orderBy, order } = { ...rootState.trees, ...payload }
@@ -94,7 +117,10 @@ const trees = {
       /*
        * first load the page count
        */
-      
+      if (!rootState.treeCount) {
+        await this.getTreeCount(payload, rootState);
+      }
+
       let response = await Axios.get(
         `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?` +
           (filter ? filter.getBackloopString(false) : ''),
