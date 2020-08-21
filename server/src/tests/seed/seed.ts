@@ -76,6 +76,10 @@ const entities = [
     id: 2,
     type: "p",
     name: "freetownStaffA",
+  },{
+    id: 3,
+    type: "p",
+    name: "somePlanter",
   }
 ]
 
@@ -90,13 +94,15 @@ const entity_relationship = [
 const planters = {
   freetownPlanterA: {
     id: 1,
-    first_name: "freetownPlanterA",
-    person_id: 2,
+    first_name: "somePlanter",
+    person_id: 3,
+    organization_id: 1,
   },
   PlanterB: {
     id: 2,
     first_name: "PlanterB",
-    person_id: undefined
+    person_id: undefined,
+    organization_id: undefined,
   },
 }
 
@@ -132,7 +138,7 @@ const trees = [
 
 const description = 
 `
----------------- story -------------------
+---------------------- story -------------------------
 admin user accounts:
   ${JSON.stringify(users, null, 2)}
 
@@ -142,11 +148,16 @@ admin roles:
 entities: 
   ${JSON.stringify(entities, null, 2)}
 
+entity_relationship: 
+  ${JSON.stringify(entity_relationship, null, 2)}
+
 planters: 
   ${JSON.stringify(planters, null, 2)}
 
 trees:
   ${JSON.stringify(trees, null, 2)}
+
+---------------------- story end -------------------------
 `
 
 async function seed(){
@@ -202,10 +213,10 @@ async function seed(){
   //planter
   await pool.query({
     text: `insert into planter
-    (id, first_name, last_name, person_id)
+    (id, first_name, last_name, person_id, organization_id)
     values ` + 
     Object.values(planters).map(e => {
-      return `(${e.id}, '${e.first_name}', 'test', ${e.person_id || null})`
+      return `(${e.id}, '${e.first_name}', 'test', ${e.person_id || null}, ${e.organization_id || null} )`
     }).join(","),
     values: []
   });

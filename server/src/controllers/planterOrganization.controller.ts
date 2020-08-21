@@ -44,7 +44,7 @@ export class PlanterOrganizationController {
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
     where = {
       ...where,
-      personId : {
+      organizationId : {
         inq: entityIds,
       }
     }
@@ -73,7 +73,7 @@ export class PlanterOrganizationController {
       //demonstration
       filter.where = {
         ...filter.where,
-        personId: {
+        organizationId: {
           inq: entityIds,
         },
       }
@@ -95,7 +95,7 @@ export class PlanterOrganizationController {
   ): Promise<Planter> {
     const result = await this.planterRepository.findById(id);
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    if(!entityIds.includes(result.personId || -1)){
+    if(!entityIds.includes(result.organizationId || -1)){
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     }
     return await this.planterRepository.findById(id);
@@ -116,7 +116,7 @@ export class PlanterOrganizationController {
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     const result = await this.planterRepository.findById(id);
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    if(!entityIds.includes(result.personId || -1)){
+    if(!entityIds.includes(result.organizationId || -1)){
       throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
     }
     await this.planterRepository.updateById(id, planter);
