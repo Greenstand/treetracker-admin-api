@@ -42,7 +42,7 @@ class MenuStats extends React.PureComponent {
       planterCount
     } = nextProps;
 
-    return (unprocessedTreeCount && totalTrees && planterCount) || (!unprocessedTreeCount && !totalTrees && !planterCount)
+    return unprocessedTreeCount !== null && totalTrees && planterCount;
   }
 
   getStatsElement() {
