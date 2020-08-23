@@ -30,6 +30,7 @@ describe('treeDetail', () => {
   }
 
   const TREE_TAGS = [{
+    id: 1,
     treeId: 0,
     tagId: 3,
   }]

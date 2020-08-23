@@ -19,9 +19,8 @@ import {
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
 
-const SqlConnector = require('loopback-connector').SqlConnector;
-const ParameterizedSQL = SqlConnector.ParameterizedSQL;
-
+// Extend the LoopBack filter types for the Trees model to include tagId
+// This is a workaround for the lack of proper join support in LoopBack
 type TreesWhere = Where<Trees> & {tagId: string}
 type TreesFilter = Filter<Trees> & {where: TreesWhere}
 
@@ -42,34 +41,26 @@ export class TreesController {
   async count(
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
+    // In order to filter by tagId (tree-tags relation), we need to bypass the LoopBack count()
     if (where && where.tagId !== undefined) {
-
-      const connector = this.treesRepository.dataSource.connector;
-      const model = connector?._models.Trees.model;
-
-      let safeWhere = model?._sanitizeQuery(where);
-      safeWhere = model?._coerce(where);
-    
-      let whereClause = connector?._buildWhere('Trees', safeWhere);
-
-      let query = new ParameterizedSQL(
-        `SELECT COUNT(*) FROM trees `+
-        `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id `+
-        `WHERE tree_tag.tag_id=${where?.tagId} `);
-      
-      if (whereClause && whereClause.sql) {
-        query.sql += `AND ${whereClause.sql}`
-        query.params = whereClause.params
+      try {
+        let query = this.buildFilterQuery(
+          `SELECT COUNT(*) FROM trees`,
+          `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
+          `tree_tag.tag_id=${where.tagId} `,
+          where,
+        );
+  
+        return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(count => {
+          return Array.isArray(count) ? count[0] : count;
+        });
+      } catch(e) {
+        console.log(e);
+        return await this.treesRepository.count(where);
       }
-      
-      query = connector?.parameterize(query);
-
-      return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(count => {
-        return Array.isArray(count) ? count[0] : count;
-      });
     } else {
-    return await this.treesRepository.count(where);
-  }
+      return await this.treesRepository.count(where);
+    }
   }
 
   @get('/trees', {
@@ -88,7 +79,30 @@ export class TreesController {
     @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: TreesFilter,
   ): Promise<Trees[]> {
     console.log(filter, filter?filter.where:null);
-    return await this.treesRepository.find(filter);
+
+    // In order to filter by tagId (tree-tags relation), we need to bypass the LoopBack find()
+    if (filter && filter.where && filter.where.tagId !== undefined) {
+      try {
+        const connector = this.getConnector()
+        if (connector) {
+          let query = this.buildFilterQuery(
+            `SELECT ${connector.buildColumnNames('Trees', filter)}`,
+            `LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id`,
+            `tree_tag.tag_id=${filter.where.tagId} `,
+            filter.where,
+          );
+          return <Promise<Trees[]>> await this.treesRepository.execute(query.sql, query.params);
+        } else {
+          throw('Connector not defined')
+        }
+
+      } catch(e) {
+        console.log(e);
+        return await this.treesRepository.find(filter);
+      }
+    } else {
+      return await this.treesRepository.find(filter);
+    }
   }
 
   @get('/trees/{id}', {
@@ -153,4 +167,50 @@ export class TreesController {
     await this.treesRepository.updateById(id, trees);
   }
 
+  private getConnector() {
+    return this.treesRepository.dataSource.connector;
+  }
+
+  private buildFilterQuery(
+    selectClause : string,
+    joinClause? : string,
+    whereClause? : string,
+    whereObj? : TreesWhere,
+  ) {
+    let sql = selectClause;
+    if (joinClause) {
+      sql += ` ${joinClause}`;
+    }
+
+    if (whereClause) {
+      sql += ` ${whereClause}`;
+    }
+
+    const ParameterizedSQL = require('loopback-connector').ParameterizedSQL;
+
+    let query = new ParameterizedSQL(sql);
+
+    if (whereObj) {
+      const connector = this.getConnector();
+      if (connector) {
+        const model = connector._models.Trees.model;
+  
+        if (model) {
+          let safeWhere = model._sanitizeQuery(whereObj);
+          safeWhere = model._coerce(safeWhere);
+        
+          let whereObjClause = connector._buildWhere('Trees', safeWhere);
+    
+          if (whereObjClause && whereObjClause.sql) {
+            query.sql += `${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql}`
+            query.params = whereObjClause.params
+          }
+    
+          query = connector.parameterize(query);
+        }
+      }
+    }
+    
+    return query
+  }
 }

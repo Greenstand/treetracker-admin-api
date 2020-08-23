@@ -240,7 +240,7 @@ export default {
    */
   async createTreeTags(treeId, tags) {
     return tags.map(t => {
-      const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags`;
+      const query = `${process.env.REACT_APP_API_ROOT}/api/tree-tags`;
       return fetch(query, {
         method: "POST",
         headers: { 
@@ -263,7 +263,7 @@ export default {
     const filterString = 
       (treeId ? `filter[where][treeId]=${treeId}` : '') +
       (tagId ? `&filter[where][tagId]=${tagId}` : '');
-    const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags?${filterString}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tree-tags?${filterString}`;
     return fetch(query, {
       method: "GET",
       headers: { 
