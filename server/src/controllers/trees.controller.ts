@@ -19,6 +19,12 @@ import {
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
 
+const SqlConnector = require('loopback-connector').SqlConnector;
+const ParameterizedSQL = SqlConnector.ParameterizedSQL;
+
+type TreesWhere = Where<Trees> & {tagId: string}
+type TreesFilter = Filter<Trees> & {where: TreesWhere}
+
 export class TreesController {
   constructor(
     @repository(TreesRepository)
@@ -34,9 +40,36 @@ export class TreesController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
+    @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
+    if (where && where.tagId !== undefined) {
+
+      const connector = this.treesRepository.dataSource.connector;
+      const model = connector?._models.Trees.model;
+
+      let safeWhere = model?._sanitizeQuery(where);
+      safeWhere = model?._coerce(where);
+    
+      let whereClause = connector?._buildWhere('Trees', safeWhere);
+
+      let query = new ParameterizedSQL(
+        `SELECT COUNT(*) FROM trees `+
+        `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id `+
+        `WHERE tree_tag.tag_id=${where?.tagId} `);
+      
+      if (whereClause && whereClause.sql) {
+        query.sql += `AND ${whereClause.sql}`
+        query.params = whereClause.params
+      }
+      
+      query = connector?.parameterize(query);
+
+      return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(count => {
+        return Array.isArray(count) ? count[0] : count;
+      });
+    } else {
     return await this.treesRepository.count(where);
+  }
   }
 
   @get('/trees', {
@@ -52,7 +85,7 @@ export class TreesController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
+    @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: TreesFilter,
   ): Promise<Trees[]> {
     console.log(filter, filter?filter.where:null);
     return await this.treesRepository.find(filter);
@@ -67,7 +100,7 @@ export class TreesController {
     },
   })
   async findById(@param.path.number('id') id: number): Promise<Trees> {
-    return await this.treesRepository.findById(id);
+    return await this.treesRepository.findById(id, {include: [{relation: 'treeTags'}]});
   }
 
   // this route is for finding trees within a radius of a lat/lon point

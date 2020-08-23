@@ -25,7 +25,7 @@ export class TreeTagController {
     public treeTagRepository : TreeTagRepository,
   ) {}
 
-  @get('/tree_tags/count', {
+  @get('/tree-tags/count', {
     responses: {
       '200': {
         description: 'TreeTag model count',
@@ -39,7 +39,7 @@ export class TreeTagController {
     return await this.treeTagRepository.count(where);
   }
 
-  @get('/tree_tags', {
+  @get('/tree-tags', {
     responses: {
       '200': {
         description: 'Array of TreeTag model instances',
@@ -58,7 +58,7 @@ export class TreeTagController {
     return await this.treeTagRepository.find(filter);
   }
 
-  @get('/tree_tags/{id}', {
+  @get('/tree-tags/{id}', {
     responses: {
       '200': {
         description: 'TreeTag model instance',
@@ -70,7 +70,7 @@ export class TreeTagController {
     return await this.treeTagRepository.findById(id);
   }
 
-  @patch('/tree_tags/{id}', {
+  @patch('/tree-tags/{id}', {
     responses: {
       '204': {
         description: 'TreeTag PATCH success',
@@ -84,7 +84,7 @@ export class TreeTagController {
     await this.treeTagRepository.updateById(id, tag);
   }
 
-  @post('/tree_tags/', {
+  @post('/tree-tags/', {
     responses: {
       '204': {
         description: 'TreeTag POST success',
@@ -102,7 +102,7 @@ export class TreeTagController {
     return await this.treeTagRepository.create(treeTag);
   }
 
-  @del('/tree_tags/{id}', {
+  @del('/tree-tags/{id}', {
     responses: {
       '204': {
         description: 'TreeTag delete success',

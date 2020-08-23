@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {TreeTag} from './tree-tag.model';
 
 @model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'trees'}}})
 export class Trees extends Entity {
@@ -238,6 +239,9 @@ export class Trees extends Entity {
     postgresql: {"columnName":"species_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
   })
   speciesId?: Number;
+
+  @hasMany(() => TreeTag, {keyTo: 'treeId'})
+  treeTags: TreeTag[];
 
   @property({
     type: String,
