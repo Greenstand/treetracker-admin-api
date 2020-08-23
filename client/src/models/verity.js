@@ -268,7 +268,7 @@ const verity = {
 		/*
 		 * To load trees into the list
 		 */
-		async loadTreeImages(payload, state){
+		async loadTreeImages(_payload, state){
 			//{{{
 			log.debug('to load images')
 			const verityState		= state.verity

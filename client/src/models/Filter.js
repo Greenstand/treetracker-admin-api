@@ -13,6 +13,7 @@ export default class Filter {
   deviceId
   planterIdentifier
   speciesId
+  tagId
 
   constructor(options) {
     Object.assign(this, options)
@@ -61,6 +62,10 @@ export default class Filter {
 
     if (this.speciesId) {
       result += `${prefix}[speciesId]=${this.speciesId}`
+    }
+
+    if (this.tagId) {
+      result += `${prefix}[tagId]=${this.tagId}`
     }
 
     return result

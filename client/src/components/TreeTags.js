@@ -151,11 +151,11 @@ const TreeTags = (props) => {
         suggestion: classes.suggestion
       }}
       renderInputComponent={renderInput}
-      suggestions={textFieldInput.length === 0 ? [] :
+      suggestions={
         props.tagState.tagList.filter(t => {
           const tagName = t.tagName.toLowerCase()
-          return tagName.startsWith(textFieldInput.toLowerCase()) &&
-            !props.tagState.tagInput.find(i => i.toLowerCase() === tagName)
+          return (textFieldInput.length === 0 || tagName.startsWith(textFieldInput.toLowerCase()))
+            && !props.tagState.tagInput.find(i => i.toLowerCase() === tagName)
         })
       }
       onSuggestionsFetchRequested={handleSuggestionsFetchRequested}

@@ -111,7 +111,7 @@ const trees = {
         }/api/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
           page * rowsPerPage
         }&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true` +
-        `&filter[fields][planterId]=true&filter[where][active]=true` +
+        `&filter[fields][planterId]=true&filter[fields][treeTags]=true&filter[where][active]=true` +
         (filter ? filter.getBackloopString() : '')
       response = await Axios.get(query, {
         headers: {

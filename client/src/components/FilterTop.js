@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import FilterModel from '../models/Filter';
 import DateFnsUtils from '@date-io/date-fns';
 import {connect} from 'react-redux';
@@ -31,33 +32,20 @@ const styles = theme => {
     close: {
       color: theme.palette.grey[500]
     },
-    dateInput: {
-      width: 158,
-      fontSize: 14
-    },
-    button: {
-      marginTop: 5
-    },
-    inputContaner: {
-      padding: 5,
-    },
-    input: {
-      margin: theme.spacing(2),
-    },
-    filterElement: {
-      marginLeft: 4,
-    },
-    textField: {
-      marginTop: 15,
-      width: 142,
-    },
-    textFieldSelect: {
-      marginTop: 17,
-      width: 142,
+    inputContainer: {
+      margin: theme.spacing(1),
+      '&>*': {
+        display: 'inline-flex',
+        width: 160,
+        margin: theme.spacing(1.5, 1),
+      },
     },
     apply: {
-      marginTop: 15,
-      marginLeft: 4,
+      width: 90,
+      height: 36,
+    },
+    autocompleteInputRoot: {
+      padding: `${theme.spacing(0, 12, 0, 1)} !important`,
     },
   };
 };
@@ -72,7 +60,6 @@ function Filter(props) {
   const [planterIdentifier, setPlanterIdentifier] = useState(
     filter.planterIdentifier
   );
-  const [status, setStatus] = useState(filter.status);
   const [approved, setApproved] = useState(filter.approved);
   const [active, setActive] = useState(filter.active);
   const [dateStart, setDateStart] = useState(
@@ -80,6 +67,12 @@ function Filter(props) {
   );
   const [dateEnd, setDateEnd] = useState(filter.dateEnd || dateEndDefault);
   const [speciesId, setSpeciesId] = useState(0);
+  const [tagId, setTagId] = useState(0);
+  const [tagSearchString, setTagSearchString] = useState('');
+
+  useEffect(() => {
+    props.tagsDispatch.getTags(tagSearchString)
+  }, [tagSearchString])
 
   const handleDateStartChange = date => {
     setDateStart(date);
@@ -93,19 +86,20 @@ function Filter(props) {
     return convertDateToDefaultSqlDate(date);
   };
 
-  function handleClear() {
-    const filter = new FilterModel();
-    setTreeId('');
-    setPlanterId('');
-    setDeviceId('');
-    setPlanterIdentifier('');
-    setStatus('All');
-    setDateStart(dateStartDefault);
-    setDateEnd(dateEndDefault);
-    setApproved();
-    setActive();
-    props.onSubmit && props.onSubmit(filter);
-  }
+  // function handleClear() {
+  //   const filter = new FilterModel();
+  //   setTreeId('');
+  //   setPlanterId('');
+  //   setDeviceId('');
+  //   setPlanterIdentifier('');
+  //   setDateStart(dateStartDefault);
+  //   setDateEnd(dateEndDefault);
+  //   setApproved();
+  //   setActive();
+  //   setSpeciesId(0);
+  //   setTagId(0);
+  //   props.onSubmit && props.onSubmit(filter);
+  // }
 
   function handleSubmit() {
     const filter = new FilterModel();
@@ -113,27 +107,22 @@ function Filter(props) {
     filter.planterId = planterId;
     filter.deviceId = deviceId;
     filter.planterIdentifier = planterIdentifier;
-    filter.status = status;
     filter.dateStart = dateStart? formatDate(dateStart) : undefined;
     filter.dateEnd = dateEnd? formatDate(dateEnd) : undefined;
     filter.approved = approved;
     filter.active = active;
     filter.speciesId = speciesId;
+    filter.tagId = tagId;
     props.onSubmit && props.onSubmit(filter);
-  }
-
-  function handleCloseClick() {
-    props.onClose && props.onClose();
   }
 
   return (
     <React.Fragment>
       {
-        <Grid container>
+        <Grid container wrap='nowrap' direction='row'>
           <Grid item className={classes.inputContainer}>
             <TextField
               select
-              className={`${classes.textFieldSelect} ${classes.filterElement}`}
               label='Approved'
               value={
                 approved === undefined ? 'All' : approved === true ? 'true' : 'false'
@@ -156,7 +145,6 @@ function Filter(props) {
             </TextField>
             <TextField
               select
-              className={`${classes.textFieldSelect} ${classes.filterElement}`}
               label='Rejected'
               value={
                 active === undefined ? 'All' : active === true ? 'false' : 'true'
@@ -192,10 +180,9 @@ function Filter(props) {
                 KeyboardButtonProps={{
                   'aria-label': 'change date'
                 }}
-                className={`${classes.dateInput} ${classes.filterElement}`}
               />
               <KeyboardDatePicker
-                className={`${classes.filterElement}`}
+                className={``}
                 margin='normal'
                 id='end-date-picker'
                 label='End Date'
@@ -206,45 +193,37 @@ function Filter(props) {
                 KeyboardButtonProps={{
                   'aria-label': 'change date'
                 }}
-                className={`${classes.dateInput} ${classes.filterElement}`}
               />
             </MuiPickersUtilsProvider>
             <TextField
-              className={`${classes.textField} ${classes.filterElement}`}
               label='Planter ID'
-              placeholder='Planter ID'
+              placeholder='e.g. 7'
               value={planterId}
               onChange={e => setPlanterId(e.target.value)}
             />
             <TextField
-              className={`${classes.textField} ${classes.filterElement}`}
               label='Tree ID'
               placeholder='e.g. 80'
               value={treeId}
               onChange={e => setTreeId(e.target.value)}
             />
             <TextField
-              className={`${classes.textField} ${classes.filterElement}`}
               label='Device ID'
-              placeholder='device id'
+              placeholder='e.g. 123456'
               value={deviceId}
               onChange={e => setDeviceId(e.target.value)}
             />
             <TextField
-              className={`${classes.textField} ${classes.filterElement}`}
               label='Planter Identifier'
-              placeholder='planter identifier'
+              placeholder='e.g. planter@example.com'
               value={planterIdentifier}
               onChange={e => setPlanterIdentifier(e.target.value)}
             />
             <TextField
               select
-              className={`${classes.textFieldSelect} ${classes.filterElement}`}
               label='Species'
               value={speciesId}
-              onChange={e =>
-                setSpeciesId(e.target.value)
-              }
+              onChange={e => setSpeciesId(e.target.value)}
             >
               {[{id:0,name:'all'}, ...props.speciesState.speciesList].map(species => (
                 <MenuItem key={species.id} value={species.id}>
@@ -252,6 +231,30 @@ function Filter(props) {
                 </MenuItem>
               ))}
             </TextField>
+            <Autocomplete
+              classes={{
+                inputRoot: classes.autocompleteInputRoot,
+              }}
+              options={props.tagsState.tagList}
+              getOptionLabel={(tag) => tag.tagName}
+              onChange={(_oldVal, newVal) => {
+                console.log(newVal)
+                setTagId(newVal && newVal.id)
+              }}
+              onInputChange={(_oldVal, newVal) => {
+                setTagSearchString(newVal)
+              }}
+              renderInput={(params) => 
+                <TextField
+                  {...params} 
+                  label='Tag'
+                  value={tagId}
+                  onChange={e => setTagId(e.target.value)}
+                />
+              }
+            />
+          </Grid>
+          <Grid className={classes.inputContainer}>
             <Button 
               className={classes.apply}
               variant='outlined' color='primary' onClick={handleSubmit}>
@@ -271,9 +274,11 @@ function Filter(props) {
 export default withStyles(styles)(connect(
   //state
   state => ({
-    speciesState: state.species
+    speciesState: state.species,
+    tagsState: state.tags,
   }),
   //dispatch
   dispatch => ({
-  })
+    tagsDispatch: dispatch.tags,
+  }),
 )(Filter));
