@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
-
+import Delete from '@material-ui/icons/Delete'
 import Menu from './common/Menu'
 import { withStyles } from '@material-ui/core/styles'
 
@@ -101,6 +101,8 @@ const SpeciesTable = (props) => {
   const [isEdit, setIsEdit] = React.useState(false)
   const [speciesEdit, setSpeciesEdit] = React.useState(undefined)
   const [finishEdit, setFinishEdit] = React.useState(true)
+  const [openDelete, setOpenDelete] = React.useState(false)
+
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
 
@@ -123,26 +125,35 @@ const SpeciesTable = (props) => {
     setIsEdit(true)
   }
 
+  const openDeleteDialog = (species) => {
+    setSpeciesEdit(species)
+    setOpenDelete(true)
+  }
+
   const getSpecies = () => {
     return (rowsPerPage > 0
       ? props.speciesState.speciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       : props.speciesState.speciesList
-    ).map((specie) => (
-      <TableRow key={specie.id} role="listitem">
-        <TableCell component="th" scope="row">
-          {specie.id}
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {specie.name}
-        </TableCell>
-        <TableCell>{specie.desc}</TableCell>
-        <TableCell>
-          <IconButton title="edit" onClick={() => handleEdit(specie)}>
-            <Edit />
-          </IconButton>
-          <IconButton>{/* <Delete /> */}</IconButton>
-        </TableCell>
-      </TableRow>
+    ).map((species) => (
+      <>
+        <TableRow key={species.id} role="listitem">
+          <TableCell component="th" scope="row">
+            {species.id}
+          </TableCell>
+          <TableCell component="th" scope="row">
+            {species.name}
+          </TableCell>
+          <TableCell>{species.desc}</TableCell>
+          <TableCell>
+            <IconButton title="edit" onClick={() => handleEdit(species)}>
+              <Edit />
+            </IconButton>
+            <IconButton title="delete" onClick={() => openDeleteDialog(species)}>
+              <Delete />
+            </IconButton>
+          </TableCell>
+        </TableRow>
+      </>
     ))
   }
 
@@ -230,6 +241,14 @@ const SpeciesTable = (props) => {
         editSpecies={props.speciesDispatch.editSpecies}
         loadSpeciesList={props.speciesDispatch.loadSpeciesList}
       />
+      <DeleteDialog
+        speciesEdit={speciesEdit}
+        setSpeciesEdit={setSpeciesEdit}
+        openDelete={openDelete}
+        setOpenDelete={setOpenDelete}
+        deleteSpecies={props.speciesDispatch.deleteSpecies}
+        loadSpeciesList={props.speciesDispatch.loadSpeciesList}
+      />
     </>
   )
 }
@@ -310,6 +329,45 @@ const EditModal = ({
         <Button onClick={handleEditDetailClose}>Cancel</Button>
         <Button onClick={handleSave} variant="contained" color="primary">
           Save
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
+const DeleteDialog = ({
+  speciesEdit,
+  setSpeciesEdit,
+  openDelete,
+  setOpenDelete,
+  deleteSpecies,
+  loadSpeciesList,
+}) => {
+  const handleDelete = async () => {
+    await deleteSpecies({ id: speciesEdit.id })
+    loadSpeciesList()
+    setOpenDelete(false)
+    setSpeciesEdit(undefined)
+  }
+
+  const closeDelete = () => {
+    setOpenDelete(false)
+    setSpeciesEdit(undefined)
+  }
+
+  return (
+    <Dialog
+      open={openDelete}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{`Please confirm you want to delete ?`}</DialogTitle>
+      <DialogActions>
+        <Button onClick={handleDelete} color="primary">
+          Delete
+        </Button>
+        <Button onClick={closeDelete} color="primary" autoFocus>
+          Cancel
         </Button>
       </DialogActions>
     </Dialog>
