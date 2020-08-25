@@ -82,9 +82,9 @@ const species = {
     /*
      * to edit the specie
      */
-    async editSpecie(payload, state) {
+    async editSpecies(payload, state) {
       const { id, name, desc } = payload
-      let editedSpecies = await api.editSpecie(id, name, desc)
+      let editedSpecies = await api.editSpecies(id, name, desc)
       console.debug('edit old species:', editedSpecies)
     },
   },

@@ -184,7 +184,7 @@ export default {
       .catch(handleError)
   },
   /* edit specie */
-  editSpecie(id, name, desc) {
+  editSpecies(id, name, desc) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/species/${id}`
     return fetch(query, {
       method: 'PATCH',

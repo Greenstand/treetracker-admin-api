@@ -93,13 +93,13 @@ const styles = (theme) => ({
   },
 })
 
-const SpecieTable = (props) => {
+const SpeciesTable = (props) => {
   const { classes } = props
 
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [isEdit, setIsEdit] = React.useState(false)
-  const [specieEdit, setSpecieEdit] = React.useState(undefined)
+  const [speciesEdit, setSpeciesEdit] = React.useState(undefined)
   const [finishEdit, setFinishEdit] = React.useState(true)
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
@@ -118,8 +118,8 @@ const SpecieTable = (props) => {
     setPage(0)
   }
 
-  const handleEdit = (specie) => {
-    setSpecieEdit(specie)
+  const handleEdit = (species) => {
+    setSpeciesEdit(species)
     setIsEdit(true)
   }
 
@@ -223,11 +223,11 @@ const SpecieTable = (props) => {
       <EditModal
         isEdit={isEdit}
         setIsEdit={setIsEdit}
-        specieEdit={specieEdit}
-        setSpecieEdit={setSpecieEdit}
+        speciesEdit={speciesEdit}
+        setSpeciesEdit={setSpeciesEdit}
         setFinishEdit={setFinishEdit}
         styles={{ ...classes }}
-        editSpecie={props.speciesDispatch.editSpecie}
+        editSpecies={props.speciesDispatch.editSpecies}
         loadSpeciesList={props.speciesDispatch.loadSpeciesList}
       />
     </>
@@ -237,39 +237,39 @@ const SpecieTable = (props) => {
 const EditModal = ({
   isEdit,
   setIsEdit,
-  specieEdit,
-  setSpecieEdit,
+  speciesEdit,
+  setSpeciesEdit,
   setFinishEdit,
   styles,
   loadSpeciesList,
-  editSpecie,
+  editSpecies,
 }) => {
   const onNameChange = (e) => {
     console.log(e.target.value)
-    setSpecieEdit({ ...specieEdit, name: e.target.value })
+    setSpeciesEdit({ ...speciesEdit, name: e.target.value })
   }
 
   const onDescChange = (e) => {
     console.log(e.target.value)
-    setSpecieEdit({ ...specieEdit, desc: e.target.value })
+    setSpeciesEdit({ ...speciesEdit, desc: e.target.value })
   }
 
   const handleEditDetailClose = () => {
     setIsEdit(false)
-    setSpecieEdit(undefined)
+    setSpeciesEdit(undefined)
   }
 
   const handleSave = async () => {
     setIsEdit(false)
-    await editSpecie({ id: specieEdit.id, name: specieEdit.name, desc: specieEdit.desc })
+    await editSpecies({ id: speciesEdit.id, name: speciesEdit.name, desc: speciesEdit.desc })
     loadSpeciesList()
     setFinishEdit(false)
-    setSpecieEdit(undefined)
+    setSpeciesEdit(undefined)
   }
 
   return (
     <Dialog open={isEdit} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Specie Detail</DialogTitle>
+      <DialogTitle id="form-dialog-title">Species Detail</DialogTitle>
       <DialogContent>
         <Grid container>
           <Grid item className={styles.name}>
@@ -283,7 +283,7 @@ const EditModal = ({
               InputLabelProps={{
                 shrink: true,
               }}
-              value={(specieEdit && specieEdit.name) || ''}
+              value={(speciesEdit && speciesEdit.name) || ''}
               className={styles.input}
               onChange={onNameChange}
             />
@@ -299,7 +299,7 @@ const EditModal = ({
               InputLabelProps={{
                 shrink: true,
               }}
-              value={(specieEdit && specieEdit.desc) || ''}
+              value={(speciesEdit && speciesEdit.desc) || ''}
               className={styles.input}
               onChange={onDescChange}
             />
@@ -326,5 +326,5 @@ export default withStyles(styles)(
     (dispatch) => ({
       speciesDispatch: dispatch.species,
     })
-  )(SpecieTable)
+  )(SpeciesTable)
 )
