@@ -72,13 +72,14 @@
     "eslint-plugin-eslint-plugin": "^2.1.0",
     "eslint-plugin-mocha": "^5.3.0",
     "jest": "^26.0.1",
+    "nodemon": "^2.0.4",
     "typescript": "~3.5.2"
   },
   "nodemonConfig": {
     "watch": [
       "src"
     ],
-    "ext": "ts",
+    "ext": "ts,js",
     "exec": "npm start"
   },
   "jest": {

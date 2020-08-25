@@ -1,56 +1,32 @@
 /*
  * Planter page
  */
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect} from 'react'
 import clsx from 'clsx'
-import Tooltip from '@material-ui/core/Tooltip'
 import { connect } from 'react-redux'
-import compose from 'recompose/compose'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
-import Button from '@material-ui/core/Button' // replace with icons down the line
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import Slide from '@material-ui/core/Slide'
 import TablePagination from '@material-ui/core/TablePagination'
 
 import { selectedHighlightColor } from '../common/variables.js'
-import * as loglevel from 'loglevel'
 import Grid from '@material-ui/core/Grid'
-import AppBar from '@material-ui/core/AppBar'
-import Modal from '@material-ui/core/Modal'
-import LinearProgress from '@material-ui/core/LinearProgress'
 import IconFilter from '@material-ui/icons/FilterList'
-import Image from '@material-ui/icons/Image'
 import IconButton from '@material-ui/core/IconButton'
 import Box from '@material-ui/core/Box'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Snackbar from '@material-ui/core/Snackbar'
 import Drawer from '@material-ui/core/Drawer'
-import Toolbar from '@material-ui/core/Toolbar'
-import RadioGroup from '@material-ui/core/RadioGroup'
-import Radio from '@material-ui/core/Radio'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import TextField from '@material-ui/core/TextField'
-import Species from './Species'
 import Close from "@material-ui/icons/Close";
 
 import FilterTopPlanter from './FilterTopPlanter'
 import FilterPlanter from '../models/FilterPlanter'
-import IconLogo from './IconLogo'
-import Avatar from "@material-ui/core/Avatar";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import Navbar from "./Navbar";
+import PlanterDetail from "./PlanterDetail"
 
 const log = require('loglevel').getLogger('../components/Planters')
 
@@ -299,7 +275,7 @@ const Planters = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      <Detail open={isDetailShown} planter={planterDetail} onClose={() => setDetailShown(false)} />
+      <PlanterDetail open={isDetailShown} planter={planterDetail} onClose={() => setDetailShown(false)} />
     </React.Fragment>
   )
 }
@@ -343,109 +319,6 @@ function Planter (props){
   )
 }
 export {Planter};
-
-
-const useDetailStyle = makeStyles(theme => ({
-  root: {
-    width: 441,
-  },
-  box: {
-    padding: theme.spacing(4),
-  },
-  cardMedia: {
-    height: "378px",
-  },
-  personBox: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "lightgray",
-    height: "100%",
-  },
-  person: {
-    height: 180,
-    width: 180,
-    fill: "gray",
-  },
-  name: {
-    textTransform: "capitalize",
-  },
-}));
-
-function Detail(props){
-  const classes = useDetailStyle();
-  const {
-    planter,
-  } = props;
-
-  return(
-    <Drawer anchor="right" open={props.open} onClose={props.onClose}>
-      <Grid className={classes.root} >
-        <Grid container direction="column">
-          <Grid item>
-            <Grid container justify="space-between" alignItems="center" >
-              <Grid item>
-                <Box m={4} >
-                  <Typography color="primary" variant="h6" >
-                    Planter Detail
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item>
-                <IconButton>
-                  <Close onClick={() => props.onClose()} />
-                </IconButton>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-
-            {planter.imageUrl &&
-              <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
-            }
-            {!planter.imageUrl &&
-              <CardMedia className={classes.cardMedia} >
-                <Grid container className={classes.personBox} >
-                  <Person className={classes.person} />
-                </Grid>
-              </CardMedia>
-            }
-          </Grid>
-          <Grid item className={classes.box} >
-            <Typography variant="h5" color="primary" className={classes.name} >{props.planter.firstName} {props.planter.lastName}</Typography>
-            <Typography variant="body2">ID:{props.planter.id}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Email address</Typography>
-            <Typography variant="body1" >{props.planter.email || "---"}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Phone number</Typography>
-            <Typography variant="body1" >{props.planter.phone || "---"}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Person ID</Typography>
-            <Typography variant="body1" >{props.planter.personId || "---"}</Typography>
-          </Grid>
-          <Divider/>
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Organization</Typography>
-            <Typography variant="body1" >{props.planter.organization || "---" }</Typography>
-          </Grid>
-          <Divider />
-          <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Organization ID</Typography>
-            <Typography variant="body1" >{props.planter.organizationId || "---"}</Typography>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Drawer>
-  )
-}
-export {Detail}
 
 export default connect(
   //state

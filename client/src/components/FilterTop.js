@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
-import Drawer from '@material-ui/core/Drawer';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import IconClose from '@material-ui/icons/CloseRounded';
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FilterModel from '../models/Filter';
-import dateformat from 'dateformat';
-import GSInputLabel from './common/InputLabel';
-import classNames from 'classnames';
 import DateFnsUtils from '@date-io/date-fns';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
 import {connect} from 'react-redux';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from '@material-ui/pickers';
+import { getDatePickerLocale, getDateFormatLocale, convertDateToDefaultSqlDate } from '../common/locale'
 
 export const FILTER_WIDTH = 330;
 
@@ -99,7 +90,7 @@ function Filter(props) {
   };
 
   const formatDate = date => {
-    return dateformat(date, 'yyyy-mm-dd');
+    return convertDateToDefaultSqlDate(date);
   };
 
   function handleClear() {
@@ -189,14 +180,15 @@ function Filter(props) {
                 </MenuItem>
               ))}
             </TextField>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={getDatePickerLocale()}>
               <KeyboardDatePicker
                 margin='normal'
                 id='start-date-picker'
                 label='Start Date'
-                format='MM/dd/yyyy'
+                format={getDateFormatLocale(true)}
                 value={dateStart}
                 onChange={handleDateStartChange}
+                maxDate={dateEnd}
                 KeyboardButtonProps={{
                   'aria-label': 'change date'
                 }}
@@ -207,9 +199,10 @@ function Filter(props) {
                 margin='normal'
                 id='end-date-picker'
                 label='End Date'
-                format='MM/dd/yyyy'
+                format={getDateFormatLocale(true)}
                 value={dateEnd}
                 onChange={handleDateEndChange}
+                minDate={dateStart}
                 KeyboardButtonProps={{
                   'aria-label': 'change date'
                 }}

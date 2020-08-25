@@ -9,11 +9,11 @@ import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
 import FilterModel from '../models/Filter'
-import dateformat from 'dateformat'
 import GSInputLabel from './common/InputLabel'
 import classNames from 'classnames'
 import DateFnsUtils from '@date-io/date-fns'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers'
+import { getDatePickerLocale, getDateFormatLocale, convertDateToDefaultSqlDate } from '../common/locale'
 
 export const FILTER_WIDTH = 330
 
@@ -66,7 +66,7 @@ function Filter(props) {
   }
 
   const formatDate = (date) => {
-    return dateformat(date, 'yyyy-mm-dd')
+    return convertDateToDefaultSqlDate(date)
   }
 
   function handleClear() {
@@ -118,18 +118,20 @@ function Filter(props) {
         <Grid item>
           <Typography variant="h5">Filters</Typography>
         </Grid>
-        <Grid item>
-          <IconButton
-            color="primary"
-            classes={{
-              colorPrimary: classes.close,
-            }}
-            onClick={handleCloseClick}
-          >
-            <IconClose />
-          </IconButton>
+        {props.onClose &&
+          <Grid item>
+            <IconButton
+              color="primary"
+              classes={{
+                colorPrimary: classes.close,
+              }}
+              onClick={handleCloseClick}
+            >
+              <IconClose />
+            </IconButton>
+          </Grid>
+        }
         </Grid>
-      </Grid>
       <Button variant="outlined" color="primary" onClick={handleSubmit}>
         Apply Filters
       </Button>
@@ -232,15 +234,16 @@ function Filter(props) {
         ))}
       </TextField>
       <GSInputLabel text="Time created" />
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={DateFnsUtils} locale={getDatePickerLocale()}>
         <Grid container justify="space-between">
           <KeyboardDatePicker
             margin="normal"
             id="start-date-picker"
             label="Start Date"
-            format="MM/dd/yyyy"
             value={dateStart}
             onChange={handleDateStartChange}
+            format={getDateFormatLocale(true)}
+            maxDate={dateEnd}
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
@@ -250,9 +253,10 @@ function Filter(props) {
             margin="normal"
             id="end-date-picker"
             label="End Date"
-            format="MM/dd/yyyy"
             value={dateEnd}
             onChange={handleDateEndChange}
+            format={getDateFormatLocale(true)}
+            minDate={dateStart}
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}

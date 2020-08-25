@@ -2,6 +2,19 @@ import { handleResponse, handleError } from "./apiUtils";
 import {session} from "../models/auth";
 
 export default {
+  getPlanter(id){
+    const query = `${process.env.REACT_APP_API_ROOT}/api/planter/${id}`;
+    return fetch(query, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
+
   getPlanters({ skip, rowsPerPage, orderBy = "id", order = "desc", filter }) {
     const query =
       `${process.env.REACT_APP_API_ROOT}/api/planter?` +
