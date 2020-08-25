@@ -127,17 +127,17 @@ const SpeciesTable = (props) => {
     return (rowsPerPage > 0
       ? props.speciesState.speciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       : props.speciesState.speciesList
-    ).map((specie) => (
-      <TableRow key={specie.id} role="listitem">
+    ).map((species) => (
+      <TableRow key={species.id} role="listitem">
         <TableCell component="th" scope="row">
-          {specie.id}
+          {species.id}
         </TableCell>
         <TableCell component="th" scope="row">
-          {specie.name}
+          {species.name}
         </TableCell>
-        <TableCell>{specie.desc}</TableCell>
+        <TableCell>{species.desc}</TableCell>
         <TableCell>
-          <IconButton title="edit" onClick={() => handleEdit(specie)}>
+          <IconButton title="edit" onClick={() => handleEdit(species)}>
             <Edit />
           </IconButton>
           <IconButton>{/* <Delete /> */}</IconButton>
