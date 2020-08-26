@@ -19,6 +19,7 @@ import IconLogo from '../IconLogo'
 import { AppContext } from '../Context'
 import { PERMISSIONS, hasPermission } from '../../models/auth'
 import { Link } from 'react-router-dom'
+import Grid from '@material-ui/core/Grid'
 
 export const MENU_WIDTH = 232
 
@@ -173,19 +174,25 @@ export default function GSMenu(props) {
       </Box>
       <Box height={20} />
       {menus.map((item, i) => (
-        <MenuItem
-          key={i}
-          className={classes.menuItem}
-          selected={props.active === item.name}
-          disabled={item.disabled}
-        >
-          <ListItemIcon className={classes.listItemIcon}>{item.icon && <item.icon />}</ListItemIcon>
-          <ListItemText className={classes.listItemText}>
-            <Link className={classes.linkItemText} to={`${item.linkTo}`}>
-              {item.name}
-            </Link>
-          </ListItemText>
-        </MenuItem>
+          <Link className={classes.linkItemText} to={`${item.linkTo}`}>
+            <MenuItem
+              key={i}
+              className={classes.menuItem}
+              selected={props.active === item.name}
+              disabled={item.disabled}
+            >
+                <Grid container>
+                  <Grid item>
+                    <ListItemIcon className={classes.listItemIcon}>
+                      {item.icon && <item.icon />}
+                    </ListItemIcon>
+                  </Grid>
+                  <Grid item>
+                    <ListItemText className={classes.listItemText}>{item.name}</ListItemText>
+                  </Grid>
+                </Grid>
+            </MenuItem>
+          </Link>
       ))}
     </>
   )

@@ -9,12 +9,18 @@ import {
   TableFooter,
   TableRow,
   TableCell,
+  TextField,
+  Typography,
   Button,
   TablePagination,
-  Typography,
   IconButton,
   Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@material-ui/core'
+import Edit from '@material-ui/icons/Edit'
 
 import Menu from './common/Menu'
 import { withStyles } from '@material-ui/core/styles'
@@ -48,10 +54,10 @@ const styles = (theme) => ({
   input: {
     margin: theme.spacing(0, 1, 4, 1),
   },
-  firstName: {
+  name: {
     marginRight: theme.spacing(1),
   },
-  lastName: {
+  desc: {
     marginRight: theme.spacing(1),
   },
   paper: {
@@ -87,17 +93,21 @@ const styles = (theme) => ({
   },
 })
 
-const SpecieTable = (props) => {
-  React.useEffect(() => {
-    props.speciesDispatch.loadSpeciesList()
-    console.log(props.speciesState.speciesList)
-  }, [])
+const SpeciesTable = (props) => {
   const { classes } = props
 
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [isEdit, setIsEdit] = React.useState(false)
+  const [speciesEdit, setSpeciesEdit] = React.useState(undefined)
+  const [finishEdit, setFinishEdit] = React.useState(true)
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
+
+  React.useEffect(() => {
+    props.speciesDispatch.loadSpeciesList()
+    console.log(props.speciesState.speciesList)
+  }, [])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -108,23 +118,28 @@ const SpecieTable = (props) => {
     setPage(0)
   }
 
+  const handleEdit = (species) => {
+    setSpeciesEdit(species)
+    setIsEdit(true)
+  }
+
   const getSpecies = () => {
     return (rowsPerPage > 0
       ? props.speciesState.speciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       : props.speciesState.speciesList
-    ).map((specie) => (
-      <TableRow key={specie.id} role="listitem">
+    ).map((species) => (
+      <TableRow key={species.id} role="listitem">
         <TableCell component="th" scope="row">
-          {specie.id}
+          {species.id}
         </TableCell>
         <TableCell component="th" scope="row">
-          {specie.name}
+          {species.name}
         </TableCell>
-        <TableCell>{specie.desc}</TableCell>
+        <TableCell>{species.desc}</TableCell>
         <TableCell>
-          {/* <IconButton title="edit" onClick={() => handleEdit(user)}>
+          <IconButton title="edit" onClick={() => handleEdit(species)}>
             <Edit />
-          </IconButton> */}
+          </IconButton>
           <IconButton>{/* <Delete /> */}</IconButton>
         </TableCell>
       </TableRow>
@@ -205,7 +220,99 @@ const SpecieTable = (props) => {
           </Grid>
         </Grid>
       </Grid>
+      <EditModal
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        speciesEdit={speciesEdit}
+        setSpeciesEdit={setSpeciesEdit}
+        setFinishEdit={setFinishEdit}
+        styles={{ ...classes }}
+        editSpecies={props.speciesDispatch.editSpecies}
+        loadSpeciesList={props.speciesDispatch.loadSpeciesList}
+      />
     </>
+  )
+}
+
+const EditModal = ({
+  isEdit,
+  setIsEdit,
+  speciesEdit,
+  setSpeciesEdit,
+  setFinishEdit,
+  styles,
+  loadSpeciesList,
+  editSpecies,
+}) => {
+  const onNameChange = (e) => {
+    console.log(e.target.value)
+    setSpeciesEdit({ ...speciesEdit, name: e.target.value })
+  }
+
+  const onDescChange = (e) => {
+    console.log(e.target.value)
+    setSpeciesEdit({ ...speciesEdit, desc: e.target.value })
+  }
+
+  const handleEditDetailClose = () => {
+    setIsEdit(false)
+    setSpeciesEdit(undefined)
+  }
+
+  const handleSave = async () => {
+    setIsEdit(false)
+    await editSpecies({ id: speciesEdit.id, name: speciesEdit.name, desc: speciesEdit.desc })
+    loadSpeciesList()
+    setFinishEdit(false)
+    setSpeciesEdit(undefined)
+  }
+
+  return (
+    <Dialog open={isEdit} aria-labelledby="form-dialog-title">
+      <DialogTitle id="form-dialog-title">Species Detail</DialogTitle>
+      <DialogContent>
+        <Grid container>
+          <Grid item className={styles.name}>
+            <TextField
+              autoFocus
+              id="name"
+              label="Name"
+              type="text"
+              variant="outlined"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={(speciesEdit && speciesEdit.name) || ''}
+              className={styles.input}
+              onChange={onNameChange}
+            />
+          </Grid>
+          <Grid item className={styles.desc}>
+            <TextField
+              autoFocus
+              id="desc"
+              label="Description"
+              type="text"
+              variant="outlined"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={(speciesEdit && speciesEdit.desc) || ''}
+              className={styles.input}
+              onChange={onDescChange}
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleEditDetailClose}>Cancel</Button>
+        <Button onClick={handleSave} variant="contained" color="primary">
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 
@@ -219,5 +326,5 @@ export default withStyles(styles)(
     (dispatch) => ({
       speciesDispatch: dispatch.species,
     })
-  )(SpecieTable)
+  )(SpeciesTable)
 )

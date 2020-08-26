@@ -6,14 +6,15 @@ import {
 import {session} from "../models/auth";
 
 
+
 export default {
   getTreeImages({
     skip,
     rowsPerPage,
-    orderBy = "id",
-    order = "desc",
+    orderBy = 'id',
+    order = 'desc',
     //the filter model
-    filter
+    filter,
   }) {
     const query =
       `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?` +
@@ -33,15 +34,16 @@ export default {
       `filter[fields][planterIdentifier]=true&` +
       `field[imageURL]` +
       //the filter query
-      filter.getBackloopString();
+      filter.getBackloopString()
     return fetch(query, {
-        headers: {
-          Authorization: session.token ,
-        }
-      })
+      headers: {
+        Authorization: session.token,
+      },
+    })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
+
   approveTreeImage(
     id,
     morphology,
@@ -51,11 +53,12 @@ export default {
     tags,
   ) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
+
     return fetch(query, {
-      method: "PATCH",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
       body: JSON.stringify({
         id: id,
@@ -67,18 +70,18 @@ export default {
         age,
         captureApprovalTag,
         speciesId: speciesId,
-      })
+      }),
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   rejectTreeImage(id, rejectionReason, tags) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
     return fetch(query, {
-      method: "PATCH",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
       body: JSON.stringify({
         id: id,
@@ -87,10 +90,10 @@ export default {
         //at the same time, should set approved to false
         approved: false,
         rejectionReason,
-      })
+      }),
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   /*
    * to rollback from a wrong approving
@@ -98,19 +101,19 @@ export default {
   undoTreeImage(id) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
     return fetch(query, {
-      method: "PATCH",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
       body: JSON.stringify({
         id: id,
         active: true,
-        approved: false
-      })
+        approved: false,
+      }),
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   getUnverifiedTreeCount() {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?where[approved]=false&where[active]=true`;
@@ -123,113 +126,136 @@ export default {
   getTreeCount(filter) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?${filter.getBackloopString(false)}`;
     return fetch(query, {
-        headers: {
-          Authorization: session.token ,
-        }
-    }).then(handleResponse).catch(handleError);
+      headers: {
+        Authorization: session.token,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError)
   },
   getTreeById(id) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`;
     return fetch(query, {
       headers: {
         Authorization: session.token,
-      }
-    }).then(handleResponse).catch(handleError);
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError)
   },
   /*
    * get species list
    */
   getSpecies() {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species`
     return fetch(query, {
-      method: "GET",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   /*
    * get species by id
    */
   getSpeciesById(id) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/species/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species/${id}`
     return fetch(query, {
-      method: "GET",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   /*
    * create new species
    */
   createSpecies(name) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/species`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species`
     return fetch(query, {
-      method: "POST",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
       body: JSON.stringify({
         name: name,
         desc: name,
         active: 0,
         valueFactor: 0,
-      })
+      }),
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
+  },
+  /* edit specie */
+  editSpecies(id, name, desc) {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/species/${id}`
+    return fetch(query, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
+      },
+      body: JSON.stringify({
+        id: id,
+        name: name,
+        desc: desc,
+        active: 0,
+        valueFactor: 0,
+      }),
+    })
+      .then(handleResponse)
+      .catch(handleError)
   },
   /*
    * get tag list
    */
   getTags(filter) {
     const filterString =
-      `filter[limit]=25&` +
-      (filter ? `filter[where][tagName][ilike]=${filter}%` : '');
-    const query = `${process.env.REACT_APP_API_ROOT}/api/tags?${filterString}`;
+      `filter[limit]=25&` + (filter ? `filter[where][tagName][ilike]=${filter}%` : '')
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags?${filterString}`
     return fetch(query, {
-      method: "GET",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   /*
    * get tag by id
    */
   getTagById(id) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/tags/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags/${id}`
     return fetch(query, {
-      method: "GET",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   /*
    * create new tag
    */
   createTag(tagName) {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/tags`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tags`
     return fetch(query, {
-      method: "POST",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
       body: JSON.stringify({
         tagName,
@@ -238,45 +264,45 @@ export default {
       }),
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
   /*
    * create new tree tags
    */
   async createTreeTags(treeId, tags) {
-    return tags.map(t => {
-      const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags`;
+    return tags.map((t) => {
+      const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags`
       return fetch(query, {
-        method: "POST",
-        headers: { 
-          "content-type": "application/json" ,
-          Authorization: session.token ,
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          Authorization: session.token,
         },
         body: JSON.stringify({
           treeId,
           tagId: t.id,
         }),
       })
-      .then(handleResponse)
-      .catch(handleError);
-    });
+        .then(handleResponse)
+        .catch(handleError)
+    })
   },
   /*
    * get tags for a given tree
    */
-  getTreeTags({treeId, tagId}) {
-    const filterString = 
+  getTreeTags({ treeId, tagId }) {
+    const filterString =
       (treeId ? `filter[where][treeId]=${treeId}` : '') +
-      (tagId ? `&filter[where][tagId]=${tagId}` : '');
-    const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags?${filterString}`;
+      (tagId ? `&filter[where][tagId]=${tagId}` : '')
+    const query = `${process.env.REACT_APP_API_ROOT}/api/tree_tags?${filterString}`
     return fetch(query, {
-      method: "GET",
-      headers: { 
-        "content-type": "application/json" ,
-        Authorization: session.token ,
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
       },
     })
       .then(handleResponse)
-      .catch(handleError);
+      .catch(handleError)
   },
-};
+}
