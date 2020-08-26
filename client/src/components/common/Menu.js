@@ -141,25 +141,25 @@ export default function GSMenu(props) {
       </Box>
       <Box height={20} />
       {menus.map((item, i) => (
-        <MenuItem
-          key={i}
-          className={classes.menuItem}
-          selected={props.active === item.name}
-          disabled={item.disabled}
-        >
           <Link className={classes.linkItemText} to={`${item.linkTo}`}>
-            <Grid container>
-              <Grid item>
-                <ListItemIcon className={classes.listItemIcon}>
-                  {item.icon && <item.icon />}
-                </ListItemIcon>
-              </Grid>
-              <Grid item>
-                <ListItemText className={classes.listItemText}>{item.name}</ListItemText>
-              </Grid>
-            </Grid>
+            <MenuItem
+              key={i}
+              className={classes.menuItem}
+              selected={props.active === item.name}
+              disabled={item.disabled}
+            >
+                <Grid container>
+                  <Grid item>
+                    <ListItemIcon className={classes.listItemIcon}>
+                      {item.icon && <item.icon />}
+                    </ListItemIcon>
+                  </Grid>
+                  <Grid item>
+                    <ListItemText className={classes.listItemText}>{item.name}</ListItemText>
+                  </Grid>
+                </Grid>
+            </MenuItem>
           </Link>
-        </MenuItem>
       ))}
     </>
   )
