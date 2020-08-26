@@ -42,18 +42,26 @@ const style = (theme) => ({
     float: 'left',
     marginLeft: '22px',
     height: '100%',
+    width: '90px',
+    boxSizing: 'border-box',
+    position: 'relative',
     fontFamily: theme.typography.fontFamily
   },
   dashstatData: {
     display: 'inline-block',
-    marginTop: '20px',
-    lineHeight: '26px',
-    marginBlockEnd: '0'
+    position: 'absolute',
+    top: '18px',
+    marginBlockStart: 0,
+    marginBlockEnd: 0,
   },
   dashstatLabel: {
     display: 'inline-block',
     fontSize: '12px',
-    marginTop: '14px'
+    bottom: '20px',
+    marginBlockStart: 0,
+    marginBlockEnd: 0,
+    width: '90px',
+    position: 'absolute'
   }
 })
 
@@ -70,7 +78,7 @@ const style = (theme) => ({
  */
 function DashStat(props) {
   const {
-    fetch, data, Icon, label, color, classes
+    fetch, data, Icon, label, color = '#000000', classes
   } = props;
 
   const [needsFetch, setNeedsFetched] = React.useState(true);
@@ -83,12 +91,12 @@ function DashStat(props) {
     <Grid item xs={3}>
       <div className={classes.dashstatContainer}>
         <div className={classes.dashstatIconContainer}>
-          <div className={classes.dashstatCircleIcon} style={{ backgroundColor: color || '#000000' }}></div>
-          <Icon className={classes.dashstatIcon} style={{ color: color || '#000000' }}></Icon>
+          <div className={classes.dashstatCircleIcon} style={{ backgroundColor: color }}></div>
+          <Icon className={classes.dashstatIcon} style={{ color: color }}></Icon>
         </div>
         <div className={classes.dashstatText}>
           <h3 className={classes.dashstatData}>{data}</h3><br/>
-          <span className={classes.dashstatLabel}>{label}</span>
+          <p className={classes.dashstatLabel}>{label}</p>
         </div>
       </div>
     </Grid>
