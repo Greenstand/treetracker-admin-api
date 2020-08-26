@@ -51,9 +51,15 @@ const verity = {
       approved: false,
       rejected: false,
       active: true,
+    }),
+    verifiedFilter: new FilterModel({
+      approved: true,
+      rejected: false,
+      active: true,
 		}),
     treeCount: 0,
     unprocessedTreeCount: null,
+    verifiedTreeCount: null,
 	},
 	reducers: {
 		appendTreeImages(state, treeImages){
@@ -111,6 +117,12 @@ const verity = {
       return {
           ...state,
           unprocessedTreeCount,
+      };
+    },
+    setVerifiedTreeCount(state, verifiedTreeCount) {
+      return {
+          ...state,
+          verifiedTreeCount,
       };
     },
 		setApproveAllComplete(state, approveAllComplete){
@@ -193,7 +205,9 @@ const verity = {
 				...state,
 				treeImages: [],
 				currentPage: 0,
-				treeCount: 0,
+        treeCount: 0,
+        verifiedTreeCount: null,
+        unprocessedTreeCount: null
 			}
 		},
 		/*
@@ -486,6 +500,15 @@ const verity = {
     async getUnprocessedTreeCount(payload, state) {
       const result = await api.getTreeCount(state.verity.unprocessedFilter)
       this.setUnprocessedTreeCount(result.count)
+      return true
+    },
+
+    /*
+     * gets and sets count for trees that are active and approved
+     */
+    async getVerifiedTreeCount(payload, state) {
+      const result = await api.getTreeCount(state.verity.verifiedFilter)
+      this.setVerifiedTreeCount(result.count)
       return true
     },
 

@@ -2,10 +2,18 @@ import React from 'react'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
-import Menu from './common/Menu'
+import Menu, { MENU_WIDTH } from './common/Menu'
+import DashStat from './DashStat';
 import * as d3 from 'd3'
 import log from 'loglevel'
 import assert from 'assert'
+import {connect} from 'react-redux';
+import NatureOutlinedIcon from '@material-ui/icons/NatureOutlined';
+import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
+import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
+import PeopleOutlineOutlinedIcon from '@material-ui/icons/PeopleOutlineOutlined';
+import theme, { colorPrimary } from './common/theme';
+import { rgb } from 'd3'
 
 const logo = (
   <svg
@@ -57,16 +65,36 @@ const logo = (
 
 const style = (theme) => ({
   box: {
+    width: '100%',
     height: '100%',
+    position: 'relative',
+  },
+  menuAside: {
+    height: '100%',
+    width: MENU_WIDTH,
+    position: 'absolute',
+    left: 0,
+    top: 0
   },
   menu: {
     height: '100%',
+    width: MENU_WIDTH,
+    overflow: 'hidden'
   },
-  rightBox: {},
+  rightBox: {
+    height: '100%',
+    position: 'absolute',
+    padding: '40px',
+    left: MENU_WIDTH,
+    top: 0,
+    right: 0,
+    backgroundColor: 'rgb(239, 239, 239)',
+    boxSizing: 'border-box',
+  },
   welcomeBox: {
     height: '100%',
     //padding: theme.spacing(4),
-    paddingTop: '20%', //theme.spacing(50),
+    //padding: '40px',
   },
   title: {
     fill: '#9f9f9f',
@@ -80,65 +108,88 @@ const style = (theme) => ({
 function Home(props) {
   const { classes } = props
 
-  async function load() {
-    const logoElement = d3.select('.logo')
-    assert(logoElement)
-    assert(logoElement.node())
-    const g = d3.select('#trees')
-    log.info('g:', g)
-    const htmlCode = d3.select('#logoDiv').node().innerHTML
-    assert(htmlCode.match(/<svg.*/))
+  // async function load() {
+  //   const logoElement = d3.select('.logo')
+  //   assert(logoElement)
+  //   assert(logoElement.node())
+  //   const g = d3.select('#trees')
+  //   log.info('g:', g)
+  //   const htmlCode = d3.select('#logoDiv').node().innerHTML
+  //   assert(htmlCode.match(/<svg.*/))
 
-    g.append('g')
-      .attr('transform', `translate(80 92)`)
-      .append('g')
-      .html(htmlCode)
-      //original size: 58, 73
-      .attr('transform', `translate(${-58 / 2} ${-73 / 2}), scale(0)`)
-      .attr('transform-origin', `${58 / 2} ${73 / 2} `)
-      .transition()
-      .delay(2000)
-      .duration(1000)
-      .ease(d3.easeElasticOut.amplitude(1).period(0.2))
-      .attr('transform', `translate(${-58 / 2} ${-73 / 2}), scale(1.4)`)
+  //   g.append('g')
+  //     .attr('transform', `translate(80 92)`)
+  //     .append('g')
+  //     .html(htmlCode)
+  //     //original size: 58, 73
+  //     .attr('transform', `translate(${-58 / 2} ${-73 / 2}), scale(0)`)
+  //     .attr('transform-origin', `${58 / 2} ${73 / 2} `)
+  //     .transition()
+  //     .delay(2000)
+  //     .duration(1000)
+  //     .ease(d3.easeElasticOut.amplitude(1).period(0.2))
+  //     .attr('transform', `translate(${-58 / 2} ${-73 / 2}), scale(1.4)`)
 
-    d3.select('#text')
-      .attr('transform', `translate(0 0)`)
-      .transition()
-      .delay(2000)
-      .duration(1000)
-      .ease(d3.easeElasticOut.amplitude(1).period(0.2))
-      .attr('transform', `translate(4, 0)`)
-  }
+  //   d3.select('#text')
+  //     .attr('transform', `translate(0 0)`)
+  //     .transition()
+  //     .delay(2000)
+  //     .duration(1000)
+  //     .ease(d3.easeElasticOut.amplitude(1).period(0.2))
+  //     .attr('transform', `translate(4, 0)`)
+  // }
 
-  React.useEffect(() => {
-    load()
-  }, [])
+  // React.useEffect(() => {
+  //   load()
+  // }, [])
 
   return (
-    <Grid container className={classes.box}>
-      <Grid item xs={3}>
+    <div className={classes.box}>
+      <div className={classes.menuAside}>
         <Paper elevation={3} className={classes.menu}>
           <Menu variant="plain" />
         </Paper>
-      </Grid>
-      <Grid item xs={9}>
-        <Grid container className={classes.welcomeBox} justify="center">
-          <div id="logoDiv" style={{ display: 'none' }}>
-            {logo}
-          </div>
-          <svg viewBox="0 0 700 200" width="700" height="200">
-            <g id="trees" />
-            <g transform="translate(100, 100)">
-              <text id="text" className={classes.title}>
-                Greenstand Admin Panel
-              </text>
-            </g>
-          </svg>
+      </div>
+      <div className={classes.rightBox}>
+        <Grid container spacing={5} className={classes.welcomeBox} justify="center">
+          <DashStat data={props.totalTrees}
+            fetch={props.getTreeCount}
+            color={theme.palette.stats.green}
+            Icon={NatureOutlinedIcon}
+            label={'Total Trees'} />
+          <DashStat data={props.unprocessedTreeCount}
+            fetch={props.getUnprocessedTreeCount}
+            color={theme.palette.stats.red}
+            Icon={LocalOfferOutlinedIcon}
+            label={'Unprocessed Trees'} />
+          <DashStat data={props.verifiedTreeCount}
+            fetch={props.getVerifiedTreeCount}
+            color={theme.palette.stats.orange}
+            Icon={CheckCircleOutlineOutlinedIcon}
+            label={'Verified Trees'} />
+          <DashStat data={props.planterCount}
+            fetch={props.getPlanterCount}
+            color={theme.palette.stats.orange}
+            Icon={PeopleOutlineOutlinedIcon}
+            label={'Users'} />
         </Grid>
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   )
 }
 
-export default withStyles(style)(Home)
+
+export default connect(
+  state => ({
+    unprocessedTreeCount: state.verity.unprocessedTreeCount || 0,
+    verifiedTreeCount: state.verity.verifiedTreeCount || 0,
+    totalTrees: state.trees.treeCount,
+    planterCount: state.planters.count
+  }),
+  dispatch => ({
+    getUnprocessedTreeCount: dispatch.verity.getUnprocessedTreeCount,
+    getVerifiedTreeCount: dispatch.verity.getVerifiedTreeCount,
+    getTreeCount: dispatch.trees.getTreeCount,
+    getPlanterCount: dispatch.planters.count,
+  })
+)(withStyles(style)(Home));

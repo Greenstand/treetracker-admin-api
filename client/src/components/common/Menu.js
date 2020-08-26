@@ -2,7 +2,6 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
 import MenuItem from '@material-ui/core/MenuItem'
-import MenuStats from './MenuStats'
 import IconSettings from '@material-ui/icons/Settings'
 import IconShowChart from '@material-ui/icons/ShowChart'
 import IconThumbsUpDown from '@material-ui/icons/ThumbsUpDown'
@@ -196,7 +195,6 @@ export default function GSMenu(props) {
             </MenuItem>
           </Link>
       ))}
-      <MenuStats/>
     </>
   )
 
