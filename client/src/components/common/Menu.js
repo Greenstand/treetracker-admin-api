@@ -139,11 +139,12 @@ export default function GSMenu(props) {
       name: 'Species',
       linkTo: '/species',
       icon: CategoryIcon,
-      disabled: !hasPermission(
-        user, [
+      //TODO this is temporarily, need to add species policy
+      disabled: 
+        (!hasPermission(user, [
           POLICIES.SUPER_PERMISSION,
           POLICIES.LIST_TREE,
-        ]),
+        ])) || user.policy.organization !== undefined,
     },
     {
       name: 'Settings',
