@@ -130,6 +130,8 @@ router.post('/login', async function login(req, res, next) {
         `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
       );
       userLogin.role = result.rows.map(r => r.role_id);
+    }else{
+      console.log("can not find user by ", userName);
     }
 
     // If user exists in db AND user is active
@@ -142,11 +144,15 @@ router.post('/login', async function login(req, res, next) {
       const {id, userName, firstName, lastName, email, role, policy} = userLogin;
       //      const audit = new Audit();
       //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
+      console.log("login success");
       res.json({
         token,
         user: {id, userName, firstName, lastName, email, role, policy},
       });
-    } 
+    }else{
+      console.log("login failed:", userLogin)
+    }
+
     return res.status(401).json();
   } catch (err) {
     console.error(err);
@@ -310,6 +316,10 @@ router.post('/admin_users/', async (req, res, next) => {
       res.status(201).json({id: result.rows[0].id});
       return;
     }
+    //active
+    if(req.body.active == undefined){
+      req.body.active = true;
+    }
     const insert = `insert into admin_user ${utils.buildInsertFields(
       req.body,
     )}`;
@@ -394,6 +404,7 @@ router.post('/init', async (req, res, next) => {
 
 const isAuth = async (req, res, next) => {
   //white list
+  console.log("testtest");
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
   const isApiExplorerReq = isDevEnvironment;
@@ -445,6 +456,7 @@ const isAuth = async (req, res, next) => {
             return;
           }
         } else {
+          console.log("password unmatch");
           res.status(401).json({
             error: new Error('Session expired'),
           });
@@ -462,6 +474,7 @@ const isAuth = async (req, res, next) => {
         next();
         return;
       } else {
+        console.log("No permission");
         res.status(401).json({
           error: new Error('No permission'),
         });
