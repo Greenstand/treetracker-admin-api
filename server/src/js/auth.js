@@ -10,7 +10,7 @@ const {utils} = require('./utils');
 const {helper} = require('./helper');
 const db = require('../datasources/treetracker.datasource.json');
 const policy = require('../policy.json');
-//const assert = require('assert').strict;
+const expect = require('expect');
 const Audit = require('./Audit');
 
 const app = express();
@@ -114,8 +114,9 @@ router.post('/login', async function login(req, res, next) {
     ); /*TODO check if user name exists*/
 
     const user_entity = user_rows.rows[0];
-    //assert(user_entity.salt);
+    expect(user_entity.salt).toBeDefined();
     const hash = sha512(password, user_entity.salt);
+    expect(hash).toBeDefined();
 
     let result = await pool.query(
       `select * from admin_user where user_name = '${userName}' and password_hash = '${hash}'`,
@@ -161,6 +162,7 @@ async function loadUserPermissions(userId) {
     result = await pool.query(
       `select * from admin_user_role where admin_user_id = ${userId}`,
     );
+    expect(result.rows.length).toBeGreaterThan(0);
     userDetails.role = result.rows.map(r => r.role_id);
     //get policies
     result = await pool.query(
@@ -291,7 +293,7 @@ router.post('/validate/', async (req, res, next) => {
       return res.status(401).json();
     }
   } catch (err) {
-    console.error(err);
+    console.error(err, "verify, req:", req.originalUrl, req.headers.authorization);
     res.status(500).json();
   }
 });
@@ -392,7 +394,6 @@ router.post('/init', async (req, res, next) => {
 
 const isAuth = async (req, res, next) => {
   //white list
-  //console.error("req.originalUrl", req.originalUrl);
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
   const isApiExplorerReq = isDevEnvironment;
@@ -407,7 +408,15 @@ const isAuth = async (req, res, next) => {
     //inject the user extract from token to request object
     req.user = userSession;
     const roles = userSession.role;
-    const policies = userSession.policy;
+    expect(userSession.policy).toBeInstanceOf(Object);
+    const policies = userSession.policy.policies;
+    expect(policies).toBeInstanceOf(Array);
+    const organization = userSession.policy.organization;
+    organization && expect(organization).toMatchObject({
+      name: expect.any(String),
+      id: expect.any(Number),
+    });
+    let matcher;
     if (url.match(/\/auth\/check_session/)) {
       let user_id = req.query.id;
       console.log(user_id);
@@ -468,47 +477,98 @@ const isAuth = async (req, res, next) => {
       } else if (url.match(/\/api\/tree_tags.*/)) {
         next();
         return;
-      } else if (url.match(/\/api\/trees.*/)) {
-        if (
-          policies.some(
-            r =>
-              r.name === POLICIES.SUPER_PERMISSION ||
-              r.name === POLICIES.LIST_TREE ||
-              r.name === POLICIES.APPROVE_TREE,
-          )
-        ) {
-          // (
-          //   roles.includes(PERMISSIONS.ADMIN) ||
-          //   roles.includes(PERMISSIONS.TREE_AUDITOR)
-          // )
-          next();
-          return;
-        } else {
-          res.status(401).json({
-            error: new Error('No permission'),
-          });
-          return;
+      } else if (matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/)) {
+        if(matcher[1]){
+          //organization case
+          const id = parseInt(matcher[2]);
+          if (
+            policies.some(
+              r =>
+                r.name === POLICIES.SUPER_PERMISSION ||
+                r.name === POLICIES.LIST_TREE ||
+                r.name === POLICIES.APPROVE_TREE,
+            )
+          ) {
+            next();
+            return;
+          } else {
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
+        }else{
+          //normal case
+          //organizational user can not visit it directly
+          if(organization && organization.id > 0){
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
+          if (
+            policies.some(
+              r =>
+                r.name === POLICIES.SUPER_PERMISSION ||
+                r.name === POLICIES.LIST_TREE ||
+                r.name === POLICIES.APPROVE_TREE,
+            )
+          ) {
+            next();
+            return;
+          } else {
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
         }
-      } else if (url.match(/\/api\/planter.*/)) {
-        if (
-          policies.some(
-            r =>
-              r.name === POLICIES.SUPER_PERMISSION ||
-              r.name === POLICIES.LIST_PLANTER ||
-              r.name === POLICIES.MANAGE_PLANTER,
-          )
-        ) {
-          // (
-          //   roles.includes(PERMISSIONS.ADMIN) ||
-          //   roles.includes(PERMISSIONS.PLANTER_MANAGER)
-          // )
-          next();
-          return;
-        } else {
-          res.status(401).json({
-            error: new Error('No permission'),
-          });
-          return;
+      } else if (matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/)) {
+        if(matcher[1]){
+          //organization case
+          const id = parseInt(matcher[2]);
+          if (
+            policies.some(
+              r =>
+                r.name === POLICIES.SUPER_PERMISSION ||
+                r.name === POLICIES.LIST_PLANTER ||
+                r.name === POLICIES.MANAGE_PLANTER,
+            )
+          ) {
+            next();
+            return;
+          } else {
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }
+        }else{
+          //normal case
+          //organizational user can not visit it directly
+          if(organization && organization.id > 0){
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          }else{
+            if (
+              policies.some(
+                r =>
+                  r.name === POLICIES.SUPER_PERMISSION ||
+                  r.name === POLICIES.LIST_PLANTER ||
+                  r.name === POLICIES.MANAGE_PLANTER,
+              )
+            ) {
+              next();
+              return;
+            } else {
+              res.status(401).json({
+                error: new Error('No permission'),
+              });
+              return;
+            }
+          }
         }
       }
     } else {
