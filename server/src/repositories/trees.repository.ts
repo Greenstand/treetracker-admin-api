@@ -26,7 +26,6 @@ export class TreesRepository extends DefaultCrudRepository<
     expect(organizationId).number();
     const result = await this.execute(`select * from planter where organization_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`, []);
     expect(result).match([{id: expect.any(Number)}]);
-    expect(result).lengthOf(1);
     return result.map(e => e.id);
   }
 }
