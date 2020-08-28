@@ -8,7 +8,10 @@ const config = require('../config');
 const {Pool, Client} = require('pg');
 const {utils} = require('./utils');
 const {helper} = require('./helper');
-const db = require('../datasources/treetracker.datasource.json');
+const db = process.env.NODE_DB === "test" ?
+    require('../datasources/treetrackerTest.datasource.json')
+  :
+    require('../datasources/treetracker.datasource.json');
 const policy = require('../policy.json');
 const expect = require('expect');
 const Audit = require('./Audit');

@@ -1,7 +1,8 @@
 /*
  * Seed data to DB for test
  */
-const db = require('../../datasources/treetracker.datasource.json');
+const getDatasource = require('../../datasources/config').default;
+const db = getDatasource();
 const {Pool, Client} = require('pg');
 const pool = new Pool({connectionString: db.url});
 const policy = require('../../policy.json');

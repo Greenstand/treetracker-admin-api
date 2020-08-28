@@ -114,7 +114,7 @@ export default function GSMenu(props) {
       disabled: !hasPermission(
         user, [
           POLICIES.SUPER_PERMISSION,
-          POLICIES.TREE_AUDIT,
+          POLICIES.LIST_TREE,
           
         ]),
     },

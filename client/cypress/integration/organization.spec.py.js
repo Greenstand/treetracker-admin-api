@@ -13,12 +13,17 @@ describe("Organization", () => {
   });
 
   it("verify", () => {
-    cy.contains(/verify/i)
+    cy.contains(".MuiMenuItem-root", /verify/i)
       .click();
   });
 
   it("planter", () => {
-    cy.contains(/planter/i)
+    cy.contains(".MuiMenuItem-root", /planter/i)
+      .click({force:true});
+  });
+
+  it.only("tree", () => {
+    cy.contains(".MuiMenuItem-root", /tree/i)
       .click();
   });
 });
