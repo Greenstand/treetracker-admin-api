@@ -4,16 +4,12 @@ import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
 import Menu, { MENU_WIDTH } from './common/Menu'
 import DashStat from './DashStat';
-import * as d3 from 'd3'
-import log from 'loglevel'
-import assert from 'assert'
 import {connect} from 'react-redux';
 import NatureOutlinedIcon from '@material-ui/icons/NatureOutlined';
 import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 import PeopleOutlineOutlinedIcon from '@material-ui/icons/PeopleOutlineOutlined';
-import theme, { colorPrimary } from './common/theme';
-import { rgb } from 'd3'
+import theme from './common/theme';
 
 const logo = (
   <svg

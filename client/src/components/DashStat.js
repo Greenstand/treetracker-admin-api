@@ -1,9 +1,7 @@
-import { Box } from "@material-ui/core";
+import withData from './common/withData';
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { withStyles } from '@material-ui/core/styles'
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { formatRelative } from "date-fns";
+import { withStyles } from '@material-ui/core/styles';
 
 const style = (theme) => ({
   dashstatContainer: {
@@ -11,7 +9,6 @@ const style = (theme) => ({
     backgroundColor: 'white',
     borderRadius: '10px',
   },
-
   dashstatIconContainer: {
     width: '58px',
     height: '58px',
@@ -66,10 +63,8 @@ const style = (theme) => ({
 })
 
 /**
- *
  * @param {{
  *   color?: string,
- *   fetch: Function,
  *   data: any,
  *   Icon: Object,
  *   classes: any,
@@ -78,14 +73,8 @@ const style = (theme) => ({
  */
 function DashStat(props) {
   const {
-    fetch, data, Icon, label, color = '#000000', classes
+    data, Icon, label, color = '#000000', classes
   } = props;
-
-  const [needsFetch, setNeedsFetched] = React.useState(true);
-  if (!data && needsFetch) {
-    fetch();
-    setNeedsFetched(false);
-  }
 
   return (
     <Grid item xs={3}>
@@ -103,4 +92,4 @@ function DashStat(props) {
   )
 }
 
-export default withStyles(style)(DashStat);
+export default withData(withStyles(style)(DashStat));
