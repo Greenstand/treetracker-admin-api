@@ -43,14 +43,16 @@ export class TreesOrganizationController {
     const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
     where = {
       ...where,
-      or: [
-            {
-              plantingOrganizationId: { inq: entityIds},
-            },
-            {
-              planterId: { inq: planterIds},
-            }
-      ]
+      and:[{
+        or: [
+              {
+                plantingOrganizationId: { inq: entityIds},
+              },
+              {
+                planterId: { inq: planterIds},
+              }
+        ]
+      }],
     }
     return await this.treesRepository.count(where);
   }
@@ -79,14 +81,16 @@ export class TreesOrganizationController {
       //demonstration
       filter.where = {
         ...filter.where,
-        or: [
-              {
-                plantingOrganizationId: { inq: entityIds},
-              },
-              {
-                planterId: { inq: planterIds},
-              }
-        ]
+        and:[{
+          or: [
+            {
+              plantingOrganizationId: { inq: entityIds},
+            },
+            {
+              planterId: { inq: planterIds},
+            }
+          ]
+        }],
       }
     }
     console.log("filter:", filter, filter?filter.where:null);

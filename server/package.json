@@ -25,7 +25,7 @@
     "migrate": "node ./dist/migrate",
     "prestart": "npm run clean && npm run build",
     "start": "DEBUG=loopback:*,express:* node .",
-    "startTest": "NODE_DB=test npm run build && NODE_DB=test node ./dist/indexTest.js",
+    "startTest": "NODE_DB=test npm run build && NODE_DB=test DEBUG=loopback:* node ./dist/indexTest.js",
     "prepublishOnly": "npm run test",
     "test": "NODE_DB=test jest --watchAll --runInBand",
     "test:debug": "DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand",
