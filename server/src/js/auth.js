@@ -5,9 +5,9 @@ const generator = require('generate-password');
 const Crypto = require('crypto');
 const bodyParser = require('body-parser');
 const config = require('../config');
-const {Pool, Client} = require('pg');
-const {utils} = require('./utils');
-const {helper} = require('./helper');
+const { Pool, Client } = require('pg');
+const { utils } = require('./utils');
+const { helper } = require('./helper');
 const db = require('../datasources/treetracker.datasource.json');
 const policy = require('../policy.json');
 //const assert = require('assert').strict;
@@ -18,7 +18,7 @@ const app = express();
 //const pool = new Pool({ connectionString: "postgresql://doadmin:l5al4hwte8qmj6x8@db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker_dev?ssl=true"});
 //const pool = new Pool({ connectionString: "postgres://treetracker:tr33dev@107.170.246.116:5432/treetracker"});
 //const pool = new Pool({ connectionString: "postgresql://doadmin:g7a1fey4jeqao9mg@db-postgresql-sfo2-40397-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker?ssl=true"});
-const pool = new Pool({connectionString: db.url});
+const pool = new Pool({ connectionString: db.url });
 const jwtSecret = config.jwtSecret;
 
 const PERMISSIONS = {
@@ -65,7 +65,7 @@ const sha512 = function(password, salt) {
 };
 
 const generateSalt = function() {
-  const generated = generator.generate({length: 6, numbers: true});
+  const generated = generator.generate({ length: 6, numbers: true });
   return generated;
 };
 
@@ -89,7 +89,7 @@ const permissions = [
 
 const users = [user, userB];
 
-const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
+const jsonParser = app.use(bodyParser.urlencoded({ extended: false })); // parse application/json
 // const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
 
 router.get('/permissions', async function login(req, res, next) {
@@ -106,7 +106,7 @@ router.post('/login', async function login(req, res, next) {
   try {
     //try to init, in case of first visit
     // await init();
-    const {userName, password} = req.body;
+    const { userName, password } = req.body;
 
     //find the user to get the salt, validate if hashed password matches
     let user_rows = await pool.query(
@@ -135,17 +135,25 @@ router.post('/login', async function login(req, res, next) {
     // query remaining details and return
     if (userLogin && userLogin.active) {
       const userDetails = await loadUserPermissions(userLogin.id);
-      userLogin = {...userLogin, ...userDetails };
+      userLogin = { ...userLogin, ...userDetails };
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {id, userName, firstName, lastName, email, role, policy} = userLogin;
+      const {
+        id,
+        userName,
+        firstName,
+        lastName,
+        email,
+        role,
+        policy,
+      } = userLogin;
       //      const audit = new Audit();
       //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
       res.json({
         token,
-        user: {id, userName, firstName, lastName, email, role, policy},
+        user: { id, userName, firstName, lastName, email, role, policy },
       });
-    } 
+    }
     return res.status(401).json();
   } catch (err) {
     console.error(err);
@@ -155,19 +163,19 @@ router.post('/login', async function login(req, res, next) {
 
 // load roles and policy (permissions)
 async function loadUserPermissions(userId) {
-    const userDetails = {};
-    let result;
-    //get role
-    result = await pool.query(
-      `select * from admin_user_role where admin_user_id = ${userId}`,
-    );
-    userDetails.role = result.rows.map(r => r.role_id);
-    //get policies
-    result = await pool.query(
-      `select * from admin_role where id = ${userDetails.role[0]}`,
-    );
-    userDetails.policy = result.rows.map(r => r.policy)[0];
-    return userDetails;
+  const userDetails = {};
+  let result;
+  //get role
+  result = await pool.query(
+    `select * from admin_user_role where admin_user_id = ${userId}`,
+  );
+  userDetails.role = result.rows.map(r => r.role_id);
+  //get policies
+  result = await pool.query(
+    `select * from admin_role where id = ${userDetails.role[0]}`,
+  );
+  userDetails.policy = result.rows.map(r => r.policy)[0];
+  return userDetails;
 }
 
 router.get('/test', async function login(req, res, next) {
@@ -279,7 +287,7 @@ router.get('/admin_users/', async (req, res, next) => {
 
 router.post('/validate/', async (req, res, next) => {
   try {
-    const {password} = req.body;
+    const { password } = req.body;
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
@@ -305,7 +313,7 @@ router.post('/admin_users/', async (req, res, next) => {
     );
     if (result.rows.length === 1) {
       //TODO 401
-      res.status(201).json({id: result.rows[0].id});
+      res.status(201).json({ id: result.rows[0].id });
       return;
     }
     const insert = `insert into admin_user ${utils.buildInsertFields(
@@ -332,7 +340,7 @@ router.post('/admin_users/', async (req, res, next) => {
     } else {
       throw new Error('can not find new user');
     }
-    res.status(201).json({id: obj.id});
+    res.status(201).json({ id: obj.id });
   } catch (e) {
     console.error(e);
     res.status(500).json();
@@ -396,7 +404,12 @@ const isAuth = async (req, res, next) => {
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
   const isApiExplorerReq = isDevEnvironment;
-  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || isApiExplorerReq) {
+  if (
+    url === '/auth/login' ||
+    url === '/auth/test' ||
+    url === '/auth/init' ||
+    isApiExplorerReq
+  ) {
     next();
     return;
   }
@@ -427,7 +440,7 @@ const isAuth = async (req, res, next) => {
           if (helper.needRoleUpdate(update_userSession, userSession)) {
             //reassign token with updated role if role changes
             const new_token = jwt.sign(update_userSession, jwtSecret);
-            res.status(200).json({token: new_token});
+            res.status(200).json({ token: new_token });
             return;
           } else {
             console.log('auth check');

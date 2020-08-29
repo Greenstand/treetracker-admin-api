@@ -16,25 +16,26 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Planter} from '../models';
-import {PlanterRepository} from '../repositories';
+import { Planter } from '../models';
+import { PlanterRepository } from '../repositories';
 
 export class PlanterController {
   constructor(
     @repository(PlanterRepository)
-    public planterRepository : PlanterRepository,
+    public planterRepository: PlanterRepository,
   ) {}
 
   @get('/planter/count', {
     responses: {
       '200': {
         description: 'Planter model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Planter)) where?: Where<Planter>,
+    @param.query.object('where', getWhereSchemaFor(Planter))
+    where?: Where<Planter>,
   ): Promise<Count> {
     return await this.planterRepository.count(where);
   }
@@ -45,14 +46,15 @@ export class PlanterController {
         description: 'Array of Planter model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Planter}},
+            schema: { type: 'array', items: { 'x-ts-type': Planter } },
           },
         },
       },
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Planter)) filter?: Filter<Planter>,
+    @param.query.object('filter', getFilterSchemaFor(Planter))
+    filter?: Filter<Planter>,
   ): Promise<Planter[]> {
     return await this.planterRepository.find(filter);
   }
@@ -61,7 +63,7 @@ export class PlanterController {
     responses: {
       '200': {
         description: 'Planter model instance',
-        content: {'application/json': {schema: {'x-ts-type': Planter}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Planter } } },
       },
     },
   })
@@ -82,5 +84,4 @@ export class PlanterController {
   ): Promise<void> {
     await this.planterRepository.updateById(id, planter);
   }
-
 }

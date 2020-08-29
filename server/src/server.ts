@@ -1,15 +1,18 @@
 //import {once} from 'events';
-import {Request, Response} from 'express';
-import cors from "cors";
+import { Request, Response } from 'express';
+import cors from 'cors';
 //TODO import better
 import express = require('express');
 import * as http from 'http';
 import * as path from 'path';
-import {ApplicationConfig, TreetrackerAdminApiApplication} from './application';
-const {auth} = require('./js/auth.js');
-const {auditMiddleware} = require('./js/Audit');
+import {
+  ApplicationConfig,
+  TreetrackerAdminApiApplication,
+} from './application';
+const { auth } = require('./js/auth.js');
+const { auditMiddleware } = require('./js/Audit');
 
-export {ApplicationConfig};
+export { ApplicationConfig };
 
 export class ExpressServer {
   public readonly app: express.Application;
@@ -23,8 +26,8 @@ export class ExpressServer {
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
     // Expose the front-end assets via Express, not as LB4 route
-    this.app.use("/api", auth.isAuth);
-    this.app.use("/auth", auth.isAuth);
+    this.app.use('/api', auth.isAuth);
+    this.app.use('/auth', auth.isAuth);
 
     //audit
     this.app.use(auditMiddleware);
@@ -33,9 +36,8 @@ export class ExpressServer {
     //the auth: login...
     this.app.use('/auth', auth.router);
 
-
     // Custom Express routes
-    this.app.get('/', function (_req: Request, res: Response) {
+    this.app.get('/', function(_req: Request, res: Response) {
       res.sendFile(path.join(__dirname, '../public/express.html'));
     });
 
@@ -50,7 +52,7 @@ export class ExpressServer {
   public async start() {
     await this.lbApp.start();
     const port = this.lbApp.restServer.config.port || 3000;
-//    const host = this.lbApp.restServer.config.host || '0.0.0.0';
+    //    const host = this.lbApp.restServer.config.host || '0.0.0.0';
     const host = '0.0.0.0';
     console.log(`listerning at: ${host}:${port}`);
     this.server = this.app.listen(port, host);

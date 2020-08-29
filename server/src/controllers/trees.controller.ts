@@ -16,20 +16,20 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Trees} from '../models';
-import {TreesRepository} from '../repositories';
+import { Trees } from '../models';
+import { TreesRepository } from '../repositories';
 
 export class TreesController {
   constructor(
     @repository(TreesRepository)
-    public treesRepository : TreesRepository,
+    public treesRepository: TreesRepository,
   ) {}
 
   @get('/trees/count', {
     responses: {
       '200': {
         description: 'Trees model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -45,16 +45,17 @@ export class TreesController {
         description: 'Array of Trees model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Trees}},
+            schema: { type: 'array', items: { 'x-ts-type': Trees } },
           },
         },
       },
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
+    @param.query.object('filter', getFilterSchemaFor(Trees))
+    filter?: Filter<Trees>,
   ): Promise<Trees[]> {
-    console.log(filter, filter?filter.where:null);
+    console.log(filter, filter ? filter.where : null);
     return await this.treesRepository.find(filter);
   }
 
@@ -62,7 +63,7 @@ export class TreesController {
     responses: {
       '200': {
         description: 'Trees model instance',
-        content: {'application/json': {schema: {'x-ts-type': Trees}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Trees } } },
       },
     },
   })
@@ -77,35 +78,40 @@ export class TreesController {
       '200': {
         description: 'Find trees near a lat/lon with a radius in meters',
         content: {
-        'application/json': {
-          schema: {type: 'array', items: {'x-ts-type': Trees}},
-        },
+          'application/json': {
+            schema: { type: 'array', items: { 'x-ts-type': Trees } },
+          },
         },
       },
     },
   })
-  async near(@param.query.number('lat') lat :number, 
-             @param.query.number('lon') lon :number,
-             @param({
-              name: 'radius',
-              in: 'query',
-              required: false,
-              schema: {type: 'number'},
-              description: 'measured in meters (default: 100 meters)'
-             }) radius :number,
-             @param({
-              name: 'limit',
-              in: 'query',
-              required: false,
-              schema: {type: 'number'},
-              description: 'default is 100'
-             }) limit :number,
-             ) : Promise<Trees[]> {
-    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
+  async near(
+    @param.query.number('lat') lat: number,
+    @param.query.number('lon') lon: number,
+    @param({
+      name: 'radius',
+      in: 'query',
+      required: false,
+      schema: { type: 'number' },
+      description: 'measured in meters (default: 100 meters)',
+    })
+    radius: number,
+    @param({
+      name: 'limit',
+      in: 'query',
+      required: false,
+      schema: { type: 'number' },
+      description: 'default is 100',
+    })
+    limit: number,
+  ): Promise<Trees[]> {
+    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${
+      radius ? radius : 100
+    }, false) LIMIT ${limit ? limit : 100}`;
     console.log(`near query: ${query}`);
-    return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
+    return <Promise<Trees[]>>await this.treesRepository.execute(query, []);
   }
-  
+
   @patch('/trees/{id}', {
     responses: {
       '204': {
@@ -119,5 +125,4 @@ export class TreesController {
   ): Promise<void> {
     await this.treesRepository.updateById(id, trees);
   }
-
 }

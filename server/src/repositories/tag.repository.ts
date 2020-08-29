@@ -1,7 +1,7 @@
-import {DefaultCrudRepository} from '@loopback/repository';
-import {Tag, TagRelations} from '../models';
-import {TreetrackerDataSource} from '../datasources';
-import {inject} from '@loopback/core';
+import { DefaultCrudRepository } from '@loopback/repository';
+import { Tag, TagRelations } from '../models';
+import { TreetrackerDataSource } from '../datasources';
+import { inject } from '@loopback/core';
 
 export class TagRepository extends DefaultCrudRepository<
   Tag,
@@ -14,4 +14,3 @@ export class TagRepository extends DefaultCrudRepository<
     super(Tag, dataSource);
   }
 }
-

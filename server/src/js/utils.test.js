@@ -1,46 +1,45 @@
-const {utils} = require("./utils");
+const { utils } = require('./utils');
 
-describe("Utils", () => {
-
-  it("convertCamel", () => {
+describe('Utils', () => {
+  it('convertCamel', () => {
     const obj = {
-      first_name: "a",
-      created_at: "b",
-    }
+      first_name: 'a',
+      created_at: 'b',
+    };
     const result = utils.convertCamel(obj);
-    expect(result).toHaveProperty("firstName");
+    expect(result).toHaveProperty('firstName');
   });
 
-  it("convertDB", () => {
+  it('convertDB', () => {
     const obj = {
-      firstName: "a",
-      createdAt: "b",
-    }
+      firstName: 'a',
+      createdAt: 'b',
+    };
     const result = utils.convertDB(obj);
-    expect(result).toHaveProperty("first_name");
-    expect(result).toHaveProperty("created_at");
+    expect(result).toHaveProperty('first_name');
+    expect(result).toHaveProperty('created_at');
   });
 
-  it("update fields", () => {
+  it('update fields', () => {
     const obj = {
       id: 0,
-      firstName: "a",
-      lastName: "b",
+      firstName: 'a',
+      lastName: 'b',
       role: [1, 2],
-    }
+    };
     const result = utils.buildUpdateFields(obj);
     expect(result).toMatch(/first_name = 'a'\s+,\s+last_name = 'b'/);
     //expect(result).toMatch(/where\s+id\s*=\s*\d+/);
     console.log(result);
   });
 
-  it("insert fields", () => {
+  it('insert fields', () => {
     const obj = {
       id: 0,
-      firstName: "a",
-      lastName: "b",
+      firstName: 'a',
+      lastName: 'b',
       role: [1, 2],
-    }
+    };
     const result = utils.buildInsertFields(obj);
     expect(result).toMatch(/first_name\s*,\s*last_name/);
     expect(result).toMatch(/'a'/);

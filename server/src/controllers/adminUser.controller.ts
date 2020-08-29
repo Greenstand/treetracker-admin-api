@@ -16,15 +16,15 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {AdminUser} from '../models';
-import {AdminUserRepository} from '../repositories';
+import { AdminUser } from '../models';
+import { AdminUserRepository } from '../repositories';
 
 export class AdminUserController {
   constructor(
     @repository(AdminUserRepository)
-    public adminUserRepository : AdminUserRepository,
+    public adminUserRepository: AdminUserRepository,
   ) {}
-  
+
   // @get('/admin_user/count', {
   //   responses: {
   //     '200': {
@@ -95,5 +95,4 @@ export class AdminUserController {
   // ): Promise<void> {
   //   await this.adminUserRepository.deleteById(id);
   // }
-
 }

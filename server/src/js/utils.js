@@ -1,63 +1,72 @@
-function convertCamel(obj){
+function convertCamel(obj) {
   const result = {};
   Object.keys(obj).forEach(key => {
     const value = obj[key];
-    const newKey = key.split("_").map((w,i) => {
-      if(i === 0){
-        return w;
-      }else{
-        return w.split('').map((c,i) => i === 0?c.toUpperCase():c).join('');
-      }
-    }).join('');
+    const newKey = key
+      .split('_')
+      .map((w, i) => {
+        if (i === 0) {
+          return w;
+        } else {
+          return w
+            .split('')
+            .map((c, i) => (i === 0 ? c.toUpperCase() : c))
+            .join('');
+        }
+      })
+      .join('');
     result[newKey] = value;
   });
   return result;
 }
 
-function convertDB(obj){
+function convertDB(obj) {
   const result = {};
   Object.keys(obj).forEach(key => {
     const value = obj[key];
-    const newKey = key.split("").map(c => {
-      if(c.match(/[QWERTYUIOPASDFGHJKLZXCVBNM]/)){
-        return "_" + c.toLowerCase();
-      }else{
-        return c;
-      }
-    }).join('');
+    const newKey = key
+      .split('')
+      .map(c => {
+        if (c.match(/[QWERTYUIOPASDFGHJKLZXCVBNM]/)) {
+          return '_' + c.toLowerCase();
+        } else {
+          return c;
+        }
+      })
+      .join('');
     result[newKey] = value;
   });
   return result;
 }
 
-function buildUpdateFields(obj){
+function buildUpdateFields(obj) {
   let fields = [];
-  let where = "";
+  let where = '';
   obj = convertDB(obj);
   Object.keys(obj).forEach(key => {
-    if(key === "id"){
+    if (key === 'id') {
       //where = `where id = ${obj[key]}`;
       //nothing
-    }else if(key === "role"){
+    } else if (key === 'role') {
       //nothing
-    }else{
+    } else {
       fields.push(` ${key} = '${obj[key]}' `);
     }
   });
   return fields.join(' , ') + where;
 }
 
-function buildInsertFields(obj){
+function buildInsertFields(obj) {
   let fields = [];
   let values = [];
   obj = convertDB(obj);
   Object.keys(obj).forEach(key => {
-    if(key === "id"){
+    if (key === 'id') {
       //where = `where id = ${obj[key]}`;
       //nothing
-    }else if(key === "role"){
+    } else if (key === 'role') {
       //nothing
-    }else{
+    } else {
       fields.push(`${key}`);
       values.push(`'${obj[key]}'`);
     }
@@ -65,7 +74,7 @@ function buildInsertFields(obj){
   return `(${fields.join(',')}) values (${values.join(',')})`;
 }
 
-function getEnvironment(){
+function getEnvironment() {
   return process.env.NODE_ENV;
 }
 
@@ -74,5 +83,5 @@ exports.utils = {
   convertDB,
   buildUpdateFields,
   buildInsertFields,
-  getEnvironment
-}
+  getEnvironment,
+};

@@ -2,14 +2,14 @@ const request = require('supertest');
 const express = require('express');
 
 jest.mock('pg');
-const {Pool, Client} = require('pg');
+const { Pool, Client } = require('pg');
 const query = jest.fn();
 Pool.mockImplementation(() => ({
   query,
 }));
 
 const Audit = require('./Audit');
-const {auditMiddleware} = require('./Audit');
+const { auditMiddleware } = require('./Audit');
 
 describe('Audit', () => {
   let app;
