@@ -16,20 +16,20 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import { Tag } from '../models';
-import { TagRepository } from '../repositories';
+import {Tag} from '../models';
+import {TagRepository} from '../repositories';
 
 export class TagController {
   constructor(
     @repository(TagRepository)
-    public tagRepository: TagRepository,
+    public tagRepository : TagRepository,
   ) {}
 
   @get('/tags/count', {
     responses: {
       '200': {
         description: 'Tag model count',
-        content: { 'application/json': { schema: CountSchema } },
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
@@ -45,7 +45,7 @@ export class TagController {
         description: 'Array of Tag model instances',
         content: {
           'application/json': {
-            schema: { type: 'array', items: { 'x-ts-type': Tag } },
+            schema: {type: 'array', items: {'x-ts-type': Tag}},
           },
         },
       },
@@ -54,7 +54,7 @@ export class TagController {
   async find(
     @param.query.object('filter', getFilterSchemaFor(Tag)) filter?: Filter<Tag>,
   ): Promise<Tag[]> {
-    console.log(filter, filter ? filter.where : null);
+    console.log(filter, filter?filter.where:null);
     return await this.tagRepository.find(filter);
   }
 
@@ -62,7 +62,7 @@ export class TagController {
     responses: {
       '200': {
         description: 'Tag model instance',
-        content: { 'application/json': { schema: { 'x-ts-type': Tag } } },
+        content: {'application/json': {schema: {'x-ts-type': Tag}}},
       },
     },
   })
@@ -91,11 +91,11 @@ export class TagController {
       },
     },
   })
-  async create(@requestBody() tag: Tag): Promise<Tag> {
+  async create(
+    @requestBody() tag: Tag,
+  ): Promise<Tag> {
     // Only create the tag if it doesn't already exist
-    const match = await this.tagRepository.findOne({
-      where: { tagName: { ilike: tag.tagName } },
-    });
+    const match = await this.tagRepository.findOne({where:{tagName:{ilike: tag.tagName}}});
     if (match) {
       return match;
     }
@@ -109,7 +109,10 @@ export class TagController {
       },
     },
   })
-  async delete(@param.path.number('id') id: number): Promise<void> {
-    await this.tagRepository.deleteById(id);
+  async delete(
+    @param.path.number('id') id: number,
+  ): Promise<void>{
+    await this.tagRepository.deleteById(id)
   }
+
 }

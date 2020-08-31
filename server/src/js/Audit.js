@@ -1,7 +1,7 @@
 /*
  * To record operation on the system
  */
-const { Pool, Client } = require('pg');
+const {Pool, Client} = require('pg');
 const log = require('loglevel');
 const db = require('../datasources/treetracker.datasource.json');
 //const assert = require('assert').strict;
@@ -67,7 +67,7 @@ const auditMiddleware = (request, response, next) => {
 
 class Audit {
   constructor() {
-    this.pool = new Pool({ connectionString: db.url });
+    this.pool = new Pool({connectionString: db.url});
   }
 
   async did(req, res) {
@@ -75,8 +75,7 @@ class Audit {
     //assert(req.headers);
     //assert(req.headers.host);
     //assert(req.headers['user-agent']);
-    const host =
-      req.headers['x-real-ip'] || req.headers.host.match(/(.*):(.*)/)[1];
+    const host = req.headers['x-real-ip'] || req.headers.host.match(/(.*):(.*)/)[1];
     const userAgent = req.headers['user-agent'];
     let operation;
     let operator;

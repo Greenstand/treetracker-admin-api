@@ -1,4 +1,4 @@
-import { ApplicationConfig, ExpressServer } from './server';
+import {ApplicationConfig, ExpressServer} from './server';
 
 export * from './server';
 

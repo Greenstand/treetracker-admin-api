@@ -2,7 +2,7 @@ const request = require('supertest');
 const express = require('express');
 
 jest.mock('pg');
-const { Pool, Client } = require('pg');
+const {Pool, Client} = require('pg');
 
 /*
  * Cuz the js import way, we must mock it in this way
@@ -11,7 +11,7 @@ const query = jest.fn();
 Pool.mockImplementation(() => ({
   query,
 }));
-const { auth } = require('./auth.js');
+const {auth} = require('./auth.js');
 
 jest.mock('./Audit');
 const Audit = require('./Audit');

@@ -1,7 +1,7 @@
-import { DefaultCrudRepository } from '@loopback/repository';
-import { Trees, TreesRelations } from '../models';
-import { TreetrackerDataSource } from '../datasources';
-import { inject } from '@loopback/core';
+import {DefaultCrudRepository} from '@loopback/repository';
+import {Trees, TreesRelations} from '../models';
+import {TreetrackerDataSource} from '../datasources';
+import {inject} from '@loopback/core';
 
 export class TreesRepository extends DefaultCrudRepository<
   Trees,

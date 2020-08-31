@@ -1,6 +1,6 @@
 const request = require('supertest');
 const express = require('express');
-const { auth } = require('./auth.js');
+const {auth} = require('./auth.js');
 
 describe.skip('auth int', () => {
   let app;
@@ -16,7 +16,7 @@ describe.skip('auth int', () => {
     });
   });
 
-  it('init', async () => {
+  it("init", async () => {
     const response = await request(app).post('/auth/init');
     expect(response.statusCode).toBe(200);
   });
