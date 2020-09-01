@@ -1,6 +1,7 @@
 import {inject} from '@loopback/core';
 import {juggler} from '@loopback/repository';
-import * as config from './treetracker.datasource.json';
+import getDatasource from "./config";
+const config = getDatasource();
 
 export class TreetrackerDataSource extends juggler.DataSource {
   static dataSourceName = 'treetracker';

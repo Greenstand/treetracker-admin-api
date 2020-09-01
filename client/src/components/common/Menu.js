@@ -19,8 +19,19 @@ import IconLogo from '../IconLogo'
 import { AppContext } from '../Context'
 import { PERMISSIONS, hasPermission } from '../../models/auth'
 import { Link } from 'react-router-dom'
+import Grid from '@material-ui/core/Grid'
 
 export const MENU_WIDTH = 232
+
+const POLICIES = {
+  SUPER_PERMISSION: 'super_permission',
+  LIST_USER: 'list_user',
+  MANAGER_USER: 'manager_user',
+  LIST_TREE: 'list_tree',
+  APPROVE_TREE: 'approve_tree',
+  LIST_PLANTER: 'list_planter',
+  MANAGE_PLANTER: 'manage_planter',
+};
 
 const useStyles = makeStyles((theme) => ({
   drawer: {},
@@ -70,6 +81,7 @@ export default function GSMenu(props) {
   const theme = useTheme()
   const appContext = React.useContext(AppContext)
   const { user } = appContext
+  console.log("user:", user);
 
   const menus = [
     {
@@ -88,19 +100,34 @@ export default function GSMenu(props) {
       name: 'Verify',
       linkTo: 'verify',
       icon: IconThumbsUpDown,
-      disabled: !hasPermission(user, [PERMISSIONS.ADMIN, PERMISSIONS.TREE_AUDIT]),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.LIST_TREE,
+          POLICIES.APPROVE_TREE,
+        ]),
     },
     {
       name: 'Trees',
       linkTo: '/trees',
       icon: IconNature,
-      disabled: !hasPermission(user, [PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.LIST_TREE,
+          
+        ]),
     },
     {
       name: 'Planters',
       linkTo: 'planters',
       icon: IconGroup,
-      disabled: !hasPermission(user, [PERMISSIONS.PLANTER, PERMISSIONS.ADMIN]),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.LIST_PLANTER,
+          
+        ]),
     },
     {
       name: 'Payments',
@@ -112,7 +139,12 @@ export default function GSMenu(props) {
       name: 'Species',
       linkTo: '/species',
       icon: CategoryIcon,
-      disabled: !hasPermission(user, [PERMISSIONS.TREE_AUDIT, PERMISSIONS.ADMIN]),
+      //TODO this is temporarily, need to add species policy
+      disabled: 
+        (!hasPermission(user, [
+          POLICIES.SUPER_PERMISSION,
+          POLICIES.LIST_TREE,
+        ])) || user.policy.organization !== undefined,
     },
     {
       name: 'Settings',
@@ -124,7 +156,10 @@ export default function GSMenu(props) {
       name: 'User Manager',
       linkTo: '/usermanager',
       icon: IconGroup,
-      disabled: !hasPermission(user, PERMISSIONS.ADMIN),
+      disabled: !hasPermission(
+        user, [
+          POLICIES.SUPER_PERMISSION,
+        ]),
     },
     {
       name: 'Account',
@@ -140,19 +175,25 @@ export default function GSMenu(props) {
       </Box>
       <Box height={20} />
       {menus.map((item, i) => (
-        <MenuItem
-          key={i}
-          className={classes.menuItem}
-          selected={props.active === item.name}
-          disabled={item.disabled}
-        >
-          <ListItemIcon className={classes.listItemIcon}>{item.icon && <item.icon />}</ListItemIcon>
-          <ListItemText className={classes.listItemText}>
-            <Link className={classes.linkItemText} to={`${item.linkTo}`}>
-              {item.name}
-            </Link>
-          </ListItemText>
-        </MenuItem>
+          <Link className={classes.linkItemText} to={`${item.linkTo}`}>
+            <MenuItem
+              key={i}
+              className={classes.menuItem}
+              selected={props.active === item.name}
+              disabled={item.disabled}
+            >
+                <Grid container>
+                  <Grid item>
+                    <ListItemIcon className={classes.listItemIcon}>
+                      {item.icon && <item.icon />}
+                    </ListItemIcon>
+                  </Grid>
+                  <Grid item>
+                    <ListItemText className={classes.listItemText}>{item.name}</ListItemText>
+                  </Grid>
+                </Grid>
+            </MenuItem>
+          </Link>
       ))}
     </>
   )

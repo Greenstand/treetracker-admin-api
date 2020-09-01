@@ -12,10 +12,12 @@ export const AppProvider = (props) => {
       setUser(user)
       setToken(token)
       session.token = token
+      session.user = user
     },
     logout: () => {
       setUser(undefined)
       session.token = undefined
+      session.user = undefined
       localStorage.removeItem('token')
       localStorage.removeItem('user')
     },
