@@ -9,10 +9,10 @@ function hasPermission(user, p){
   if(!user) return false;
   if(p instanceof Array){
     return p.some(permission => {
-      return user.role.some(r => r === permission);
+      return user.policy.policies.some(r => r.name === permission);
     });
   }else{
-    return user.role.some(r => r === p) ? true : false;
+    return user.policy.policies.some(r => r.name === p) ? true : false;
   }
 }
 
