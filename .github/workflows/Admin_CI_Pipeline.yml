@@ -70,3 +70,9 @@ jobs:
       working-directory: ${{env.working-directory}}
     - run: npm test
       working-directory: ${{env.working-directory}}
+      env: 
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_CONNECTOR: ${{ secrets.DB_CONNECTOR }}
+        DB_URL: ${{ secrets.DB_URL }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+
