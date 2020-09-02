@@ -1,5 +1,5 @@
-import {expect} from '@loopback/testlab'
-import { TreetrackerDataSource } from '../datasources'
+import { expect } from '@loopback/testlab';
+import { TreetrackerDataSource } from '../datasources';
 import { SpeciesController } from '../controllers';
 import { SpeciesRepository } from '../repositories';
 require('dotenv').config();

@@ -22,8 +22,8 @@ export class TreetrackerAdminApiApplication extends BootMixin(
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
-
-    // Inject datasource. 
+    
+    // Configure database with env. variables.  
     // First, bind configuration to treetracker source.
     this.bind('datasources.config.treetracker').to({
       name: process.env.DB_NAME, 
@@ -31,7 +31,9 @@ export class TreetrackerAdminApiApplication extends BootMixin(
       url: process.env.DB_URL, 
       port: process.env.DB_PORT, 
     });
-    // Then, bind treetracker source to TreetrackerDataSource Class. 
+
+    /* Then, bind treetracker source to TreetrackerDataSource Class. 
+    Scope of TreetrackerDataSource: Transient*/
     this.bind('datasources.treetracker').toClass(TreetrackerDataSource);
     
     this.component(RestExplorerComponent);
