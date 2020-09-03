@@ -361,7 +361,7 @@ const DeleteDialog = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{`Please confirm you want to delete ?`}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">{`Please confirm you want to delete`}</DialogTitle>
       <DialogActions>
         <Button onClick={handleDelete} color="primary">
           Delete
