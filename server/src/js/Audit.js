@@ -28,7 +28,7 @@ const auditMiddleware = (request, response, next) => {
           const audit = new Audit();
           await audit.did(request, response);
         } else {
-          console.log('quit when failed');
+          //console.log('quit when failed');
         }
       } catch (e) {
         console.error(e);
@@ -99,11 +99,11 @@ class Audit {
         operation = operations.tree_verify;
         operation.payload = req.body;
       } else {
-        console.log('no need audit', url);
+        //console.log('no need audit', url);
         return;
       }
     } else {
-      console.log('no need audit', url);
+      //console.log('no need audit', url);
       return;
     }
     //assert(operation);
@@ -112,7 +112,7 @@ class Audit {
     const sql = `insert into audit ("admin_user_id", platform, ip, browser, organization, operation) values (${operator}, 'admin_panel', '${host}', '${userAgent}', 'greenstand', '${JSON.stringify(
       operation,
     )}')`;
-    console.debug('audit sql:', sql);
+    //console.debug('audit sql:', sql);
 
     await this.pool.query(sql);
   }

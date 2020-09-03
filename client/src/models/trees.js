@@ -1,3 +1,6 @@
+import { 
+  getOrganization,
+} from "../api/apiUtils";
 import Axios from 'axios'
 import { session } from '../models/auth'
 import FilterModel from '../models/Filter'
@@ -65,7 +68,7 @@ const trees = {
     async getTreesWithImagesAsync({ page, rowsPerPage, orderBy = 'id', order = 'desc' }) {
       const query = `${
         process.env.REACT_APP_API_ROOT
-      }/api/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
+      }/api/${getOrganization()}trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
         page * rowsPerPage
       }&filter[fields][imageUrl]=true&filter[fields][lat]=true&filter[fields][lon]=true` +
       `&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][timeUpdated]=true` +
@@ -93,7 +96,7 @@ const trees = {
        */
       
       let response = await Axios.get(
-        `${process.env.REACT_APP_API_ROOT}/api/trees/count?` +
+        `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?` +
           (filter ? filter.getBackloopString(false) : ''),
         {
           headers: {
@@ -108,7 +111,7 @@ const trees = {
       const query =
         `${
           process.env.REACT_APP_API_ROOT
-        }/api/trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
+        }/api/${getOrganization()}trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
           page * rowsPerPage
         }&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true` +
         `&filter[fields][planterId]=true&filter[where][active]=true` +
@@ -128,7 +131,7 @@ const trees = {
       })
     },
     async requestTreeCount(payload, rootState) {
-      Axios.get(`${process.env.REACT_APP_API_ROOT}/api/trees/count`, {
+      Axios.get(`${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count`, {
         headers: {
           'content-type': 'application/json',
           Authorization: session.token,
@@ -139,7 +142,7 @@ const trees = {
       })
     },
     async getTreeAsync(id) {
-      const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}`
+      const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`
       Axios.get(query, {
         headers: {
           'content-type': 'application/json',
@@ -174,7 +177,7 @@ const trees = {
       }
     },
     async markInactiveTree(id) {
-      const query = `${process.env.REACT_APP_API_ROOT}/api/trees/${id}/`
+      const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}/`
       const data = { active: false }
       Axios.patch(query, data, {
         headers: {

@@ -63,4 +63,4 @@ typings/
 # Cache used by TypeScript's incremental build
 *.tsbuildinfo
 
-src/datasources/treetracker.datasource.json
+src/datasources/treetracker*.datasource.json

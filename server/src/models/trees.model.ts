@@ -255,6 +255,14 @@ export class Trees extends Entity {
   })
   rejectionReason?: String;
 
+  @property({
+    type: Number,
+    required: false,
+    scale: 0,
+    postgresql: {"columnName":"planting_organization_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+  })
+  plantingOrganizationId?: Number;
+
 
   // Define well-known properties here
 

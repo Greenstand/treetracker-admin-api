@@ -357,8 +357,37 @@ var b = {
 
 ## How to contribute
 
+### For client
+
 Basically, we follow the React/Jest convention to build test, all test file are located at the same directory with the file to test, name convention: xxx.test.js , please at least make all the 'model' file to pass unit test, for client project, all model file at : /client/src/model/
 
 To run test:
 
 `npm test`
+
+### For server
+
+On server, we used a combination of JS and Typescript, and, because the Loopback would load services/controllers from the typescript output folder (dist), so it get tricky to test.
+
+For the goal of protecting the db, when running test, we will use a separate database. Please put the database datasource file on this location:
+
+```
+[project root dir]/server/src/datasources/treetrackerTest.datasource.json
+```
+
+To run test:
+
+```
+npm test
+```
+
+And also need to run a command to compile the Loopback files when files changed:
+
+```
+npm run watch
+```
+
+In this way, we can write the code and get the tests result immediately.
+
+NOTE when run tests, the files related to Loopback are loading from ./dist folder, that's because for Jest, it do not output compiled files totally.
+

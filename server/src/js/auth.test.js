@@ -20,7 +20,7 @@ const audit = {
 };
 Audit.mockImplementation(() => audit);
 
-describe('auth', () => {
+describe.skip('auth', () => {
   let app;
 
   it('Check the config', () => {
@@ -162,7 +162,7 @@ describe('auth', () => {
       token = response.body.token;
     });
 
-    it.only('audit(login) should be called', () => {
+    it('audit(login) should be called', () => {
       expect(audit.did).toHaveBeenCalledWith(
         expect.any(Number),
         Audit.TYPE.LOGIN,

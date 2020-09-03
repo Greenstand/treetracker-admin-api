@@ -1,9 +1,13 @@
-import { handleResponse, handleError } from "./apiUtils";
+import { 
+  handleResponse, 
+  handleError,
+  getOrganization,
+} from "./apiUtils";
 import {session} from "../models/auth";
 
 export default {
   getPlanter(id){
-    const query = `${process.env.REACT_APP_API_ROOT}/api/planter/${id}`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/${id}`;
     return fetch(query, {
       method: "GET",
       headers: { 
@@ -17,7 +21,7 @@ export default {
 
   getPlanters({ skip, rowsPerPage, orderBy = "id", order = "desc", filter }) {
     const query =
-      `${process.env.REACT_APP_API_ROOT}/api/planter?` +
+      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter?` +
       `filter[order]=${orderBy} ${order}&` +
       `filter[limit]=${rowsPerPage}&` +
       `filter[skip]=${skip}&` +
@@ -44,7 +48,7 @@ export default {
     filter,
   }){
     const query = 
-      `${process.env.REACT_APP_API_ROOT}/api/planter/count?${
+      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/count?${
         filter && filter.getBackloopString(false)
       }`
     return fetch(query,{

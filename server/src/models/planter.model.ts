@@ -79,6 +79,14 @@ export class Planter extends Entity {
   })
   personId?: Number;
 
+  @property({
+    type: Number,
+    required: false,
+    scale: 0,
+    postgresql: {"columnName":"organization_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+  })
+  organizationId?: Number;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
