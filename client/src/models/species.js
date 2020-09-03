@@ -80,12 +80,20 @@ const species = {
       }
     },
     /*
-     * to edit the specie
+     * to edit the species
      */
     async editSpecies(payload, state) {
       const { id, name, desc } = payload
       let editedSpecies = await api.editSpecies(id, name, desc)
       console.debug('edit old species:', editedSpecies)
+    },
+    /*
+     * to delete the species
+     */
+    async deleteSpecies(payload, state) {
+      const { id } = payload
+      let deletedSpecies = await api.deleteSpecies(id)
+      console.debug('delete outdated species:', deletedSpecies)
     },
   },
 }
