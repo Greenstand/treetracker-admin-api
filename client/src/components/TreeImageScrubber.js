@@ -722,9 +722,10 @@ function SidePanel(props) {
           }
 
         </Grid>
-        <Grid className={`${classes.sidePanelItem}`}>
-          <TextField placeholder='Note (optional)' ></TextField>
-        </Grid>
+        {/*Hidden until functionality is implemented. Issuer: https://github.com/Greenstand/treetracker-admin/issues/371*/}
+        {/*<Grid className={`${classes.sidePanelItem}`}>*/}
+        {/*  <TextField placeholder='Note (optional)' ></TextField>*/}
+        {/*</Grid>*/}
         <Grid className={`${classes.sidePanelItem}`}>
           <Button onClick={handleSubmit} color='primary' >SUBMIT</Button>
         </Grid>
