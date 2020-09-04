@@ -168,11 +168,18 @@ const Login = (props) => {
           setLoading(false)
         }
       } catch (e) {
-        console.error(e)
-        setErrorMessage(
-          'Could not log in. Please check your username and password or contact the admin.'
-        )
-        setLoading(false)
+        console.error("Undefined User error:", e)
+        if (e.response.status === 401) {
+          setErrorMessage(
+            `The user name: ${userName} does not exist.`
+          )
+          setLoading(false)
+        } else {
+          setErrorMessage(
+            'Could not log in. Please check your username and password or contact the admin.'
+          )
+          setLoading(false)
+        }
       }
     })()
     return false
