@@ -49,15 +49,13 @@ const verity = {
     }),
     unprocessedFilter: new FilterModel({
       approved: false,
-      rejected: false,
       active: true,
     }),
     verifiedFilter: new FilterModel({
       approved: true,
-      rejected: false,
       active: true,
 		}),
-    treeCount: 0,
+    treeCount: null,
     unprocessedTreeCount: null,
     verifiedTreeCount: null,
 	},
@@ -120,6 +118,7 @@ const verity = {
       };
     },
     setVerifiedTreeCount(state, verifiedTreeCount) {
+      window.api = api;
       return {
           ...state,
           verifiedTreeCount,

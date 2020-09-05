@@ -1,4 +1,4 @@
-import withData from './common/withData';
+
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
@@ -92,4 +92,4 @@ function DashStat(props) {
   )
 }
 
-export default withData(withStyles(style)(DashStat));
+export default withStyles(style)(DashStat);

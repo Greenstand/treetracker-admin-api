@@ -9,12 +9,12 @@ export default function withData(Component) {
    */
   return function (props) {
     const { fetch, data, ...rest} = props;
-    const [needsFetch, setNeedsFetched] = React.useState(true);
-    if (!data && needsFetch) {
+    const [needsFetch, setNeedsFetched] = React.useState(data === null);
+    if (needsFetch) {
       fetch();
       setNeedsFetched(false);
     }
 
-    return <Component {...rest} data={data}/>
+    return <Component data={data} {...rest}/>
   }
 }

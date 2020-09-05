@@ -8,7 +8,7 @@ import FilterModel from '../models/Filter'
 const trees = {
   state: {
     data: [],
-    treeCount: 0,
+    treeCount: null,
     selected: [],
     tree: {},
     numSelected: 0,

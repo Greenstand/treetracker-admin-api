@@ -1,15 +1,16 @@
 import React from 'react'
+
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
+
 import Menu, { MENU_WIDTH } from './common/Menu'
-import DashStat from './DashStat';
-import {connect} from 'react-redux';
-import NatureOutlinedIcon from '@material-ui/icons/NatureOutlined';
-import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
-import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
-import PeopleOutlineOutlinedIcon from '@material-ui/icons/PeopleOutlineOutlined';
-import theme from './common/theme';
+import {
+  DashStatPlanterCount,
+  DashStatTotalTrees,
+  DashStatUnprocessedTrees,
+  DashStatVerifiedTrees
+} from './DashStat.container';
 
 const logo = (
   <svg
@@ -148,44 +149,14 @@ function Home(props) {
       </div>
       <div className={classes.rightBox}>
         <Grid container spacing={5} className={classes.welcomeBox} justify="center">
-          <DashStat data={props.totalTrees}
-            fetch={props.getTreeCount}
-            color={theme.palette.stats.green}
-            Icon={NatureOutlinedIcon}
-            label={'Total Trees'} />
-          <DashStat data={props.unprocessedTreeCount}
-            fetch={props.getUnprocessedTreeCount}
-            color={theme.palette.stats.red}
-            Icon={LocalOfferOutlinedIcon}
-            label={'Unprocessed Trees'} />
-          <DashStat data={props.verifiedTreeCount}
-            fetch={props.getVerifiedTreeCount}
-            color={theme.palette.stats.orange}
-            Icon={CheckCircleOutlineOutlinedIcon}
-            label={'Verified Trees'} />
-          <DashStat data={props.planterCount}
-            fetch={props.getPlanterCount}
-            color={theme.palette.stats.orange}
-            Icon={PeopleOutlineOutlinedIcon}
-            label={'Users'} />
+          <DashStatTotalTrees />
+          <DashStatUnprocessedTrees />
+          <DashStatVerifiedTrees />
+          <DashStatPlanterCount />
         </Grid>
       </div>
     </div>
   )
 }
 
-
-export default connect(
-  state => ({
-    unprocessedTreeCount: state.verity.unprocessedTreeCount || 0,
-    verifiedTreeCount: state.verity.verifiedTreeCount || 0,
-    totalTrees: state.trees.treeCount,
-    planterCount: state.planters.count
-  }),
-  dispatch => ({
-    getUnprocessedTreeCount: dispatch.verity.getUnprocessedTreeCount,
-    getVerifiedTreeCount: dispatch.verity.getVerifiedTreeCount,
-    getTreeCount: dispatch.trees.getTreeCount,
-    getPlanterCount: dispatch.planters.count,
-  })
-)(withStyles(style)(Home));
+export default withStyles(style)(Home);
