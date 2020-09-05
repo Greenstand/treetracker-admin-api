@@ -202,7 +202,8 @@ function Account(props) {
     load()
   }, [])
 
-  const roles = user.role.map(r => {
+  const freshUser = users.find(el => el.userName === user.userName) || user
+  const roles = freshUser.role.map(r => {
     for (let i = 0; i < permissions.length; i++){
       if (permissions[i].id === r) {
         return (
