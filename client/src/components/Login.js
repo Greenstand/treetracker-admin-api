@@ -169,9 +169,9 @@ const Login = (props) => {
         }
       } catch (e) {
         console.error("Undefined User error:", e)
-        if (e.response.status === 401) {
+        if (e.response.data.errorMessage) {
           setErrorMessage(
-            `The user name: ${userName} does not exist.`
+            e.response.data.errorMessage
           )
           setLoading(false)
         } else {
