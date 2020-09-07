@@ -50,7 +50,8 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "cypress": "DEBUG=cypress-react-unit-test cypress open"
+    "cypress": "DEBUG=cypress-react-unit-test cypress open", 
+    "lint": "eslint ."
   },
   "browserslist": [
     ">0.2%",
