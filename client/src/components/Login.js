@@ -265,7 +265,7 @@ const Login = (props) => {
             variant="contained"
             color="primary"
             //Disable button if sending request, username or password are empty
-            disabled={loading || (!userName && usernameBlurred) || (!password && passwordBlurred)}
+            disabled={loading || !userName || !password}
             className={submitClassname}
           >
             <Typography className={classes.submitText}>LOG IN</Typography>
