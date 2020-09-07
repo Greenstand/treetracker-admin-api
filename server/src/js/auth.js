@@ -118,9 +118,7 @@ router.post('/login', async function login(req, res, next) {
 
     //Check if user exists
     if (user_rows.rowCount === 0) {
-      let error = new Error(`This user name: ${userName} does not exist in database.`)
-      error.statusCode = 401
-      next(error)
+      return res.status(401).json({errorMessage: `The username: ${userName} does not exist.`})
     }
 
     const user_entity = user_rows.rows[0];
