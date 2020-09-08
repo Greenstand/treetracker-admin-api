@@ -72,7 +72,7 @@ function Filter(props) {
 
   useEffect(() => {
     props.tagsDispatch.getTags(tagSearchString)
-  }, [tagSearchString])
+  }, [tagSearchString, props.tagsDispatch])
 
   const handleDateStartChange = date => {
     setDateStart(date);

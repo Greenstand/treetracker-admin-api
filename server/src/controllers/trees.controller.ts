@@ -47,12 +47,12 @@ export class TreesController {
         let query = this.buildFilterQuery(
           `SELECT COUNT(*) FROM trees`,
           `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
-          `tree_tag.tag_id=${where.tagId} `,
+          `WHERE tree_tag.tag_id=${where.tagId} `,
           where,
         );
   
-        return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(count => {
-          return Array.isArray(count) ? count[0] : count;
+        return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(res => {
+          return (res && res[0]) || {count:0};
         });
       } catch(e) {
         console.log(e);
@@ -86,9 +86,9 @@ export class TreesController {
         const connector = this.getConnector()
         if (connector) {
           let query = this.buildFilterQuery(
-            `SELECT ${connector.buildColumnNames('Trees', filter)}`,
+            `SELECT ${connector.buildColumnNames('Trees', filter)} from trees`,
             `LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id`,
-            `tree_tag.tag_id=${filter.where.tagId} `,
+            `WHERE tree_tag.tag_id=${filter.where.tagId} `,
             filter.where,
           );
           return <Promise<Trees[]>> await this.treesRepository.execute(query.sql, query.params);
@@ -202,7 +202,7 @@ export class TreesController {
           let whereObjClause = connector._buildWhere('Trees', safeWhere);
     
           if (whereObjClause && whereObjClause.sql) {
-            query.sql += `${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql}`
+            query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql}`
             query.params = whereObjClause.params
           }
     
