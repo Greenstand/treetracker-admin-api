@@ -114,7 +114,12 @@ router.post('/login', async function login(req, res, next) {
     //find the user to get the salt, validate if hashed password matches
     let user_rows = await pool.query(
       `select * from admin_user where user_name = '${userName}'`,
-    ); /*TODO check if user name exists*/
+    );
+
+    //Check if user exists
+    if (user_rows.rowCount === 0) {
+      return res.status(401).json({errorMessage: `The username: ${userName} does not exist.`})
+    }
 
     const user_entity = user_rows.rows[0];
     expect(user_entity.salt).toBeDefined();

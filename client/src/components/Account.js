@@ -174,7 +174,7 @@ function Account(props) {
 
   const [permissions, setPermissions] = React.useState([])
   const [users, setUsers] = React.useState([])
- 
+
   //loading permission from server
   async function load() {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
@@ -201,6 +201,19 @@ function Account(props) {
   React.useEffect(() => {
     load()
   }, [])
+
+  const freshUser = users.find(el => el.userName === user.userName) || user
+  const roles = freshUser.role.map(r => {
+    for (let i = 0; i < permissions.length; i++){
+      if (permissions[i].id === r) {
+        return (
+          <Grid key={i}>
+            {permissions[i].roleName}
+          </Grid>
+        )
+      }
+    }
+  })
 
   return (
     <>
@@ -239,18 +252,7 @@ function Account(props) {
                 <Grid item>
                   <Typography className={classes.title}>Role</Typography>
                   <Typography className={classes.item}>
-                    {users.map((user) => ( 
-                    user.role.map((r, i) => (
-                      <Grid key={i}>
-                        {
-                          permissions.reduce(
-                            (a, c) => a || (c.id === r ? c : undefined),
-                            undefined
-                          ).roleName
-                        }
-                      </Grid>
-                      ))
-                  ))}
+                    {roles}
                   </Typography>
                 </Grid>
                 <Grid item>
