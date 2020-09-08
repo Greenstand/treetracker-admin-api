@@ -276,7 +276,7 @@ const TreeImageScrubber = (props) => {
   async function handlePlanterDetail(e, tree) {
     e.preventDefault();
     e.stopPropagation();
-    const planter = props.plantersState.planters.find(x => x.id === tree.planterId);
+    let planter = props.plantersState.planters.find(x => x.id === tree.planterId);
     if (!planter) {
       planter = await props.plantersDispatch.getPlanter({ id: tree.planterId });
     }
@@ -343,7 +343,7 @@ const TreeImageScrubber = (props) => {
   const treeImageItems = treeImages.concat(placeholderImages)
     .map(tree => {
       return (
-        <Grid item xs={12} sm={6} md={4} xl={3}>
+        <Grid item xs={12} sm={6} md={4} xl={3} key={tree.id}>
           <div
             className={clsx(
               classes.cardWrapper,
@@ -351,7 +351,7 @@ const TreeImageScrubber = (props) => {
                 ? classes.cardSelected
                 : undefined,
               tree.placeholder && classes.placeholderCard
-            )} key={tree.id}
+            )}
           >
             {isTreeSelected(tree.id) &&
               (<Paper
@@ -429,7 +429,7 @@ const TreeImageScrubber = (props) => {
             <Navbar
               className={classes.navbar}
               buttons={[
-                <IconButton onClick={handleFilterClick}>
+                <IconButton onClick={handleFilterClick} key={1}>
                   <IconFilter />
                 </IconButton>
               ]}

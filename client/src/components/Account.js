@@ -210,7 +210,7 @@ function Account(props) {
           {permissions[i].roleName}
         </Grid>
       )
-    })
+    }, undefined)
   })
 
   return (
@@ -259,7 +259,7 @@ function Account(props) {
                     {getDateTimeStringLocale(user.createdAt)}
                   </Typography>
                 </Grid>
-                <Grid item xs="8">
+                <Grid item xs={8}>
                   <Grid container justify="space-between">
                     <Grid item>
                       <Typography className={classes.title}>Password</Typography>

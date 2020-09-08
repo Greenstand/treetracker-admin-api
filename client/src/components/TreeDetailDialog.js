@@ -45,7 +45,7 @@ function TreeDetailDialog(props) {
 
   useEffect(() => {
     props.getTreeDetail(props.tree.id)
-  }, [props.tree])
+  }, [props, props.tree])
 
   /*
    * Render the most complete tree detail we have
@@ -185,7 +185,7 @@ function TreeDetailDialog(props) {
           <Grid item>
             <img alt={`Tree ${renderTree}`} style={{maxWidth: '100%'}} src={renderTree.imageUrl} />
           </Grid>
-          <Grid item style={{width: '300px'}} spacing={2}>
+          <Grid container item style={{width: '300px'}} spacing={2}>
             <Grid container direction='row' spacing={4}>
               <Tags tree={renderTree} species={props.treeDetail.species} treeTags={props.treeDetail.tags}/>
             </Grid>

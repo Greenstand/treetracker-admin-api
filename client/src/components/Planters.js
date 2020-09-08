@@ -144,7 +144,7 @@ const Planters = (props) => {
       pageNumber: 0,
       filter: props.plantersState.filter,
     });
-  }, [props.plantersDispatch, props.plantersState.pageSize, props.plantersState.filter])
+  }, [props.plantersDispatch, props.plantersState.pageSize])
 
   useEffect(() => {
     props.plantersDispatch.count({
@@ -222,7 +222,7 @@ const Planters = (props) => {
         <Grid item>
           <Navbar
             buttons={[
-              <IconButton onClick={handleFilterClick}>
+              <IconButton onClick={handleFilterClick} key={1}>
                 <IconFilter />
               </IconButton>
             ]}

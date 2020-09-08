@@ -108,7 +108,7 @@ const SpeciesTable = (props) => {
   React.useEffect(() => {
     props.speciesDispatch.loadSpeciesList()
     console.log(props.speciesState.speciesList)
-  }, [props.speciesDispatch, props.speciesState.speciesList])
+  }, [props.speciesDispatch])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -134,25 +134,23 @@ const SpeciesTable = (props) => {
       ? props.speciesState.speciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       : props.speciesState.speciesList
     ).map((species) => (
-      <>
-        <TableRow key={species.id} role="listitem">
-          <TableCell component="th" scope="row">
-            {species.id}
-          </TableCell>
-          <TableCell component="th" scope="row">
-            {species.name}
-          </TableCell>
-          <TableCell>{species.desc}</TableCell>
-          <TableCell>
-            <IconButton title="edit" onClick={() => handleEdit(species)}>
-              <Edit />
-            </IconButton>
-            <IconButton title="delete" onClick={() => openDeleteDialog(species)}>
-              <Delete />
-            </IconButton>
-          </TableCell>
-        </TableRow>
-      </>
+      <TableRow key={species.id} role="listitem">
+        <TableCell component="th" scope="row">
+          {species.id}
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {species.name}
+        </TableCell>
+        <TableCell>{species.desc}</TableCell>
+        <TableCell>
+          <IconButton title="edit" onClick={() => handleEdit(species)}>
+            <Edit />
+          </IconButton>
+          <IconButton title="delete" onClick={() => openDeleteDialog(species)}>
+            <Delete />
+          </IconButton>
+        </TableCell>
+      </TableRow>
     ))
   }
 
@@ -181,7 +179,7 @@ const SpeciesTable = (props) => {
         </Grid>
         <Grid item xs={9}>
           <Grid container className={classes.rightBox}>
-            <Grid item xs="12">
+            <Grid item xs={12}>
               <Grid container justify="space-between" className={classes.titleBox}>
                 <Grid item>
                   <Grid container>

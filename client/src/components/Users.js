@@ -439,7 +439,7 @@ function Users(props) {
         </Grid>
         <Grid item xs={9}>
           <Grid container className={classes.rightBox}>
-            <Grid item xs="12">
+            <Grid item xs={12}>
               <Grid container justify="space-between" className={classes.titleBox}>
                 <Grid item>
                   <Grid container>
@@ -658,10 +658,10 @@ function Users(props) {
         </DialogContentText>
         */}
           <Grid container className={classes.noteBox}>
-            <Grid item xs="1">
+            <Grid item xs={1}>
               <EmojiObjects />
             </Grid>
-            <Grid item xs="11">
+            <Grid item xs={11}>
               <Typography className={classes.note}>
                 Please be careful, once you generate a new password, then the current password for
                 this user will be dedicated.
@@ -717,7 +717,7 @@ function Users(props) {
       >
         <DialogTitle id="form-dialog-title">Delete User</DialogTitle>
         <DialogContent>
-          <Grid item xs="11">
+          <Grid item xs={11}>
             <Typography className={classes.note}>
               {`Are you sure you want to delete user \
               ${(userDelete && userDelete.userName) || ''}?`}

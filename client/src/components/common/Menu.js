@@ -173,9 +173,8 @@ export default function GSMenu(props) {
       </Box>
       <Box height={20} />
       {menus.map((item, i) => (
-          <Link className={classes.linkItemText} to={`${item.linkTo}`}>
+          <Link className={classes.linkItemText} to={`${item.linkTo}`} key={i}>
             <MenuItem
-              key={i}
               className={classes.menuItem}
               selected={props.active === item.name}
               disabled={item.disabled}
