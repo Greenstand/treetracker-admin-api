@@ -100,7 +100,6 @@ const SpeciesTable = (props) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [isEdit, setIsEdit] = React.useState(false)
   const [speciesEdit, setSpeciesEdit] = React.useState(undefined)
-  const [finishEdit, setFinishEdit] = React.useState(true)
   const [openDelete, setOpenDelete] = React.useState(false)
 
   const emptyRows =
@@ -109,7 +108,7 @@ const SpeciesTable = (props) => {
   React.useEffect(() => {
     props.speciesDispatch.loadSpeciesList()
     console.log(props.speciesState.speciesList)
-  }, [])
+  }, [props.speciesDispatch, props.speciesState.speciesList])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -236,7 +235,6 @@ const SpeciesTable = (props) => {
         setIsEdit={setIsEdit}
         speciesEdit={speciesEdit}
         setSpeciesEdit={setSpeciesEdit}
-        setFinishEdit={setFinishEdit}
         styles={{ ...classes }}
         editSpecies={props.speciesDispatch.editSpecies}
         loadSpeciesList={props.speciesDispatch.loadSpeciesList}
@@ -258,7 +256,6 @@ const EditModal = ({
   setIsEdit,
   speciesEdit,
   setSpeciesEdit,
-  setFinishEdit,
   styles,
   loadSpeciesList,
   editSpecies,
@@ -282,7 +279,6 @@ const EditModal = ({
     setIsEdit(false)
     await editSpecies({ id: speciesEdit.id, name: speciesEdit.name, desc: speciesEdit.desc })
     loadSpeciesList()
-    setFinishEdit(false)
     setSpeciesEdit(undefined)
   }
 

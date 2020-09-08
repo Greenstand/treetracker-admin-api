@@ -14,10 +14,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import HomeIcon from '@material-ui/icons/Home'
 import ListItemText from '@material-ui/core/ListItemText'
 import Box from '@material-ui/core/Box'
-import { useTheme } from '@material-ui/styles'
 import IconLogo from '../IconLogo'
 import { AppContext } from '../Context'
-import { PERMISSIONS, hasPermission } from '../../models/auth'
+import { hasPermission } from '../../models/auth'
 import { Link } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 
@@ -78,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function GSMenu(props) {
   const classes = useStyles()
-  const theme = useTheme()
   const appContext = React.useContext(AppContext)
   const { user } = appContext
   console.log("user:", user);

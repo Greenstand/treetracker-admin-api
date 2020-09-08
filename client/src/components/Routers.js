@@ -9,9 +9,7 @@ import Account from './Account'
 import Home from './Home'
 import Users from './Users'
 import SpeciesMgt from './SpeciesMgt'
-import { AppProvider, AppContext } from './Context'
 import PrivateRoute from './PrivateRoute'
-import TreeTest from './TreeTest'
 
 export default function Routers() {
   const refContainer = React.useRef()

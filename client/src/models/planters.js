@@ -1,11 +1,8 @@
 /*
  * The model for planter page
  */
-import * as loglevel from "loglevel";
 import api from "../api/planters";
 import FilterPlanter from "./FilterPlanter";
-
-const log = loglevel.getLogger("../models/planters");
 
 const planters = {
   state: {

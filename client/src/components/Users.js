@@ -111,17 +111,6 @@ function intersection(a, b) {
   return a.filter((value) => b.some((bb) => bb.id === value.id))
 }
 
-const permissions = [
-  {
-    id: 0,
-    name: 'admin',
-  },
-  {
-    id: 1,
-    name: 'Tree Auditor',
-  },
-]
-
 function Users(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
@@ -174,7 +163,7 @@ function Users(props) {
   }
 
   async function handleDeleteConfirm() {
-    if (userDelete.id == user.id) {
+    if (userDelete.id === user.id) {
       setErrorMessage('Cannot delete active user.')
       return
     }
@@ -375,12 +364,6 @@ function Users(props) {
     setUserEditing({ ...userEditing, email: e.target.value })
   }
 
-  function handleActiveChange(e) {
-    //convert to boolean
-    let isTrueSet = e.target.value === 'true'
-    setUserEditing({ ...userEditing, active: isTrueSet })
-  }
-
   function handleAddUser() {
     setUserEditing({})
     setLeft(permissions)
@@ -420,7 +403,7 @@ function Users(props) {
         <TableCell component="th" scope="row">
           {user.firstName} {user.lastName}
         </TableCell>
-        <TableCell>{user.status}</TableCell>
+        <TableCell>{user.active ? 'active' : 'inactive'}</TableCell>
         <TableCell>
           {user.role.map((r, i) => (
             <Grid key={i}>
@@ -435,7 +418,7 @@ function Users(props) {
           <IconButton title="edit" onClick={() => handleEdit(user)}>
             <Edit />
           </IconButton>
-          <IconButton>
+          <IconButton title="delete" onClick={() => handleDelete(user)}>
             <Delete />
           </IconButton>
           <IconButton title="generate password" onClick={() => handleGeneratePassword(user)}>

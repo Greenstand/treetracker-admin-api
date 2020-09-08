@@ -185,7 +185,7 @@ const TreeImageScrubber = (props) => {
   useEffect(() => {
     log.debug('mounted');
     props.verityDispatch.loadTreeImages();
-  }, []);
+  }, [props.verityDispatch]);
 
   /* to display progress */
   useEffect(() => {
@@ -195,12 +195,12 @@ const TreeImageScrubber = (props) => {
   /* To update tree count */
   useEffect(() => {
     props.verityDispatch.getTreeCount();
-  }, [props.verityState.treeImages]);
+  }, [props.verityDispatch, props.verityState.treeImages]);
 
   /* load more trees when the page or page size changes */
   useEffect(() => {
     props.verityDispatch.loadTreeImages();
-  }, [props.verityState.pageSize, props.verityState.currentPage]);
+  }, [props.verityDispatch, props.verityState.pageSize, props.verityState.currentPage]);
 
   function handleTreeClick(e, treeId) {
     e.stopPropagation();
@@ -250,7 +250,7 @@ const TreeImageScrubber = (props) => {
         return
       } else {
         //create new species
-        const species = await props.speciesDispatch.createSpecies()
+        await props.speciesDispatch.createSpecies()
       }
     }
     const speciesId = await props.speciesDispatch.getSpeciesId()
@@ -276,7 +276,7 @@ const TreeImageScrubber = (props) => {
   async function handlePlanterDetail(e, tree) {
     e.preventDefault();
     e.stopPropagation();
-    var planter = props.plantersState.planters.find(x => x.id == tree.planterId);
+    const planter = props.plantersState.planters.find(x => x.id === tree.planterId);
     if (!planter) {
       planter = await props.plantersDispatch.getPlanter({ id: tree.planterId });
     }
@@ -535,7 +535,7 @@ const TreeImageScrubber = (props) => {
                 color='inherit'
                 size='small'
                 onClick={async () => {
-                  const result = await props.verityDispatch.undoAll();
+                  await props.verityDispatch.undoAll();
                   log.log('finished');
                 }}
               >

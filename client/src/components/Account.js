@@ -203,16 +203,14 @@ function Account(props) {
   }, [])
 
   const freshUser = users.find(el => el.userName === user.userName) || user
-  const roles = freshUser.role.map(r => {
-    for (let i = 0; i < permissions.length; i++){
-      if (permissions[i].id === r) {
-        return (
-          <Grid key={i}>
-            {permissions[i].roleName}
-          </Grid>
-        )
-      }
-    }
+  const roles = freshUser.role.map((r,i) => {
+    return permissions.reduce((el, p) => {
+      return el || (p && p.id === r &&
+        <Grid key={i}>
+          {permissions[i].roleName}
+        </Grid>
+      )
+    })
   })
 
   return (
