@@ -29,14 +29,17 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - run: npm ci
+    - name: npm clean install
+      run: npm ci
       working-directory: ${{env.project-directory}}
-    - run: npm lint
+    - name: run ESLint
+      run: npm run lint
       working-directory: ${{env.project-directory}}
       continue-on-error: true #Prevents job from failing
-    - run: npm run build
+    - name: build client project
+      run: npm run build
       working-directory: ${{env.project-directory}}  
-      continue-on-error: true
-    - run: npm test
-      working-directory: ${{env.project-directory}}
       continue-on-error: true 
+    - name: run React tests
+      run: npm test
+      working-directory: ${{env.project-directory}}

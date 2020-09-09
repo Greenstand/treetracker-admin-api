@@ -14,7 +14,7 @@
     "build": "lb-tsc --allowJs -d false",
     "build:watch": "lb-tsc --watch",
     "clean": "lb-clean dist *.tsbuildinfo",
-    "lint": "npm run prettier:check && npm run eslint",
+    "lint": "npm run eslint",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
     "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
     "prettier:check": "npm run prettier:cli -- -l",

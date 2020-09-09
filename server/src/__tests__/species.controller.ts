@@ -19,7 +19,7 @@ describe('Species Controller Integration Tests', () => {
 
     describe('Count number of species', () => {
         it('return total species', async () => {
-            const ExpectResult: number = 1;
+            const ExpectResult: number = 0;
             const controller = new SpeciesController(new SpeciesRepository(datasource)); 
             const CountSpecies = (await controller.count()).count; 
             expect(CountSpecies).equal(ExpectResult);

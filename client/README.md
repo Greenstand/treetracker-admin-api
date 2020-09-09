@@ -8,7 +8,7 @@ Create-react-app using [rematch](http://rematch.gitbooks.io/), and [material ui]
 
 ### Install
 Clone this repo, then inside it's directory:
-`npm intall`
+`npm install`
 
 
 ### Start
