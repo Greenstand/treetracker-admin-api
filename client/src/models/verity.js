@@ -47,16 +47,20 @@ const verity = {
 			approved: false,
 			active: true,
     }),
-    unprocessedFilter: new FilterModel({
-      approved: false,
-      active: true,
-    }),
     verifiedFilter: new FilterModel({
       approved: true,
       active: true,
-		}),
+    }),
+    rejectedFilter: new FilterModel({
+      approved: false,
+      active: false
+    }),
+
+    invalidateTreeCount: true,
+    invalidateVerifiedCount: true,
+    invalidateRejectedCount: true,
     treeCount: null,
-    unprocessedTreeCount: null,
+    rejectedTreeCount: null,
     verifiedTreeCount: null,
 	},
 	reducers: {
@@ -106,34 +110,59 @@ const verity = {
 			}
 		},
     setTreeCount(state, treeCount) {
-        return {
-            ...state,
-            treeCount,
-        };
+      return {
+          ...state,
+          treeCount,
+          invalidateTreeCount: false,
+      };
     },
-    setUnprocessedTreeCount(state, unprocessedTreeCount) {
+    invalidateTreeCount(state, payload) {
+      return {
+        ...state,
+        invalidateTreeCount: payload,
+      }
+    },
+    setRejectedTreeCount(state, unprocessedTreeCount) {
       return {
           ...state,
           unprocessedTreeCount,
-      };
+          invalidateRejectedCount: false,
+      }
+    },
+    invalidateRejectedCount(state, payload) {
+      return {
+        ...state,
+        invalidateRejectedCount: payload,
+      }
     },
     setVerifiedTreeCount(state, verifiedTreeCount) {
       window.api = api;
       return {
           ...state,
           verifiedTreeCount,
+          invalidateVerifiedCount: false,
       };
+    },
+    invalidateVerifiedCount(state, payload) {
+      return {
+        ...state,
+        invalidateVerifiedCount: payload,
+      }
     },
 		setApproveAllComplete(state, approveAllComplete){
 			return {
 				...state,
-				approveAllComplete,
+        approveAllComplete,
+        invalidateTreeCount: true,
+        invalidateVerifiedCount: true,
 			}
 		},
 		setRejectAllComplete(state, rejectAllComplete){
 			return {
 				...state,
 				rejectAllComplete,
+        invalidateTreeCount: true,
+        invalidateRejectedCount: true,
 			}
 		},
     /*
@@ -204,9 +233,12 @@ const verity = {
 				...state,
 				treeImages: [],
 				currentPage: 0,
-        treeCount: 0,
+        treeCount: null,
         verifiedTreeCount: null,
-        unprocessedTreeCount: null
+        unprocessedTreeCount: null,
+        invalidateTreeCount: true,
+        invalidateVerifiedCount: true,
+        invalidateRejectedCount: true,
 			}
 		},
 		/*
@@ -236,7 +268,7 @@ const verity = {
 		 */
 		async approveTreeImage(id){
 			await api.approveTreeImage(id)
-			this.approvedTreeImage(id)
+      this.approvedTreeImage(id)
 			return true
 		},
 		/*
@@ -245,7 +277,7 @@ const verity = {
 		 */
 		async rejectTreeImage(id){
 			await api.rejectTreeImage(id)
-			this.rejectedTreeImage(id)
+      this.rejectedTreeImage(id)
 			return true
 		},
     /*
@@ -368,7 +400,11 @@ const verity = {
 			//finished, set status flags
 			this.setLoading(false);
 			this.setApproveAllProcessing(false);
-			this.setRejectAllProcessing(false);
+      this.setRejectAllProcessing(false);
+      this.invalidateVerifiedCount(true)
+      this.invalidateTreeCount(true)
+      this.invalidateRejectedCount(true)
+
 			//reset
 			this.setApproveAllComplete(0);
 			this.resetSelection();
@@ -426,6 +462,9 @@ const verity = {
 			//finished, set status flags
 			this.setLoading(false);
 			this.setApproveAllProcessing(false);
+      this.invalidateRejectedCount(true);
+      this.invalidateTreeCount(true);
+      this.invalidateVerifiedCount(true);
 			//reset
 			this.setApproveAllComplete(0);
 			this.resetSelection();
@@ -467,7 +506,10 @@ const verity = {
 			this.setRejectAllProcessing(false);
 			//reset
 			this.setRejectAllComplete(0);
-			this.setApproveAllComplete(0);
+      this.setApproveAllComplete(0);
+      this.invalidateRejectedCount(true);
+      this.invalidateTreeCount(true);
+      this.invalidateVerifiedCount(true);
 			this.resetSelection();
 			return true;
 			//}}}
@@ -488,17 +530,19 @@ const verity = {
      * gets and sets count for unverified trees
      */
     async getTreeCount(payload, state) {
-        const result = await api.getTreeCount(state.verity.filter)
-        this.setTreeCount(result.count)
-        return true
+      this.invalidateTreeCount(false)
+      const result = await api.getTreeCount(state.verity.filter)
+      this.setTreeCount(result.count)
+      return true
     },
 
     /*
      * gets and sets count for trees with no tag data (entirely unprocessed)
      */
-    async getUnprocessedTreeCount(payload, state) {
-      const result = await api.getTreeCount(state.verity.unprocessedFilter)
-      this.setUnprocessedTreeCount(result.count)
+    async getRejectedTreeCount(payload, state) {
+      this.invalidateRejectedCount(false)
+      const result = await api.getTreeCount(state.verity.rejectedFilter)
+      this.setRejectedTreeCount(result.count)
       return true
     },
 
@@ -506,6 +550,7 @@ const verity = {
      * gets and sets count for trees that are active and approved
      */
     async getVerifiedTreeCount(payload, state) {
+      this.invalidateVerifiedCount(false)
       const result = await api.getTreeCount(state.verity.verifiedFilter)
       this.setVerifiedTreeCount(result.count)
       return true

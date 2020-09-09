@@ -12,58 +12,58 @@ import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined'
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined'
 import PeopleOutlineOutlinedIcon from '@material-ui/icons/PeopleOutlineOutlined'
 
-const DashStatWithData = withData(DashStat);
-
 export const DashStatTotalTrees = compose(
-  (El) => ((props) => (<El
-    color={theme.palette.stats.green}
-    Icon={NatureOutlinedIcon}
-    label={'Total Trees'} {...props} />)),
   connect(
     state => ({
       data: state.trees.treeCount !== null ? countToLocaleString(state.trees.treeCount) : null,
+      needsRefresh: state.trees.invalidateTreeCount
     }),
     dispatch => ({
       fetch: dispatch.trees.getTreeCount,
     }),
   ),
-)(DashStatWithData);
+  withData,
+  (El) => ((props) => (<El
+    color={theme.palette.stats.green}
+    Icon={NatureOutlinedIcon}
+    label={'Total Trees'} {...props} />)),
+)(DashStat);
 
 export const DashStatUnprocessedTrees = compose(
+  connect(
+    state => ({
+      data: state.verity.treeCount !== null ? countToLocaleString(state.verity.treeCount) : null,
+      needsRefresh: state.verity.invalidateTreeCount
+    }),
+    dispatch => ({
+      fetch: dispatch.verity.getTreeCount,
+    })
+  ),
+  withData,
   (El) => ((props) => (<El
     color={theme.palette.stats.red}
     Icon={LocalOfferOutlinedIcon}
     label={'Untagged Trees'} {...props} />)),
-  connect(
-    state => ({
-      data: state.verity.unprocessedTreeCount !== null ? countToLocaleString(state.verity.unprocessedTreeCount) : null
-    }),
-    dispatch => ({
-      fetch: dispatch.verity.getUnprocessedTreeCount,
-    })
-  ),
-)(DashStatWithData);
+)(DashStat);
 
 export const DashStatVerifiedTrees = compose(
-  (El) => ((props) => (<El
-    color={theme.palette.stats.orange}
-    Icon={CheckCircleOutlineOutlinedIcon}
-    label={'Verified Trees'} {...props} />)),
   connect(
     state => ({
-      data: state.verity.verifiedTreeCount !== null ? countToLocaleString(state.verity.verifiedTreeCount) : null
+      data: state.verity.verifiedTreeCount !== null ? countToLocaleString(state.verity.verifiedTreeCount) : null,
+      needsRefresh: state.verity.invalidateVerifiedCount
     }),
     dispatch => ({
       fetch: dispatch.verity.getVerifiedTreeCount,
     })
   ),
-)(DashStatWithData);
-
-export const DashStatPlanterCount = compose(
+  withData,
   (El) => ((props) => (<El
     color={theme.palette.stats.orange}
-    Icon={PeopleOutlineOutlinedIcon}
-    label={'Users'} {...props} />)),
+    Icon={CheckCircleOutlineOutlinedIcon}
+    label={'Verified Trees'} {...props} />)),
+)(DashStat);
+
+export const DashStatPlanterCount = compose(
   connect(
     state => ({
       data: state.planters.count !== null ? countToLocaleString(state.planters.count) : null
@@ -72,4 +72,9 @@ export const DashStatPlanterCount = compose(
       fetch: dispatch.planters.count
     })
   ),
-)(DashStatWithData);
+  withData,
+  (El) => ((props) => (<El
+    color={theme.palette.stats.orange}
+    Icon={PeopleOutlineOutlinedIcon}
+    label={'Users'} {...props} />)),
+)(DashStat);

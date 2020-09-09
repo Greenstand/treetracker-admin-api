@@ -1,4 +1,4 @@
-import { 
+import {
   getOrganization,
 } from "../api/apiUtils";
 import Axios from 'axios'
@@ -9,6 +9,7 @@ const trees = {
   state: {
     data: [],
     treeCount: null,
+    invalidateTreeCount: true,
     selected: [],
     tree: {},
     numSelected: 0,
@@ -38,7 +39,10 @@ const trees = {
       }
     },
     receiveTreeCount(state, payload) {
-      return { ...state, treeCount: payload.count }
+      return { ...state, treeCount: payload.count, invalidateTreeCount: false }
+    },
+    invalidateTreeCount(state, payload) {
+      return { ...state, invalidateTreeCount: payload }
     },
     receiveLocation(state, payload, { id, address }) {
       if (address === 'cached') {
@@ -89,25 +93,26 @@ const trees = {
     },
 
     async getTreeCount(payload, state) {
-       // Destruct payload and fill in any gaps from rootState.trees
-       const { filter } = { ...state.trees, ...payload }
+      // Destruct payload and fill in any gaps from rootState.trees
+      const { filter } = { ...state.trees, ...payload }
 
-       /*
-        * first load the page count
-        */
+      /*
+       * first load the page count
+       */
 
-       let response = await Axios.get(
-         `${process.env.REACT_APP_API_ROOT}/api/trees/count?` +
-           (filter ? filter.getBackloopString(false) : ''),
-         {
-           headers: {
-             'content-type': 'application/json',
-             Authorization: session.token,
-           },
-         }
-       )
-       const data = response.data
-       this.receiveTreeCount(data)
+      this.invalidateTreeCount(false);
+      let response = await Axios.get(
+        `${process.env.REACT_APP_API_ROOT}/api/trees/count?` +
+          (filter ? filter.getBackloopString(false) : ''),
+        {
+          headers: {
+            'content-type': 'application/json',
+            Authorization: session.token,
+          },
+        }
+      )
+      const data = response.data
+      this.receiveTreeCount(data)
     },
 
     async getTreesAsync(payload, rootState) {
@@ -212,6 +217,7 @@ const trees = {
         },
       }).then((response) => {
         this.receiveStatus(response.status)
+        this.invalidateTreeCount(true);
       })
     },
     async showTree(id) {},
