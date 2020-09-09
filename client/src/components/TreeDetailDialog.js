@@ -44,8 +44,8 @@ function TreeDetailDialog(props) {
   const textAreaRef = useRef(null);
 
   useEffect(() => {
-    props.getTreeDetail(props.tree.id)
-  }, [props, props.tree])
+    props.treeDetailDispatch.getTreeDetail(props.tree.id)
+  }, [props.treeDetailDispatch, props.tree])
 
   /*
    * Render the most complete tree detail we have
@@ -61,7 +61,7 @@ function TreeDetailDialog(props) {
   function handleClose() {
     setSnackbarOpen(false)
     setSnackbarLabel('')
-    props.clearTree()
+    props.treeDetailDispatch.reset()
     props.onClose()
   }
   
@@ -205,8 +205,7 @@ const mapState = (state) => ({
 })
 
 const mapDispatch = (dispatch) => ({
-  getTreeDetail: (id) => dispatch.treeDetail.getTreeDetail(id),
-  clearTree: () => dispatch.treeDetail.reset(),
+  treeDetailDispatch: dispatch.treeDetail,
 })
 
 export default compose(

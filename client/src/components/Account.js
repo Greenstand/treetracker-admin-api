@@ -198,9 +198,7 @@ function Account(props) {
     }
   }
 
-  React.useEffect(() => {
-    load()
-  }, [])
+  React.useEffect(load, [])
 
   const freshUser = users.find(el => el.userName === user.userName) || user
   const roles = freshUser.role.map((r,i) => {

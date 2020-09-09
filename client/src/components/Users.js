@@ -148,9 +148,7 @@ function Users(props) {
     }
   }
 
-  React.useEffect(() => {
-    load()
-  }, [])
+  React.useEffect(load, [])
 
   function handleEdit(user) {
     setUserEditing(user)

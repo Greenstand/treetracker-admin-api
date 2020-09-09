@@ -18,7 +18,6 @@ import IconFilter from '@material-ui/icons/FilterList'
 import IconButton from '@material-ui/core/IconButton'
 
 import FilterTopPlanter from './FilterTopPlanter'
-import FilterPlanter from '../models/FilterPlanter'
 import Person from "@material-ui/icons/Person";
 import Navbar from "./Navbar";
 import PlanterDetail from "./PlanterDetail"
@@ -133,16 +132,11 @@ const Planters = (props) => {
   useEffect(() => {
     log.debug('mounted')
     props.plantersDispatch.count()
-    props.plantersDispatch.load({
-      pageNumber: 0,
-      filter: new FilterPlanter(),
-    })
   }, [props.plantersDispatch])
 
   useEffect(() => {
     props.plantersDispatch.load({
       pageNumber: 0,
-      filter: props.plantersState.filter,
     });
   }, [props.plantersDispatch, props.plantersState.pageSize])
 

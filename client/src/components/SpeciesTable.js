@@ -107,7 +107,6 @@ const SpeciesTable = (props) => {
 
   React.useEffect(() => {
     props.speciesDispatch.loadSpeciesList()
-    console.log(props.speciesState.speciesList)
   }, [props.speciesDispatch])
 
   const handleChangePage = (event, newPage) => {
