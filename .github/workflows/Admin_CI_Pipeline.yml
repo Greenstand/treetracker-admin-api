@@ -8,13 +8,12 @@ on:
     paths:
     - 'client/**'
     branches:
-      # - master. Recommiting appears to solve problem of triggering workflow.
-      - Urey_GitHub_Actions
+      - master
   pull_request:
     paths:
     - 'client/**'
     branches:
-      - Urey_GitHub_Actions
+      - master
 
 env:
   project-directory: ./client

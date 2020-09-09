@@ -8,13 +8,12 @@ on:
     paths:
     - 'server/**'
     branches:
-      # - master. Recommiting appears to solve problem of triggering workflow.
-    - Urey_GitHub_Actions
+      - master
   pull_request:
     paths:
     - 'server/**'
     branches:
-    - Urey_GitHub_Actions
+      - master
 
 env: 
   project-directory: ./server
@@ -33,17 +32,15 @@ jobs:
       run: npm ci
       working-directory: ${{env.project-directory}}
     - name: run ESLint
-      run: npm lint
+      run: npm run lint
       working-directory: ${{env.project-directory}}
       continue-on-error: true
     - name: build server project
       run: npm run build
       working-directory: ${{env.project-directory}}
-      continue-on-error: true
     - name: run Loopback tests
       run: npm test
       working-directory: ${{env.project-directory}}
-      continue-on-error: true
       env: 
         DB_NAME: ${{ secrets.DB_NAME }}
         DB_CONNECTOR: ${{ secrets.DB_CONNECTOR }}
