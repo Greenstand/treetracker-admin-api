@@ -7,9 +7,6 @@
     "loopback"
   ],
   "main": "dist/index.js",
-  "engines": {
-    "node": ">=8.9"
-  },
   "scripts": {
     "build": "lb-tsc --allowJs -d false",
     "build:watch": "lb-tsc --watch",
@@ -92,5 +89,8 @@
     ],
     "ext": "ts,js",
     "exec": "npm start"
+  },
+  "engines": {
+    "node": ">= 12 < 13"
   }
 }
