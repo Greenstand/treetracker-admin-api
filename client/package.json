@@ -74,5 +74,8 @@
     "eslint-plugin-react": "^7.19.0",
     "prettier": "2.0.5",
     "react-inspector": "^3.0.2"
+  },
+  "engines": {
+    "node": ">= 12 < 13"
   }
 }
