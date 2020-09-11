@@ -144,6 +144,7 @@ const SpeciesTable = (props) => {
             {species.name}
           </TableCell>
           <TableCell>{species.desc}</TableCell>
+          <TableCell>{species.treeCount}</TableCell>
           <TableCell>
             <IconButton title="edit" onClick={() => handleEdit(species)}>
               <Edit />
@@ -210,6 +211,7 @@ const SpeciesTable = (props) => {
                         <TableCell>ID</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Description</TableCell>
+                        <TableCell>Tagged Trees</TableCell>
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
