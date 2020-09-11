@@ -76,5 +76,5 @@ export const DashStatPlanterCount = compose(
   (El) => ((props) => (<El
     color={theme.palette.stats.orange}
     Icon={PeopleOutlineOutlinedIcon}
-    label={'Users'} {...props} />)),
+    label={'Planters'} {...props} />)),
 )(DashStat);
