@@ -17,19 +17,22 @@ Please add any missing content to this readme.
 ## Development Setup
 
 ### Install git
+
 See https://git-scm.com/downloads for instructions.
 
 ### Install Node.js
-_Node.js version 8.x works best for now; later versions have exhibited some strange behaviour with this project.
+
+_Node.js version 12.x works best for now; later versions have exhibited some strange behaviour with this project.
 If you encounter issues with the server, check your version of Node.js first._
 
 We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances.
 
-Alternatively, you can install Node.js directly from https://nodejs.org/dist/latest-v8.x/
+Alternatively, you can install Node.js directly from https://nodejs.org/dist/latest-v12.x/
 
 _On MacOS, you can alleviate the need to run as sudo by using nvm or by [following John Papa's instructions](http://jpapa.me/nomoresudo)._
 
 ### Clone this project
+
 1. Open terminal
 1. Go to a folder where you would like to install the project. Then type the following:
 
@@ -38,6 +41,7 @@ git clone https://github.com/Greenstand/treetracker-admin.git
 ```
 
 ### Project Setup
+
 Once cloned, type:
 
 ```
@@ -45,6 +49,7 @@ cd treetracker-admin/server && touch .env src/datasources/treetracker.datasource
 ```
 
 This sets up the following:
+
 - A `treetracker.datasource.json` file in `server/src/datasources/` that will be used to reference the source of data for Loopback.
 - A `.env` file in `server` that will contain a JWT secrect.
 
@@ -76,7 +81,7 @@ Once Docker is installed, lauch Docker from the Applications GUI.
 
 For most versions of Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/install/)
 
-For some older versions or Win10 Home: [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/). 
+For some older versions or Win10 Home: [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/).
 At least on one machine, to get this to work, when you get to the step to do QuickStart terminal script, instead, run:
 
 ```
@@ -91,7 +96,7 @@ then re-run the QuickStart terminal script.
 #### Linux
 
 To install on linux, you can run
-```sudo apt-get install -y docker-ce```
+`sudo apt-get install -y docker-ce`
 but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
 
 ### Install, build docker containers and go
@@ -171,6 +176,7 @@ REACT_APP_API_ROOT=http://localhost:3000
 So the React App would connect to http://localhost:3000 for API server.
 
 #### Start server
+
 ```
 cd server
 NODE_ENV=development ./node_modules/.bin/nodemon
@@ -181,12 +187,14 @@ NODE_ENV=development ./node_modules/.bin/nodemon
 > Using `nodemon` to run the server rather than `npm start` automatically refreshes the server when files change.
 
 #### Start client
+
 ```
 cd client
 npm start
 ```
 
 #### View the Treetracker Admin Panel
+
 Visit http://localhost:3001
 
 ## Quick Start For API only development
@@ -395,4 +403,3 @@ npm run watch
 In this way, we can write the code and get the tests result immediately.
 
 NOTE when run tests, the files related to Loopback are loading from ./dist folder, that's because for Jest, it do not output compiled files totally.
-
