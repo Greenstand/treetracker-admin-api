@@ -6,14 +6,14 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
+  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
-  del,
+  // put,
+  // del,
   requestBody,
 } from '@loopback/rest';
 import {Trees} from '../models';
@@ -84,7 +84,7 @@ export class TreesController {
       },
     },
   })
-  async near(@param.query.number('lat') lat :number, 
+  async near(@param.query.number('lat') lat :number,
              @param.query.number('lon') lon :number,
              @param({
               name: 'radius',
@@ -101,11 +101,11 @@ export class TreesController {
               description: 'default is 100'
              }) limit :number,
              ) : Promise<Trees[]> {
-    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
+    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
     console.log(`near query: ${query}`);
     return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
   }
-  
+
   @patch('/trees/{id}', {
     responses: {
       '204': {

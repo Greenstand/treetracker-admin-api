@@ -1,11 +1,11 @@
 /*
  * Seed data to DB for test
  */
-const getDatasource = require('../../datasources/config').default;
+import getDatasource from '../../datasources/config';
 const db = getDatasource();
-const {Pool, Client} = require('pg');
+import {Pool} from 'pg';
 const pool = new Pool({connectionString: db.url});
-const policy = require('../../policy.json');
+import policy from '../../policy.json';
 
 
 
@@ -55,7 +55,7 @@ const roles = {
   },
   freetownManager: {
     id: 4,
-    name: "Freetown Manager", 
+    name: "Freetown Manager",
     description: "Manager for oranization freetown",
     policy: {
       policies: [policy.policies[3],policy.policies[4],policy.policies[5],policy.policies[6],],
@@ -137,22 +137,22 @@ const trees = [
   },
 ]
 
-const description = 
+const description =
 `
 ---------------------- story -------------------------
 admin user accounts:
   ${JSON.stringify(users, null, 2)}
 
-admin roles: 
+admin roles:
   ${JSON.stringify(roles, null, 2)}
 
-entities: 
+entities:
   ${JSON.stringify(entities, null, 2)}
 
-entity_relationship: 
+entity_relationship:
   ${JSON.stringify(entity_relationship, null, 2)}
 
-planters: 
+planters:
   ${JSON.stringify(planters, null, 2)}
 
 trees:
@@ -161,13 +161,13 @@ trees:
 ---------------------- story end -------------------------
 `
 
-async function seed(){
-  let sql = 
+async function seed(): Promise<null> {
+  const sql =
     `insert into admin_role (id, role_name, description, policy) ` +
-      `values` + 
+      `values` +
       Object.values(roles).map( role => {
         return `(${role.id}, '${role.name}','${role.description}','${JSON.stringify(role.policy)}')`
-      }).join(','); 
+      }).join(',');
   console.log("sql:", sql);
   await pool.query(
     sql
@@ -194,7 +194,7 @@ async function seed(){
   await pool.query({
     text: `insert into entity
     (id, type, name)
-    values ` + 
+    values ` +
     entities.map(entity => {
       return `(${entity.id}, '${entity.type}', '${entity.name}')`
     }).join(","),
@@ -204,7 +204,7 @@ async function seed(){
   await pool.query({
     text: `insert into entity_relationship
     (id, parent_id, child_id, type, role)
-    values ` + 
+    values ` +
     entity_relationship.map(e => {
       return `(${e.id}, '${e.parent_id}', '${e.child_id}', 'test', 'test')`
     }).join(","),
@@ -215,7 +215,7 @@ async function seed(){
   await pool.query({
     text: `insert into planter
     (id, first_name, last_name, person_id, organization_id)
-    values ` + 
+    values ` +
     Object.values(planters).map(e => {
       return `(${e.id}, '${e.first_name}', 'test', ${e.person_id || null}, ${e.organization_id || null} )`
     }).join(","),
@@ -225,16 +225,16 @@ async function seed(){
   await pool.query({
     text: `insert into trees
     (id, time_created, time_updated, device_id, planter_id, planting_organization_id)
-    values ` + 
+    values ` +
     trees.map(tree => {
       return `(${tree.id}, $1, $1, ${tree.device_id || null}, ${tree.planter_id || null},${tree.planting_organization_id || null})`
     }).join(","),
     values: [new Date()]
   });
-
+  return null;
 }
 
-async function clear(){
+async function clear(): Promise<null> {
   await pool.query('delete from admin_user');
   await pool.query('delete from admin_user_role');
   await pool.query('delete from admin_role');
@@ -242,9 +242,10 @@ async function clear(){
   await pool.query('delete from planter');
   await pool.query('delete from entity');
   await pool.query('delete from entity_relationship');
+  return null;
 }
 
-module.exports = {
+export default {
   seed,
   clear,
   users,

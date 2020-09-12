@@ -1,9 +1,9 @@
 import {ApplicationConfig, ExpressServer} from './server';
 
 export * from './server';
-const seed = require("./tests/seed/seed");
+import seed from "./tests/seed/seed";
 
-export async function main(options: ApplicationConfig = {}) {
+export async function main(options: ApplicationConfig = {}): Promise<void> {
   //seed data
   console.log("seeding data...");
   await seed.clear();
@@ -12,6 +12,7 @@ export async function main(options: ApplicationConfig = {}) {
   await server.boot();
   await server.start();
   console.log('Server is running.');
+  return;
 }
 
 if (require.main === module) {

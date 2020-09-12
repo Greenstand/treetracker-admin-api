@@ -1,10 +1,10 @@
 /*
  * To record operation on the system
  */
-const {Pool, Client} = require('pg');
-const log = require('loglevel');
-const db = require('../datasources/treetracker.datasource.json');
-//const assert = require('assert').strict;
+import {Pool} from 'pg';
+// import log from 'loglevel';
+import db from '../datasources/treetracker.datasource.json';
+// import {strict as assert} from 'assert';
 
 const operations = {
   login: {

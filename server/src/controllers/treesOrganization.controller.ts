@@ -6,20 +6,20 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
+  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
-  del,
+  // put,
+  // del,
   requestBody,
   HttpErrors,
 } from '@loopback/rest';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
-const expect : any = require("expect-runtime");
+import expect from "expect-runtime";
 
 export class TreesOrganizationController {
   constructor(
@@ -77,7 +77,7 @@ export class TreesOrganizationController {
     const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
     expect(planterIds).a(expect.any(Array));
     if(filter){
-      //filter should be to deal with the organization, but here is just for 
+      //filter should be to deal with the organization, but here is just for
       //demonstration
       filter.where = {
         ...filter.where,
@@ -136,7 +136,7 @@ export class TreesOrganizationController {
       },
     },
   })
-  async near(@param.query.number('lat') lat :number, 
+  async near(@param.query.number('lat') lat :number,
              @param.query.number('lon') lon :number,
              @param({
               name: 'radius',
@@ -153,11 +153,11 @@ export class TreesOrganizationController {
               description: 'default is 100'
              }) limit :number,
              ) : Promise<Trees[]> {
-    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
+    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
     console.log(`near query: ${query}`);
     return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
   }
-  
+
   @patch('/organization/{organizationId}/trees/{id}', {
     responses: {
       '204': {

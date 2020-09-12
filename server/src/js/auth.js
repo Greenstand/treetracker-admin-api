@@ -1,20 +1,20 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const generator = require('generate-password');
-const Crypto = require('crypto');
-const bodyParser = require('body-parser');
-const config = require('../config');
-const {Pool, Client} = require('pg');
-const {utils} = require('./utils');
-const {helper} = require('./helper');
+import jwt from 'jsonwebtoken';
+import generator from 'generate-password';
+import Crypto from 'crypto';
+import bodyParser from 'body-parser';
+import config from '../config';
+import {Pool} from 'pg';
+import {utils} from './utils';
+import {helper} from './helper';
 const db = process.env.NODE_DB === "test" ?
     require('../datasources/treetrackerTest.datasource.json')
   :
     require('../datasources/treetracker.datasource.json');
-const policy = require('../policy.json');
-const expect = require('expect');
-const Audit = require('./Audit');
+import policy from '../policy.json';
+import expect from 'expect';
+// import Audit from './Audit';
 
 const app = express();
 //const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
@@ -24,11 +24,11 @@ const app = express();
 const pool = new Pool({connectionString: db.url});
 const jwtSecret = config.jwtSecret;
 
-const PERMISSIONS = {
-  ADMIN: 1,
-  TREE_AUDITOR: 2,
-  PLANTER_MANAGER: 3,
-};
+// const PERMISSIONS = {
+//   ADMIN: 1,
+//   TREE_AUDITOR: 2,
+//   PLANTER_MANAGER: 3,
+// };
 
 const POLICIES = {
   SUPER_PERMISSION: 'super_permission',
@@ -40,28 +40,28 @@ const POLICIES = {
   MANAGE_PLANTER: 'manage_planter',
 };
 
-const user = {
-  id: 1,
-  username: 'dadiorchen',
-  firstName: 'Dadior',
-  lastName: 'Chen',
-  password: '123456',
-  role: [0, 1],
-  email: 'dadiorchen@outlook.com',
-};
+// const user = {
+//   id: 1,
+//   username: 'dadiorchen',
+//   firstName: 'Dadior',
+//   lastName: 'Chen',
+//   password: '123456',
+//   role: [0, 1],
+//   email: 'dadiorchen@outlook.com',
+// };
 
-const userB = {
-  id: 2,
-  username: 'bbb',
-  firstName: 'B',
-  lastName: 'B',
-  password: '123456',
-  role: [1],
-  email: 'b@outlook.com',
-};
+// const userB = {
+//   id: 2,
+//   username: 'bbb',
+//   firstName: 'B',
+//   lastName: 'B',
+//   password: '123456',
+//   role: [1],
+//   email: 'b@outlook.com',
+// };
 
 const sha512 = function(password, salt) {
-  let hash = Crypto.createHmac('sha512', salt);
+  const hash = Crypto.createHmac('sha512', salt);
   hash.update(password);
   const hashedPwd = hash.digest('hex');
   return hashedPwd;
@@ -72,30 +72,30 @@ const generateSalt = function() {
   return generated;
 };
 
-const permissions = [
-  {
-    id: 0,
-    name: 'Admin',
-    description: 'Admin pemission',
-  },
-  {
-    id: 1,
-    name: 'Tree Auditor',
-    description: 'Veify & view trees',
-  },
-  {
-    id: 2,
-    name: 'Planter Manager',
-    description: 'Check & manage planters',
-  },
-];
+// const permissions = [
+//   {
+//     id: 0,
+//     name: 'Admin',
+//     description: 'Admin pemission',
+//   },
+//   {
+//     id: 1,
+//     name: 'Tree Auditor',
+//     description: 'Veify & view trees',
+//   },
+//   {
+//     id: 2,
+//     name: 'Planter Manager',
+//     description: 'Check & manage planters',
+//   },
+// ];
 
-const users = [user, userB];
+// const users = [user, userB];
 
 const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
 // const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
 
-router.get('/permissions', async function login(req, res, next) {
+router.get('/permissions', async function login(req, res) {
   try {
     const result = await pool.query(`select * from admin_role`);
     res.status(200).json(result.rows.map(r => utils.convertCamel(r)));
@@ -112,7 +112,7 @@ router.post('/login', async function login(req, res, next) {
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
-    let user_rows = await pool.query(
+    const user_rows = await pool.query(
       `select * from admin_user where user_name = '${userName}'`,
     );
 
@@ -186,11 +186,11 @@ async function loadUserPermissions(userId) {
     return userDetails;
 }
 
-router.get('/test', async function login(req, res, next) {
+router.get('/test', async function login(req, res) {
   res.send('OK');
 });
 
-router.get('/admin_users/:userId', async (req, res, next) => {
+router.get('/admin_users/:userId', async (req, res) => {
   try {
     //console.log(pool);
     let result = await pool.query(
@@ -219,11 +219,11 @@ router.get('/admin_users/:userId', async (req, res, next) => {
 router.put(
   '/admin_users/:userId/password',
   jsonParser,
-  async (req, res, next) => {
+  async (req, res) => {
     try {
       const salt = generateSalt();
       const hash = sha512(req.body.password, salt);
-      const result = await pool.query(
+      await pool.query(
         `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
       );
       res.status(200).json();
@@ -234,20 +234,20 @@ router.put(
   },
 );
 
-router.patch('/admin_users/:userId', async (req, res, next) => {
+router.patch('/admin_users/:userId', async (req, res) => {
   try {
     const update = `update admin_user set ${utils.buildUpdateFields(
       req.body,
     )} where id = ${req.params.userId}`;
     console.log('update:', update);
-    let result = await pool.query(update);
+    await pool.query(update);
     //role
-    result = await pool.query(
+    await pool.query(
       `delete from admin_user_role where admin_user_id = ${req.params.userId}`,
     );
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
-        let result = await pool.query(
+        await pool.query(
           `insert into admin_user_role (role_id, admin_user_id) values (${req.body.role[i]},${req.params.userId})`,
         );
       }
@@ -259,14 +259,14 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
   }
 });
 
-router.delete('/admin_users/:userId', async (req, res, next) => {
+router.delete('/admin_users/:userId', async (req, res) => {
   try {
     let deleteQuery = `delete from admin_user_role where admin_user_id = ${req.params.userId}`;
     console.log('delete:', deleteQuery);
-    let result = await pool.query(deleteQuery);
+    await pool.query(deleteQuery);
     deleteQuery = `delete from admin_user where id = ${req.params.userId}`;
     console.log('delete:', deleteQuery);
-    result = await pool.query(deleteQuery);
+    await pool.query(deleteQuery);
     res.status(204).json();
   } catch (e) {
     console.error(e);
@@ -274,9 +274,9 @@ router.delete('/admin_users/:userId', async (req, res, next) => {
   }
 });
 
-router.get('/admin_users/', async (req, res, next) => {
+router.get('/admin_users/', async (req, res) => {
   try {
-    let result = await pool.query(`select * from admin_user`);
+    const result = await pool.query(`select * from admin_user`);
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
       const r = result.rows[i];
@@ -293,7 +293,7 @@ router.get('/admin_users/', async (req, res, next) => {
   }
 });
 
-router.post('/validate/', async (req, res, next) => {
+router.post('/validate/', async (req, res) => {
   try {
     const {password} = req.body;
     const token = req.headers.authorization;
@@ -312,7 +312,7 @@ router.post('/validate/', async (req, res, next) => {
   }
 });
 
-router.post('/admin_users/', async (req, res, next) => {
+router.post('/admin_users/', async (req, res) => {
   try {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
@@ -400,7 +400,7 @@ async function init() {
   );
 }
 
-router.post('/init', async (req, res, next) => {
+router.post('/init', async (req, res) => {
   try {
     await init();
     res.status(200).json();
@@ -426,7 +426,7 @@ const isAuth = async (req, res, next) => {
     const userSession = decodedToken;
     //inject the user extract from token to request object
     req.user = userSession;
-    const roles = userSession.role;
+    // const roles = userSession.role;
     expect(userSession.policy).toBeInstanceOf(Object);
     const policies = userSession.policy.policies;
     expect(policies).toBeInstanceOf(Array);
@@ -437,17 +437,17 @@ const isAuth = async (req, res, next) => {
     });
     let matcher;
     if (url.match(/\/auth\/check_session/)) {
-      let user_id = req.query.id;
+      const user_id = req.query.id;
       console.log(user_id);
-      let result = await pool.query(
+      const result = await pool.query(
         `select * from admin_user where id = '${user_id}'`,
       );
       if (result.rows.length === 1) {
-        let update_userSession = utils.convertCamel(result.rows[0]);
+        const update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
         if (update_userSession.passwordHash === userSession.passwordHash) {
           /*get the role for updated usersession* */
-          let updated_role = await pool.query(
+          const updated_role = await pool.query(
             `select * from admin_user_role where admin_user_id = ${user_id}`,
           );
           update_userSession.role = updated_role.rows.map(r => r.role_id);
@@ -490,35 +490,31 @@ const isAuth = async (req, res, next) => {
       }
     } else if (url.match(/\/api\/.*/)) {
       if (url.match(/\/api\/species.*/)) {
-        next();
-        return;
+        return next();
       } else if (url.match(/\/api\/tags.*/)) {
-        next();
-        return;
+        return next();
       } else if (url.match(/\/api\/tree_tags.*/)) {
-        next();
-        return;
-      } else if (matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/)) {
+        return next();
+      }
+      matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/)
+      if (matcher) {
         if(matcher[1]){
           //organization case
-          const id = parseInt(matcher[2]);
           if (
             policies.some(
               r =>
                 r.name === POLICIES.SUPER_PERMISSION ||
                 r.name === POLICIES.LIST_TREE ||
                 r.name === POLICIES.APPROVE_TREE,
-            )
-          ) {
-            next();
-            return;
+            )) {
+            return next();
           } else {
             res.status(401).json({
               error: new Error('No permission'),
             });
             return;
           }
-        }else{
+        } else {
           //normal case
           //organizational user can not visit it directly
           if(organization && organization.id > 0){
@@ -533,10 +529,8 @@ const isAuth = async (req, res, next) => {
                 r.name === POLICIES.SUPER_PERMISSION ||
                 r.name === POLICIES.LIST_TREE ||
                 r.name === POLICIES.APPROVE_TREE,
-            )
-          ) {
-            next();
-            return;
+            )) {
+            return next();
           } else {
             res.status(401).json({
               error: new Error('No permission'),
@@ -544,10 +538,12 @@ const isAuth = async (req, res, next) => {
             return;
           }
         }
-      } else if (matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/)) {
+      }
+
+      matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/)
+      if (matcher) {
         if(matcher[1]){
           //organization case
-          const id = parseInt(matcher[2]);
           if (
             policies.some(
               r =>
@@ -556,8 +552,7 @@ const isAuth = async (req, res, next) => {
                 r.name === POLICIES.MANAGE_PLANTER,
             )
           ) {
-            next();
-            return;
+            return next();
           } else {
             res.status(401).json({
               error: new Error('No permission'),
@@ -579,10 +574,8 @@ const isAuth = async (req, res, next) => {
                   r.name === POLICIES.SUPER_PERMISSION ||
                   r.name === POLICIES.LIST_PLANTER ||
                   r.name === POLICIES.MANAGE_PLANTER,
-              )
-            ) {
-              next();
-              return;
+              )) {
+              return next();
             } else {
               res.status(401).json({
                 error: new Error('No permission'),
@@ -593,8 +586,7 @@ const isAuth = async (req, res, next) => {
         }
       }
     } else {
-      next();
-      return;
+      return next();
     }
     res.status(401).json({
       error: new Error('No permission'),

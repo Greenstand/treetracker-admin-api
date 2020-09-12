@@ -1,5 +1,8 @@
 import {Entity, model, property} from '@loopback/repository';
 
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
 @model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'tree_species'}}})
 export class Species extends Entity {
   @property({

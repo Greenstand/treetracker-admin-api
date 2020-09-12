@@ -6,20 +6,20 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
+  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
-  del,
+  // put,
+  // del,
   requestBody,
   HttpErrors,
 } from '@loopback/rest';
 import {Planter} from '../models';
 import {PlanterRepository, TreesRepository} from '../repositories';
-const expect : any = require("expect-runtime");
+// import expect from "expect-runtime";
 
 export class PlanterOrganizationController {
   constructor(
@@ -69,7 +69,7 @@ export class PlanterOrganizationController {
   ): Promise<Planter[]> {
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
     if(filter){
-      //filter should be to deal with the organization, but here is just for 
+      //filter should be to deal with the organization, but here is just for
       //demonstration
       filter.where = {
         ...filter.where,

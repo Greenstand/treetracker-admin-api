@@ -5,9 +5,9 @@ import * as http from 'http';
 import * as path from 'path';
 import express from 'express';
 import {ApplicationConfig, TreetrackerAdminApiApplication} from './application';
-const {auth} = require('./js/auth.js');
-const {auditMiddleware} = require('./js/Audit');
-const listEndpoints = require('express-list-endpoints')
+import {auth} from './js/auth.js';
+import {auditMiddleware} from './js/Audit';
+import listEndpoints from 'express-list-endpoints';
 
 //TODO import better
 //const express = require('express').default;
@@ -49,11 +49,11 @@ export class ExpressServer {
     console.log("print:", listEndpoints(this.app));
   }
 
-  public async boot() {
+  public async boot(): Promise<void> {
     await this.lbApp.boot();
   }
 
-  public async start() {
+  public async start(): Promise<void> {
     await this.lbApp.start();
     const port = this.lbApp.restServer.config.port || 3000;
 //    const host = this.lbApp.restServer.config.host || '0.0.0.0';
@@ -64,7 +64,7 @@ export class ExpressServer {
   }
 
   // For testing purposes
-  public async stop() {
+  public async stop(): Promise<void> {
     if (!this.server) return;
     //await this.lbApp.stop();
     this.server.close();

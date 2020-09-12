@@ -1,6 +1,6 @@
-const seed = require("../../tests/seed/seed");
-const db = require('../../datasources/treetracker.datasource.json');
-const {Pool, Client} = require('pg');
+import seed from "../../tests/seed/seed";
+import db from '../../datasources/treetracker.datasource.json';
+import {Pool} from 'pg';
 const pool = new Pool({connectionString: db.url});
 
 describe("Seed data into DB", () => {
@@ -16,7 +16,7 @@ describe("Seed data into DB", () => {
   });
 
   it("Should have default admin user", async () => {
-    let r = await pool.query({
+    const r = await pool.query({
       text: `select * from admin_user where user_name = $1`,
       values: ['admin']
     });
@@ -28,7 +28,7 @@ describe("Seed data into DB", () => {
   });
 
   it("Should have organization user", async () => {
-    let r = await pool.query({
+    const r = await pool.query({
       text: `select * from admin_user where user_name = $1`,
       values: [seed.users.freetown.username]
     });
@@ -40,7 +40,7 @@ describe("Seed data into DB", () => {
   });
 
   it("Should have some roles", async () => {
-    let r = await pool.query({
+    const r = await pool.query({
       text: `select * from admin_role `,
       values: []
     });
@@ -48,7 +48,7 @@ describe("Seed data into DB", () => {
   });
 
   it("Should have an entity, it is an organization", async () => {
-    let r = await pool.query({
+    const r = await pool.query({
       text: `select * from entity where type = 'o' `,
       values: []
     });
@@ -56,7 +56,7 @@ describe("Seed data into DB", () => {
   });
 
   it("Should have 2 planter", async () => {
-    let r = await pool.query({
+    const r = await pool.query({
       text: `select * from planter`,
       values: []
     });
@@ -64,7 +64,7 @@ describe("Seed data into DB", () => {
   });
 
   it("Should have 5 trees", async () => {
-    let r = await pool.query({
+    const r = await pool.query({
       text: `select * from trees`,
       values: []
     });
@@ -72,7 +72,7 @@ describe("Seed data into DB", () => {
   });
 
   it("Freetown should get 2 entity id as children", async () => {
-    let r = await pool.query({
+    const r = await pool.query({
       text: `select * from getEntityRelationshipChildren(1)`,
       values: []
     });
@@ -82,5 +82,3 @@ describe("Seed data into DB", () => {
 
 
 });
-
-export {};

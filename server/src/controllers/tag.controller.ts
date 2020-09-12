@@ -12,7 +12,7 @@ import {
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
+//  put,
   del,
   requestBody,
 } from '@loopback/rest';

@@ -1,5 +1,8 @@
 import {Entity, model, property} from '@loopback/repository';
 
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
 @model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'trees'}}})
 export class Trees extends Entity {
   @property({
@@ -48,7 +51,7 @@ export class Trees extends Entity {
   causeOfDeathId?: Number;
 
 	//Sun Dec  8 16:09:12 CST 2019
-	//change from user_id to planter_id 
+	//change from user_id to planter_id
   @property({
     type: Number,
     required: false,

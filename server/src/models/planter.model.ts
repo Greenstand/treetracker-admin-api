@@ -1,5 +1,8 @@
 import {Entity, model, property} from '@loopback/repository';
 
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
 @model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'planter'}}})
 export class Planter extends Entity {
   @property({
@@ -69,7 +72,7 @@ export class Planter extends Entity {
   })
   imageUrl?: String;
 
-  //added person_id  
+  //added person_id
   //Sat May 23 09:56:55 CST 2020
   @property({
     type: Number,

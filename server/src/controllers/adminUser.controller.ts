@@ -1,22 +1,22 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
+  // Count,
+  // CountSchema,
+  // Filter,
   repository,
-  Where,
+  // Where,
 } from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getFilterSchemaFor,
-  getWhereSchemaFor,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
-import {AdminUser} from '../models';
+// import {
+//   post,
+//   param,
+//   get,
+//   getFilterSchemaFor,
+//   getWhereSchemaFor,
+//   patch,
+//   put,
+//   del,
+//   requestBody,
+// } from '@loopback/rest';
+// import {AdminUser} from '../models';
 import {AdminUserRepository} from '../repositories';
 
 export class AdminUserController {
@@ -24,7 +24,7 @@ export class AdminUserController {
     @repository(AdminUserRepository)
     public adminUserRepository : AdminUserRepository,
   ) {}
-  
+
   // @get('/admin_user/count', {
   //   responses: {
   //     '200': {

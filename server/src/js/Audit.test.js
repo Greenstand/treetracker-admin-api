@@ -1,15 +1,17 @@
-const request = require('supertest');
-const express = require('express');
+/* eslint-env jest */
 
-jest.mock('pg');
-const {Pool, Client} = require('pg');
+import request from 'supertest';
+import express from 'express';
+
+import {Pool} from 'pg';
+jest.mock('pg')
+
 const query = jest.fn();
 Pool.mockImplementation(() => ({
   query,
 }));
 
-const Audit = require('./Audit');
-const {auditMiddleware} = require('./Audit');
+import {auditMiddleware} from './Audit';
 
 describe('Audit', () => {
   let app;

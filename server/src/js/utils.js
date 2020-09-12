@@ -31,8 +31,8 @@ function convertDB(obj){
 }
 
 function buildUpdateFields(obj){
-  let fields = [];
-  let where = "";
+  const fields = [];
+  const where = "";
   obj = convertDB(obj);
   Object.keys(obj).forEach(key => {
     if(key === "id"){
@@ -48,8 +48,8 @@ function buildUpdateFields(obj){
 }
 
 function buildInsertFields(obj){
-  let fields = [];
-  let values = [];
+  const fields = [];
+  const values = [];
   obj = convertDB(obj);
   Object.keys(obj).forEach(key => {
     if(key === "id"){
