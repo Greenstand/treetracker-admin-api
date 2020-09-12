@@ -8,7 +8,7 @@ import FilterModel		from './Filter';
 const log		= loglevel.getLogger('../models/verity')
 
 const verity = {
-	state		 : {
+	state: {
 		treeImages		: [],
 		/*
 		 * The array of all current selected trees, user click to select true
@@ -43,13 +43,27 @@ const verity = {
 		/*
 		 * The default value means: image not approved yet, and not rejected yet too
 		 */
-		filter		: new FilterModel({
-			approved		: false,
-			active		: true,
-		}),
-		treeCount: 0,
+		filter: new FilterModel({
+			approved: false,
+			active: true,
+    }),
+    verifiedFilter: new FilterModel({
+      approved: true,
+      active: true,
+    }),
+    rejectedFilter: new FilterModel({
+      approved: false,
+      active: false
+    }),
+
+    invalidateTreeCount: true,
+    invalidateVerifiedCount: true,
+    invalidateRejectedCount: true,
+    treeCount: null,
+    rejectedTreeCount: null,
+    verifiedTreeCount: null,
 	},
-	reducers		: {
+	reducers: {
 		appendTreeImages(state, treeImages){
       let newTreeImages = [...state.treeImages, ...treeImages]
       let newState = {
@@ -96,21 +110,59 @@ const verity = {
 			}
 		},
     setTreeCount(state, treeCount) {
-        return {
-            ...state,
-            treeCount,
-        };
-		},
+      return {
+          ...state,
+          treeCount,
+          invalidateTreeCount: false,
+      };
+    },
+    invalidateTreeCount(state, payload) {
+      return {
+        ...state,
+        invalidateTreeCount: payload,
+      }
+    },
+    setRejectedTreeCount(state, unprocessedTreeCount) {
+      return {
+          ...state,
+          unprocessedTreeCount,
+          invalidateRejectedCount: false,
+      }
+    },
+    invalidateRejectedCount(state, payload) {
+      return {
+        ...state,
+        invalidateRejectedCount: payload,
+      }
+    },
+    setVerifiedTreeCount(state, verifiedTreeCount) {
+      window.api = api;
+      return {
+          ...state,
+          verifiedTreeCount,
+          invalidateVerifiedCount: false,
+      };
+    },
+    invalidateVerifiedCount(state, payload) {
+      return {
+        ...state,
+        invalidateVerifiedCount: payload,
+      }
+    },
 		setApproveAllComplete(state, approveAllComplete){
 			return {
 				...state,
-				approveAllComplete,
+        approveAllComplete,
+        invalidateTreeCount: true,
+        invalidateVerifiedCount: true,
 			}
 		},
 		setRejectAllComplete(state, rejectAllComplete){
 			return {
 				...state,
 				rejectAllComplete,
+        invalidateTreeCount: true,
+        invalidateRejectedCount: true,
 			}
 		},
     /*
@@ -181,7 +233,12 @@ const verity = {
 				...state,
 				treeImages: [],
 				currentPage: 0,
-				treeCount: 0,
+        treeCount: null,
+        verifiedTreeCount: null,
+        unprocessedTreeCount: null,
+        invalidateTreeCount: true,
+        invalidateVerifiedCount: true,
+        invalidateRejectedCount: true,
 			}
 		},
 		/*
@@ -211,7 +268,7 @@ const verity = {
 		 */
 		async approveTreeImage(id){
 			await api.approveTreeImage(id)
-			this.approvedTreeImage(id)
+      this.approvedTreeImage(id)
 			return true
 		},
 		/*
@@ -220,15 +277,15 @@ const verity = {
 		 */
 		async rejectTreeImage(id){
 			await api.rejectTreeImage(id)
-			this.rejectedTreeImage(id)
+      this.rejectedTreeImage(id)
 			return true
 		},
     /*
      * Sat Apr 11 17:23:16 CST 2020
      * use new method to replace old ones: approveTreeImage, rejectTreeImage
-     * add approveAction to indicate if it's approve or reject, and other 
+     * add approveAction to indicate if it's approve or reject, and other
      * arguments
-     * 
+     *
      * payload: {
      *  id,
      *  approveAction,
@@ -250,13 +307,13 @@ const verity = {
       }else{
         log.debug('reject')
         await api.rejectTreeImage(
-          payload.id, 
+          payload.id,
           payload.approveAction.rejectionReason,
         )
 			}
-			
+
 			await api.createTreeTags(payload.id, payload.approveAction.tags)
-			
+
 			this.approved(payload.id)
       return true
     },
@@ -343,7 +400,11 @@ const verity = {
 			//finished, set status flags
 			this.setLoading(false);
 			this.setApproveAllProcessing(false);
-			this.setRejectAllProcessing(false);
+      this.setRejectAllProcessing(false);
+      this.invalidateVerifiedCount(true)
+      this.invalidateTreeCount(true)
+      this.invalidateRejectedCount(true)
+
 			//reset
 			this.setApproveAllComplete(0);
 			this.resetSelection();
@@ -401,6 +462,9 @@ const verity = {
 			//finished, set status flags
 			this.setLoading(false);
 			this.setApproveAllProcessing(false);
+      this.invalidateRejectedCount(true);
+      this.invalidateTreeCount(true);
+      this.invalidateVerifiedCount(true);
 			//reset
 			this.setApproveAllComplete(0);
 			this.resetSelection();
@@ -442,7 +506,10 @@ const verity = {
 			this.setRejectAllProcessing(false);
 			//reset
 			this.setRejectAllComplete(0);
-			this.setApproveAllComplete(0);
+      this.setApproveAllComplete(0);
+      this.invalidateRejectedCount(true);
+      this.invalidateTreeCount(true);
+      this.invalidateVerifiedCount(true);
 			this.resetSelection();
 			return true;
 			//}}}
@@ -463,10 +530,32 @@ const verity = {
      * gets and sets count for unverified trees
      */
     async getTreeCount(payload, state) {
-        const result = await api.getTreeCount(state.verity.filter)
-        this.setTreeCount(result.count)
-        return true
+      this.invalidateTreeCount(false)
+      const result = await api.getTreeCount(state.verity.filter)
+      this.setTreeCount(result.count)
+      return true
     },
+
+    /*
+     * gets and sets count for trees with no tag data (entirely unprocessed)
+     */
+    async getRejectedTreeCount(payload, state) {
+      this.invalidateRejectedCount(false)
+      const result = await api.getTreeCount(state.verity.rejectedFilter)
+      this.setRejectedTreeCount(result.count)
+      return true
+    },
+
+    /*
+     * gets and sets count for trees that are active and approved
+     */
+    async getVerifiedTreeCount(payload, state) {
+      this.invalidateVerifiedCount(false)
+      const result = await api.getTreeCount(state.verity.verifiedFilter)
+      this.setVerifiedTreeCount(result.count)
+      return true
+    },
+
 		/*
 		 * to select trees
 		 * payload:
