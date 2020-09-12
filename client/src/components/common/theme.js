@@ -3,7 +3,7 @@
  */
 import {createMuiTheme}		from '@material-ui/core/styles'
 
-const colorPrimary		= '#76BB23'
+export const colorPrimary		= '#76BB23'
 
 const colorPrimarySelected		= 'rgba(118, 187, 35, 0.3)'
 const colorPrimaryHover		= 'rgba(118, 187, 35, 0.1)'
@@ -40,7 +40,12 @@ export default createMuiTheme({
 			active		: 'rgba(135, 195, 46, .64)',
 			hover		: 'rgba(135, 195, 46, .08)',
 			selected		: 'rgba(135, 195, 46, .32)',
-		},
+    },
+    stats: {
+      green: colorPrimary,
+      red: 'rgb(233, 88, 57)',
+      orange: 'rgb(239, 128, 49)'
+    }
   },
 	overrides		: {
 		MuiButton		: {
@@ -58,7 +63,7 @@ export default createMuiTheme({
 		},
 		MuiInputLabel: {
 			outlined: {
-				transform: 'translate(10px, 12px) scale(1)', 
+				transform: 'translate(10px, 12px) scale(1)',
 			},
 		},
 		MuiListItem		: {

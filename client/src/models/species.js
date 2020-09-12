@@ -37,7 +37,14 @@ const species = {
     async loadSpeciesList() {
       const speciesList = await api.getSpecies()
       log.debug('load species from api:', speciesList.length)
-      this.setSpeciseList(speciesList)
+      const sepcieListWithCount = await Promise.all(
+        speciesList.map(async (species) => {
+          let treeCount = await api.getTreeCountPerSpecies(species.id)
+          species.treeCount = treeCount.count
+          return species
+        })
+      )
+      this.setSpeciseList(sepcieListWithCount)
     },
     onChange(text) {
       console.log('on change:"', text, '"')

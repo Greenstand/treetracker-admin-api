@@ -14,31 +14,46 @@ New milestone is about our new version 2.0 for the admin panel. Currently, we ar
 
 Please add any missing content to this readme.
 
-## Setup
+## Development Setup
 
-- Install Node
-- on OSX, install git and type `brew install git`
-- on OSX, install [home brew](http://brew.sh/) and type `brew install node`
-- on Windows, use the installer available at [nodejs.org](http://nodejs.org/)
-- On OSX you can alleviate the need to run as sudo by [following John Papa's instructions](http://jpapa.me/nomoresudo)
-- Open terminal
-- Go to a folder where you would like to install the project. Then type the following:
+### Install git
+
+See https://git-scm.com/downloads for instructions.
+
+### Install Node.js
+
+_Node.js version 12.x works best for now; later versions have exhibited some strange behaviour with this project.
+If you encounter issues with the server, check your version of Node.js first._
+
+We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances.
+
+Alternatively, you can install Node.js directly from https://nodejs.org/dist/latest-v12.x/
+
+_On MacOS, you can alleviate the need to run as sudo by using nvm or by [following John Papa's instructions](http://jpapa.me/nomoresudo)._
+
+### Clone this project
+
+1. Open terminal
+1. Go to a folder where you would like to install the project. Then type the following:
 
 ```
 git clone https://github.com/Greenstand/treetracker-admin.git
 ```
 
-- Once cloned type:
+### Project Setup
+
+Once cloned, type:
 
 ```
-cd treetracker-admin/server && touch .env src/datasources/treetracker.datasource.json && npm install
+cd treetracker-admin/server && touch .env src/datasources/treetracker.datasource.json
 ```
 
-- In `server/src/datasources/` directory you will need to create a `treetracker.datasource.json` file that will be used to reference the source of data for Loopback.
+This sets up the following:
 
-- In `server/` directory you will need to create a `.env` file that will be used to reference the source of data for Loopback.
+- A `treetracker.datasource.json` file in `server/src/datasources/` that will be used to reference the source of data for Loopback.
+- A `.env` file in `server` that will contain a JWT secrect.
 
-- **Contact the #admin-panel channel** on Slack to get our shared treetracker.datasource.json as well env file
+_**Contact the #admin-panel channel** on Slack (you'll need to request access) to get our shared `treetracker.datasource.json` and `.env` files._
 
 ## Development Environment Quick Start
 
@@ -46,7 +61,9 @@ We provide a development environment through docker that can run on your local e
 
 ### Set Up Docker
 
-To run docker on a local machine, you will have to install Docker first. Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM. Docker provides one for each OS by default.
+To run docker on a local machine, you will have to install Docker first.
+Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM.
+Docker provides one for each OS by default.
 
 #### Mac
 
@@ -64,7 +81,8 @@ Once Docker is installed, lauch Docker from the Applications GUI.
 
 For most versions of Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/install/)
 
-For some older versions or Win10 Home: [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/). At least on one machine, to get this to work, when you get to the step to do QuickStart terminal script, instead, run:
+For some older versions or Win10 Home: [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/).
+At least on one machine, to get this to work, when you get to the step to do QuickStart terminal script, instead, run:
 
 ```
 docker-machine create default --virtualbox-no-vtx-check
@@ -72,22 +90,16 @@ docker-machine create default --virtualbox-no-vtx-check
 
 then re-run the QuickStart terminal script.
 
-NOTE: if you use Docker Toolbox, check the IP address in the output of the QuickStart terminal script. You will use this IP address later instead of localhost.
+> If you use Docker Toolbox, check the IP address in the output of the QuickStart terminal script.
+> You will use this IP address later instead of `localhost`.
 
 #### Linux
 
-To install on linux, you can run `sudo apt-get install -y docker-ce` but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
+To install on linux, you can run
+`sudo apt-get install -y docker-ce`
+but there is [additional setup](https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository) to verify keys, etc.
 
 ### Install, build docker containers and go
-
-Install Node (see Requirements above)
-
-Clone this repository
-
-```
-git clone git@github.com:Greenstand/treetracker-admin.git
-cd treetracker-admin
-```
 
 Run the setup script. This script installs node modules, builds docker containers, and starts them
 
@@ -95,11 +107,11 @@ Run the setup script. This script installs node modules, builds docker container
 ./dev/scripts/setup.sh
 ```
 
-You can now view the treetracker admin at http://localhost:8080.
+You can now view the Treetracker Admin Panel at http://localhost:8080.
 
-_note: If you try to access the site on port 3001 you will recieve a CORS error_
+> Note: If you try to access the site on port 3001 you will recieve a CORS error
 
-_note: If you used Docker Toolbox, you may need to use the IP address it reported, such as http://192.168.99.100:8080_
+> Note: If you used Docker Toolbox, you may need to use the IP address it reported, such as http://192.168.99.100:8080_
 
 It may take a few seconds for the web and api servers to come up. You can monitor them using the docker logs commands as:
 
@@ -108,7 +120,7 @@ docker logs -f treetracker-admin-web
 docker logs -f treetracker-admin-api
 ```
 
-Also see _Scripts_ below
+Also see [Scripts](#scripts) below
 
 The REST API documentation can be viewed and explored by visiting http://localhost:3000/api/explorer
 
@@ -135,13 +147,15 @@ https://code.visualstudio.com/docs
 
 ### Still can not figure it out?
 
-Here is our wiki page for troubleshooting , take a look. And help us to improve it by adding your case solving this problem. https://github.com/Greenstand/treetracker-admin/wiki/Set-Up-Issues
+Here is our [wiki page for troubleshooting](https://github.com/Greenstand/treetracker-admin/wiki/Set-Up-Issues), take a look.
+
+Help us to improve it by adding your experience solving this problem.
 
 ### How to devlop without Docker
 
 If Docker is really a roadblock, please consider using this way below to bypass it.
 
-- Install
+#### Install
 
 ```
 cd client
@@ -153,36 +167,35 @@ cd server
 npm install
 ```
 
-- Add a .env.local under "client" for local config, it looks like this:
+Add a `.env.local` file in the `client` directory for local config, it looks like this:
 
 ```
-REACT_APP_WEBMAP_DOMAIN=https://treetracker.org
 REACT_APP_API_ROOT=http://localhost:3000
 ```
 
 So the React App would connect to http://localhost:3000 for API server.
 
-- Start server:
+#### Start server
 
 ```
 cd server
 NODE_ENV=development ./node_modules/.bin/nodemon
 ```
 
-NOTE: To set NODE_ENV=development is just for Loopback API explorer is available, we can visit it at: http://localhost:3000/api/explorer.
+> NOTE: Setting `NODE_ENV=development` means the Loopback API explorer is available at http://localhost:3000/api/explorer
 
-And using nodemon to run the server rather than 'npm start' is for getting the ability to automatically refresh the server after files changing.
+> Using `nodemon` to run the server rather than `npm start` automatically refreshes the server when files change.
 
-- Start client:
+#### Start client
 
 ```
 cd client
 npm start
 ```
 
-- Visit
+#### View the Treetracker Admin Panel
 
-http://localhost:3001
+Visit http://localhost:3001
 
 ## Quick Start For API only development
 
@@ -390,4 +403,3 @@ npm run watch
 In this way, we can write the code and get the tests result immediately.
 
 NOTE when run tests, the files related to Loopback are loading from ./dist folder, that's because for Jest, it do not output compiled files totally.
-
