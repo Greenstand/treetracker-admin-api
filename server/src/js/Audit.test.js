@@ -4,7 +4,7 @@ import request from 'supertest';
 import express from 'express';
 
 import {Pool} from 'pg';
-jest.mock('pg')
+jest.mock('pg');
 
 const query = jest.fn();
 Pool.mockImplementation(() => ({

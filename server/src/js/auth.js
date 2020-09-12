@@ -8,10 +8,10 @@ import config from '../config';
 import {Pool} from 'pg';
 import {utils} from './utils';
 import {helper} from './helper';
-const db = process.env.NODE_DB === "test" ?
-    require('../datasources/treetrackerTest.datasource.json')
-  :
-    require('../datasources/treetracker.datasource.json');
+const db =
+  process.env.NODE_DB === 'test'
+    ? require('../datasources/treetrackerTest.datasource.json')
+    : require('../datasources/treetracker.datasource.json');
 import policy from '../policy.json';
 import expect from 'expect';
 // import Audit from './Audit';
@@ -60,14 +60,14 @@ const POLICIES = {
 //   email: 'b@outlook.com',
 // };
 
-const sha512 = function(password, salt) {
+const sha512 = function (password, salt) {
   const hash = Crypto.createHmac('sha512', salt);
   hash.update(password);
   const hashedPwd = hash.digest('hex');
   return hashedPwd;
 };
 
-const generateSalt = function() {
+const generateSalt = function () {
   const generated = generator.generate({length: 6, numbers: true});
   return generated;
 };
@@ -98,7 +98,7 @@ const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse a
 router.get('/permissions', async function login(req, res) {
   try {
     const result = await pool.query(`select * from admin_role`);
-    res.status(200).json(result.rows.map(r => utils.convertCamel(r)));
+    res.status(200).json(result.rows.map((r) => utils.convertCamel(r)));
   } catch (e) {
     console.error(e);
     res.status(500).json();
@@ -118,7 +118,9 @@ router.post('/login', async function login(req, res, next) {
 
     //Check if user exists
     if (user_rows.rowCount === 0) {
-      return res.status(401).json({errorMessage: `The username: ${userName} does not exist.`})
+      return res
+        .status(401)
+        .json({errorMessage: `The username: ${userName} does not exist.`});
     }
 
     const user_entity = user_rows.rows[0];
@@ -137,28 +139,36 @@ router.post('/login', async function login(req, res, next) {
       result = await pool.query(
         `select * from admin_user_role where admin_user_id = ${userLogin.id}`,
       );
-      userLogin.role = result.rows.map(r => r.role_id);
-    }else{
-      console.log("can not find user by ", userName);
+      userLogin.role = result.rows.map((r) => r.role_id);
+    } else {
+      console.log('can not find user by ', userName);
     }
 
     // If user exists in db AND user is active
     // query remaining details and return
     if (userLogin && userLogin.active) {
       const userDetails = await loadUserPermissions(userLogin.id);
-      userLogin = {...userLogin, ...userDetails };
+      userLogin = {...userLogin, ...userDetails};
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
-      const {id, userName, firstName, lastName, email, role, policy} = userLogin;
+      const {
+        id,
+        userName,
+        firstName,
+        lastName,
+        email,
+        role,
+        policy,
+      } = userLogin;
       //      const audit = new Audit();
       //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
-      console.log("login success");
+      console.log('login success');
       res.json({
         token,
         user: {id, userName, firstName, lastName, email, role, policy},
       });
-    }else{
-      console.log("login failed:", userLogin)
+    } else {
+      console.log('login failed:', userLogin);
     }
 
     return res.status(401).json();
@@ -170,20 +180,20 @@ router.post('/login', async function login(req, res, next) {
 
 // load roles and policy (permissions)
 async function loadUserPermissions(userId) {
-    const userDetails = {};
-    let result;
-    //get role
-    result = await pool.query(
-      `select * from admin_user_role where admin_user_id = ${userId}`,
-    );
-    expect(result.rows.length).toBeGreaterThan(0);
-    userDetails.role = result.rows.map(r => r.role_id);
-    //get policies
-    result = await pool.query(
-      `select * from admin_role where id = ${userDetails.role[0]}`,
-    );
-    userDetails.policy = result.rows.map(r => r.policy)[0];
-    return userDetails;
+  const userDetails = {};
+  let result;
+  //get role
+  result = await pool.query(
+    `select * from admin_user_role where admin_user_id = ${userId}`,
+  );
+  expect(result.rows.length).toBeGreaterThan(0);
+  userDetails.role = result.rows.map((r) => r.role_id);
+  //get policies
+  result = await pool.query(
+    `select * from admin_role where id = ${userDetails.role[0]}`,
+  );
+  userDetails.policy = result.rows.map((r) => r.policy)[0];
+  return userDetails;
 }
 
 router.get('/test', async function login(req, res) {
@@ -203,7 +213,7 @@ router.get('/admin_users/:userId', async (req, res) => {
       result = await pool.query(
         `select * from admin_user_role where role_id = ${userGet.id}`,
       );
-      userGet.role = result.rows.map(r => r.role_id);
+      userGet.role = result.rows.map((r) => r.role_id);
     }
     if (userGet) {
       res.status(200).json(userGet);
@@ -216,23 +226,19 @@ router.get('/admin_users/:userId', async (req, res) => {
   }
 });
 
-router.put(
-  '/admin_users/:userId/password',
-  jsonParser,
-  async (req, res) => {
-    try {
-      const salt = generateSalt();
-      const hash = sha512(req.body.password, salt);
-      await pool.query(
-        `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
-      );
-      res.status(200).json();
-    } catch (e) {
-      console.error(e);
-      res.status(500).json();
-    }
-  },
-);
+router.put('/admin_users/:userId/password', jsonParser, async (req, res) => {
+  try {
+    const salt = generateSalt();
+    const hash = sha512(req.body.password, salt);
+    await pool.query(
+      `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
+    );
+    res.status(200).json();
+  } catch (e) {
+    console.error(e);
+    res.status(500).json();
+  }
+});
 
 router.patch('/admin_users/:userId', async (req, res) => {
   try {
@@ -283,7 +289,7 @@ router.get('/admin_users/', async (req, res) => {
       const roles = await pool.query(
         `select * from admin_user_role where admin_user_id = ${r.id}`,
       );
-      r.role = roles.rows.map(rr => rr.role_id);
+      r.role = roles.rows.map((rr) => rr.role_id);
       users.push(utils.convertCamel(r));
     }
     res.status(200).json(users);
@@ -307,7 +313,12 @@ router.post('/validate/', async (req, res) => {
       return res.status(401).json();
     }
   } catch (err) {
-    console.error(err, "verify, req:", req.originalUrl, req.headers.authorization);
+    console.error(
+      err,
+      'verify, req:',
+      req.originalUrl,
+      req.headers.authorization,
+    );
     res.status(500).json();
   }
 });
@@ -325,7 +336,7 @@ router.post('/admin_users/', async (req, res) => {
       return;
     }
     //active
-    if(req.body.active == undefined){
+    if (req.body.active == undefined) {
       req.body.active = true;
     }
     const insert = `insert into admin_user ${utils.buildInsertFields(
@@ -412,11 +423,16 @@ router.post('/init', async (req, res) => {
 
 const isAuth = async (req, res, next) => {
   //white list
-  console.log("testtest");
+  console.log('testtest');
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
   const isApiExplorerReq = isDevEnvironment;
-  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init' || isApiExplorerReq) {
+  if (
+    url === '/auth/login' ||
+    url === '/auth/test' ||
+    url === '/auth/init' ||
+    isApiExplorerReq
+  ) {
     next();
     return;
   }
@@ -431,10 +447,11 @@ const isAuth = async (req, res, next) => {
     const policies = userSession.policy.policies;
     expect(policies).toBeInstanceOf(Array);
     const organization = userSession.policy.organization;
-    organization && expect(organization).toMatchObject({
-      name: expect.any(String),
-      id: expect.any(Number),
-    });
+    organization &&
+      expect(organization).toMatchObject({
+        name: expect.any(String),
+        id: expect.any(Number),
+      });
     let matcher;
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
@@ -450,7 +467,7 @@ const isAuth = async (req, res, next) => {
           const updated_role = await pool.query(
             `select * from admin_user_role where admin_user_id = ${user_id}`,
           );
-          update_userSession.role = updated_role.rows.map(r => r.role_id);
+          update_userSession.role = updated_role.rows.map((r) => r.role_id);
           //compare wuth the updated role in case role is changed
           if (helper.needRoleUpdate(update_userSession, userSession)) {
             //reassign token with updated role if role changes
@@ -464,7 +481,7 @@ const isAuth = async (req, res, next) => {
             return;
           }
         } else {
-          console.log("password unmatch");
+          console.log('password unmatch');
           res.status(401).json({
             error: new Error('Session expired'),
           });
@@ -478,11 +495,11 @@ const isAuth = async (req, res, next) => {
       //   next();
       //   return;
       // }
-      if (policies.some(r => r.name === POLICIES.SUPER_PERMISSION)) {
+      if (policies.some((r) => r.name === POLICIES.SUPER_PERMISSION)) {
         next();
         return;
       } else {
-        console.log("No permission");
+        console.log('No permission');
         res.status(401).json({
           error: new Error('No permission'),
         });
@@ -496,17 +513,18 @@ const isAuth = async (req, res, next) => {
       } else if (url.match(/\/api\/tree_tags.*/)) {
         return next();
       }
-      matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/)
+      matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);
       if (matcher) {
-        if(matcher[1]){
+        if (matcher[1]) {
           //organization case
           if (
             policies.some(
-              r =>
+              (r) =>
                 r.name === POLICIES.SUPER_PERMISSION ||
                 r.name === POLICIES.LIST_TREE ||
                 r.name === POLICIES.APPROVE_TREE,
-            )) {
+            )
+          ) {
             return next();
           } else {
             res.status(401).json({
@@ -517,7 +535,7 @@ const isAuth = async (req, res, next) => {
         } else {
           //normal case
           //organizational user can not visit it directly
-          if(organization && organization.id > 0){
+          if (organization && organization.id > 0) {
             res.status(401).json({
               error: new Error('No permission'),
             });
@@ -525,11 +543,12 @@ const isAuth = async (req, res, next) => {
           }
           if (
             policies.some(
-              r =>
+              (r) =>
                 r.name === POLICIES.SUPER_PERMISSION ||
                 r.name === POLICIES.LIST_TREE ||
                 r.name === POLICIES.APPROVE_TREE,
-            )) {
+            )
+          ) {
             return next();
           } else {
             res.status(401).json({
@@ -540,13 +559,13 @@ const isAuth = async (req, res, next) => {
         }
       }
 
-      matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/)
+      matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/);
       if (matcher) {
-        if(matcher[1]){
+        if (matcher[1]) {
           //organization case
           if (
             policies.some(
-              r =>
+              (r) =>
                 r.name === POLICIES.SUPER_PERMISSION ||
                 r.name === POLICIES.LIST_PLANTER ||
                 r.name === POLICIES.MANAGE_PLANTER,
@@ -559,22 +578,23 @@ const isAuth = async (req, res, next) => {
             });
             return;
           }
-        }else{
+        } else {
           //normal case
           //organizational user can not visit it directly
-          if(organization && organization.id > 0){
+          if (organization && organization.id > 0) {
             res.status(401).json({
               error: new Error('No permission'),
             });
             return;
-          }else{
+          } else {
             if (
               policies.some(
-                r =>
+                (r) =>
                   r.name === POLICIES.SUPER_PERMISSION ||
                   r.name === POLICIES.LIST_PLANTER ||
                   r.name === POLICIES.MANAGE_PLANTER,
-              )) {
+              )
+            ) {
               return next();
             } else {
               res.status(401).json({

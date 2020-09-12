@@ -3,14 +3,26 @@ import {Entity, model, property} from '@loopback/repository';
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
-@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'planter'}}})
+@model({
+  settings: {
+    idInjection: false,
+    postgresql: {schema: 'public', table: 'planter'},
+  },
+})
 export class Planter extends Entity {
   @property({
     type: Number,
     required: true,
     scale: 0,
     id: 1,
-    postgresql: {"columnName":"id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   id: Number;
 
@@ -18,7 +30,14 @@ export class Planter extends Entity {
     type: String,
     required: true,
     length: 30,
-    postgresql: {"columnName":"first_name","dataType":"character varying","dataLength":30,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'first_name',
+      dataType: 'character varying',
+      dataLength: 30,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   firstName: String;
 
@@ -26,35 +45,70 @@ export class Planter extends Entity {
     type: String,
     required: true,
     length: 30,
-    postgresql: {"columnName":"last_name","dataType":"character varying","dataLength":30,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'last_name',
+      dataType: 'character varying',
+      dataLength: 30,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   lastName: String;
 
   @property({
     type: String,
     required: false,
-    postgresql: {"columnName":"email","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
+    postgresql: {
+      columnName: 'email',
+      dataType: 'character varying',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
   })
   email?: String;
 
   @property({
     type: String,
     required: false,
-    postgresql: {"columnName":"organization","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
+    postgresql: {
+      columnName: 'organization',
+      dataType: 'character varying',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
   })
   organization?: String;
 
   @property({
     type: String,
     required: false,
-    postgresql: {"columnName":"phone","dataType":"text","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
+    postgresql: {
+      columnName: 'phone',
+      dataType: 'text',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
   })
   phone?: String;
 
   @property({
     type: Boolean,
     required: false,
-    postgresql: {"columnName":"pwd_reset_required","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
+    postgresql: {
+      columnName: 'pwd_reset_required',
+      dataType: 'boolean',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
   })
   pwdResetRequired?: Boolean;
 
@@ -68,7 +122,14 @@ export class Planter extends Entity {
   @property({
     type: String,
     required: false,
-    postgresql: {"columnName":"image_url","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
+    postgresql: {
+      columnName: 'image_url',
+      dataType: 'character varying',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
   })
   imageUrl?: String;
 
@@ -78,7 +139,14 @@ export class Planter extends Entity {
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"person_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+    postgresql: {
+      columnName: 'person_id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'YES',
+    },
   })
   personId?: Number;
 
@@ -86,7 +154,14 @@ export class Planter extends Entity {
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"organization_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+    postgresql: {
+      columnName: 'organization_id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'YES',
+    },
   })
   organizationId?: Number;
 

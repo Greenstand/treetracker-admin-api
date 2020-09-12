@@ -1,11 +1,11 @@
 import {ApplicationConfig, ExpressServer} from './server';
 
 export * from './server';
-import seed from "./tests/seed/seed";
+import seed from './tests/seed/seed';
 
 export async function main(options: ApplicationConfig = {}): Promise<void> {
   //seed data
-  console.log("seeding data...");
+  console.log('seeding data...');
   await seed.clear();
   await seed.seed();
   const server = new ExpressServer(options);
@@ -29,7 +29,7 @@ if (require.main === module) {
       listenOnStart: false,
     },
   };
-  main(config).catch(err => {
+  main(config).catch((err) => {
     console.error('Cannot start the application.', err);
     process.exit(1);
   });

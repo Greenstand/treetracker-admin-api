@@ -28,10 +28,10 @@ const PING_RESPONSE: ResponseObject = {
 };
 
 interface PingReply {
-  greeting: string
-  date: Date
-  url: string
-  headers: Request["headers"]
+  greeting: string;
+  date: Date;
+  url: string;
+  headers: Request['headers'];
 }
 
 /**

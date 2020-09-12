@@ -14,4 +14,3 @@ export class SpeciesRepository extends DefaultCrudRepository<
     super(Species, dataSource);
   }
 }
-

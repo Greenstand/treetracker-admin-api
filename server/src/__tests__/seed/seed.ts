@@ -1,84 +1,85 @@
-import seed from "../../tests/seed/seed";
+import seed from '../../tests/seed/seed';
 import db from '../../datasources/treetracker.datasource.json';
 import {Pool} from 'pg';
 const pool = new Pool({connectionString: db.url});
 
-describe("Seed data into DB", () => {
-
+describe('Seed data into DB', () => {
   beforeAll(async () => {
-//    console.log("The DB story:");
-//    console.log(seed.description);
+    //    console.log("The DB story:");
+    //    console.log(seed.description);
     await seed.seed();
   });
 
-  afterAll(async ()  => {
+  afterAll(async () => {
     await seed.clear();
   });
 
-  it("Should have default admin user", async () => {
+  it('Should have default admin user', async () => {
     const r = await pool.query({
       text: `select * from admin_user where user_name = $1`,
-      values: ['admin']
+      values: ['admin'],
     });
     expect(r).toMatchObject({
-      rows: [{
-        user_name: "admin",
-      }],
+      rows: [
+        {
+          user_name: 'admin',
+        },
+      ],
     });
   });
 
-  it("Should have organization user", async () => {
+  it('Should have organization user', async () => {
     const r = await pool.query({
       text: `select * from admin_user where user_name = $1`,
-      values: [seed.users.freetown.username]
+      values: [seed.users.freetown.username],
     });
     expect(r).toMatchObject({
-      rows: [{
-        user_name: seed.users.freetown.username,
-      }],
+      rows: [
+        {
+          user_name: seed.users.freetown.username,
+        },
+      ],
     });
   });
 
-  it("Should have some roles", async () => {
+  it('Should have some roles', async () => {
     const r = await pool.query({
       text: `select * from admin_role `,
-      values: []
+      values: [],
     });
     expect(r.rows.length).toBeGreaterThan(0);
   });
 
-  it("Should have an entity, it is an organization", async () => {
+  it('Should have an entity, it is an organization', async () => {
     const r = await pool.query({
       text: `select * from entity where type = 'o' `,
-      values: []
+      values: [],
     });
     expect(r.rows.length).toBeGreaterThan(0);
   });
 
-  it("Should have 2 planter", async () => {
+  it('Should have 2 planter', async () => {
     const r = await pool.query({
       text: `select * from planter`,
-      values: []
+      values: [],
     });
     expect(r.rows.length).toBe(2);
   });
 
-  it("Should have 5 trees", async () => {
+  it('Should have 5 trees', async () => {
     const r = await pool.query({
       text: `select * from trees`,
-      values: []
+      values: [],
     });
     expect(r.rows.length).toBe(5);
   });
 
-  it("Freetown should get 2 entity id as children", async () => {
+  it('Freetown should get 2 entity id as children', async () => {
     const r = await pool.query({
       text: `select * from getEntityRelationshipChildren(1)`,
-      values: []
+      values: [],
     });
-    console.log("result:!:", r);
+    console.log('result:!:', r);
     expect(r.rows.length).toBe(2);
   });
-
-
 });

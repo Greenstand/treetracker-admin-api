@@ -71,12 +71,10 @@ describe.skip('auth', () => {
           },
         ],
       });
-    const response = await request(app)
-      .post('/auth/login')
-      .send({
-        userName: 'dadiorchen',
-        password: '123456',
-      });
+    const response = await request(app).post('/auth/login').send({
+      userName: 'dadiorchen',
+      password: '123456',
+    });
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeDefined();
     expect(response.body.token).toMatch(/\S+/);
@@ -90,12 +88,10 @@ describe.skip('auth', () => {
     query.mockReturnValueOnce({
       rows: [],
     });
-    const response = await request(app)
-      .post('/auth/login')
-      .send({
-        userName: 'dadiorchen',
-        password: 'xxxxxxx',
-      });
+    const response = await request(app).post('/auth/login').send({
+      userName: 'dadiorchen',
+      password: 'xxxxxxx',
+    });
     expect(response.statusCode).toBe(401);
   });
 
@@ -150,12 +146,10 @@ describe.skip('auth', () => {
             },
           ],
         });
-      const response = await request(app)
-        .post('/auth/login')
-        .send({
-          userName: 'dadiorchen',
-          password: '123456',
-        });
+      const response = await request(app).post('/auth/login').send({
+        userName: 'dadiorchen',
+        password: '123456',
+      });
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.token).toMatch(/\S+/);
@@ -185,7 +179,7 @@ describe.skip('auth', () => {
         .set('Authorization', token);
       expect(res.statusCode).toBe(200);
       expect(res.body).toBeInstanceOf(Array);
-      res.body.forEach(permission => {
+      res.body.forEach((permission) => {
         expect(permission).toMatchObject({
           id: expect.any(Number),
           roleName: expect.any(String),
@@ -217,7 +211,7 @@ describe.skip('auth', () => {
         .set('Authorization', token);
       expect(res.statusCode).toBe(200);
       expect(res.body).toBeInstanceOf(Array);
-      res.body.forEach(user => {
+      res.body.forEach((user) => {
         expect(user).toMatchObject({
           id: expect.any(Number),
           userName: expect.any(String),
@@ -321,12 +315,10 @@ describe.skip('auth', () => {
             },
           ],
         });
-      const response = await request(app)
-        .post('/auth/login')
-        .send({
-          userName: 'bbb',
-          password: '123456',
-        });
+      const response = await request(app).post('/auth/login').send({
+        userName: 'bbb',
+        password: '123456',
+      });
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.token).toMatch(/\S+/);

@@ -3,14 +3,26 @@ import {Entity, model, property} from '@loopback/repository';
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
-@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'tree_tag'}}})
+@model({
+  settings: {
+    idInjection: false,
+    postgresql: {schema: 'public', table: 'tree_tag'},
+  },
+})
 export class TreeTag extends Entity {
   @property({
     type: Number,
     required: false,
     scale: 0,
     id: 1,
-    postgresql: {"columnName":"id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   id: Number;
 
@@ -18,7 +30,14 @@ export class TreeTag extends Entity {
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"tree_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'tree_id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   treeId: Number;
 
@@ -26,7 +45,14 @@ export class TreeTag extends Entity {
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"tag_id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'tag_id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   tagId: Number;
 

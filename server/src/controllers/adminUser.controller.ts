@@ -22,7 +22,7 @@ import {AdminUserRepository} from '../repositories';
 export class AdminUserController {
   constructor(
     @repository(AdminUserRepository)
-    public adminUserRepository : AdminUserRepository,
+    public adminUserRepository: AdminUserRepository,
   ) {}
 
   // @get('/admin_user/count', {
@@ -95,5 +95,4 @@ export class AdminUserController {
   // ): Promise<void> {
   //   await this.adminUserRepository.deleteById(id);
   // }
-
 }
