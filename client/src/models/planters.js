@@ -11,7 +11,7 @@ const planters = {
   state: {
     planters: [],
     pageSize: 24,
-    count: 0,
+    count: null,
     currentPage: 0,
     filter: new FilterPlanter(),
     isLoading: false,
