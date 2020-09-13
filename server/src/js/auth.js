@@ -620,7 +620,7 @@ const isAuth = async (req, res, next) => {
   }
 };
 
-exports.auth = {
+export default {
   router,
   isAuth,
 };

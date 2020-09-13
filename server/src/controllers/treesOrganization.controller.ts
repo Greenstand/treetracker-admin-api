@@ -130,8 +130,8 @@ export class TreesOrganizationController {
       organizationId,
     );
     if (
-      !entityIds.includes(result.plantingOrganizationId || -1) &&
-      !planterIds.includes(result.planterId || -1)
+      !entityIds.includes(result.plantingOrganizationId?.valueOf() || -1) &&
+      !planterIds.includes(result.planterId?.valueOf() || -1)
     ) {
       throw new HttpErrors.Unauthorized(
         'Organizational user has no permission to do this operation',
@@ -201,8 +201,8 @@ export class TreesOrganizationController {
       organizationId,
     );
     if (
-      !entityIds.includes(result.plantingOrganizationId || -1) &&
-      !planterIds.includes(result.planterId || -1)
+      !entityIds.includes(result.plantingOrganizationId?.valueOf() || -1) &&
+      !planterIds.includes(result.planterId?.valueOf() || -1)
     ) {
       throw new HttpErrors.Unauthorized(
         'Organizational user has no permission to do this operation',

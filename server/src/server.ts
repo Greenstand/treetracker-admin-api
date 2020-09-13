@@ -5,7 +5,7 @@ import * as http from 'http';
 import * as path from 'path';
 import express from 'express';
 import {ApplicationConfig, TreetrackerAdminApiApplication} from './application';
-import {auth} from './js/auth.js';
+import auth from './js/auth.js';
 import {auditMiddleware} from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
 

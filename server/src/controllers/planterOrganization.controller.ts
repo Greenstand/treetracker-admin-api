@@ -38,12 +38,12 @@ export class PlanterOrganizationController {
     },
   })
   async count(
-    @param.path.number('organizationId') organizationId: number,
+    @param.path.number('organizationId') organizationId: Number,
     @param.query.object('where', getWhereSchemaFor(Planter))
     where?: Where<Planter>,
   ): Promise<Count> {
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
+      organizationId.valueOf(),
     );
     where = {
       ...where,
@@ -67,12 +67,12 @@ export class PlanterOrganizationController {
     },
   })
   async find(
-    @param.path.number('organizationId') organizationId: number,
+    @param.path.number('organizationId') organizationId: Number,
     @param.query.object('filter', getFilterSchemaFor(Planter))
     filter?: Filter<Planter>,
   ): Promise<Planter[]> {
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
+      organizationId?.valueOf() || -1,
     );
     if (filter) {
       //filter should be to deal with the organization, but here is just for
@@ -96,14 +96,14 @@ export class PlanterOrganizationController {
     },
   })
   async findById(
-    @param.path.number('organizationId') organizationId: number,
-    @param.path.number('id') id: number,
+    @param.path.number('organizationId') organizationId: Number,
+    @param.path.number('id') id: Number,
   ): Promise<Planter> {
     const result = await this.planterRepository.findById(id);
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
+      organizationId.valueOf(),
     );
-    if (!entityIds.includes(result.organizationId || -1)) {
+    if (!entityIds.includes(result?.organizationId?.valueOf() || -1)) {
       throw new HttpErrors.Unauthorized(
         'Organizational user has no permission to do this operation',
       );
@@ -119,8 +119,8 @@ export class PlanterOrganizationController {
     },
   })
   async updateById(
-    @param.path.number('organizationId') organizationId: number,
-    @param.path.number('id') id: number,
+    @param.path.number('organizationId') organizationId: Number,
+    @param.path.number('id') id: Number,
     @requestBody() planter: Planter,
   ): Promise<void> {
     throw new HttpErrors.Unauthorized(
@@ -128,9 +128,9 @@ export class PlanterOrganizationController {
     );
     const result = await this.planterRepository.findById(id);
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
+      organizationId.valueOf(),
     );
-    if (!entityIds.includes(result.organizationId || -1)) {
+    if (!entityIds.includes(result?.organizationId?.valueOf() || -1)) {
       throw new HttpErrors.Unauthorized(
         'Organizational user has no permission to do this operation',
       );

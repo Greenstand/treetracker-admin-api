@@ -15,7 +15,7 @@ const operations = {
   },
 };
 
-const auditMiddleware = (request, response, next) => {
+export const auditMiddleware = (request, response, next) => {
   try {
     const oldJSON = response.json;
     response.on('finish', async function () {
@@ -119,5 +119,4 @@ class Audit {
   }
 }
 
-module.exports = Audit;
-module.exports.auditMiddleware = auditMiddleware;
+export default Audit;
