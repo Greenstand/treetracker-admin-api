@@ -44,7 +44,7 @@ export class TreesController {
     // In order to filter by tagId (tree-tags relation), we need to bypass the LoopBack count()
     if (where && where.tagId !== undefined) {
       try {
-        let query = this.buildFilterQuery(
+        const query = this.buildFilterQuery(
           `SELECT COUNT(*) FROM trees`,
           `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
           `WHERE tree_tag.tag_id=${where.tagId} `,
@@ -85,13 +85,17 @@ export class TreesController {
       try {
         const connector = this.getConnector()
         if (connector) {
-          let query = this.buildFilterQuery(
-            `SELECT ${connector.buildColumnNames('Trees', filter)} from trees`,
-            `LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id`,
+          // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
+          const columnNames = connector.buildColumnNames('Trees', filter).replace('"id"','"tree_id" as "id"')
+          const query = this.buildFilterQuery(
+            `SELECT ${columnNames} from trees`,
+            `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
             `WHERE tree_tag.tag_id=${filter.where.tagId} `,
             filter.where,
           );
-          return <Promise<Trees[]>> await this.treesRepository.execute(query.sql, query.params);
+          return <Promise<Trees[]>> await this.treesRepository.execute(query.sql, query.params).then((data) => {
+            return data.map((obj) => connector.fromRow('Trees', obj));
+          });
         } else {
           throw('Connector not defined')
         }
