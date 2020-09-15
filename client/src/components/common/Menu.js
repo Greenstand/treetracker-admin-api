@@ -81,8 +81,6 @@ export default function GSMenu(props) {
   const theme = useTheme()
   const appContext = React.useContext(AppContext)
   const { user } = appContext
-  console.log("user:", user);
-
   const menus = [
     {
       name: 'Home',
