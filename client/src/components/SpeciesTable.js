@@ -22,6 +22,7 @@ import {
 } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Delete from '@material-ui/icons/Delete'
+import SortIcon from '@material-ui/icons/Sort';
 import Menu from './common/Menu'
 import { withStyles } from '@material-ui/core/styles'
 
@@ -95,6 +96,7 @@ const styles = (theme) => ({
 
 const SpeciesTable = (props) => {
   const { classes } = props
+  const sortOptions = {byId:"id", byName:"name"}
 
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
@@ -102,14 +104,34 @@ const SpeciesTable = (props) => {
   const [speciesEdit, setSpeciesEdit] = React.useState(undefined)
   const [finishEdit, setFinishEdit] = React.useState(true)
   const [openDelete, setOpenDelete] = React.useState(false)
+  const [species, getSpecies] = React.useState([])
+  const [option, setOption] = React.useState(sortOptions.byName) 
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
 
   React.useEffect(() => {
     props.speciesDispatch.loadSpeciesList()
-    console.log(props.speciesState.speciesList)
   }, [])
+
+  React.useEffect(()=>{
+    getSpecies(props.speciesState.speciesList)
+  },[props.speciesState.speciesList])
+
+  React.useEffect(()=>{
+    const sortBy = (option)=>{
+      let sortedSpecies
+      if(option === sortOptions.byId){
+        sortedSpecies = [...species].sort((a, b) => a[option] - b[option]);
+      }
+      if(option === sortOptions.byName){
+        sortedSpecies = [...species].sort((a, b) => a[option].localeCompare(b[option]));
+      }
+      getSpecies(sortedSpecies)
+    }
+    sortBy(option)    
+  },[option])
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -130,12 +152,11 @@ const SpeciesTable = (props) => {
     setOpenDelete(true)
   }
 
-  const getSpecies = () => {
-    return (rowsPerPage > 0
-      ? props.speciesState.speciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      : props.speciesState.speciesList
+  const renderSpecies = () => {    
+    return ( rowsPerPage > 0
+      ? species.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : species
     ).map((species) => (
-      <>
         <TableRow key={species.id} role="listitem">
           <TableCell component="th" scope="row">
             {species.id}
@@ -154,7 +175,6 @@ const SpeciesTable = (props) => {
             </IconButton>
           </TableCell>
         </TableRow>
-      </>
     ))
   }
 
@@ -208,15 +228,23 @@ const SpeciesTable = (props) => {
                   <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                       <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Name</TableCell>
+                        <TableCell>ID
+                          <IconButton title="sortbyId" onClick={()=>setOption(sortOptions.byId)} >
+                            <SortIcon />
+                            </IconButton>
+                        </TableCell>                   
+                        <TableCell>name
+                          <IconButton title="sortbyName" onClick={()=>setOption(sortOptions.byName)} >
+                            <SortIcon />
+                          </IconButton>
+                         </TableCell>
                         <TableCell>Description</TableCell>
                         <TableCell>Tagged Trees</TableCell>
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {getSpecies()}
+                      {renderSpecies()}
                       {emptyRows > 0 && (
                         <TableRow style={{ height: 53 * emptyRows }}>
                           <TableCell colSpan={6} />
