@@ -34,11 +34,9 @@ jobs:
     - name: run ESLint
       run: npm run lint
       working-directory: ${{env.project-directory}}
-      continue-on-error: true #Prevents job from failing
     - name: build client project
       run: npm run build
       working-directory: ${{env.project-directory}}  
-      continue-on-error: true 
     - name: run React tests
       run: npm test
       working-directory: ${{env.project-directory}}

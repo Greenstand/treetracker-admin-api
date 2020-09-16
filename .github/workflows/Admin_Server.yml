@@ -34,16 +34,9 @@ jobs:
     - name: run ESLint
       run: npm run lint
       working-directory: ${{env.project-directory}}
-      continue-on-error: true
     - name: build server project
       run: npm run build
       working-directory: ${{env.project-directory}}
     - name: run Loopback tests
       run: npm test
       working-directory: ${{env.project-directory}}
-      env: 
-        DB_NAME: ${{ secrets.DB_NAME }}
-        DB_CONNECTOR: ${{ secrets.DB_CONNECTOR }}
-        DB_URL: ${{ secrets.DB_URL }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-
