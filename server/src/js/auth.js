@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+
+
 import express from 'express';
 const router = express.Router();
 import jwt from 'jsonwebtoken';
