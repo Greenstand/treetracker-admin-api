@@ -7,7 +7,7 @@ function needRoleUpdate(update_userSession, userSession) {
     /*check if roles equal */
     const isEqual =
       update_userSession.role.length === userSession.role.length &&
-      userSession.role.every(val => update_userSession.role.includes(val));
+      userSession.role.every((val) => update_userSession.role.includes(val));
     return isEqual ? false : true;
   }
 }

@@ -6,27 +6,27 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
+  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
-  del,
+  // put,
+  // del,
   requestBody,
   HttpErrors,
 } from '@loopback/rest';
 import {Planter} from '../models';
 import {PlanterRepository, TreesRepository} from '../repositories';
-const expect : any = require("expect-runtime");
+// import expect from "expect-runtime";
 
 export class PlanterOrganizationController {
   constructor(
     @repository(PlanterRepository)
-    public planterRepository : PlanterRepository,
+    public planterRepository: PlanterRepository,
     @repository(TreesRepository)
-    public treesRepository : TreesRepository,
+    public treesRepository: TreesRepository,
   ) {}
 
   @get('/organization/{organizationId}/planter/count', {
@@ -38,16 +38,19 @@ export class PlanterOrganizationController {
     },
   })
   async count(
-    @param.path.number('organizationId') organizationId: number,
-    @param.query.object('where', getWhereSchemaFor(Planter)) where?: Where<Planter>,
+    @param.path.number('organizationId') organizationId: Number,
+    @param.query.object('where', getWhereSchemaFor(Planter))
+    where?: Where<Planter>,
   ): Promise<Count> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId.valueOf(),
+    );
     where = {
       ...where,
-      organizationId : {
+      organizationId: {
         inq: entityIds,
-      }
-    }
+      },
+    };
     return await this.planterRepository.count(where);
   }
 
@@ -64,19 +67,22 @@ export class PlanterOrganizationController {
     },
   })
   async find(
-    @param.path.number('organizationId') organizationId: number,
-    @param.query.object('filter', getFilterSchemaFor(Planter)) filter?: Filter<Planter>,
+    @param.path.number('organizationId') organizationId: Number,
+    @param.query.object('filter', getFilterSchemaFor(Planter))
+    filter?: Filter<Planter>,
   ): Promise<Planter[]> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    if(filter){
-      //filter should be to deal with the organization, but here is just for 
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId?.valueOf() || -1,
+    );
+    if (filter) {
+      //filter should be to deal with the organization, but here is just for
       //demonstration
       filter.where = {
         ...filter.where,
         organizationId: {
           inq: entityIds,
         },
-      }
+      };
     }
     return await this.planterRepository.find(filter);
   }
@@ -90,13 +96,17 @@ export class PlanterOrganizationController {
     },
   })
   async findById(
-    @param.path.number('organizationId') organizationId: number,
-    @param.path.number('id') id: number
+    @param.path.number('organizationId') organizationId: Number,
+    @param.path.number('id') id: Number,
   ): Promise<Planter> {
     const result = await this.planterRepository.findById(id);
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    if(!entityIds.includes(result.organizationId || -1)){
-      throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId.valueOf(),
+    );
+    if (!entityIds.includes(result?.organizationId?.valueOf() || -1)) {
+      throw new HttpErrors.Unauthorized(
+        'Organizational user has no permission to do this operation',
+      );
     }
     return await this.planterRepository.findById(id);
   }
@@ -109,17 +119,22 @@ export class PlanterOrganizationController {
     },
   })
   async updateById(
-    @param.path.number('organizationId') organizationId: number,
-    @param.path.number('id') id: number,
+    @param.path.number('organizationId') organizationId: Number,
+    @param.path.number('id') id: Number,
     @requestBody() planter: Planter,
   ): Promise<void> {
-      throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
+    throw new HttpErrors.Unauthorized(
+      'Organizational user has no permission to do this operation',
+    );
     const result = await this.planterRepository.findById(id);
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    if(!entityIds.includes(result.organizationId || -1)){
-      throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId.valueOf(),
+    );
+    if (!entityIds.includes(result?.organizationId?.valueOf() || -1)) {
+      throw new HttpErrors.Unauthorized(
+        'Organizational user has no permission to do this operation',
+      );
     }
     await this.planterRepository.updateById(id, planter);
   }
-
 }

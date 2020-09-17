@@ -6,14 +6,14 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
+  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
-  del,
+  // put,
+  // del,
   requestBody,
 } from '@loopback/rest';
 import {Planter} from '../models';
@@ -22,7 +22,7 @@ import {PlanterRepository} from '../repositories';
 export class PlanterController {
   constructor(
     @repository(PlanterRepository)
-    public planterRepository : PlanterRepository,
+    public planterRepository: PlanterRepository,
   ) {}
 
   @get('/planter/count', {
@@ -34,7 +34,8 @@ export class PlanterController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Planter)) where?: Where<Planter>,
+    @param.query.object('where', getWhereSchemaFor(Planter))
+    where?: Where<Planter>,
   ): Promise<Count> {
     return await this.planterRepository.count(where);
   }
@@ -52,7 +53,8 @@ export class PlanterController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Planter)) filter?: Filter<Planter>,
+    @param.query.object('filter', getFilterSchemaFor(Planter))
+    filter?: Filter<Planter>,
   ): Promise<Planter[]> {
     return await this.planterRepository.find(filter);
   }
@@ -82,5 +84,4 @@ export class PlanterController {
   ): Promise<void> {
     await this.planterRepository.updateById(id, planter);
   }
-
 }

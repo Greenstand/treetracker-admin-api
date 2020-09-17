@@ -27,6 +27,13 @@ const PING_RESPONSE: ResponseObject = {
   },
 };
 
+interface PingReply {
+  greeting: string;
+  date: Date;
+  url: string;
+  headers: Request['headers'];
+}
+
 /**
  * A simple controller to bounce back http requests
  */
@@ -39,7 +46,7 @@ export class PingController {
       '200': PING_RESPONSE,
     },
   })
-  ping(): object {
+  ping(): PingReply {
     // Reply with a greeting, the current time, the url, and request headers
     return {
       greeting: 'Hello from LoopBack',

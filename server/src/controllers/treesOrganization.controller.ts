@@ -6,25 +6,25 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
+  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
-  del,
+  // put,
+  // del,
   requestBody,
   HttpErrors,
 } from '@loopback/rest';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
-const expect : any = require("expect-runtime");
+import expect from 'expect-runtime';
 
 export class TreesOrganizationController {
   constructor(
     @repository(TreesRepository)
-    public treesRepository : TreesRepository,
+    public treesRepository: TreesRepository,
   ) {}
 
   @get('/organization/{organizationId}/trees/count', {
@@ -39,21 +39,27 @@ export class TreesOrganizationController {
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
   ): Promise<Count> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId,
+    );
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
+      organizationId,
+    );
     where = {
       ...where,
-      and:[{
-        or: [
-              {
-                plantingOrganizationId: { inq: entityIds},
-              },
-              {
-                planterId: { inq: planterIds},
-              }
-        ]
-      }],
-    }
+      and: [
+        {
+          or: [
+            {
+              plantingOrganizationId: {inq: entityIds},
+            },
+            {
+              planterId: {inq: planterIds},
+            },
+          ],
+        },
+      ],
+    };
     return await this.treesRepository.count(where);
   }
 
@@ -71,29 +77,36 @@ export class TreesOrganizationController {
   })
   async find(
     @param.path.number('organizationId') organizationId: number,
-    @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: Filter<Trees>,
+    @param.query.object('filter', getFilterSchemaFor(Trees))
+    filter?: Filter<Trees>,
   ): Promise<Trees[]> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId,
+    );
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
+      organizationId,
+    );
     expect(planterIds).a(expect.any(Array));
-    if(filter){
-      //filter should be to deal with the organization, but here is just for 
+    if (filter) {
+      //filter should be to deal with the organization, but here is just for
       //demonstration
       filter.where = {
         ...filter.where,
-        and:[{
-          or: [
-            {
-              plantingOrganizationId: { inq: entityIds},
-            },
-            {
-              planterId: { inq: planterIds},
-            }
-          ]
-        }],
-      }
+        and: [
+          {
+            or: [
+              {
+                plantingOrganizationId: {inq: entityIds},
+              },
+              {
+                planterId: {inq: planterIds},
+              },
+            ],
+          },
+        ],
+      };
     }
-    console.log("filter:", filter, filter?filter.where:null);
+    console.log('filter:', filter, filter ? filter.where : null);
     return await this.treesRepository.find(filter);
   }
 
@@ -107,17 +120,22 @@ export class TreesOrganizationController {
   })
   async findById(
     @param.path.number('organizationId') organizationId: number,
-    @param.path.number('id') id: number
+    @param.path.number('id') id: number,
   ): Promise<Trees> {
     const result = await this.treesRepository.findById(id);
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
-    if(
-      !entityIds.includes(result.plantingOrganizationId || -1)
-      &&
-      !planterIds.includes(result.planterId || -1)
-    ){
-      throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId,
+    );
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
+      organizationId,
+    );
+    if (
+      !entityIds.includes(result.plantingOrganizationId?.valueOf() || -1) &&
+      !planterIds.includes(result.planterId?.valueOf() || -1)
+    ) {
+      throw new HttpErrors.Unauthorized(
+        'Organizational user has no permission to do this operation',
+      );
     }
     return result;
   }
@@ -129,35 +147,40 @@ export class TreesOrganizationController {
       '200': {
         description: 'Find trees near a lat/lon with a radius in meters',
         content: {
-        'application/json': {
-          schema: {type: 'array', items: {'x-ts-type': Trees}},
-        },
+          'application/json': {
+            schema: {type: 'array', items: {'x-ts-type': Trees}},
+          },
         },
       },
     },
   })
-  async near(@param.query.number('lat') lat :number, 
-             @param.query.number('lon') lon :number,
-             @param({
-              name: 'radius',
-              in: 'query',
-              required: false,
-              schema: {type: 'number'},
-              description: 'measured in meters (default: 100 meters)'
-             }) radius :number,
-             @param({
-              name: 'limit',
-              in: 'query',
-              required: false,
-              schema: {type: 'number'},
-              description: 'default is 100'
-             }) limit :number,
-             ) : Promise<Trees[]> {
-    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
+  async near(
+    @param.query.number('lat') lat: number,
+    @param.query.number('lon') lon: number,
+    @param({
+      name: 'radius',
+      in: 'query',
+      required: false,
+      schema: {type: 'number'},
+      description: 'measured in meters (default: 100 meters)',
+    })
+    radius: number,
+    @param({
+      name: 'limit',
+      in: 'query',
+      required: false,
+      schema: {type: 'number'},
+      description: 'default is 100',
+    })
+    limit: number,
+  ): Promise<Trees[]> {
+    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${
+      radius ? radius : 100
+    }, false) LIMIT ${limit ? limit : 100}`;
     console.log(`near query: ${query}`);
-    return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
+    return <Promise<Trees[]>>await this.treesRepository.execute(query, []);
   }
-  
+
   @patch('/organization/{organizationId}/trees/{id}', {
     responses: {
       '204': {
@@ -171,18 +194,21 @@ export class TreesOrganizationController {
     @requestBody() trees: Trees,
   ): Promise<void> {
     const result = await this.treesRepository.findById(id);
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
-    if(
-      !entityIds.includes(result.plantingOrganizationId || -1)
-      &&
-      !planterIds.includes(result.planterId || -1)
-    ){
-      throw new HttpErrors.Unauthorized('Organizational user has no permission to do this operation');
+    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
+      organizationId,
+    );
+    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
+      organizationId,
+    );
+    if (
+      !entityIds.includes(result.plantingOrganizationId?.valueOf() || -1) &&
+      !planterIds.includes(result.planterId?.valueOf() || -1)
+    ) {
+      throw new HttpErrors.Unauthorized(
+        'Organizational user has no permission to do this operation',
+      );
     }
 
     await this.treesRepository.updateById(id, trees);
-
   }
-
 }

@@ -14,4 +14,3 @@ export class TreeTagRepository extends DefaultCrudRepository<
     super(TreeTag, dataSource);
   }
 }
-

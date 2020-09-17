@@ -1,0 +1,43 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/@typescript-eslint",
+    "loopback"
+  ],
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "max-len": "off",
+    "quotes": "off",
+    "key-spacing": "off",
+    "comma-spacing": "off",
+    "semi": "off",
+    "comma-dangle": "off",
+    "camelcase": "off",
+    "space-before-blocks": "off",
+    "spaced-comment": "off",
+    "no-multiple-empty-lines": "off",
+    "indent": "off",
+    "space-in-parens": "off",
+    "no-undef": "off",
+    "space-before-function-paren": "off",
+    "padded-blocks": "off",
+    "space-infix-ops": "off",
+    "keyword-spacing": "off",
+    "object-curly-spacing": "off",
+    "operator-linebreak": "off",
+    "function-paren-newline": "off",
+    "one-var": "off",
+    "no-unused-expressions": "off",
+    "@typescript-eslint/ban-types": "off"
+  }
+}

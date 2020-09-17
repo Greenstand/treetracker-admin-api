@@ -2,11 +2,12 @@ import {ApplicationConfig, ExpressServer} from './server';
 
 export * from './server';
 
-export async function main(options: ApplicationConfig = {}) {
+export async function main(options: ApplicationConfig = {}): Promise<void> {
   const server = new ExpressServer(options);
   await server.boot();
   await server.start();
   console.log('Server is running.');
+  return;
 }
 
 if (require.main === module) {
@@ -23,7 +24,7 @@ if (require.main === module) {
       listenOnStart: false,
     },
   };
-  main(config).catch(err => {
+  main(config).catch((err) => {
     console.error('Cannot start the application.', err);
     process.exit(1);
   });
