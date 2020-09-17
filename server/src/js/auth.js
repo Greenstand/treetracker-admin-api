@@ -516,7 +516,7 @@ const isAuth = async (req, res, next) => {
       } else if (url.match(/\/api\/tree-tags.*/)) {
         return next();
       }
-      
+
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);
       if (matcher) {
         if (matcher[1]) {

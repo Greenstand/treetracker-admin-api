@@ -16,6 +16,7 @@ import {
   // del,
   requestBody,
 } from '@loopback/rest';
+import {ParameterizedSQL} from 'loopback-connector';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
 
@@ -50,7 +51,7 @@ export class TreesController {
           `WHERE tree_tag.tag_id=${where.tagId} `,
           where,
         );
-  
+
         return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(res => {
           return (res && res[0]) || {count:0};
         });
@@ -196,31 +197,29 @@ export class TreesController {
       sql += ` ${whereClause}`;
     }
 
-    const ParameterizedSQL = require('loopback-connector').ParameterizedSQL;
-
     let query = new ParameterizedSQL(sql);
 
     if (whereObj) {
       const connector = this.getConnector();
       if (connector) {
         const model = connector._models.Trees.model;
-  
+
         if (model) {
           let safeWhere = model._sanitizeQuery(whereObj);
           safeWhere = model._coerce(safeWhere);
-        
-          let whereObjClause = connector._buildWhere('Trees', safeWhere);
-    
+
+          const whereObjClause = connector._buildWhere('Trees', safeWhere);
+
           if (whereObjClause && whereObjClause.sql) {
             query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql}`
             query.params = whereObjClause.params
           }
-    
+
           query = connector.parameterize(query);
         }
       }
     }
-    
+
     return query
   }
 }
