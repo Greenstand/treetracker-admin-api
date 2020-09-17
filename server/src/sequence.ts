@@ -21,7 +21,7 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.REJECT) public reject: Reject,
   ) {}
 
-  async handle(context: RequestContext) {
+  async handle(context: RequestContext): Promise<void> {
     try {
       const {request, response} = context;
       const route = this.findRoute(request);

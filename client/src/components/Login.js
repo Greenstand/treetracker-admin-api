@@ -77,7 +77,6 @@ const Login = (props) => {
           }
         )
         if (response.status === 200) {
-          console.log(response)
           if (response.data.token === undefined) {
             //the role not change
             appContext.login(user, token)

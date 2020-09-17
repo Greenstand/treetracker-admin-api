@@ -12,7 +12,7 @@ import {
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
+  // put,
   del,
   requestBody,
 } from '@loopback/rest';
@@ -22,7 +22,7 @@ import {SpeciesRepository} from '../repositories';
 export class SpeciesController {
   constructor(
     @repository(SpeciesRepository)
-    public speciesRepository : SpeciesRepository,
+    public speciesRepository: SpeciesRepository,
   ) {}
 
   @get('/species/count', {
@@ -34,7 +34,8 @@ export class SpeciesController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Species)) where?: Where<Species>,
+    @param.query.object('where', getWhereSchemaFor(Species))
+    where?: Where<Species>,
   ): Promise<Count> {
     return await this.speciesRepository.count(where);
   }
@@ -52,9 +53,10 @@ export class SpeciesController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Species)) filter?: Filter<Species>,
+    @param.query.object('filter', getFilterSchemaFor(Species))
+    filter?: Filter<Species>,
   ): Promise<Species[]> {
-    console.log(filter, filter?filter.where:null);
+    console.log(filter, filter ? filter.where : null);
     return await this.speciesRepository.find(filter);
   }
 
@@ -91,9 +93,7 @@ export class SpeciesController {
       },
     },
   })
-  async create(
-    @requestBody() species: Species,
-  ): Promise<Species> {
+  async create(@requestBody() species: Species): Promise<Species> {
     return await this.speciesRepository.create(species);
   }
 
@@ -104,10 +104,7 @@ export class SpeciesController {
       },
     },
   })
-  async delete(
-    @param.path.number('id') id: number,
-  ): Promise<void>{
-    await this.speciesRepository.deleteById(id)
+  async delete(@param.path.number('id') id: number): Promise<void> {
+    await this.speciesRepository.deleteById(id);
   }
-
 }

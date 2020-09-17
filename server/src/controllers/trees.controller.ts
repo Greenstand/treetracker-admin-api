@@ -6,14 +6,14 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
+  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  put,
-  del,
+  // put,
+  // del,
   requestBody,
 } from '@loopback/rest';
 import {Trees} from '../models';
@@ -27,7 +27,7 @@ type TreesFilter = Filter<Trees> & {where: TreesWhere}
 export class TreesController {
   constructor(
     @repository(TreesRepository)
-    public treesRepository : TreesRepository,
+    public treesRepository: TreesRepository,
   ) {}
 
   @get('/trees/count', {
@@ -76,7 +76,8 @@ export class TreesController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Trees)) filter?: TreesFilter,
+    @param.query.object('filter', getFilterSchemaFor(Trees))
+    filter?: TreesFilter,
   ): Promise<Trees[]> {
     console.log(filter, filter?filter.where:null);
 
@@ -128,35 +129,40 @@ export class TreesController {
       '200': {
         description: 'Find trees near a lat/lon with a radius in meters',
         content: {
-        'application/json': {
-          schema: {type: 'array', items: {'x-ts-type': Trees}},
-        },
+          'application/json': {
+            schema: {type: 'array', items: {'x-ts-type': Trees}},
+          },
         },
       },
     },
   })
-  async near(@param.query.number('lat') lat :number, 
-             @param.query.number('lon') lon :number,
-             @param({
-              name: 'radius',
-              in: 'query',
-              required: false,
-              schema: {type: 'number'},
-              description: 'measured in meters (default: 100 meters)'
-             }) radius :number,
-             @param({
-              name: 'limit',
-              in: 'query',
-              required: false,
-              schema: {type: 'number'},
-              description: 'default is 100'
-             }) limit :number,
-             ) : Promise<Trees[]> {
-    let query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius?radius:100}, false) LIMIT ${limit?limit:100}`;
+  async near(
+    @param.query.number('lat') lat: number,
+    @param.query.number('lon') lon: number,
+    @param({
+      name: 'radius',
+      in: 'query',
+      required: false,
+      schema: {type: 'number'},
+      description: 'measured in meters (default: 100 meters)',
+    })
+    radius: number,
+    @param({
+      name: 'limit',
+      in: 'query',
+      required: false,
+      schema: {type: 'number'},
+      description: 'default is 100',
+    })
+    limit: number,
+  ): Promise<Trees[]> {
+    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${
+      radius ? radius : 100
+    }, false) LIMIT ${limit ? limit : 100}`;
     console.log(`near query: ${query}`);
-    return <Promise<Trees[]>> await this.treesRepository.execute(query, []);
+    return <Promise<Trees[]>>await this.treesRepository.execute(query, []);
   }
-  
+
   @patch('/trees/{id}', {
     responses: {
       '204': {

@@ -3,7 +3,7 @@ import {Trees, TreesRelations, TreeTag} from '../models';
 import {TreetrackerDataSource} from '../datasources';
 import {inject, Getter} from '@loopback/core';
 import {TreeTagRepository} from './tree-tag.repository';
-const expect : any = require("expect-runtime");
+import expect from 'expect-runtime';
 
 export class TreesRepository extends DefaultCrudRepository<
   Trees,
@@ -21,17 +21,27 @@ export class TreesRepository extends DefaultCrudRepository<
     this.registerInclusionResolver('treeTags', this.treeTags.inclusionResolver);
   }
 
-  async getEntityIdsByOrganizationId(organizationId : Number):Promise<Array<Number>>{
+  async getEntityIdsByOrganizationId(
+    organizationId: number,
+  ): Promise<Array<number>> {
     expect(organizationId).number();
-    expect(this).property("execute").defined();
-    const result = await this.execute(`select * from getEntityRelationshipChildren(${organizationId})`, []);
-    return result.map(e => e.entity_id);
+    expect(this).property('execute').defined();
+    const result = await this.execute(
+      `select * from getEntityRelationshipChildren(${organizationId})`,
+      [],
+    );
+    return result.map((e) => e.entity_id);
   }
 
-  async getPlanterIdsByOrganizationId(organizationId : Number):Promise<Array<Number>>{
+  async getPlanterIdsByOrganizationId(
+    organizationId: number,
+  ): Promise<Array<number>> {
     expect(organizationId).number();
-    const result = await this.execute(`select * from planter where organization_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`, []);
+    const result = await this.execute(
+      `select * from planter where organization_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`,
+      [],
+    );
     expect(result).match([{id: expect.any(Number)}]);
-    return result.map(e => e.id);
+    return result.map((e) => e.id);
   }
 }

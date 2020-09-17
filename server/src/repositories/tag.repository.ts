@@ -14,4 +14,3 @@ export class TagRepository extends DefaultCrudRepository<
     super(Tag, dataSource);
   }
 }
-
