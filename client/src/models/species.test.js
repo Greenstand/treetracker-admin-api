@@ -30,6 +30,9 @@ describe('species', () => {
         name: 'm',
       })
     })
+    api.getTreeCountPerSpecies = jest.fn(() => {
+      return Promise.resolve({ count: (Math.random() * 10) >> 0 })
+    })
 	})
 
 	describe('with a default store', () => {

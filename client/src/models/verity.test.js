@@ -80,7 +80,6 @@ describe('verity', () => {
       })
 
 			describe('approveTreeImage(1, {seedling, new_tree, simple_leaf, 6})', () => {
-				//{{{
         let approveAction = {
           morphology: 'seedling',
           age: 'new_tree',
@@ -89,7 +88,7 @@ describe('verity', () => {
 					speciesId: 6,
         }
 				beforeEach(async () => {
-					const result		= await store.dispatch.verity.approve(
+					const result = await store.dispatch.verity.approve(
             {
               id: '1',
               approveAction,
@@ -98,8 +97,9 @@ describe('verity', () => {
 					expect(result).toBe(true)
 				})
 
-				it('state tree list should removed the tree, so, get []', () => {
-					expect(store.getState().verity.treeImages).toHaveLength(0)
+				it('state tree list should remove the tree, so return []', () => {
+          expect(store.getState().verity.treeImages).toEqual(expect.any(Array));
+					expect(store.getState().verity.treeImages).toHaveLength(0);
 				})
 
         it('api.approve should be called by : id, seedling...', () => {
@@ -108,8 +108,6 @@ describe('verity', () => {
             ['1', 'seedling', 'new_tree', 'simple_leaf', 6]
           )
         })
-
-				//}}}
 			})
 
 			describe('rejectTreeImage(1, not_tree)', () => {
@@ -183,22 +181,22 @@ describe('verity', () => {
 				beforeEach(async () => {
 					await store.dispatch.verity.set({pageSize:24})
 				})
-	
+
 				it('pageSize should be 24', () => {
 					expect(store.getState().verity.pageSize).toBe(24)
 				})
 			});
-	
+
 			describe('set currentPage', () => {
 				beforeEach(async () => {
 					store.dispatch.verity.set({currentPage:1})
 				})
-	
+
 				it('currentPage should be 1', () => {
 					expect(store.getState().verity.currentPage).toBe(1)
 				})
 			});
-	
+
 			//}}}
 		})
 
@@ -367,7 +365,6 @@ describe('verity', () => {
 				})
 
 				describe('rejectAll()', () => {
-					//{{{
           let approveAction = {
             isApproved: false,
             rejectionReason: 'not_tree',
@@ -420,7 +417,6 @@ describe('verity', () => {
 //						//}}}
 //					})
 
-					//}}}
 				})
 
 				describe('clickTree(9, isShift)', () => {
