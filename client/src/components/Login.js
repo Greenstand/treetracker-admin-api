@@ -15,7 +15,10 @@ import IconLogo from './IconLogo'
 import { withStyles } from '@material-ui/core/styles'
 import { AppContext } from './Context'
 import classNames from 'classnames'
-import { Redirect } from 'react-router-dom'
+import {
+  useHistory,
+  useLocation
+} from 'react-router-dom'
 import axios from 'axios'
 // import Copyright from 'components/Copyright'
 
@@ -62,34 +65,11 @@ const Login = (props) => {
   const [loading, setLoading] = React.useState(false)
   const [usernameBlurred, setUsernameBlurred] = React.useState(false)
   const [passwordBlurred, setPasswordBlurred] = React.useState(false)
-  const [isRemember, setRemember] = React.useState(false)
+  const [isRemember, setRemember] = React.useState(true)
 
-  React.useLayoutEffect(() => {
-    //try to load token
-    async function load() {
-      const token = JSON.parse(localStorage.getItem('token'))
-      const user = JSON.parse(localStorage.getItem('user'))
-      if (token && user) {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_ROOT}/auth/check_session?id=${user.id}`,
-          {
-            headers: { Authorization: token },
-          }
-        )
-        if (response.status === 200) {
-          if (response.data.token === undefined) {
-            //the role not change
-            appContext.login(user, token)
-          } else {
-            //role changes, update the token
-            localStorage.setItem('token', JSON.stringify(response.data.token))
-            appContext.login(user, response.data.token)
-          }
-        }
-      }
-    }
-    load()
-  }, [appContext])
+  const history = useHistory()
+  const location = useLocation()
+  const { from } = location.state || { from: { pathname: "/" } }
 
   React.useEffect(() => {
     return () => {
@@ -159,12 +139,7 @@ const Login = (props) => {
           if (res.status === 200) {
             const token = res.data.token
             const user = res.data.user
-            //remember
-            if (isRemember) {
-              localStorage.setItem('token', JSON.stringify(token))
-              localStorage.setItem('user', JSON.stringify(user))
-            }
-            appContext.login(user, token)
+            appContext.login(user, token, isRemember)
             setLoading(true)
           } else {
             setErrorMessage('Invalid username or password')
@@ -190,7 +165,7 @@ const Login = (props) => {
   }
 
   if (appContext.user && appContext.token) {
-    return <Redirect to="/" />
+    history.replace(from)
   }
 
   return (
