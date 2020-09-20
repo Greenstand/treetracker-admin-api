@@ -34,6 +34,10 @@ import axios from 'axios'
 import { AppContext } from './Context'
 import pwdGenerator from 'generate-password'
 import { getDateTimeStringLocale } from '../common/locale'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormLabel from '@material-ui/core/FormLabel'
+import Radio from '@material-ui/core/Radio'
 
 const style = (theme) => ({
   box: {
@@ -377,7 +381,7 @@ function Users(props) {
 
   function handleActiveChange(e) {
     //convert to boolean
-    let isTrueSet = e.target.value === 'true'
+    let isTrueSet = e.target.value === 'active'
     setUserEditing({ ...userEditing, active: isTrueSet })
   }
 
@@ -587,6 +591,18 @@ function Users(props) {
             className={classes.input}
             onChange={handleEmailChange}
           />
+          <FormLabel
+                variant="outlined">User Status</FormLabel>
+          <RadioGroup
+            row
+            name="User status radios"
+            value={(userEditing && userEditing.active ? 'active' : 'inactive')}
+            onChange={handleActiveChange}
+            className={classes.radioGroup}
+            >
+            <FormControlLabel value="active" control={<Radio />} label="Active" />
+            <FormControlLabel value="inactive" control={<Radio />} label="Inactive" />
+          </RadioGroup>
           {userEditing && userEditing.createdAt && (
             <Grid container spacing={2}>
               <Grid item>
