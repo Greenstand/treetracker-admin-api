@@ -27,8 +27,6 @@ const Navbar = (props) => {
     setMenuShown(!isMenuShown)
   }
 
-  debugger;
-
   return (
     <React.Fragment>
       <AppBar color='default' className={props.className}>
