@@ -1,4 +1,15 @@
 import {ApplicationConfig, ExpressServer} from './server';
+import expect from 'expect-runtime';
+
+//check if env configration were set correctly
+expect(process.env.POLICY_SUPER_PERMISSION).defined();
+expect(process.env.POLICY_SUPER_PERMISSION).defined();
+expect(process.env.POLICY_LIST_USER).defined();
+expect(process.env.POLICY_MANAGER_USER).defined();
+expect(process.env.POLICY_LIST_TREE).defined();
+expect(process.env.POLICY_APPROVE_TREE).defined();
+expect(process.env.POLICY_LIST_PLANTER).defined();
+expect(process.env.POLICY_MANAGE_PLANTER).defined();
 
 export * from './server';
 

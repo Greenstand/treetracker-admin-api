@@ -33,15 +33,6 @@ const jwtSecret = config.jwtSecret;
 //   PLANTER_MANAGER: 3,
 // };
 
-const POLICIES = {
-  SUPER_PERMISSION: 'super_permission',
-  LIST_USER: 'list_user',
-  MANAGER_USER: 'manager_user',
-  LIST_TREE: 'list_tree',
-  APPROVE_TREE: 'approve_tree',
-  LIST_PLANTER: 'list_planter',
-  MANAGE_PLANTER: 'manage_planter',
-};
 
 // const user = {
 //   id: 1,
@@ -498,7 +489,7 @@ const isAuth = async (req, res, next) => {
       //   next();
       //   return;
       // }
-      if (policies.some((r) => r.name === POLICIES.SUPER_PERMISSION)) {
+      if (policies.some((r) => r.name === process.env.POLICY_SUPER_PERMISSION)) {
         next();
         return;
       } else {
@@ -523,9 +514,9 @@ const isAuth = async (req, res, next) => {
           if (
             policies.some(
               (r) =>
-                r.name === POLICIES.SUPER_PERMISSION ||
-                r.name === POLICIES.LIST_TREE ||
-                r.name === POLICIES.APPROVE_TREE,
+                r.name === process.env.POLICY_SUPER_PERMISSION ||
+                r.name === process.env.POLICY_LIST_TREE ||
+                r.name === process.env.POLICY_APPROVE_TREE,
             )
           ) {
             return next();
@@ -547,9 +538,9 @@ const isAuth = async (req, res, next) => {
           if (
             policies.some(
               (r) =>
-                r.name === POLICIES.SUPER_PERMISSION ||
-                r.name === POLICIES.LIST_TREE ||
-                r.name === POLICIES.APPROVE_TREE,
+                r.name === process.env.POLICY_SUPER_PERMISSION ||
+                r.name === process.env.POLICY_LIST_TREE ||
+                r.name === process.env.POLICY_APPROVE_TREE,
             )
           ) {
             return next();
@@ -569,9 +560,9 @@ const isAuth = async (req, res, next) => {
           if (
             policies.some(
               (r) =>
-                r.name === POLICIES.SUPER_PERMISSION ||
-                r.name === POLICIES.LIST_PLANTER ||
-                r.name === POLICIES.MANAGE_PLANTER,
+                r.name === process.env.POLICY_SUPER_PERMISSION ||
+                r.name === process.env.POLICY_LIST_PLANTER ||
+                r.name === process.env.POLICY_MANAGE_PLANTER,
             )
           ) {
             return next();
@@ -593,9 +584,9 @@ const isAuth = async (req, res, next) => {
             if (
               policies.some(
                 (r) =>
-                  r.name === POLICIES.SUPER_PERMISSION ||
-                  r.name === POLICIES.LIST_PLANTER ||
-                  r.name === POLICIES.MANAGE_PLANTER,
+                  r.name === process.env.POLICY_SUPER_PERMISSION ||
+                  r.name === process.env.POLICY_LIST_PLANTER ||
+                  r.name === process.env.POLICY_MANAGE_PLANTER,
               )
             ) {
               return next();

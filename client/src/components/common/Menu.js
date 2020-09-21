@@ -23,15 +23,6 @@ import Grid from '@material-ui/core/Grid'
 
 export const MENU_WIDTH = 232
 
-const POLICIES = {
-  SUPER_PERMISSION: 'super_permission',
-  LIST_USER: 'list_user',
-  MANAGER_USER: 'manager_user',
-  LIST_TREE: 'list_tree',
-  APPROVE_TREE: 'approve_tree',
-  LIST_PLANTER: 'list_planter',
-  MANAGE_PLANTER: 'manage_planter',
-};
 
 const useStyles = makeStyles((theme) => ({
   drawer: {},
@@ -100,9 +91,9 @@ export default function GSMenu(props) {
       icon: IconThumbsUpDown,
       disabled: !hasPermission(
         user, [
-          POLICIES.SUPER_PERMISSION,
-          POLICIES.LIST_TREE,
-          POLICIES.APPROVE_TREE,
+          process.env.REACT_APP_POLICY_SUPER_PERMISSION,
+          process.env.REACT_APP_POLICY_LIST_TREE,
+          process.env.REACT_APP_POLICY_APPROVE_TREE,
         ]),
     },
     {
@@ -111,8 +102,8 @@ export default function GSMenu(props) {
       icon: IconNature,
       disabled: !hasPermission(
         user, [
-          POLICIES.SUPER_PERMISSION,
-          POLICIES.LIST_TREE,
+          process.env.REACT_APP_POLICY_SUPER_PERMISSION,
+          process.env.REACT_APP_POLICY_LIST_TREE,
           
         ]),
     },
@@ -122,8 +113,8 @@ export default function GSMenu(props) {
       icon: IconGroup,
       disabled: !hasPermission(
         user, [
-          POLICIES.SUPER_PERMISSION,
-          POLICIES.LIST_PLANTER,
+          process.env.REACT_APP_POLICY_SUPER_PERMISSION,
+          process.env.REACT_APP_POLICY_LIST_PLANTER,
           
         ]),
     },
@@ -140,8 +131,8 @@ export default function GSMenu(props) {
       //TODO this is temporarily, need to add species policy
       disabled: 
         (!hasPermission(user, [
-          POLICIES.SUPER_PERMISSION,
-          POLICIES.LIST_TREE,
+          process.env.REACT_APP_POLICY_SUPER_PERMISSION,
+          process.env.REACT_APP_POLICY_LIST_TREE,
         ])) || user.policy.organization !== undefined,
     },
     {
@@ -156,7 +147,7 @@ export default function GSMenu(props) {
       icon: IconGroup,
       disabled: !hasPermission(
         user, [
-          POLICIES.SUPER_PERMISSION,
+          process.env.REACT_APP_POLICY_SUPER_PERMISSION,
         ]),
     },
     {
