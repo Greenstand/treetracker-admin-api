@@ -1,7 +1,7 @@
 import seed from '../../tests/seed/seed';
-import db from '../../datasources/treetracker.datasource.json';
+import getDatasource from '../../../src/datasources/config';
 import {Pool} from 'pg';
-const pool = new Pool({connectionString: db.url});
+const pool = new Pool({connectionString: getDatasource().url});
 
 describe('Seed data into DB', () => {
   beforeAll(async () => {
