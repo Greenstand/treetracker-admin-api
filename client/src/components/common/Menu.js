@@ -74,6 +74,9 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: 'none',
     color: theme.palette.primary.main,
   },
+  disabledLinkItem: {
+    pointerEvents: 'none',
+  },
 }))
 
 export default function GSMenu(props) {
@@ -113,7 +116,7 @@ export default function GSMenu(props) {
         user, [
           POLICIES.SUPER_PERMISSION,
           POLICIES.LIST_TREE,
-          
+
         ]),
     },
     {
@@ -124,7 +127,7 @@ export default function GSMenu(props) {
         user, [
           POLICIES.SUPER_PERMISSION,
           POLICIES.LIST_PLANTER,
-          
+
         ]),
     },
     {
@@ -138,7 +141,7 @@ export default function GSMenu(props) {
       linkTo: '/species',
       icon: CategoryIcon,
       //TODO this is temporarily, need to add species policy
-      disabled: 
+      disabled:
         (!hasPermission(user, [
           POLICIES.SUPER_PERMISSION,
           POLICIES.LIST_TREE,
@@ -173,7 +176,7 @@ export default function GSMenu(props) {
       </Box>
       <Box height={20} />
       {menus.map((item, i) => (
-          <Link className={classes.linkItemText} to={`${item.linkTo}`}>
+          <Link className={classes.linkItemText + (item.disabled ? ' ' + classes.disabledLinkItem : '')} to={`${item.disabled ? '/' : item.linkTo}`}>
             <MenuItem
               key={i}
               className={classes.menuItem}
