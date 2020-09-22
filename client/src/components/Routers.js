@@ -29,7 +29,6 @@ export default function Routers() {
             <Switch>
               <Route path="/login" component={Login} />
               { appContext.routes
-                .filter(({disabled}) => !disabled)
                 .map(({linkTo, exact = false, component}, idx) => (
                   <PrivateRoute
                     path={linkTo}

@@ -119,7 +119,7 @@ function getRoutes(user) {
       icon: IconPermIdentity,
       disabled: false,
     },
-  ]
+  ].filter(({disabled}) => !disabled)
 }
 
 export const AppProvider = (props) => {
