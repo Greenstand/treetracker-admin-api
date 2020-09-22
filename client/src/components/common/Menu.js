@@ -7,7 +7,6 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Box from '@material-ui/core/Box'
 import IconLogo from '../IconLogo'
 import { AppContext } from '../Context'
-import { hasPermission } from '../../models/auth'
 import { Link } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 
@@ -91,7 +90,7 @@ export default function GSMenu(props) {
                 </Grid>
             </MenuItem>
           </Link>
-      ))), [appContext.routes, props.active])}
+      ))), [appContext.routes, props.active, classes])}
     </>
   )
 

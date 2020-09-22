@@ -103,8 +103,8 @@ const SpeciesTable = (props) => {
   const [isEdit, setIsEdit] = React.useState(false)
   const [speciesEdit, setSpeciesEdit] = React.useState(undefined)
   const [openDelete, setOpenDelete] = React.useState(false)
-  const [species, getSpecies] = React.useState([])
-  const [option, setOption] = React.useState(sortOptions.byName) 
+  const [sortedSpeciesList, setSortedSpeciesList] = React.useState([])
+  const [option, setOption] = React.useState(sortOptions.byName)
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
@@ -114,23 +114,18 @@ const SpeciesTable = (props) => {
   }, [props.speciesDispatch])
 
   React.useEffect(()=>{
-    getSpecies(props.speciesState.speciesList)
-  },[props.speciesState.speciesList])
-
-  React.useEffect(()=>{
-    const sortBy = (option)=>{
+    const sortBy = (option) => {
       let sortedSpecies
       if(option === sortOptions.byId){
-        sortedSpecies = [...species].sort((a, b) => a[option] - b[option]);
+        sortedSpecies = [...props.speciesState.speciesList].sort((a, b) => a[option] - b[option]);
       }
       if(option === sortOptions.byName){
-        sortedSpecies = [...species].sort((a, b) => a[option].localeCompare(b[option]));
+        sortedSpecies = [...props.speciesState.speciesList].sort((a, b) => a[option].localeCompare(b[option]));
       }
-      getSpecies(sortedSpecies)
+      setSortedSpeciesList(sortedSpecies)
     }
-    sortBy(option)    
-  },[option])
-
+    sortBy(option)
+  },[option, sortOptions.byId, sortOptions.byName, props.speciesState.speciesList])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -153,8 +148,8 @@ const SpeciesTable = (props) => {
 
   const renderSpecies = () => {    
     return ( rowsPerPage > 0
-      ? species.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      : species
+      ? sortedSpeciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : sortedSpeciesList
     ).map((species) => (
         <TableRow key={species.id} role="listitem">
           <TableCell component="th" scope="row">
