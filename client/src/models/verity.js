@@ -312,7 +312,9 @@ const verity = {
         )
 			}
 
-			await api.createTreeTags(payload.id, payload.approveAction.tags)
+			if (payload.approveAction.tags) {
+        await api.createTreeTags(payload.id, payload.approveAction.tags)
+      }
 
 			this.approved(payload.id)
       return true
