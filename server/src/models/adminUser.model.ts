@@ -1,13 +1,27 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'admin_user'}}})
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
+@model({
+  settings: {
+    idInjection: false,
+    postgresql: {schema: 'public', table: 'admin_user'},
+  },
+})
 export class AdminUser extends Entity {
   @property({
     type: Number,
     required: true,
     scale: 0,
     id: 1,
-    postgresql: {"columnName":"id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   id: Number;
 
@@ -15,7 +29,14 @@ export class AdminUser extends Entity {
     type: String,
     required: true,
     length: 30,
-    postgresql: {"columnName":"user_name","dataType":"character varying","dataLength":150,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'user_name',
+      dataType: 'character varying',
+      dataLength: 150,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   username: String;
 
@@ -23,14 +44,28 @@ export class AdminUser extends Entity {
     type: String,
     required: true,
     length: 30,
-    postgresql: {"columnName":"password_hash","dataType":"character varying","dataLength":150,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'password_hash',
+      dataType: 'character varying',
+      dataLength: 150,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   hasswordHash: String;
 
   @property({
     type: String,
     required: false,
-    postgresql: {"columnName":"email","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"YES"},
+    postgresql: {
+      columnName: 'email',
+      dataType: 'character varying',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
   })
   email?: String;
 

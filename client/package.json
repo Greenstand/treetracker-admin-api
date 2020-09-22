@@ -33,6 +33,7 @@
     "react": "*",
     "react-autosuggest": "^10.0.2",
     "react-dom": "*",
+    "react-fast-compare": "^3.2.0",
     "react-infinite": "*",
     "react-redux": "*",
     "react-router": "^5.2.0",

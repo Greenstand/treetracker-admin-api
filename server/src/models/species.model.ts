@@ -1,13 +1,27 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'tree_species'}}})
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
+@model({
+  settings: {
+    idInjection: false,
+    postgresql: {schema: 'public', table: 'tree_species'},
+  },
+})
 export class Species extends Entity {
   @property({
     type: Number,
     required: false,
     scale: 0,
     id: 1,
-    postgresql: {"columnName":"id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   id: Number;
 
@@ -15,7 +29,14 @@ export class Species extends Entity {
     type: String,
     required: false,
     length: 45,
-    postgresql: {"columnName":"name","dataType":"character varying","dataLength":45,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'name',
+      dataType: 'character varying',
+      dataLength: 45,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   name: String;
 
@@ -23,7 +44,14 @@ export class Species extends Entity {
     type: String,
     required: false,
     length: 255,
-    postgresql: {"columnName":"desc","dataType":"character varying","dataLength":255,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'desc',
+      dataType: 'character varying',
+      dataLength: 255,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   desc: String;
 
@@ -31,7 +59,14 @@ export class Species extends Entity {
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"active","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'active',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   active: Number;
 
@@ -39,7 +74,14 @@ export class Species extends Entity {
     type: Number,
     required: false,
     scale: 0,
-    postgresql: {"columnName":"value_factor","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"YES"},
+    postgresql: {
+      columnName: 'value_factor',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'YES',
+    },
   })
   valueFactor?: Number;
 

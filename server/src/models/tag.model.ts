@@ -1,34 +1,66 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {idInjection: false, postgresql: {schema: 'public', table: 'tag'}}})
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
+@model({
+  settings: {idInjection: false, postgresql: {schema: 'public', table: 'tag'}},
+})
 export class Tag extends Entity {
   @property({
     type: Number,
     required: false,
     scale: 0,
     id: 1,
-    postgresql: {"columnName":"id","dataType":"integer","dataLength":null,"dataPrecision":null,"dataScale":0,"nullable":"NO"},
+    postgresql: {
+      columnName: 'id',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
   })
   id: Number;
 
   @property({
     type: String,
     required: false,
-    postgresql: {"columnName":"tag_name","dataType":"character varying","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'tag_name',
+      dataType: 'character varying',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   tagName: String;
 
   @property({
     type: Boolean,
     required: false,
-    postgresql: {"columnName":"active","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'active',
+      dataType: 'boolean',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   active: String;
 
   @property({
     type: Boolean,
     required: false,
-    postgresql: {"columnName":"public","dataType":"boolean","dataLength":null,"dataPrecision":null,"dataScale":null,"nullable":"NO"},
+    postgresql: {
+      columnName: 'public',
+      dataType: 'boolean',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'NO',
+    },
   })
   public: String;
 

@@ -16,7 +16,7 @@ describe.skip('auth int', () => {
     });
   });
 
-  it("init", async () => {
+  it('init', async () => {
     const response = await request(app).post('/auth/init');
     expect(response.statusCode).toBe(200);
   });
@@ -27,12 +27,10 @@ describe.skip('auth int', () => {
   });
 
   it('/auth/login', async () => {
-    const response = await request(app)
-      .post('/auth/login')
-      .send({
-        userName: 'admin',
-        password: 'admin',
-      });
+    const response = await request(app).post('/auth/login').send({
+      userName: 'admin',
+      password: 'admin',
+    });
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeDefined();
     expect(response.body.token).toMatch(/\S+/);
@@ -43,12 +41,10 @@ describe.skip('auth int', () => {
   });
 
   it('/auth/login fail', async () => {
-    const response = await request(app)
-      .post('/auth/login')
-      .send({
-        userName: 'dadiorchen',
-        password: 'xxxxxxx',
-      });
+    const response = await request(app).post('/auth/login').send({
+      userName: 'dadiorchen',
+      password: 'xxxxxxx',
+    });
     expect(response.statusCode).toBe(401);
   });
 
@@ -61,12 +57,10 @@ describe.skip('auth int', () => {
     let token;
 
     beforeEach(async () => {
-      const response = await request(app)
-        .post('/auth/login')
-        .send({
-          userName: 'admin',
-          password: 'admin',
-        });
+      const response = await request(app).post('/auth/login').send({
+        userName: 'admin',
+        password: 'admin',
+      });
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.token).toMatch(/\S+/);
@@ -79,7 +73,7 @@ describe.skip('auth int', () => {
         .set('Authorization', token);
       expect(res.statusCode).toBe(200);
       expect(res.body).toBeInstanceOf(Array);
-      res.body.forEach(permission => {
+      res.body.forEach((permission) => {
         expect(permission).toMatchObject({
           id: expect.any(Number),
           roleName: expect.any(String),
@@ -94,7 +88,7 @@ describe.skip('auth int', () => {
         .set('Authorization', token);
       expect(res.statusCode).toBe(200);
       expect(res.body).toBeInstanceOf(Array);
-      res.body.forEach(user => {
+      res.body.forEach((user) => {
         expect(user).toMatchObject({
           id: expect.any(Number),
           userName: expect.any(String),
@@ -127,12 +121,10 @@ describe.skip('auth int', () => {
       });
 
       it.skip('can login with new user', async () => {
-        const res = await request(app)
-          .post('/auth/login')
-          .send({
-            userName: newUser.userName,
-            password: newUser.password,
-          });
+        const res = await request(app).post('/auth/login').send({
+          userName: newUser.userName,
+          password: newUser.password,
+        });
         expect(res.statusCode).toBe(200);
       });
 
@@ -168,12 +160,10 @@ describe.skip('auth int', () => {
         });
 
         it('Can login with new password', async () => {
-          const res = await request(app)
-            .post('/auth/login')
-            .send({
-              userName: newUser.userName,
-              password: 'abcdef',
-            });
+          const res = await request(app).post('/auth/login').send({
+            userName: newUser.userName,
+            password: 'abcdef',
+          });
           expect(res.statusCode).toBe(200);
         });
       });
@@ -184,12 +174,10 @@ describe.skip('auth int', () => {
     let token;
 
     beforeEach(async () => {
-      const response = await request(app)
-        .post('/auth/login')
-        .send({
-          userName: 'seb',
-          password: '123456',
-        });
+      const response = await request(app).post('/auth/login').send({
+        userName: 'seb',
+        password: '123456',
+      });
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeDefined();
       expect(response.body.token).toMatch(/\S+/);
