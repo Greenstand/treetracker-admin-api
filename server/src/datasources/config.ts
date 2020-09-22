@@ -1,3 +1,7 @@
+//NOTE, here import datasource json is just for Typescript compile purpose, 
+//we must import it to let TS cp this json file to the dist folder
+import _ from "./treetracker.datasource.json"
+
 export interface DatasourceConfig {
   name: string;
   connector: string;
