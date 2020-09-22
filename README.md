@@ -177,7 +177,7 @@ So the React App would connect to http://localhost:3000 for API server.
 
 #### Start server
 
-Normanly, to start server:
+Normally, to start server:
 
 ```
 cd server
@@ -397,7 +397,7 @@ For the goal of protecting the db, when running test, we will use a separate dat
 [project root dir]/server/src/datasources/treetrackerTest.datasource.json
 ```
 
-NOTE: please do not set this datasource to point to our dev DB, because that the tests would clear all the data in the DB, so it would bring some trouble if we don't have any data in the dev DB.
+NOTE: please do not set this datasource to point to our dev DB, because the tests would clear all the data in the DB. It would cause trouble if we don't have any data in the dev DB.
 
 To locally install postgresDB, this app might be helpful: https://postgresapp.com/
 
@@ -407,7 +407,7 @@ To run test:
 npm test
 ```
 
-To make the test process more smooth, we suggest to run a command to compile the Loopback files automatically when files changed:
+To make the test process more smooth, we suggest running a command to compile the Loopback files automatically when files change:
 
 ```
 npm run watch
@@ -415,4 +415,4 @@ npm run watch
 
 In this way, we can write the code and get the tests result immediately.
 
-NOTE when run tests, the files related to Loopback are loading from ./dist folder, that's because for Jest, it do not output compiled files at all, and Loopback will try to load the controllers at runtime.
+NOTE: when running tests, the files related to Loopback are loaded from ./dist folder. That's because for Jest, it does not output compiled files at all, and Loopback will try to load the controllers at runtime.
