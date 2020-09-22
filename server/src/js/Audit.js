@@ -5,8 +5,8 @@
  */
 import {Pool} from 'pg';
 // import log from 'loglevel';
-import db from '../datasources/treetracker.datasource.json';
 // import {strict as assert} from 'assert';
+import getDatasource from '../datasources/config';
 
 const operations = {
   login: {
@@ -69,7 +69,7 @@ export const auditMiddleware = (request, response, next) => {
 
 class Audit {
   constructor() {
-    this.pool = new Pool({connectionString: db.url});
+    this.pool = new Pool({connectionString: getDatasource().url});
   }
 
   async did(req, res) {

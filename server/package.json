@@ -25,7 +25,7 @@
     "startTest": "NODE_DB=test npm run build && NODE_DB=test DEBUG=loopback:* node ./dist/indexTest.js",
     "prepublishOnly": "npm run test",
     "test": "NODE_DB=test jest --watchAll --runInBand",
-    "test:debug": "DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand",
+    "test:debug": "NODE_DB=test DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand",
     "watch": "onchange 'src/controllers/**/*.ts' 'src/models/**/*.ts' 'src/repositories/**/*.ts' -- npm run build"
   },
   "repository": {

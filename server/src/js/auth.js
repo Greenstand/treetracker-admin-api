@@ -11,16 +11,12 @@ import config from '../config';
 import {Pool} from 'pg';
 import {utils} from './utils';
 import {helper} from './helper';
-const db =
-  process.env.NODE_DB === 'test'
-    ? require('../datasources/treetrackerTest.datasource.json')
-    : require('../datasources/treetracker.datasource.json');
+import getDatasource  from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
-// import Audit from './Audit';
 
 const app = express();
-const pool = new Pool({connectionString: db.url});
+const pool = new Pool({connectionString: getDatasource().url});
 const jwtSecret = config.jwtSecret;
 
 const POLICIES = {
@@ -115,8 +111,6 @@ router.post('/login', async function login(req, res, next) {
         role,
         policy,
       } = userLogin;
-      //      const audit = new Audit();
-      //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
       console.log('login success');
       res.json({
         token,
