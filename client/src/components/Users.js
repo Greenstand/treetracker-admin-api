@@ -34,6 +34,10 @@ import axios from 'axios'
 import { AppContext } from './Context'
 import pwdGenerator from 'generate-password'
 import { getDateTimeStringLocale } from '../common/locale'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormLabel from '@material-ui/core/FormLabel'
+import Radio from '@material-ui/core/Radio'
 
 const style = (theme) => ({
   box: {
@@ -111,17 +115,6 @@ function intersection(a, b) {
   return a.filter((value) => b.some((bb) => bb.id === value.id))
 }
 
-const permissions = [
-  {
-    id: 0,
-    name: 'admin',
-  },
-  {
-    id: 1,
-    name: 'Tree Auditor',
-  },
-]
-
 function Users(props) {
   const { classes } = props
   const appContext = React.useContext(AppContext)
@@ -159,9 +152,7 @@ function Users(props) {
     }
   }
 
-  React.useEffect(() => {
-    load()
-  }, [])
+  React.useEffect(load, [])
 
   function handleEdit(user) {
     setUserEditing(user)
@@ -174,7 +165,7 @@ function Users(props) {
   }
 
   async function handleDeleteConfirm() {
-    if (userDelete.id == user.id) {
+    if (userDelete.id === user.id) {
       setErrorMessage('Cannot delete active user.')
       return
     }
@@ -377,7 +368,7 @@ function Users(props) {
 
   function handleActiveChange(e) {
     //convert to boolean
-    let isTrueSet = e.target.value === 'true'
+    let isTrueSet = e.target.value === 'active'
     setUserEditing({ ...userEditing, active: isTrueSet })
   }
 
@@ -420,7 +411,7 @@ function Users(props) {
         <TableCell component="th" scope="row">
           {user.firstName} {user.lastName}
         </TableCell>
-        <TableCell>{user.status}</TableCell>
+        <TableCell>{user.active ? 'active' : 'inactive'}</TableCell>
         <TableCell>
           {user.role.map((r, i) => (
             <Grid key={i}>
@@ -435,7 +426,7 @@ function Users(props) {
           <IconButton title="edit" onClick={() => handleEdit(user)}>
             <Edit />
           </IconButton>
-          <IconButton>
+          <IconButton title="delete" onClick={() => handleDelete(user)}>
             <Delete />
           </IconButton>
           <IconButton title="generate password" onClick={() => handleGeneratePassword(user)}>
@@ -456,7 +447,7 @@ function Users(props) {
         </Grid>
         <Grid item xs={9}>
           <Grid container className={classes.rightBox}>
-            <Grid item xs="12">
+            <Grid item xs={12}>
               <Grid container justify="space-between" className={classes.titleBox}>
                 <Grid item>
                   <Grid container>
@@ -587,6 +578,18 @@ function Users(props) {
             className={classes.input}
             onChange={handleEmailChange}
           />
+          <FormLabel
+                variant="outlined">User Status</FormLabel>
+          <RadioGroup
+            row
+            name="User status radios"
+            value={(userEditing && userEditing.active ? 'active' : 'inactive')}
+            onChange={handleActiveChange}
+            className={classes.radioGroup}
+            >
+            <FormControlLabel value="active" control={<Radio />} label="Active" />
+            <FormControlLabel value="inactive" control={<Radio />} label="Inactive" />
+          </RadioGroup>
           {userEditing && userEditing.createdAt && (
             <Grid container spacing={2}>
               <Grid item>
@@ -675,10 +678,10 @@ function Users(props) {
         </DialogContentText>
         */}
           <Grid container className={classes.noteBox}>
-            <Grid item xs="1">
+            <Grid item xs={1}>
               <EmojiObjects />
             </Grid>
-            <Grid item xs="11">
+            <Grid item xs={11}>
               <Typography className={classes.note}>
                 Please be careful, once you generate a new password, then the current password for
                 this user will be dedicated.
@@ -734,7 +737,7 @@ function Users(props) {
       >
         <DialogTitle id="form-dialog-title">Delete User</DialogTitle>
         <DialogContent>
-          <Grid item xs="11">
+          <Grid item xs={11}>
             <Typography className={classes.note}>
               {`Are you sure you want to delete user \
               ${(userDelete && userDelete.userName) || ''}?`}

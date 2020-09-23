@@ -102,36 +102,30 @@ const SpeciesTable = (props) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [isEdit, setIsEdit] = React.useState(false)
   const [speciesEdit, setSpeciesEdit] = React.useState(undefined)
-  const [finishEdit, setFinishEdit] = React.useState(true)
   const [openDelete, setOpenDelete] = React.useState(false)
-  const [species, getSpecies] = React.useState([])
-  const [option, setOption] = React.useState(sortOptions.byName) 
+  const [sortedSpeciesList, setSortedSpeciesList] = React.useState([])
+  const [option, setOption] = React.useState(sortOptions.byName)
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
 
   React.useEffect(() => {
     props.speciesDispatch.loadSpeciesList()
-  }, [])
+  }, [props.speciesDispatch])
 
   React.useEffect(()=>{
-    getSpecies(props.speciesState.speciesList)
-  },[props.speciesState.speciesList])
-
-  React.useEffect(()=>{
-    const sortBy = (option)=>{
+    const sortBy = (option) => {
       let sortedSpecies
       if(option === sortOptions.byId){
-        sortedSpecies = [...species].sort((a, b) => a[option] - b[option]);
+        sortedSpecies = [...props.speciesState.speciesList].sort((a, b) => a[option] - b[option]);
       }
       if(option === sortOptions.byName){
-        sortedSpecies = [...species].sort((a, b) => a[option].localeCompare(b[option]));
+        sortedSpecies = [...props.speciesState.speciesList].sort((a, b) => a[option].localeCompare(b[option]));
       }
-      getSpecies(sortedSpecies)
+      setSortedSpeciesList(sortedSpecies)
     }
-    sortBy(option)    
-  },[option])
-
+    sortBy(option)
+  },[option, sortOptions.byId, sortOptions.byName, props.speciesState.speciesList])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -154,8 +148,8 @@ const SpeciesTable = (props) => {
 
   const renderSpecies = () => {    
     return ( rowsPerPage > 0
-      ? species.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      : species
+      ? sortedSpeciesList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : sortedSpeciesList
     ).map((species) => (
         <TableRow key={species.id} role="listitem">
           <TableCell component="th" scope="row">
@@ -203,7 +197,7 @@ const SpeciesTable = (props) => {
         </Grid>
         <Grid item xs={9}>
           <Grid container className={classes.rightBox}>
-            <Grid item xs="12">
+            <Grid item xs={12}>
               <Grid container justify="space-between" className={classes.titleBox}>
                 <Grid item>
                   <Grid container>
@@ -266,7 +260,6 @@ const SpeciesTable = (props) => {
         setIsEdit={setIsEdit}
         speciesEdit={speciesEdit}
         setSpeciesEdit={setSpeciesEdit}
-        setFinishEdit={setFinishEdit}
         styles={{ ...classes }}
         editSpecies={props.speciesDispatch.editSpecies}
         loadSpeciesList={props.speciesDispatch.loadSpeciesList}
@@ -288,7 +281,6 @@ const EditModal = ({
   setIsEdit,
   speciesEdit,
   setSpeciesEdit,
-  setFinishEdit,
   styles,
   loadSpeciesList,
   editSpecies,
@@ -312,7 +304,6 @@ const EditModal = ({
     setIsEdit(false)
     await editSpecies({ id: speciesEdit.id, name: speciesEdit.name, desc: speciesEdit.desc })
     loadSpeciesList()
-    setFinishEdit(false)
     setSpeciesEdit(undefined)
   }
 

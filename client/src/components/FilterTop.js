@@ -86,21 +86,6 @@ function Filter(props) {
     return convertDateToDefaultSqlDate(date);
   };
 
-  // function handleClear() {
-  //   const filter = new FilterModel();
-  //   setTreeId('');
-  //   setPlanterId('');
-  //   setDeviceId('');
-  //   setPlanterIdentifier('');
-  //   setDateStart(dateStartDefault);
-  //   setDateEnd(dateEndDefault);
-  //   setApproved();
-  //   setActive();
-  //   setSpeciesId(0);
-  //   setTagId(0);
-  //   props.onSubmit && props.onSubmit(filter);
-  // }
-
   function handleSubmit() {
     const filter = new FilterModel();
     filter.treeId = treeId;
@@ -182,7 +167,6 @@ function Filter(props) {
                 }}
               />
               <KeyboardDatePicker
-                className={``}
                 margin='normal'
                 id='end-date-picker'
                 label='End Date'

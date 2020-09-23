@@ -36,6 +36,10 @@ export default createMuiTheme({
 			//very light primary color, for background sometimes
 			lightVery		: '#F9FCF4',
     },
+    secondary: {
+			main: '#61892f',
+			dark: 'rgba(135, 195, 46, .32)',
+    },
 		action		: {
 			active		: 'rgba(135, 195, 46, .64)',
 			hover		: 'rgba(135, 195, 46, .08)',
@@ -82,7 +86,14 @@ export default createMuiTheme({
 					backgroundColor		: colorPrimaryHover,
 				},
 			},
-		},
+    },
+    'MuiRadio': {
+      root: {
+        '&:hover': {
+          backgroundColor: 'transparent',
+        },
+      },
+    },
 		MuiSelect		: {
 			select		: {
 				'&:focus'		: {

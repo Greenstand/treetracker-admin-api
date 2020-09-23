@@ -58,23 +58,12 @@ const styles = theme => {
 };
 
 function FilterTopPlanter(props) {
-  const { classes, filter } = props;
+  const { classes } = props;
   const [id, setId] = useState("");
   const [personId, setPersonId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [organizationId, setOrganizationId] = useState("");
-
-
-  function handleClear() {
-    const filter = new FilterModel();
-    setPersonId("");
-    setFirstName("");
-    setId("");
-    setLastName("");
-    setOrganizationId("");
-    props.onSubmit && props.onSubmit(filter);
-  }
 
   function handleSubmit() {
     const filter = new FilterModel({
@@ -85,10 +74,6 @@ function FilterTopPlanter(props) {
       organizationId,
     });
     props.onSubmit && props.onSubmit(filter);
-  }
-
-  function handleCloseClick() {
-    props.onClose && props.onClose();
   }
 
   return (

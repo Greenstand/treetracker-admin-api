@@ -2,7 +2,7 @@ import Filter		from './Filter'
 
 describe('Filter, with initial values about this filter object', () => {
 	let filter
-	
+
 	beforeEach(() => {
 		filter		= new Filter()
 		filter.treeId		= 10
@@ -18,16 +18,16 @@ describe('Filter, with initial values about this filter object', () => {
 
 	it('getBackloopString() should be: ', () => {
 		console.log(filter.getBackloopString())
-		expect(filter.getBackloopString().indexOf('&filter[where][id]=10') >= 0).toBe(true)
-		expect(filter.getBackloopString().indexOf('&filter[where][status]=planted') >=0).toBe(true)
-		expect(filter.getBackloopString().indexOf('&filter[where][timeCreated][between]=2019-07-25&filter[where][timeCreated][between]=2019-07-30') >=0).toBe(true)
+		expect(filter.getBackloopString()).toEqual(expect.stringContaining('&filter[where][id]=10'))
+		expect(filter.getBackloopString()).toEqual(expect.not.stringContaining('&filter[where][status]=planted'))
+		expect(filter.getBackloopString()).toEqual(expect.stringContaining('&filter[where][timeCreated][between]=2019-07-25&filter[where][timeCreated][between]=2019-07-30'))
 	})
 
 	it('getBackloopString(false) should be: ', () => {
 		console.log(filter.getBackloopString(false))
-		expect(filter.getBackloopString(false).indexOf('&where[id]=10') >= 0).toBe(true)
-		expect(filter.getBackloopString(false).indexOf('&where[status]=planted') >=0).toBe(true)
-		expect(filter.getBackloopString(false).indexOf('&where[timeCreated][between]=2019-07-25&where[timeCreated][between]=2019-07-30') >=0).toBe(true)
+		expect(filter.getBackloopString(false)).toEqual(expect.stringContaining('&where[id]=10'))
+		expect(filter.getBackloopString(false)).toEqual(expect.not.stringContaining('&where[status]=planted'))
+		expect(filter.getBackloopString(false)).toEqual(expect.stringContaining('&where[timeCreated][between]=2019-07-25&where[timeCreated][between]=2019-07-30'))
 	})
 
 	it('getBackloopString() should match: approved=true', () => {

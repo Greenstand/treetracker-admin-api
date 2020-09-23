@@ -11,27 +11,13 @@ import config from '../config';
 import {Pool} from 'pg';
 import {utils} from './utils';
 import {helper} from './helper';
-const db =
-  process.env.NODE_DB === 'test'
-    ? require('../datasources/treetrackerTest.datasource.json')
-    : require('../datasources/treetracker.datasource.json');
+import getDatasource  from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
-// import Audit from './Audit';
 
 const app = express();
-//const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/postgres"});
-//const pool = new Pool({ connectionString: "postgresql://doadmin:l5al4hwte8qmj6x8@db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker_dev?ssl=true"});
-//const pool = new Pool({ connectionString: "postgres://treetracker:tr33dev@107.170.246.116:5432/treetracker"});
-//const pool = new Pool({ connectionString: "postgresql://doadmin:g7a1fey4jeqao9mg@db-postgresql-sfo2-40397-do-user-1067699-0.db.ondigitalocean.com:25060/treetracker?ssl=true"});
-const pool = new Pool({connectionString: db.url});
+const pool = new Pool({connectionString: getDatasource().url});
 const jwtSecret = config.jwtSecret;
-
-// const PERMISSIONS = {
-//   ADMIN: 1,
-//   TREE_AUDITOR: 2,
-//   PLANTER_MANAGER: 3,
-// };
 
 const POLICIES = {
   SUPER_PERMISSION: 'super_permission',
@@ -43,25 +29,6 @@ const POLICIES = {
   MANAGE_PLANTER: 'manage_planter',
 };
 
-// const user = {
-//   id: 1,
-//   username: 'dadiorchen',
-//   firstName: 'Dadior',
-//   lastName: 'Chen',
-//   password: '123456',
-//   role: [0, 1],
-//   email: 'dadiorchen@outlook.com',
-// };
-
-// const userB = {
-//   id: 2,
-//   username: 'bbb',
-//   firstName: 'B',
-//   lastName: 'B',
-//   password: '123456',
-//   role: [1],
-//   email: 'b@outlook.com',
-// };
 
 const sha512 = function (password, salt) {
   const hash = Crypto.createHmac('sha512', salt);
@@ -75,25 +42,6 @@ const generateSalt = function () {
   return generated;
 };
 
-// const permissions = [
-//   {
-//     id: 0,
-//     name: 'Admin',
-//     description: 'Admin pemission',
-//   },
-//   {
-//     id: 1,
-//     name: 'Tree Auditor',
-//     description: 'Veify & view trees',
-//   },
-//   {
-//     id: 2,
-//     name: 'Planter Manager',
-//     description: 'Check & manage planters',
-//   },
-// ];
-
-// const users = [user, userB];
 
 const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
 // const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
@@ -163,8 +111,6 @@ router.post('/login', async function login(req, res, next) {
         role,
         policy,
       } = userLogin;
-      //      const audit = new Audit();
-      //      await audit.did(userLogin.id, Audit.TYPE.LOGIN, req);
       console.log('login success');
       res.json({
         token,
