@@ -21,6 +21,7 @@ import CategoryIcon from '@material-ui/icons/Category'
 import HomeIcon from '@material-ui/icons/Home'
 
 import { session, hasPermission, POLICIES } from '../models/auth'
+import Unauthorized from './Unauthorized'
 
 
 
@@ -38,7 +39,7 @@ function getRoutes(user) {
     },
     {
       name: 'Monitor',
-      linkTo: '/',
+      linkTo: '/monitor',
       icon: IconShowChart,
       disabled: true,
     },
@@ -68,7 +69,7 @@ function getRoutes(user) {
     },
     {
       name: 'Planters',
-      linkTo: 'planters',
+      linkTo: '/planters',
       component: Planters,
       icon: IconGroup,
       disabled: !hasPermission(
@@ -80,7 +81,7 @@ function getRoutes(user) {
     },
     {
       name: 'Payments',
-      linkTo: '/',
+      linkTo: '/payments',
       icon: IconCompareArrows,
       disabled: true,
     },
@@ -98,9 +99,10 @@ function getRoutes(user) {
     },
     {
       name: 'Settings',
-      linkTo: '/',
+      linkTo: '/settings',
+      component: Unauthorized,
       icon: IconSettings,
-      disabled: true,
+      disabled: false,
     },
     {
       name: 'User Manager',
@@ -119,7 +121,7 @@ function getRoutes(user) {
       icon: IconPermIdentity,
       disabled: false,
     },
-  ].filter(({disabled}) => !disabled)
+  ]
 }
 
 export const AppProvider = (props) => {
@@ -139,9 +141,12 @@ export const AppProvider = (props) => {
       }
 
       if (token !== newToken) {
-        setToken(newToken);
+        setToken(newToken)
         session.token = newToken
       }
+    },
+    isLoggedIn: () => {
+      return !!user && !!token;
     },
     logout: () => {
       setUser(undefined)

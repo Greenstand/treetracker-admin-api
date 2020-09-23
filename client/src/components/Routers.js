@@ -4,6 +4,8 @@ import Grid from '@material-ui/core/Grid'
 import Login from './Login'
 import { AppContext } from './Context'
 import PrivateRoute from './PrivateRoute'
+import Unauthorized from './Unauthorized'
+import Page404 from './Page404'
 
 export default function Routers() {
   const refContainer = React.useRef()
@@ -29,10 +31,10 @@ export default function Routers() {
             <Switch>
               <Route path="/login" component={Login} />
               { appContext.routes
-                .map(({linkTo, exact = false, component}, idx) => (
+                .map(({linkTo, exact = false, component, disabled}, idx) => (
                   <PrivateRoute
                     path={linkTo}
-                    component={component}
+                    component={disabled ? Unauthorized : component}
                     exact={exact}
                     getScrollContainerRef={linkTo === '/verify' ? () => refContainer.current : undefined}
                     key={`route_${idx}`}
@@ -40,7 +42,9 @@ export default function Routers() {
                 ))
               }
               <Route>
-                <Redirect to="/login" />
+                {
+                  appContext.isLoggedIn() ? (Page404) : (<Redirect to="/login" />)
+                }
               </Route>
             </Switch>
           </Grid>
