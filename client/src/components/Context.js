@@ -8,7 +8,6 @@ import Account from './Account'
 import Home from './Home'
 import Users from './Users'
 import SpeciesMgt from './SpeciesMgt'
-import TreeTest from './TreeTest'
 
 import IconSettings from '@material-ui/icons/Settings'
 import IconShowChart from '@material-ui/icons/ShowChart'
