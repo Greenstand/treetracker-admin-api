@@ -13,12 +13,12 @@ Pool.mockImplementation(() => ({
 }));
 const {auth} = require('./auth.js');
 
-jest.mock('./Audit');
-const Audit = require('./Audit');
-const audit = {
-  did: jest.fn(),
-};
-Audit.mockImplementation(() => audit);
+//jest.mock('./Audit');
+//const Audit = require('./Audit');
+//const audit = {
+//  did: jest.fn(),
+//};
+//Audit.mockImplementation(() => audit);
 
 describe.skip('auth', () => {
   let app;

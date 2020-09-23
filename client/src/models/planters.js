@@ -1,11 +1,8 @@
 /*
  * The model for planter page
  */
-import * as loglevel from "loglevel";
 import api from "../api/planters";
 import FilterPlanter from "./FilterPlanter";
-
-const log = loglevel.getLogger("../models/planters");
 
 const planters = {
   state: {
@@ -70,15 +67,17 @@ const planters = {
 
     async load(payload, state){
       this.setIsLoading(true);
+      const filter = payload.filter || state.planters.filter || new FilterPlanter()
+      const pageNumber = payload.pageNumber === undefined ? state.payload.pageNumber : payload.pageNumber
       const planters = await api.getPlanters({
-        skip: payload.pageNumber * state.planters.pageSize,
+        skip: pageNumber * state.planters.pageSize,
         rowsPerPage: state.planters.pageSize,
-        filter: payload.filter,
+        filter,
       });
       //TODO should use single reducer to get faster
       this.setPlanters(planters);
-      this.setCurrentPage(payload.pageNumber);
-      this.setFilter(payload.filter);
+      this.setCurrentPage(pageNumber);
+      this.setFilter(filter);
       this.setIsLoading(false);
       return true;
     },

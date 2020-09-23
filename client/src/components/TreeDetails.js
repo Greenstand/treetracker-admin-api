@@ -2,7 +2,7 @@ import React from 'react'
 
 const TreeDetails = props => {
   let { tree } = props
-  const treeImage = (tree.imageUrl !== null) ? <img className="tree-image" src={tree.imageUrl}></img> : null
+  const treeImage = (tree.imageUrl !== null) ? <img className="tree-image" src={tree.imageUrl} alt={`tree ${tree.id}`}/> : null
   const isAlive = (tree.causeOfDeathId !== null) ? 'Dead' : 'Alive'
   const treeMissing = (tree.missing) ? 'True' : 'False'
   return (
@@ -13,13 +13,6 @@ const TreeDetails = props => {
       <p className="tree-missing">Missing: {treeMissing}</p>
     </div>
   )
-}
-
-const mapState = state => {
-  const keys = Object.keys(state.trees.data)
-  return {
-    tree: state.trees.tree
-  }
 }
 
 export default TreeDetails

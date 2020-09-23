@@ -10,21 +10,15 @@ import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
-import Slide from '@material-ui/core/Slide'
 import TablePagination from '@material-ui/core/TablePagination'
 
 import { selectedHighlightColor } from '../common/variables.js'
 import Grid from '@material-ui/core/Grid'
 import IconFilter from '@material-ui/icons/FilterList'
 import IconButton from '@material-ui/core/IconButton'
-import Box from '@material-ui/core/Box'
-import Drawer from '@material-ui/core/Drawer'
-import Close from "@material-ui/icons/Close";
 
 import FilterTopPlanter from './FilterTopPlanter'
-import FilterPlanter from '../models/FilterPlanter'
 import Person from "@material-ui/icons/Person";
-import Divider from "@material-ui/core/Divider";
 import Navbar from "./Navbar";
 import PlanterDetail from "./PlanterDetail"
 
@@ -125,10 +119,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />
-})
-
 const Planters = (props) => {
   log.debug('render Planters...')
   const classes = useStyles(props)
@@ -142,24 +132,19 @@ const Planters = (props) => {
   useEffect(() => {
     log.debug('mounted')
     props.plantersDispatch.count()
-    props.plantersDispatch.load({
-      pageNumber: 0,
-      filter: new FilterPlanter(),
-    })
-  }, [])
+  }, [props.plantersDispatch])
 
   useEffect(() => {
     props.plantersDispatch.load({
       pageNumber: 0,
-      filter: props.plantersState.filter,
     });
-  }, [props.plantersState.pageSize])
+  }, [props.plantersDispatch, props.plantersState.pageSize])
 
   useEffect(() => {
     props.plantersDispatch.count({
       filter: props.plantersState.filter,
     })
-  }, [props.plantersState.filter])
+  }, [props.plantersDispatch, props.plantersState.filter])
 
   function handlePlanterClick(planter){
     setDetailShown(true);
@@ -231,7 +216,7 @@ const Planters = (props) => {
         <Grid item>
           <Navbar
             buttons={[
-              <IconButton onClick={handleFilterClick}>
+              <IconButton onClick={handleFilterClick} key={1}>
                 <IconFilter />
               </IconButton>
             ]}

@@ -72,7 +72,6 @@ function Filter(props) {
   const [planterIdentifier, setPlanterIdentifier] = useState(
     filter.planterIdentifier
   );
-  const [status, setStatus] = useState(filter.status);
   const [approved, setApproved] = useState(filter.approved);
   const [active, setActive] = useState(filter.active);
   const [dateStart, setDateStart] = useState(
@@ -93,37 +92,18 @@ function Filter(props) {
     return convertDateToDefaultSqlDate(date);
   };
 
-  function handleClear() {
-    const filter = new FilterModel();
-    setTreeId('');
-    setPlanterId('');
-    setDeviceId('');
-    setPlanterIdentifier('');
-    setStatus('All');
-    setDateStart(dateStartDefault);
-    setDateEnd(dateEndDefault);
-    setApproved();
-    setActive();
-    props.onSubmit && props.onSubmit(filter);
-  }
-
   function handleSubmit() {
     const filter = new FilterModel();
     filter.treeId = treeId;
     filter.planterId = planterId;
     filter.deviceId = deviceId;
     filter.planterIdentifier = planterIdentifier;
-    filter.status = status;
     filter.dateStart = dateStart? formatDate(dateStart) : undefined;
     filter.dateEnd = dateEnd? formatDate(dateEnd) : undefined;
     filter.approved = approved;
     filter.active = active;
     filter.speciesId = speciesId;
     props.onSubmit && props.onSubmit(filter);
-  }
-
-  function handleCloseClick() {
-    props.onClose && props.onClose();
   }
 
   return (
@@ -195,7 +175,6 @@ function Filter(props) {
                 className={`${classes.dateInput} ${classes.filterElement}`}
               />
               <KeyboardDatePicker
-                className={`${classes.filterElement}`}
                 margin='normal'
                 id='end-date-picker'
                 label='End Date'
