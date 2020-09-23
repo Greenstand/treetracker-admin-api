@@ -175,37 +175,39 @@ function Account(props) {
   const [permissions, setPermissions] = React.useState([])
   const [users, setUsers] = React.useState([])
 
-  //loading permission from server
-  async function load() {
-    let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
-      headers: { Authorization: token },
-    })
-    if (res.status === 200) {
-      setPermissions(res.data)
-      console.log(res.data);
-    } else {
-      console.error('load fail:', res)
-      return
+  React.useEffect(() => {
+    //loading permission from server
+    async function load() {
+      let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
+        headers: { Authorization: token },
+      })
+      if (res.status === 200) {
+        setPermissions(res.data)
+        console.log(res.data);
+      } else {
+        console.error('load fail:', res)
+        return
+      }
+      res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/admin_users`, {
+        headers: { Authorization: token },
+      })
+      if (res.status === 200) {
+        setUsers(res.data)
+      } else {
+        console.error('load fail:', res)
+        return
+      }
     }
-    res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/admin_users`, {
-      headers: { Authorization: token },
-    })
-    if (res.status === 200) {
-      setUsers(res.data)
-    } else {
-      console.error('load fail:', res)
-      return
-    }
-  }
 
-  React.useEffect(load, [])
+    load()
+  }, [token])
 
   const freshUser = users.find(el => el.userName === user.userName) || user
-  const roles = freshUser.role.map((r,i) => {
+  const roles = freshUser.role.map((r,idx) => {
     return permissions.reduce((el, p) => {
       return el || (p && p.id === r &&
-        <Grid key={i}>
-          {permissions[i].roleName}
+        <Grid key={`role_${idx}`}>
+          {p.roleName}
         </Grid>
       )
     }, undefined)

@@ -152,7 +152,9 @@ function Users(props) {
     }
   }
 
-  React.useEffect(load, [])
+  React.useEffect(() => {
+    load()
+  }, [])
 
   function handleEdit(user) {
     setUserEditing(user)
@@ -413,9 +415,9 @@ function Users(props) {
         </TableCell>
         <TableCell>{user.active ? 'active' : 'inactive'}</TableCell>
         <TableCell>
-          {user.role.map((r, i) => (
-            <Grid key={i}>
-              {permissions.reduce((a, c) => a || (c.id === r ? c : undefined), undefined).roleName}
+          {user.role.map((r, idx) => (
+            <Grid key={`role_${idx}`}>
+              {permissions.reduce((a, c) => a || (c.id === r ? c.roleName : undefined), undefined)}
             </Grid>
           ))}
         </TableCell>

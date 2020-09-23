@@ -164,7 +164,7 @@ const Login = (props) => {
     return false
   }
 
-  if (appContext.user && appContext.token) {
+  if (appContext.isLoggedIn()) {
     history.replace(from)
   }
 

@@ -5,6 +5,8 @@ import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
 
 import Menu, { MENU_WIDTH } from './common/Menu'
+import { AppContext } from './Context'
+import { hasPermission, POLICIES } from '../models/auth'
 import {
   DashStatPlanterCount,
   DashStatTotalTrees,
@@ -104,6 +106,7 @@ const style = (theme) => ({
 
 function Home(props) {
   const { classes } = props
+  const { user } = React.useContext(AppContext)
 
   // async function load() {
   //   const logoElement = d3.select('.logo')
@@ -149,10 +152,23 @@ function Home(props) {
       </div>
       <div className={classes.rightBox}>
         <Grid container spacing={5} className={classes.welcomeBox} justify="center">
-          <DashStatTotalTrees />
-          <DashStatUnprocessedTrees />
-          <DashStatVerifiedTrees />
-          <DashStatPlanterCount />
+          {hasPermission(user, [
+            POLICIES.SUPER_PERMISSION,
+            POLICIES.LIST_TREE,
+            POLICIES.APPROVE_TREE,
+          ]) && (
+            <>
+              <DashStatTotalTrees />
+              <DashStatUnprocessedTrees />
+              <DashStatVerifiedTrees />
+            </>
+          )}
+          {hasPermission(user, [
+            POLICIES.SUPER_PERMISSION,
+            POLICIES.LIST_PLANTER,
+          ]) && (
+            <DashStatPlanterCount />
+          )}
         </Grid>
       </div>
     </div>

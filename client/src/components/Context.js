@@ -61,19 +61,17 @@ function getRoutes(user) {
         user, [
           POLICIES.SUPER_PERMISSION,
           POLICIES.LIST_TREE,
-
         ]),
     },
     {
       name: 'Planters',
-      linkTo: 'planters',
+      linkTo: '/planters',
       component: Planters,
       icon: IconGroup,
       disabled: !hasPermission(
         user, [
           POLICIES.SUPER_PERMISSION,
           POLICIES.LIST_PLANTER,
-
         ]),
     },
     {
@@ -121,35 +119,71 @@ function getRoutes(user) {
 }
 
 export const AppProvider = (props) => {
+  const localUser = JSON.parse(localStorage.getItem('user'))
   const [user, setUser] = React.useState(undefined)
   const [token, setToken] = React.useState(undefined)
-  const [routes, setRoutes] = React.useState(getRoutes(undefined));
+  const [routes, setRoutes] = React.useState(getRoutes(localUser));
+
+  function checkSession() {
+    const localToken = JSON.parse(localStorage.getItem('token'))
+    const localUser = JSON.parse(localStorage.getItem('user'))
+    if (localToken && localUser) {
+      // Temporarily log in with the localStorage credentials while
+      // we check that the session is still valid
+      context.login(localUser, localToken)
+
+      axios.get(
+        `${process.env.REACT_APP_API_ROOT}/auth/check_session?id=${localUser.id}`,
+        {
+          headers: { Authorization: localToken },
+        }
+      ).then((response) => {
+        if (response.status === 200) {
+          if (response.data.token === undefined) {
+            //the role has not changed
+            context.login(localUser, localToken, true)
+          } else {
+            //role has changed, update the token
+            context.login(localUser, response.data.token, true)
+          }  
+        } else if (response.status === 401) {
+          // Unauthorized - log out
+          context.logout()
+        }
+      })
+
+      return true
+    }
+
+    return false
+  }
 
   const context = {
     login: (newUser, newToken, rememberDetails) => {
       // This api gets hit with identical users from multiple login calls
-      if (!isEqual(user, newUser)) {
-        setUser(user)
-        session.user = user
+      if (!isEqual(session.user, newUser)) {
+        setUser(newUser)
+        session.user = newUser
         if (rememberDetails) {
-          localStorage.setItem('token', JSON.stringify(token))
+          localStorage.setItem('user', JSON.stringify(newUser))
         }
   
         // By not updating routes object, we can memoize the menu and routes better
         setRoutes(getRoutes(newUser))
       }
 
-      if (token !== newToken) {
-        setToken(token)
-        session.token = token
+      if (session.token !== newToken) {
+        setToken(newToken)
+        session.token = newToken
 
         if (rememberDetails) {
-          localStorage.setItem('user', JSON.stringify(user))
+          localStorage.setItem('token', JSON.stringify(newToken))
         }
       }
     },
     logout: () => {
       setUser(undefined)
+      setToken(undefined)
       setRoutes(getRoutes(undefined))
       session.token = undefined
       session.user = undefined
@@ -158,51 +192,16 @@ export const AppProvider = (props) => {
       localStorage.removeItem('user')
     },
     isLoggedIn: () => {
-      return (session.user && session.token)
+      return user && token
     },
     user,
     token,
     routes,
   }
 
-  const localToken = JSON.parse(localStorage.getItem('token'))
-  const localUser = JSON.parse(localStorage.getItem('user'))
-  if (localUser && localToken) {
-    session.user = localUser
-    session.token = localToken
+  if (!user || !token) {
+    checkSession()
   }
-
-  React.useLayoutEffect(() => {
-    //try to load localToken
-    async function load() {
-      const localToken = JSON.parse(localStorage.getItem('token'))
-      const localUser = JSON.parse(localStorage.getItem('user'))
-      if (localToken && localUser) {
-        context.login(localUser, localToken)
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_ROOT}/auth/check_session?id=${localUser.id}`,
-          {
-            headers: { Authorization: localToken },
-          }
-        )
-        if (response.status === 200) {
-          if (response.data.token === undefined) {
-            //the role not change
-            context.login(localUser, localToken, true)
-          } else {
-            //role changes, update the token
-            context.login(localUser, response.data.token, true)
-          }
-        } else if (response.status === 401) {
-          context.logout()
-        }
-      }
-    }
-
-    if (!user || !token) {
-      load()
-    }
-  }, [context])
 
   return <AppContext.Provider value={context}>{props.children}</AppContext.Provider>
 }
