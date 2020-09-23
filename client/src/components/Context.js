@@ -21,6 +21,7 @@ import HomeIcon from '@material-ui/icons/Home'
 
 import { session, hasPermission, POLICIES } from '../models/auth'
 import axios from 'axios'
+import Unauthorized from './Unauthorized'
 
 export const AppContext = React.createContext({})
 
@@ -36,7 +37,7 @@ function getRoutes(user) {
     },
     {
       name: 'Monitor',
-      linkTo: '/',
+      linkTo: '/monitor',
       icon: IconShowChart,
       disabled: true,
     },
@@ -76,7 +77,7 @@ function getRoutes(user) {
     },
     {
       name: 'Payments',
-      linkTo: '/',
+      linkTo: '/payments',
       icon: IconCompareArrows,
       disabled: true,
     },
@@ -94,7 +95,8 @@ function getRoutes(user) {
     },
     {
       name: 'Settings',
-      linkTo: '/',
+      linkTo: '/settings',
+      component: Unauthorized,
       icon: IconSettings,
       disabled: true,
     },
@@ -180,6 +182,9 @@ export const AppProvider = (props) => {
           localStorage.setItem('token', JSON.stringify(newToken))
         }
       }
+    },
+    isLoggedIn: () => {
+      return !!user && !!token;
     },
     logout: () => {
       setUser(undefined)
