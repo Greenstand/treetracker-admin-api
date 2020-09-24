@@ -191,9 +191,6 @@ export const AppProvider = (props) => {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
     },
-    isLoggedIn: () => {
-      return user && token
-    },
     user,
     token,
     routes,

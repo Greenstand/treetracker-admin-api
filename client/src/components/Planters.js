@@ -201,7 +201,7 @@ const Planters = (props) => {
     <TablePagination
       rowsPerPageOptions={[24, 48, 96]}
       component="div"
-      count={props.plantersState.count}
+      count={props.plantersState.count || 0}
       rowsPerPage={props.plantersState.pageSize}
       page={props.plantersState.currentPage}
       onChangePage={handlePageChange}

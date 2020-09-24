@@ -44,7 +44,7 @@ export default function Routers() {
               <Route
                 render={({location}) => (
                   <Redirect to={{
-                    pathname: appContext.isLoggedIn() ? "/" : "/login",
+                    pathname: appContext.user ? "/" : "/login",
                     state: { from: location }
                   }}/>
                 )}
@@ -54,5 +54,5 @@ export default function Routers() {
         </Grid>
       </Grid>
     )
-  }, [appContext])
+  }, [appContext.routes, appContext.user])
 }
