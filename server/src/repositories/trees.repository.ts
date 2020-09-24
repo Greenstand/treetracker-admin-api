@@ -1,7 +1,8 @@
-import {DefaultCrudRepository} from '@loopback/repository';
-import {Trees, TreesRelations} from '../models';
+import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
+import {Trees, TreesRelations, TreeTag} from '../models';
 import {TreetrackerDataSource} from '../datasources';
-import {inject} from '@loopback/core';
+import {inject, Getter} from '@loopback/core';
+import {TreeTagRepository} from './treeTag.repository';
 import expect from 'expect-runtime';
 
 export class TreesRepository extends DefaultCrudRepository<
@@ -9,10 +10,15 @@ export class TreesRepository extends DefaultCrudRepository<
   typeof Trees.prototype.id,
   TreesRelations
 > {
+
+  public readonly treeTags: HasManyRepositoryFactory<TreeTag, typeof Trees.prototype.id>;
+
   constructor(
-    @inject('datasources.treetracker') dataSource: TreetrackerDataSource,
+    @inject('datasources.treetracker') dataSource: TreetrackerDataSource, @repository.getter('TreeTagRepository') protected treeTagRepositoryGetter: Getter<TreeTagRepository>,
   ) {
     super(Trees, dataSource);
+    this.treeTags = this.createHasManyRepositoryFactoryFor('treeTags', treeTagRepositoryGetter,);
+    this.registerInclusionResolver('treeTags', this.treeTags.inclusionResolver);
   }
 
   async getEntityIdsByOrganizationId(

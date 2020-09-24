@@ -34,11 +34,9 @@ const tags = {
      * Lazy-load tags on demand and append to existing lists
      */
     async getTags(filter){
-      if (filter && filter.length) {
-        const newTags = await api.getTags(filter)
-        log.debug('load more tags from api:', newTags.length)
-        this.appendToTagList(newTags)
-      }
+      const newTags = await api.getTags(filter)
+      log.debug('load more tags from api:', newTags.length)
+      this.appendToTagList(newTags)
     },
     /*
      * check for new tags in tagInput and add them to the database

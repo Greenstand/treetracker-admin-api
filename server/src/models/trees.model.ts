@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {TreeTag} from './treeTag.model';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
@@ -462,6 +463,9 @@ export class Trees extends Entity {
     },
   })
   speciesId?: Number;
+
+  @hasMany(() => TreeTag, {keyTo: 'treeId'})
+  treeTags: TreeTag[];
 
   @property({
     type: String,

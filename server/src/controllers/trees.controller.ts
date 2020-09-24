@@ -16,8 +16,14 @@ import {
   // del,
   requestBody,
 } from '@loopback/rest';
+import {ParameterizedSQL} from 'loopback-connector';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
+
+// Extend the LoopBack filter types for the Trees model to include tagId
+// This is a workaround for the lack of proper join support in LoopBack
+type TreesWhere = Where<Trees> & {tagId: string}
+type TreesFilter = Filter<Trees> & {where: TreesWhere}
 
 export class TreesController {
   constructor(
@@ -34,9 +40,28 @@ export class TreesController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
+    @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
-    return await this.treesRepository.count(where);
+    // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack count()
+    if (where && where.tagId !== undefined) {
+      try {
+        const query = this.buildFilterQuery(
+          `SELECT COUNT(*) FROM trees`,
+          `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
+          `WHERE tree_tag.tag_id=${where.tagId} `,
+          where,
+        );
+
+        return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(res => {
+          return (res && res[0]) || {count:0};
+        });
+      } catch(e) {
+        console.log(e);
+        return await this.treesRepository.count(where);
+      }
+    } else {
+      return await this.treesRepository.count(where);
+    }
   }
 
   @get('/trees', {
@@ -53,10 +78,37 @@ export class TreesController {
   })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Trees))
-    filter?: Filter<Trees>,
+    filter?: TreesFilter,
   ): Promise<Trees[]> {
-    console.log(filter, filter ? filter.where : null);
-    return await this.treesRepository.find(filter);
+    console.log(filter, filter?filter.where:null);
+
+    // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
+    if (filter && filter.where && filter.where.tagId !== undefined) {
+      try {
+        const connector = this.getConnector()
+        if (connector) {
+          // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
+          const columnNames = connector.buildColumnNames('Trees', filter).replace('"id"','"tree_id" as "id"')
+          const query = this.buildFilterQuery(
+            `SELECT ${columnNames} from trees`,
+            `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
+            `WHERE tree_tag.tag_id=${filter.where.tagId} `,
+            filter.where,
+          );
+          return <Promise<Trees[]>> await this.treesRepository.execute(query.sql, query.params).then((data) => {
+            return data.map((obj) => connector.fromRow('Trees', obj));
+          });
+        } else {
+          throw('Connector not defined')
+        }
+
+      } catch(e) {
+        console.log(e);
+        return await this.treesRepository.find(filter);
+      }
+    } else {
+      return await this.treesRepository.find(filter);
+    }
   }
 
   @get('/trees/{id}', {
@@ -68,7 +120,7 @@ export class TreesController {
     },
   })
   async findById(@param.path.number('id') id: number): Promise<Trees> {
-    return await this.treesRepository.findById(id);
+    return await this.treesRepository.findById(id, {include: [{relation: 'treeTags'}]});
   }
 
   // this route is for finding trees within a radius of a lat/lon point
@@ -124,5 +176,50 @@ export class TreesController {
     @requestBody() trees: Trees,
   ): Promise<void> {
     await this.treesRepository.updateById(id, trees);
+  }
+
+  private getConnector() {
+    return this.treesRepository.dataSource.connector;
+  }
+
+  private buildFilterQuery(
+    selectClause : string,
+    joinClause? : string,
+    whereClause? : string,
+    whereObj? : TreesWhere,
+  ) {
+    let sql = selectClause;
+    if (joinClause) {
+      sql += ` ${joinClause}`;
+    }
+
+    if (whereClause) {
+      sql += ` ${whereClause}`;
+    }
+
+    let query = new ParameterizedSQL(sql);
+
+    if (whereObj) {
+      const connector = this.getConnector();
+      if (connector) {
+        const model = connector._models.Trees.model;
+
+        if (model) {
+          let safeWhere = model._sanitizeQuery(whereObj);
+          safeWhere = model._coerce(safeWhere);
+
+          const whereObjClause = connector._buildWhere('Trees', safeWhere);
+
+          if (whereObjClause && whereObjClause.sql) {
+            query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql}`
+            query.params = whereObjClause.params
+          }
+
+          query = connector.parameterize(query);
+        }
+      }
+    }
+
+    return query
   }
 }

@@ -33,8 +33,10 @@ const treeDetail = {
       this.reset()
       
       return Promise.all([
-        this.getTree(id).then(tree => { this.getSpecies(tree && tree.speciesId) }),
-        this.getTags(id),
+        this.getTree(id).then(tree => {
+          this.getSpecies(tree && tree.speciesId)
+          this.getTags(tree && tree.treeTags)
+        }),
       ])
     },
     async getTree(id) {
@@ -59,21 +61,19 @@ const treeDetail = {
         return species
       })
     },
-    async getTags(treeId) {
-      if (treeId == null) {
-        log.debug('getTags called with no treeId')
+    async getTags(treeTags) {
+      if (treeTags == null) {
+        log.debug('getTags called with no speciesId')
         return Promise.resolve(STATE_EMPTY.tags)
       }
 
-      return api.getTreeTags({treeId}).then(treeTags => {
-        Promise.all(
-          treeTags.map(tag => {
-            return api.getTagById(tag.tagId)
-          })
-        ).then(tags => {
-          this.setTags(tags)
-          return tags
+      Promise.all(
+        treeTags.map(tag => {
+          return api.getTagById(tag.tagId)
         })
+      ).then(tags => {
+        this.setTags(tags)
+        return tags
       })
     }
   },

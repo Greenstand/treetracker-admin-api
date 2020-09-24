@@ -4,3 +4,4 @@ export * from './planter.controller';
 export * from './species.controller';
 export * from './tag.controller';
 export * from './treeTag.controller';
+export * from './treesTreeTag.controller';
