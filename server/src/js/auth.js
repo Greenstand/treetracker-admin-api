@@ -459,7 +459,7 @@ const isAuth = async (req, res, next) => {
         return next();
       } else if (url.match(/\/api\/tags.*/)) {
         return next();
-      } else if (url.match(/\/api\/tree-tags.*/)) {
+      } else if (url.match(/\/api\/tree_tags.*/)) {
         return next();
       }
 

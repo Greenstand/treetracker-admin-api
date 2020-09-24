@@ -42,7 +42,7 @@ export class TreesController {
   async count(
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
-    // In order to filter by tagId (tree-tags relation), we need to bypass the LoopBack count()
+    // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack count()
     if (where && where.tagId !== undefined) {
       try {
         const query = this.buildFilterQuery(
@@ -82,7 +82,7 @@ export class TreesController {
   ): Promise<Trees[]> {
     console.log(filter, filter?filter.where:null);
 
-    // In order to filter by tagId (tree-tags relation), we need to bypass the LoopBack find()
+    // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     if (filter && filter.where && filter.where.tagId !== undefined) {
       try {
         const connector = this.getConnector()

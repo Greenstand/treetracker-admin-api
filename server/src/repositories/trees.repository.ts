@@ -2,7 +2,7 @@ import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loop
 import {Trees, TreesRelations, TreeTag} from '../models';
 import {TreetrackerDataSource} from '../datasources';
 import {inject, Getter} from '@loopback/core';
-import {TreeTagRepository} from './tree-tag.repository';
+import {TreeTagRepository} from './treeTag.repository';
 import expect from 'expect-runtime';
 
 export class TreesRepository extends DefaultCrudRepository<

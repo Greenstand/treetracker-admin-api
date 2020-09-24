@@ -1,5 +1,5 @@
 import {Entity, model, property, hasMany} from '@loopback/repository';
-import {TreeTag} from './tree-tag.model';
+import {TreeTag} from './treeTag.model';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 

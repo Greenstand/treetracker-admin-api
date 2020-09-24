@@ -26,7 +26,7 @@ export class TreesTreeTagController {
     @repository(TreesRepository) protected treesRepository: TreesRepository,
   ) { }
 
-  @get('/trees/{id}/tree-tags', {
+  @get('/trees/{id}/tree_tags', {
     responses: {
       '200': {
         description: 'Array of Trees has many TreeTag',
@@ -45,7 +45,7 @@ export class TreesTreeTagController {
     return this.treesRepository.treeTags(id).find(filter);
   }
 
-  @post('/trees/{id}/tree-tags', {
+  @post('/trees/{id}/tree_tags', {
     responses: {
       '200': {
         description: 'Trees model instance',
@@ -70,7 +70,7 @@ export class TreesTreeTagController {
     return this.treesRepository.treeTags(id).create(treeTag);
   }
 
-  @patch('/trees/{id}/tree-tags', {
+  @patch('/trees/{id}/tree_tags', {
     responses: {
       '200': {
         description: 'Trees.TreeTag PATCH success count',
@@ -93,7 +93,7 @@ export class TreesTreeTagController {
     return this.treesRepository.treeTags(id).patch(treeTag, where);
   }
 
-  @del('/trees/{id}/tree-tags', {
+  @del('/trees/{id}/tree_tags', {
     responses: {
       '200': {
         description: 'Trees.TreeTag DELETE success count',
