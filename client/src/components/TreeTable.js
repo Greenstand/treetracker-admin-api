@@ -112,7 +112,7 @@ class TreeTable extends Component {
 
   loadTrees(payload) {
     this.props.getTreesAsync(payload).then(() => {
-      this.scrollRef.current.scrollTo(0,0)
+      this.scrollRef.current && this.scrollRef.current.scrollTo(0,0)
     })
   }
 

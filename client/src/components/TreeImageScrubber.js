@@ -415,7 +415,7 @@ const TreeImageScrubber = (props) => {
     <TablePagination
       rowsPerPageOptions={[12, 24, 48, 96]}
       component="div"
-      count={props.verityState.treeCount}
+      count={props.verityState.treeCount || 0}
       rowsPerPage={props.verityState.pageSize}
       page={props.verityState.currentPage}
       onChangePage={handleChangePage}

@@ -27,7 +27,9 @@ export default function Routers() {
             }}
           >
             <Switch>
-              <Route path="/login" component={Login} />
+              <Route path="/login">
+                <Login />
+              </Route>
               { appContext.routes
                 .map(({linkTo, exact = false, component}, idx) => (
                   <PrivateRoute
@@ -39,13 +41,18 @@ export default function Routers() {
                     />
                 ))
               }
-              <Route>
-                <Redirect to="/login" />
-              </Route>
+              <Route
+                render={({location}) => (
+                  <Redirect to={{
+                    pathname: appContext.user ? "/" : "/login",
+                    state: { from: location }
+                  }}/>
+                )}
+              />
             </Switch>
           </Grid>
         </Grid>
       </Grid>
     )
-  }, [appContext.routes])
+  }, [appContext.routes, appContext.user])
 }
