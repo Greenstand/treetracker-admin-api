@@ -165,6 +165,8 @@ router.get('/admin_users/:userId', async (req, res) => {
       userGet.role = result.rows.map((r) => r.role_id);
     }
     if (userGet) {
+      delete userGet.passwordHash;
+      delete userGet.salt;
       res.status(200).json(userGet);
     } else {
       res.status(404).json();
@@ -235,6 +237,8 @@ router.get('/admin_users/', async (req, res) => {
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
       const r = result.rows[i];
+      delete r.password_hash;
+      delete r.salt;
       const roles = await pool.query(
         `select * from admin_user_role where admin_user_id = ${r.id}`,
       );
