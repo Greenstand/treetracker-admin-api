@@ -28,6 +28,8 @@ import { withStyles } from '@material-ui/core/styles'
 
 const styles = (theme) => ({
   box: {
+    width: "80%",
+    overflow: 'auto',
     height: '100%',
   },
   menu: {
@@ -91,7 +93,7 @@ const styles = (theme) => ({
     position: 'relative',
     bottom: 12,
     left: 10,
-  },
+  }
 })
 
 const SpeciesTable = (props) => {
@@ -105,6 +107,8 @@ const SpeciesTable = (props) => {
   const [openDelete, setOpenDelete] = React.useState(false)
   const [sortedSpeciesList, setSortedSpeciesList] = React.useState([])
   const [option, setOption] = React.useState(sortOptions.byName)
+
+  const tableRef = React.useRef(null)
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
@@ -132,6 +136,8 @@ const SpeciesTable = (props) => {
   }
 
   const handleChangeRowsPerPage = (event) => {
+    tableRef.current && tableRef.current.scrollIntoView();
+
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
@@ -152,11 +158,9 @@ const SpeciesTable = (props) => {
       : sortedSpeciesList
     ).map((species) => (
         <TableRow key={species.id} role="listitem">
-          <TableCell component="th" scope="row">
-            {species.id}
+          <TableCell component="th" scope="row">{species.id}
           </TableCell>
-          <TableCell component="th" scope="row">
-            {species.name}
+          <TableCell component="th" scope="row">{species.name}
           </TableCell>
           <TableCell>{species.desc}</TableCell>
           <TableCell>{species.treeCount}</TableCell>
@@ -172,24 +176,24 @@ const SpeciesTable = (props) => {
     ))
   }
 
-  const tablePagination = () => {
-    return (
+  const tablePagination = () => 
       <TablePagination
-        component="div"
         count={props.speciesState.speciesList.length}
-        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+        rowsPerPageOptions={[5, 10, 20, { label: 'All', value: -1 }]}
         colSpan={3}
         page={page}
         rowsPerPage={rowsPerPage}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
+        SelectProps={{
+          inputProps: { "aria-label": "rows per page" },
+          native: true
+        }}
       />
-    )
-  }
-
+  
   return (
     <>
-      <Grid container className={classes.box}>
+      <Grid container className={classes.box} >
         <Grid item xs={3}>
           <Paper elevation={3} className={classes.menu}>
             <Menu variant="plain" />
@@ -212,14 +216,13 @@ const SpeciesTable = (props) => {
                     variant="contained"
                     className={classes.addUser}
                     color="primary"
-                  >
-                    ADD NEW SPECIES
+                  >ADD NEW SPECIES
                   </Button>
                 </Grid>
               </Grid>
               <Grid container direction="column" className={classes.bodyBox}>
-                <TableContainer component={Paper}>
-                  <Table className={classes.table} aria-label="simple table">
+                <TableContainer component={Paper} ref={tableRef}>
+                  <Table className={classes.table} aria-label="simple table" >
                     <TableHead>
                       <TableRow>
                         <TableCell>ID
@@ -246,7 +249,7 @@ const SpeciesTable = (props) => {
                       )}
                     </TableBody>
                     <TableFooter>
-                      <TableRow> {tablePagination()}</TableRow>
+                      <TableRow>{tablePagination()}</TableRow>
                     </TableFooter>
                   </Table>
                 </TableContainer>
