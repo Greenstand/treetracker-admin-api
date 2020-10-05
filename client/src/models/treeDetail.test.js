@@ -22,18 +22,17 @@ describe('treeDetail', () => {
     morphology: 'seedling',
     age: 'new_tree',
     captureApprovalTag: 'simple_leaf',
+    treeTags: [{
+      id: 1,
+      treeId: 0,
+      tagId: 3,
+    }]
   }
   
   const SPECIES = {
-    id: 5,
+    id: 30,
     name: "fig",
   }
-
-  const TREE_TAGS = [{
-    id: 1,
-    treeId: 0,
-    tagId: 3,
-  }]
 
   const TAG = {
     id: 3,
@@ -50,10 +49,6 @@ describe('treeDetail', () => {
     api.getSpeciesById = (id) => {
       log.debug('mock getSpeciesById')
       return Promise.resolve(SPECIES)
-    }
-    api.getTreeTags = ({treeId, tagId}) => {
-      log.debug('mock getTreeTags')
-      return Promise.resolve(TREE_TAGS)
     }
     api.getTagById = (id) => {
       log.debug('mock getTagById')
