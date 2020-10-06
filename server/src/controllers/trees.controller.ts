@@ -22,8 +22,8 @@ import {TreesRepository} from '../repositories';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
-type TreesWhere = Where<Trees> & {tagId: string}
-type TreesFilter = Filter<Trees> & {where: TreesWhere}
+type TreesWhere = Where<Trees> & {tagId: string};
+type TreesFilter = Filter<Trees> & {where: TreesWhere};
 
 export class TreesController {
   constructor(
@@ -52,10 +52,14 @@ export class TreesController {
           where,
         );
 
-        return <Promise<Count>> await this.treesRepository.execute(query.sql, query.params).then(res => {
-          return (res && res[0]) || {count:0};
-        });
-      } catch(e) {
+        return <Promise<Count>>(
+          await this.treesRepository
+            .execute(query.sql, query.params)
+            .then((res) => {
+              return (res && res[0]) || {count: 0};
+            })
+        );
+      } catch (e) {
         console.log(e);
         return await this.treesRepository.count(where);
       }
@@ -80,29 +84,34 @@ export class TreesController {
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
   ): Promise<Trees[]> {
-    console.log(filter, filter?filter.where:null);
+    console.log(filter, filter ? filter.where : null);
 
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     if (filter && filter.where && filter.where.tagId !== undefined) {
       try {
-        const connector = this.getConnector()
+        const connector = this.getConnector();
         if (connector) {
           // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
-          const columnNames = connector.buildColumnNames('Trees', filter).replace('"id"','"tree_id" as "id"')
+          const columnNames = connector
+            .buildColumnNames('Trees', filter)
+            .replace('"id"', '"tree_id" as "id"');
           const query = this.buildFilterQuery(
             `SELECT ${columnNames} from trees`,
             `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
             `WHERE tree_tag.tag_id=${filter.where.tagId} `,
             filter.where,
           );
-          return <Promise<Trees[]>> await this.treesRepository.execute(query.sql, query.params).then((data) => {
-            return data.map((obj) => connector.fromRow('Trees', obj));
-          });
+          return <Promise<Trees[]>>(
+            await this.treesRepository
+              .execute(query.sql, query.params)
+              .then((data) => {
+                return data.map((obj) => connector.fromRow('Trees', obj));
+              })
+          );
         } else {
-          throw('Connector not defined')
+          throw 'Connector not defined';
         }
-
-      } catch(e) {
+      } catch (e) {
         console.log(e);
         return await this.treesRepository.find(filter);
       }
@@ -120,7 +129,9 @@ export class TreesController {
     },
   })
   async findById(@param.path.number('id') id: number): Promise<Trees> {
-    return await this.treesRepository.findById(id, {include: [{relation: 'treeTags'}]});
+    return await this.treesRepository.findById(id, {
+      include: [{relation: 'treeTags'}],
+    });
   }
 
   // this route is for finding trees within a radius of a lat/lon point
@@ -183,10 +194,10 @@ export class TreesController {
   }
 
   private buildFilterQuery(
-    selectClause : string,
-    joinClause? : string,
-    whereClause? : string,
-    whereObj? : TreesWhere,
+    selectClause: string,
+    joinClause?: string,
+    whereClause?: string,
+    whereObj?: TreesWhere,
   ) {
     let sql = selectClause;
     if (joinClause) {
@@ -211,8 +222,10 @@ export class TreesController {
           const whereObjClause = connector._buildWhere('Trees', safeWhere);
 
           if (whereObjClause && whereObjClause.sql) {
-            query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql}`
-            query.params = whereObjClause.params
+            query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${
+              whereObjClause.sql
+            }`;
+            query.params = whereObjClause.params;
           }
 
           query = connector.parameterize(query);
@@ -220,6 +233,6 @@ export class TreesController {
       }
     }
 
-    return query
+    return query;
   }
 }
