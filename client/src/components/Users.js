@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
@@ -131,7 +131,7 @@ function Users(props) {
   const [errorMessage, setErrorMessage] = React.useState('')
   const passwordRef = React.useRef(null)
 
-  async function load() {
+  const load = useCallback(async () => {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
       headers: { Authorization: token },
     })
@@ -150,12 +150,11 @@ function Users(props) {
       console.error('load fail:', res)
       return
     }
-  }
+  }, [token]);
 
   React.useEffect(() => {
     load()
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [load])
 
   function handleEdit(user) {
     setUserEditing(user)
