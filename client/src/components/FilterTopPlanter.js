@@ -44,7 +44,7 @@ const styles = theme => {
     textField: {
       marginTop: 15,
       width: 142,
-	  paddingBottom:2,
+      paddingBottom:2,
     },
     textFieldSelect: {
       marginTop: 17,
@@ -137,7 +137,4 @@ export default withStyles(styles)(connect(
   state => ({
     speciesState: state.species
   }),
-  //dispatch
-  dispatch => ({
-  })
-)(FilterTopPlanter));
+ )(FilterTopPlanter));

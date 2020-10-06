@@ -2,7 +2,7 @@ import React from 'react'
 import { iconPaths } from '../common/iconPaths'
 import { withStyles } from '@material-ui/core/styles'
 
-const styles = theme => ({
+const styles = () => ({
   default: {
     fill: '#333'
   },

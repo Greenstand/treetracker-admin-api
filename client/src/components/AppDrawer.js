@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import PropTypes from 'prop-types'
 import compose from 'recompose/compose'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
@@ -98,7 +97,7 @@ const AppDrawer = (props) => {
         {navItems.map(item => {
           return (
             <ListItem className={(!isOpen) ? classes.listItem : ''} key={item.id} button onClick={
-              function (e) {
+              function () {
                 changeCurrentView(item.id)
               }
             }>

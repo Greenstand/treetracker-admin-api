@@ -16,23 +16,22 @@ const ImageScrubberActions = props => {
   const [value, setValue] = useState(0)
 
 
-  handleChange = (event, value) => {
+  let handleChange = (event, value) => {
     setValue(value);
   };
 
-    const { classes } = props
-    const { value } = state
+  const { classes } = props
 
-    return (
-      <BottomNavigation
-        value={value}
-        onChange={this.handleChange}
-        showLabels
-        className={ [classes.root, classes.active]}
-      >
-        <BottomNavigationAction label="Mark Inactive" icon={<DeleteIcon />} />
-      </BottomNavigation>
-    );
+  return (
+    <BottomNavigation
+      value={value}
+      onChange={handleChange}
+      showLabels
+      className={ [classes.root, classes.active]}
+    >
+      <BottomNavigationAction label="Mark Inactive" icon={<DeleteIcon />} />
+    </BottomNavigation>
+  );
 }
 
 ImageScrubberActions.propTypes = {
