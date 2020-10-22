@@ -35,6 +35,7 @@ const styles = (theme) => ({
   },
   rightBox: {
     height: '100%',
+    overflow: 'auto',
     padding: theme.spacing(8),
   },
   titleBox: {
@@ -91,7 +92,7 @@ const styles = (theme) => ({
     position: 'relative',
     bottom: 12,
     left: 10,
-  },
+  }
 })
 
 const SpeciesTable = (props) => {
@@ -105,6 +106,8 @@ const SpeciesTable = (props) => {
   const [openDelete, setOpenDelete] = React.useState(false)
   const [sortedSpeciesList, setSortedSpeciesList] = React.useState([])
   const [option, setOption] = React.useState(sortOptions.byName)
+
+  const tableRef = React.useRef(null)
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.speciesState.speciesList.length - page * rowsPerPage)
@@ -132,6 +135,8 @@ const SpeciesTable = (props) => {
   }
 
   const handleChangeRowsPerPage = (event) => {
+    tableRef.current && tableRef.current.scrollIntoView();
+
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
@@ -152,11 +157,9 @@ const SpeciesTable = (props) => {
       : sortedSpeciesList
     ).map((species) => (
         <TableRow key={species.id} role="listitem">
-          <TableCell component="th" scope="row">
-            {species.id}
+          <TableCell component="th" scope="row">{species.id}
           </TableCell>
-          <TableCell component="th" scope="row">
-            {species.name}
+          <TableCell component="th" scope="row">{species.name}
           </TableCell>
           <TableCell>{species.desc}</TableCell>
           <TableCell>{species.treeCount}</TableCell>
@@ -172,85 +175,82 @@ const SpeciesTable = (props) => {
     ))
   }
 
-  const tablePagination = () => {
-    return (
+  const tablePagination = () => 
       <TablePagination
-        component="div"
         count={props.speciesState.speciesList.length}
-        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+        rowsPerPageOptions={[5, 10, 20, { label: 'All', value: -1 }]}
         colSpan={3}
         page={page}
         rowsPerPage={rowsPerPage}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
+        SelectProps={{
+          inputProps: { "aria-label": "rows per page" },
+          native: true
+        }}
       />
-    )
-  }
-
+  
   return (
     <>
-      <Grid container className={classes.box}>
+      <Grid container className={classes.box} >
         <Grid item xs={3}>
           <Paper elevation={3} className={classes.menu}>
             <Menu variant="plain" />
           </Paper>
         </Grid>
-        <Grid item xs={9}>
-          <Grid container className={classes.rightBox}>
-            <Grid item xs={12}>
-              <Grid container justify="space-between" className={classes.titleBox}>
-                <Grid item>
-                  <Grid container>
-                    <Grid item>
-                      <Typography variant="h2">Species</Typography>
-                    </Grid>
+        <Grid item xs={9} container className={classes.rightBox}>
+          <Grid item xs={12}>
+            <Grid container justify="space-between" className={classes.titleBox}>
+              <Grid item>
+                <Grid container>
+                  <Grid item>
+                    <Typography variant="h2">Species</Typography>
                   </Grid>
                 </Grid>
-                <Grid item className={classes.addUserBox}>
-                  <Button
-                    // onClick={handleAddUser}
-                    variant="contained"
-                    className={classes.addUser}
-                    color="primary"
-                  >
-                    ADD NEW SPECIES
-                  </Button>
-                </Grid>
               </Grid>
-              <Grid container direction="column" className={classes.bodyBox}>
-                <TableContainer component={Paper}>
-                  <Table className={classes.table} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>ID
-                          <IconButton title="sortbyId" onClick={()=>setOption(sortOptions.byId)} >
-                            <SortIcon />
-                            </IconButton>
-                        </TableCell>                   
-                        <TableCell>name
-                          <IconButton title="sortbyName" onClick={()=>setOption(sortOptions.byName)} >
-                            <SortIcon />
+              <Grid item className={classes.addUserBox}>
+                <Button
+                  // onClick={handleAddUser}
+                  variant="contained"
+                  className={classes.addUser}
+                  color="primary"
+                >ADD NEW SPECIES
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid container direction="column" className={classes.bodyBox}>
+              <TableContainer component={Paper} ref={tableRef}>
+                <Table className={classes.table} aria-label="simple table" >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID
+                        <IconButton title="sortbyId" onClick={()=>setOption(sortOptions.byId)} >
+                          <SortIcon />
                           </IconButton>
-                         </TableCell>
-                        <TableCell>Description</TableCell>
-                        <TableCell>Tagged Trees</TableCell>
-                        <TableCell>Operations</TableCell>
+                      </TableCell>                   
+                      <TableCell>name
+                        <IconButton title="sortbyName" onClick={()=>setOption(sortOptions.byName)} >
+                          <SortIcon />
+                        </IconButton>
+                        </TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Tagged Trees</TableCell>
+                      <TableCell>Operations</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {renderSpecies()}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {renderSpecies()}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 53 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                    <TableFooter>
-                      <TableRow> {tablePagination()}</TableRow>
-                    </TableFooter>
-                  </Table>
-                </TableContainer>
-              </Grid>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>{tablePagination()}</TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
             </Grid>
           </Grid>
         </Grid>
