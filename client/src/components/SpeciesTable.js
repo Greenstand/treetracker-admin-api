@@ -28,8 +28,6 @@ import { withStyles } from '@material-ui/core/styles'
 
 const styles = (theme) => ({
   box: {
-    width: "80%",
-    overflow: 'auto',
     height: '100%',
   },
   menu: {
@@ -37,6 +35,7 @@ const styles = (theme) => ({
   },
   rightBox: {
     height: '100%',
+    overflow: 'auto',
     padding: theme.spacing(8),
   },
   titleBox: {
@@ -199,61 +198,59 @@ const SpeciesTable = (props) => {
             <Menu variant="plain" />
           </Paper>
         </Grid>
-        <Grid item xs={9}>
-          <Grid container className={classes.rightBox}>
-            <Grid item xs={12}>
-              <Grid container justify="space-between" className={classes.titleBox}>
-                <Grid item>
-                  <Grid container>
-                    <Grid item>
-                      <Typography variant="h2">Species</Typography>
-                    </Grid>
+        <Grid item xs={9} container className={classes.rightBox}>
+          <Grid item xs={12}>
+            <Grid container justify="space-between" className={classes.titleBox}>
+              <Grid item>
+                <Grid container>
+                  <Grid item>
+                    <Typography variant="h2">Species</Typography>
                   </Grid>
                 </Grid>
-                <Grid item className={classes.addUserBox}>
-                  <Button
-                    // onClick={handleAddUser}
-                    variant="contained"
-                    className={classes.addUser}
-                    color="primary"
-                  >ADD NEW SPECIES
-                  </Button>
-                </Grid>
               </Grid>
-              <Grid container direction="column" className={classes.bodyBox}>
-                <TableContainer component={Paper} ref={tableRef}>
-                  <Table className={classes.table} aria-label="simple table" >
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>ID
-                          <IconButton title="sortbyId" onClick={()=>setOption(sortOptions.byId)} >
-                            <SortIcon />
-                            </IconButton>
-                        </TableCell>                   
-                        <TableCell>name
-                          <IconButton title="sortbyName" onClick={()=>setOption(sortOptions.byName)} >
-                            <SortIcon />
+              <Grid item className={classes.addUserBox}>
+                <Button
+                  // onClick={handleAddUser}
+                  variant="contained"
+                  className={classes.addUser}
+                  color="primary"
+                >ADD NEW SPECIES
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid container direction="column" className={classes.bodyBox}>
+              <TableContainer component={Paper} ref={tableRef}>
+                <Table className={classes.table} aria-label="simple table" >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID
+                        <IconButton title="sortbyId" onClick={()=>setOption(sortOptions.byId)} >
+                          <SortIcon />
                           </IconButton>
-                         </TableCell>
-                        <TableCell>Description</TableCell>
-                        <TableCell>Tagged Trees</TableCell>
-                        <TableCell>Operations</TableCell>
+                      </TableCell>                   
+                      <TableCell>name
+                        <IconButton title="sortbyName" onClick={()=>setOption(sortOptions.byName)} >
+                          <SortIcon />
+                        </IconButton>
+                        </TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Tagged Trees</TableCell>
+                      <TableCell>Operations</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {renderSpecies()}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {renderSpecies()}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 53 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                    <TableFooter>
-                      <TableRow>{tablePagination()}</TableRow>
-                    </TableFooter>
-                  </Table>
-                </TableContainer>
-              </Grid>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>{tablePagination()}</TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
             </Grid>
           </Grid>
         </Grid>
