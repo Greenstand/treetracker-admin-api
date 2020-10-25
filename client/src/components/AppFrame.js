@@ -7,7 +7,6 @@ import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 
@@ -15,7 +14,6 @@ import AppDrawer from './AppDrawer'
 import Trees from './Trees'
 import TreeImageScrubber from './TreeImageScrubber'
 import { drawerWidth } from '../common/variables'
-import Filter		from './Filter'
 
 const styles = theme => ({
   root: {
@@ -82,7 +80,7 @@ const styles = theme => ({
   }
 })
 
-const AppFrame = props => ({
+const AppFrame = () => ({
   render () {
     let scrollContainerRef = null
     const getScrollContainerRef = () => scrollContainerRef
@@ -91,7 +89,6 @@ const AppFrame = props => ({
     }
     const {
       classes,
-      theme,
       toggleAppDrawer,
       appDrawer,
       currentView

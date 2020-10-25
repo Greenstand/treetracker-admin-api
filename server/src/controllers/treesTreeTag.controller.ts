@@ -15,16 +15,13 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {
-  Trees,
-  TreeTag,
-} from '../models';
+import {Trees, TreeTag} from '../models';
 import {TreesRepository} from '../repositories';
 
 export class TreesTreeTagController {
   constructor(
     @repository(TreesRepository) protected treesRepository: TreesRepository,
-  ) { }
+  ) {}
 
   @get('/trees/{id}/tree_tags', {
     responses: {
@@ -61,11 +58,12 @@ export class TreesTreeTagController {
           schema: getModelSchemaRef(TreeTag, {
             title: 'NewTreeTagInTrees',
             exclude: ['id'],
-            optional: ['treeId']
+            optional: ['treeId'],
           }),
         },
       },
-    }) treeTag: Omit<TreeTag, 'id'>,
+    })
+    treeTag: Omit<TreeTag, 'id'>,
   ): Promise<TreeTag> {
     return this.treesRepository.treeTags(id).create(treeTag);
   }
@@ -88,7 +86,8 @@ export class TreesTreeTagController {
       },
     })
     treeTag: Partial<TreeTag>,
-    @param.query.object('where', getWhereSchemaFor(TreeTag)) where?: Where<TreeTag>,
+    @param.query.object('where', getWhereSchemaFor(TreeTag))
+    where?: Where<TreeTag>,
   ): Promise<Count> {
     return this.treesRepository.treeTags(id).patch(treeTag, where);
   }
@@ -103,7 +102,8 @@ export class TreesTreeTagController {
   })
   async delete(
     @param.path.number('id') id: Number,
-    @param.query.object('where', getWhereSchemaFor(TreeTag)) where?: Where<TreeTag>,
+    @param.query.object('where', getWhereSchemaFor(TreeTag))
+    where?: Where<TreeTag>,
   ): Promise<Count> {
     return this.treesRepository.treeTags(id).delete(where);
   }

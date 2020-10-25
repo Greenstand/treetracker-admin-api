@@ -69,7 +69,7 @@ const ImageScrubber = props => {
   const shouldComponentUpdate = (nextProps, nextState) => {
     if (nextProps.treesArray !== props.treesArray) {
       return true
-    };
+    }
 
     return false
   }

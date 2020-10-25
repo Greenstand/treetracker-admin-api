@@ -38,7 +38,7 @@ export default {
       .catch(handleError)
   },
 
-  approveTreeImage(id, morphology, age, captureApprovalTag, speciesId, tags) {
+  approveTreeImage(id, morphology, age, captureApprovalTag, speciesId) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`
     console.log(query)
 
@@ -63,7 +63,7 @@ export default {
       .then(handleResponse)
       .catch(handleError)
   },
-  rejectTreeImage(id, rejectionReason, tags) {
+  rejectTreeImage(id, rejectionReason) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`
     return fetch(query, {
       method: 'PATCH',

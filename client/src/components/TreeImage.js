@@ -18,7 +18,7 @@ import MenuItem		from '@material-ui/core/MenuItem';
 import ListItemIcon		from '@material-ui/core/ListItemIcon';
 import Typography		from '@material-ui/core/Typography';
 
-const useStyles		= makeStyles(theme => ({
+const useStyles		= makeStyles(() => ({
 	card		: {
 		width		: 177,
 	},
@@ -129,7 +129,7 @@ export default function TreeImage(props){
 			<Collapse in={!isCollapsed} timeout='auto'>
 				<MenuList>
 				{menuItems.map(item => 
-					<MenuItem>
+					<MenuItem key={item.name}>
 						<ListItemIcon className={classes.listMenuItem}>
 							{item.icon}
 						</ListItemIcon>

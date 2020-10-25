@@ -97,7 +97,7 @@ function TreeDetailDialog(props) {
         <IconButton
           className={classes.copyButton}
           title='Copy to clipboard'
-          onClick={(e) => {
+          onClick={() => {
             navigator.clipboard.writeText(value)
             confirmCopy(label)
           }}
@@ -126,8 +126,8 @@ function TreeDetailDialog(props) {
           { label: 'Species', value: species && species.name },
           { label: 'Created', value: dateCreated.toLocaleString() },
         ].map(item =>
-          <Fragment>
-            <Grid item key={item.label}>
+          <Fragment key={item.label}>
+            <Grid item>
               <Typography variant='subtitle1'>{item.label}</Typography>
               <Typography variant='body1'>
                 {item.value || '---'}

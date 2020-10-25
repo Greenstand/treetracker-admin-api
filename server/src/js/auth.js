@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-
 import express from 'express';
 const router = express.Router();
 import jwt from 'jsonwebtoken';
@@ -11,7 +10,7 @@ import config from '../config';
 import {Pool} from 'pg';
 import {utils} from './utils';
 import {helper} from './helper';
-import getDatasource  from '../datasources/config';
+import getDatasource from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
 
@@ -29,7 +28,6 @@ const POLICIES = {
   MANAGE_PLANTER: 'manage_planter',
 };
 
-
 const sha512 = function (password, salt) {
   const hash = Crypto.createHmac('sha512', salt);
   hash.update(password);
@@ -41,7 +39,6 @@ const generateSalt = function () {
   const generated = generator.generate({length: 6, numbers: true});
   return generated;
 };
-
 
 const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
 // const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
