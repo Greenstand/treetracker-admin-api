@@ -104,6 +104,10 @@ const style = (theme) => ({
     bottom: 12,
     left: 10,
   },
+  progressContainer: {
+    justifyContent: 'space-around',
+    padding: theme.spacing(2),
+  },
 })
 
 function not(a, b) {
@@ -143,6 +147,7 @@ function Users(props) {
   const [saveInProgress, setSaveInProgress] = React.useState(false)
   const [snackbarOpen, setSnackbarOpen] = React.useState(false)
   const [snackbarMessage, setSnackbarMesssage] = React.useState('')
+  const [usersLoaded, setUsersLoaded] = React.useState(false)
 
   async function load() {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
@@ -163,6 +168,8 @@ function Users(props) {
       console.error('load fail:', res)
       return
     }
+
+    setUsersLoaded(true)
   }
 
   React.useEffect(() => {
@@ -529,10 +536,15 @@ function Users(props) {
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody>{mapSortedUsrs(users)}</TableBody>
+                    <TableBody>
+                      {mapSortedUsrs(users)}
+                    </TableBody>
                   </Table>
                 </TableContainer>
               </Grid>
+              {!usersLoaded &&
+                <Grid item container className={classes.progressContainer}><CircularProgress /></Grid>
+              }
             </Grid>
           </Grid>
         </Grid>
@@ -815,7 +827,7 @@ function Users(props) {
         message={snackbarMessage}
         action={
           <React.Fragment>
-            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleSnackbarClose}>
               <CloseIcon fontSize="small" />
             </IconButton>
           </React.Fragment>
