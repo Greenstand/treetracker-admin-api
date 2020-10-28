@@ -192,7 +192,7 @@ router.get('/admin_users/:userId', async (req, res, next) => {
       userGet = utils.convertCamel(result.rows[0]);
       //load role
       result = await pool.query(
-        `select * from admin_user_role where role_id = ${userGet.id} and active = true`,
+        `select * from admin_user_role where admin_user_id = ${userGet.id} and active = true`,
       );
       userGet.role = result.rows.map(r => r.role_id);
     }
@@ -238,7 +238,7 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
     );
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
-        let result = await pool.query(
+        await pool.query(
           `insert into admin_user_role (role_id, admin_user_id, active) values (${req.body.role[i]},${req.params.userId},true) on conflict (role_id, admin_user_id) do update set active = true`,
         );
       }
@@ -270,12 +270,12 @@ router.get('/admin_users/', async (req, res, next) => {
     let result = await pool.query(`select * from admin_user`);
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
-      const r = result.rows[i];
+      const user = result.rows[i];
       const roles = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${r.id} and active = true`,
+        `select * from admin_user_role where admin_user_id = ${user.id} and active = true`,
       );
-      r.role = roles.rows.map(rr => rr.role_id);
-      users.push(utils.convertCamel(r));
+      user.role = roles.rows.map(rr => rr.role_id);
+      users.push(utils.convertCamel(user));
     }
     res.status(200).json(users);
   } catch (e) {
@@ -333,7 +333,7 @@ router.post('/admin_users/', async (req, res, next) => {
       //roles
       //role
       await pool.query(
-        `update admin_user_role set active = false where admin_user_id = ${req.params.userId} `
+        `update admin_user_role set active = false where admin_user_id = ${obj.id} `
       );
       for (let i = 0; i < req.body.role.length; i++) {
         const insertRole = `insert into admin_user_role (role_id, admin_user_id, active) values (${req.body.role[i]},${obj.id},true) on conflict (role_id, admin_user_id) do update set active = true`;
