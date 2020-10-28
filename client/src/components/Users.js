@@ -344,7 +344,7 @@ function Users(props) {
     }
   }
 
-  function handleGeneratePassword(user) {
+  function handleChangePassword(user) {
     //auto generate password before open password Modal
     let pwd = pwdGenerator.generate({
       length: 10,
@@ -473,7 +473,7 @@ function Users(props) {
           <IconButton>
             <Delete />
           </IconButton>
-          <IconButton title="generate password" onClick={() => handleGeneratePassword(user)}>
+          <IconButton title="change password" onClick={() => handleChangePassword(user)}>
             <VpnKey />
           </IconButton>
         </TableCell>
@@ -707,7 +707,7 @@ function Users(props) {
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Generate Password</DialogTitle>
+        <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
         <DialogContent>
           {/*
         <DialogContentText>
