@@ -282,7 +282,7 @@ function Users(props) {
                   inputProps={{ 'aria-labelledby': labelId }}
                 />
               </ListItemIcon>
-              {/* <ListItemText id={labelId} primary={value.roleName} /> */}
+              <ListItemText id={labelId} primary={value.roleName} />
             </ListItem>
           )
         })}
@@ -459,7 +459,7 @@ function Users(props) {
         <TableCell>
           {user.role.map((r, i) => (
             <Grid key={i}>
-              {/* {permissions.reduce((a, c) => a || (c.id === r ? c : undefined), undefined).roleName} */}
+              {permissions.reduce((a, c) => a || (c.id === r ? c : undefined), undefined).roleName}
             </Grid>
           ))}
         </TableCell>
@@ -805,7 +805,7 @@ function Users(props) {
                 {permissions.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell component="th" scope="row">
-                      {/* <Typography>{p.roleName}</Typography> */}
+                      <Typography>{p.roleName}</Typography>
                     </TableCell>
                     <TableCell component="th" scope="row">
                       <Typography>{p.description}</Typography>
