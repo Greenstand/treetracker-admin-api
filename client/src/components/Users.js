@@ -34,6 +34,9 @@ import axios from 'axios'
 import { AppContext } from './Context'
 import pwdGenerator from 'generate-password'
 import { getDateTimeStringLocale } from '../common/locale'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Snackbar from '@material-ui/core/Snackbar'
+import CloseIcon from '@material-ui/icons/Close'
 
 const style = (theme) => ({
   box: {
@@ -101,6 +104,10 @@ const style = (theme) => ({
     bottom: 12,
     left: 10,
   },
+  progressContainer: {
+    justifyContent: 'space-around',
+    padding: theme.spacing(2),
+  },
 })
 
 function not(a, b) {
@@ -137,6 +144,10 @@ function Users(props) {
   const [copyMsg, setCopyMsg] = React.useState('')
   const [errorMessage, setErrorMessage] = React.useState('')
   const passwordRef = React.useRef(null)
+  const [saveInProgress, setSaveInProgress] = React.useState(false)
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false)
+  const [snackbarMessage, setSnackbarMesssage] = React.useState('')
+  const [usersLoaded, setUsersLoaded] = React.useState(false)
 
   async function load() {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
@@ -157,6 +168,8 @@ function Users(props) {
       console.error('load fail:', res)
       return
     }
+
+    setUsersLoaded(true)
   }
 
   React.useEffect(() => {
@@ -283,6 +296,8 @@ function Users(props) {
       return
     }
     //upload
+
+    setSaveInProgress(true)
     if (userEditing.id === undefined) {
       //add
       let res = await axios.post(
@@ -295,10 +310,12 @@ function Users(props) {
           headers: { Authorization: token },
         }
       )
+      setSaveInProgress(false)
       if (res.status === 201) {
         setUserEditing(undefined)
         setRight([])
         load()
+        showSnackbar('User saved')
       } else {
         console.error('load fail:', res)
         return
@@ -314,10 +331,12 @@ function Users(props) {
           headers: { Authorization: token },
         }
       )
+      setSaveInProgress(false)
       if (res.status === 200) {
         setUserEditing(undefined)
         setRight([])
         load()
+        showSnackbar('User saved')
       } else {
         console.error('load fail:', res)
         return
@@ -325,7 +344,7 @@ function Users(props) {
     }
   }
 
-  function handleGeneratePassword(user) {
+  function handleChangePassword(user) {
     //auto generate password before open password Modal
     let pwd = pwdGenerator.generate({
       length: 10,
@@ -335,8 +354,9 @@ function Users(props) {
     setUserPassword(user)
   }
 
-  async function handleGenerate() {
+  async function handleSavePassword() {
     //upload
+    setSaveInProgress(true)
     let res = await axios.put(
       `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userPassword.id}/password`,
       {
@@ -346,9 +366,11 @@ function Users(props) {
         headers: { Authorization: token },
       }
     )
+    setSaveInProgress(false)
     if (res.status === 200) {
       setUserPassword(undefined)
       load()
+      showSnackbar('Password saved')
     } else {
       console.error('load fail:', res)
       return
@@ -406,6 +428,19 @@ function Users(props) {
     return userEditing && userEditing[key] && /\s/.test(userEditing[key]) ? true : false
   }
 
+  function handleSnackbarClose(event, reason) {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false)
+    setSnackbarMesssage('')
+  }
+
+  function showSnackbar(message) {
+    setSnackbarMesssage(message);
+    setSnackbarOpen(true);
+  }
+
   function mapSortedUsrs(users, option = 'id') {
     const sortedUsrs = users.sort((a, b) => a[option] - b[option])
     return mapUsrs(sortedUsrs)
@@ -438,7 +473,7 @@ function Users(props) {
           <IconButton>
             <Delete />
           </IconButton>
-          <IconButton title="generate password" onClick={() => handleGeneratePassword(user)}>
+          <IconButton title="change password" onClick={() => handleChangePassword(user)}>
             <VpnKey />
           </IconButton>
         </TableCell>
@@ -501,10 +536,15 @@ function Users(props) {
                         <TableCell>Operations</TableCell>
                       </TableRow>
                     </TableHead>
-                    <TableBody>{mapSortedUsrs(users)}</TableBody>
+                    <TableBody>
+                      {mapSortedUsrs(users)}
+                    </TableBody>
                   </Table>
                 </TableContainer>
               </Grid>
+              {!usersLoaded &&
+                <Grid item container className={classes.progressContainer}><CircularProgress /></Grid>
+              }
             </Grid>
           </Grid>
         </Grid>
@@ -590,10 +630,10 @@ function Users(props) {
           {userEditing && userEditing.createdAt && (
             <Grid container spacing={2}>
               <Grid item>
-                <Typography variant="outline">Created</Typography>
+                <Typography>Created</Typography>
               </Grid>
               <Grid item>
-                <Typography variant="outline">
+                <Typography>
                   {userEditing && getDateTimeStringLocale(userEditing.createdAt)}
                 </Typography>
               </Grid>
@@ -601,7 +641,7 @@ function Users(props) {
           )}
           <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
             <Grid item role="list">
-              <Typography variant="outline">Roles</Typography>
+              <Typography>Roles</Typography>
               {customList(left)}
             </Grid>
             <Grid item>
@@ -649,15 +689,16 @@ function Users(props) {
               </Grid>
             </Grid>
             <Grid item role="list">
-              <Typography variant="outline">Selected</Typography>
+              <Typography>Selected</Typography>
               {customList(right)}
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleUserDetailClose}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" color="primary">
-            Save
+          <Button onClick={handleUserDetailClose} disabled={saveInProgress}>Cancel</Button>
+          <Button onClick={handleSave} variant="contained" color="primary"
+            disabled={saveInProgress || !right || right.length === 0}>
+            {saveInProgress ? <CircularProgress size={21} /> : 'Save'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -666,7 +707,7 @@ function Users(props) {
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Generate Password</DialogTitle>
+        <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
         <DialogContent>
           {/*
         <DialogContentText>
@@ -680,8 +721,7 @@ function Users(props) {
             </Grid>
             <Grid item xs="11">
               <Typography className={classes.note}>
-                Please be careful, once you generate a new password, then the current password for
-                this user will be dedicated.
+                Please be careful. Once you save a new password, the current password for this user will no longer work.
               </Typography>
             </Grid>
           </Grid>
@@ -701,7 +741,7 @@ function Users(props) {
                 onChange={(e) => setNewPassword(e.target.value)}
                 ref={passwordRef}
                 className={classes.input}
-                helperText="We automatically generated a password for you, if you don't like it, you can put a new one by yourself."
+                helperText="We automatically generated a password for you. If you don't like it, you can specify your own."
               />
             </Grid>
             {document.queryCommandSupported('copy') && (
@@ -721,9 +761,10 @@ function Users(props) {
           <Box height={20} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handlePasswordClose}>Cancel</Button>
-          <Button onClick={handleGenerate} variant="contained" color="primary">
-            Generate
+          <Button onClick={handlePasswordClose} disabled={saveInProgress}>Cancel</Button>
+          <Button onClick={handleSavePassword} variant="contained" color="primary"
+            disabled={saveInProgress || !newPassword}>
+            {saveInProgress ? <CircularProgress size={21} /> : 'Save'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -779,6 +820,19 @@ function Users(props) {
           <Button onClick={() => setPermissionsShown(false)}>Cancel</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={handleSnackbarClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </>
   )
 }
