@@ -373,7 +373,6 @@ router.post('/init', async (req, res) => {
 
 const isAuth = async (req, res, next) => {
   //white list
-  console.log('testtest');
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
   const isApiExplorerReq = isDevEnvironment;
