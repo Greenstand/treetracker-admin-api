@@ -118,6 +118,19 @@ async function addAdminUserRole(userId, roleId) {
   )
 }
 
+async function getActiveAdminUser(userName) {
+  return await pool.query(
+    `select * from admin_user where user_name = '${userName}' and active = true`,
+  );
+}
+
+async function deactivateAdminUser(userId) {
+  if (userId == null) {
+    return
+  }
+  return await pool.query(`update admin_user set active = false where id = ${userId}`);
+}
+
 router.get('/permissions', async function login(req, res, next) {
   try {
     const result = await pool.query(`select * from admin_role`);
@@ -135,9 +148,7 @@ router.post('/login', async function login(req, res, next) {
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
-    let user_rows = await pool.query(
-      `select * from admin_user where user_name = '${userName}'`,
-    ); /*TODO check if user name exists*/
+    let user_rows = await getActiveAdminUser(userName);
 
     const user_entity = user_rows.rows[0];
     expect(user_entity.salt).toBeDefined();
@@ -269,12 +280,8 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
 
 router.delete('/admin_users/:userId', async (req, res, next) => {
   try {
-    let deleteQuery = `delete from admin_user_role where admin_user_id = ${req.params.userId}`;
-    console.log('delete:', deleteQuery);
-    let result = await pool.query(deleteQuery);
-    deleteQuery = `delete from admin_user where id = ${req.params.userId}`;
-    console.log('delete:', deleteQuery);
-    result = await pool.query(deleteQuery);
+    await clearAdminUserRoles(req.params.userId)
+    await deactivateAdminUser(req.params.userId)
     res.status(204).json();
   } catch (e) {
     console.error(e);
@@ -322,9 +329,7 @@ router.post('/admin_users/', async (req, res, next) => {
   try {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
-    let result = await pool.query(
-      `select * from admin_user where user_name = '${req.body.userName}'`,
-    );
+    let result = await getActiveAdminUser(req.body.userName)
     if (result.rows.length === 1) {
       //TODO 401
       res.status(201).json({id: result.rows[0].id});
@@ -441,9 +446,7 @@ const isAuth = async (req, res, next) => {
     if (url.match(/\/auth\/check_session/)) {
       let user_id = req.query.id;
       console.log(user_id);
-      let result = await pool.query(
-        `select * from admin_user where id = '${user_id}'`,
-      );
+      let result = await getActiveAdminUserRoles(user_id);
       if (result.rows.length === 1) {
         let update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
