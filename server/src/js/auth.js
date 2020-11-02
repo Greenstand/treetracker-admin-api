@@ -91,6 +91,33 @@ const users = [user, userB];
 const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
 // const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
 
+async function getActiveAdminUserRoles(userId) {
+  if (userId == null) {
+    return null
+  }
+  return await pool.query(
+    `select * from admin_user_role where admin_user_id = ${userId} and active = true`,
+  );
+}
+
+async function clearAdminUserRoles(userId) {
+  if (userId == null) {
+    return
+  }
+  return await pool.query(
+    `update admin_user_role set active = false where admin_user_id = ${userId}`
+  )
+}
+
+async function addAdminUserRole(userId, roleId) {
+  if (userId == null || roleId == null) {
+    return
+  }
+  return await pool.query(
+    `insert into admin_user_role (role_id, admin_user_id, active) values (${roleId},${userId},true) on conflict (role_id, admin_user_id) do update set active = true`,
+  )
+}
+
 router.get('/permissions', async function login(req, res, next) {
   try {
     const result = await pool.query(`select * from admin_role`);
@@ -125,9 +152,7 @@ router.post('/login', async function login(req, res, next) {
       userLogin = utils.convertCamel(result.rows[0]);
       //load role
       //console.assert(userLogin.id >= 0, 'id?', userLogin);
-      result = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${userLogin.id} and active = true`,
-      );
+      result = await getActiveAdminUserRoles(userLogin.id)
       userLogin.role = result.rows.map(r => r.role_id);
     }else{
       console.log("can not find user by ", userName);
@@ -164,9 +189,7 @@ async function loadUserPermissions(userId) {
     const userDetails = {};
     let result;
     //get role
-    result = await pool.query(
-      `select * from admin_user_role where admin_user_id = ${userId} and active = true`,
-    );
+    result = await getActiveAdminUserRoles(userId);
     expect(result.rows.length).toBeGreaterThan(0);
     userDetails.role = result.rows.map(r => r.role_id);
     //get policies
@@ -191,9 +214,7 @@ router.get('/admin_users/:userId', async (req, res, next) => {
     if (result.rows.length === 1) {
       userGet = utils.convertCamel(result.rows[0]);
       //load role
-      result = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${userGet.id} and active = true`,
-      );
+      result = await getActiveAdminUserRoles(userGet.id);
       userGet.role = result.rows.map(r => r.role_id);
     }
     if (userGet) {
@@ -231,16 +252,12 @@ router.patch('/admin_users/:userId', async (req, res, next) => {
       req.body,
     )} where id = ${req.params.userId}`;
     console.log('update:', update);
-    let result = await pool.query(update);
+    await pool.query(update);
     //set all roles for this user to inactive
-    result = await pool.query(
-      `update admin_user_role set active = false where admin_user_id = ${req.params.userId} `
-    );
+    await clearAdminUserRoles(req.params.userId);
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
-        await pool.query(
-          `insert into admin_user_role (role_id, admin_user_id, active) values (${req.body.role[i]},${req.params.userId},true) on conflict (role_id, admin_user_id) do update set active = true`,
-        );
+        await addAdminUserRole(req.params.userId, req.body.role[i])
       }
     }
     res.status(200).json();
@@ -271,9 +288,7 @@ router.get('/admin_users/', async (req, res, next) => {
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
       const user = result.rows[i];
-      const roles = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${user.id} and active = true`,
-      );
+      const roles = await getActiveAdminUserRoles(user.id)
       user.role = roles.rows.map(rr => rr.role_id);
       users.push(utils.convertCamel(user));
     }
@@ -332,13 +347,9 @@ router.post('/admin_users/', async (req, res, next) => {
       obj = result.rows[0];
       //roles
       //role
-      await pool.query(
-        `update admin_user_role set active = false where admin_user_id = ${obj.id} `
-      );
+      await clearAdminUserRoles(obj.id)
       for (let i = 0; i < req.body.role.length; i++) {
-        const insertRole = `insert into admin_user_role (role_id, admin_user_id, active) values (${req.body.role[i]},${obj.id},true) on conflict (role_id, admin_user_id) do update set active = true`;
-        console.log('insert role:', insertRole);
-        await pool.query(insertRole);
+        await addAdminUserRole(obj.id, req.body.role[i])
       }
     } else {
       throw new Error('can not find new user');
@@ -384,10 +395,10 @@ async function init() {
       `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true)`,
   );
   await pool.query(
-    `insert into admin_user_role (id, role_id, admin_user_id) ` +
-      `values ( 1, 1, 1), ` +
-      `(2, 2, 2), ` +
-      `(3, 3, 2)`,
+    `insert into admin_user_role (id, role_id, admin_user_id, active) ` +
+      `values ( 1, 1, 1, true), ` +
+      `(2, 2, 2, true), ` +
+      `(3, 3, 2, true)`,
   );
 }
 
@@ -438,9 +449,7 @@ const isAuth = async (req, res, next) => {
         //compare wuth the updated pwd in case pwd is changed
         if (update_userSession.passwordHash === userSession.passwordHash) {
           /*get the role for updated usersession* */
-          let updated_role = await pool.query(
-            `select * from admin_user_role where admin_user_id = ${user_id} and active = true`,
-          );
+          const updated_role = await getActiveAdminUserRoles(user_id);
           update_userSession.role = updated_role.rows.map(r => r.role_id);
           //compare wuth the updated role in case role is changed
           if (helper.needRoleUpdate(update_userSession, userSession)) {
