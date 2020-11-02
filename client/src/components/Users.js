@@ -187,7 +187,7 @@ function Users(props) {
   }
 
   async function handleDeleteConfirm() {
-    if (userDelete.id == user.id) {
+    if (userDelete.id === user.id) {
       setErrorMessage('Cannot delete active user.')
       return
     }
@@ -470,7 +470,7 @@ function Users(props) {
           <IconButton title="edit" onClick={() => handleEdit(user)}>
             <Edit />
           </IconButton>
-          <IconButton>
+          <IconButton title="delete" onclick={() => handleDelete(user)}>
             <Delete />
           </IconButton>
           <IconButton title="change password" onClick={() => handleChangePassword(user)}>
