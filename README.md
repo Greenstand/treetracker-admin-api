@@ -1,6 +1,6 @@
 # Treetracker Admin Panel
 
-This portion of the project is to process tree data. TreeTracker's Admin Panel Frontend and RESTful API built with loopback.
+This portion of the project is to process tree data. Treetracker's Admin Panel Frontend and RESTful API built with loopback.
 
 See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more info on goals
 
@@ -45,15 +45,15 @@ git clone https://github.com/Greenstand/treetracker-admin.git
 Once cloned, type:
 
 ```
-cd treetracker-admin/server && touch .env src/datasources/treetracker.datasource.json
+cd treetracker-admin/server && touch .env .env.development
 ```
 
 This sets up the following:
 
-- A `treetracker.datasource.json` file in `server/src/datasources/` that will be used to reference the source of data for Loopback.
 - A `.env` file in `server` that will contain a JWT secrect.
+- A `.env.development` file in `server` that will contain a development database connection string.
 
-_**Contact the #admin-panel channel** on Slack (you'll need to request access) to get our shared `treetracker.datasource.json` and `.env` files._
+_**Contact the #admin-panel channel** on Slack (you'll need to request access) to get our shared `.env` files._
 
 ## Development Environment Quick Start
 
@@ -371,13 +371,7 @@ var b = {
 };
 ```
 
-## Credit
-
----
-
-- [Loopback](https://loopback.io/doc/en/lb4/index.html)
-
-## How to contribute
+## Testing
 
 ### For client
 
@@ -391,13 +385,15 @@ To run test:
 
 On server, we used a combination of JS and Typescript, and, because the Loopback would load services/controllers from the typescript output folder (dist), so it get tricky to test.
 
-For the goal of protecting the db, when running test, we will use a separate database. Please put the database datasource file on this location:
+For the goal of protecting the shared development database, when running test, we will use a separate database.
+
+Create a test environment file `server/.env.test` with the test database URL set as follows:
 
 ```
-[project root dir]/server/src/datasources/treetrackerTest.datasource.json
+DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database>?ssl=true
 ```
 
-NOTE: please do not set this datasource to point to our dev DB, because the tests would clear all the data in the DB. It would cause trouble if we don't have any data in the dev DB.
+NOTE: Please do not set this URL to point to our development database, because the tests will clear all the data in the database. It would cause trouble if we don't have any data in the dev DB.
 
 To locally install postgresDB, this app might be helpful: https://postgresapp.com/
 
@@ -416,3 +412,7 @@ npm run watch
 In this way, we can write the code and get the tests result immediately.
 
 NOTE: when running tests, the files related to Loopback are loaded from ./dist folder. That's because for Jest, it does not output compiled files at all, and Loopback will try to load the controllers at runtime.
+
+## Credit
+
+- [Loopback](https://loopback.io/doc/en/lb4/index.html)

@@ -1,29 +1,20 @@
-//NOTE, here import datasource json is just for Typescript compile purpose,
-//we must import it to let TS cp this json file to the dist folder
-import _ from './treetracker.datasource.json';
-
 export interface DatasourceConfig {
   name: string;
   connector: string;
   url: string;
-  host: string;
-  port: number;
-  user: string;
-  password: string;
-  database: string;
 }
 
-//check the test env, if this is testing, then the NODE_DB=test must be set
-if (process.env.NODE_ENV === 'test' && process.env.NODE_DB !== 'test') {
-  throw new Error("This is test env, please set NODE_DB === 'test'");
+const config: DatasourceConfig = {
+  "name": "treetracker_dev",
+  "connector": "postgresql",
+  "url": process.env.DATABASE_URL || "",
 }
 
-const config: DatasourceConfig =
-  process.env.NODE_DB === 'test'
-    ? require('./treetrackerTest.datasource.json')
-    : require('./treetracker.datasource.json');
+if (!config.url) {
+  console.log(`DATABASE_URL not set - defaulting to localhost:5432`)
+}
 
-function getDatasource(): DatasourceConfig {
+function getDatasource() : DatasourceConfig {
   return config;
 }
 
