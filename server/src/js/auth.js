@@ -148,23 +148,20 @@ router.post('/login', async function login(req, res, next) {
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
-    let user_rows = await getActiveAdminUser(userName);
+    let users = await getActiveAdminUser(userName);
 
-    const user_entity = user_rows.rows[0];
-    expect(user_entity.salt).toBeDefined();
-    const hash = sha512(password, user_entity.salt);
-    expect(hash).toBeDefined();
-
-    let result = await pool.query(
-      `select * from admin_user where user_name = '${userName}' and password_hash = '${hash}'`,
-    );
     let userLogin;
-    if (result.rows.length === 1) {
-      userLogin = utils.convertCamel(result.rows[0]);
-      //load role
-      //console.assert(userLogin.id >= 0, 'id?', userLogin);
-      result = await getActiveAdminUserRoles(userLogin.id)
-      userLogin.role = result.rows.map(r => r.role_id);
+    if (users.rows.length) {
+      const user_entity = utils.convertCamel(users.rows[0]);
+      const hash = sha512(password, user_entity.salt);
+
+      if (user_entity.passwordHash === hash) {
+        userLogin = user_entity;
+        //load role
+        //console.assert(userLogin.id >= 0, 'id?', userLogin);
+        const result = await getActiveAdminUserRoles(userLogin.id)
+        userLogin.role = result.rows.map(r => r.role_id);
+      }
     }else{
       console.log("can not find user by ", userName);
     }
@@ -219,7 +216,7 @@ router.get('/admin_users/:userId', async (req, res, next) => {
   try {
     //console.log(pool);
     let result = await pool.query(
-      `select * from admin_user where id=${req.params.userId}`,
+      `select * from admin_user where id=${req.params.userId} and active = true`,
     );
     let userGet;
     if (result.rows.length === 1) {
@@ -291,7 +288,7 @@ router.delete('/admin_users/:userId', async (req, res, next) => {
 
 router.get('/admin_users/', async (req, res, next) => {
   try {
-    let result = await pool.query(`select * from admin_user`);
+    let result = await pool.query(`select * from admin_user where active = true`);
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
       const user = result.rows[i];
@@ -345,7 +342,7 @@ router.post('/admin_users/', async (req, res, next) => {
     console.log('insert:', insert);
     await pool.query(insert);
     result = await pool.query(
-      `select * from admin_user where user_name = '${req.body.userName}'`,
+      `select * from admin_user where user_name = '${req.body.userName}' and active = true`,
     );
     let obj;
     if (result.rows.length === 1) {

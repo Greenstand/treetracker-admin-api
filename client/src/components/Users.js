@@ -199,6 +199,7 @@ function Users(props) {
         }
       )
       if (res.status === 204) {
+        showSnackbar(`${userDelete.userName} successfully deleted`)
         setUserDelete(undefined)
         setErrorMessage('')
         load()
@@ -470,7 +471,7 @@ function Users(props) {
           <IconButton title="edit" onClick={() => handleEdit(user)}>
             <Edit />
           </IconButton>
-          <IconButton title="delete" onclick={() => handleDelete(user)}>
+          <IconButton title="delete" onClick={() => handleDelete(user)}>
             <Delete />
           </IconButton>
           <IconButton title="change password" onClick={() => handleChangePassword(user)}>
