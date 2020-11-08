@@ -327,7 +327,7 @@ router.post('/admin_users/', async (req, res, next) => {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
     let result = await getActiveAdminUser(req.body.userName)
-    if (result.rows.length === 1) {
+    if (result.rows.length) {
       //TODO 401
       res.status(201).json({id: result.rows[0].id});
       return;
@@ -341,11 +341,9 @@ router.post('/admin_users/', async (req, res, next) => {
     )}`;
     console.log('insert:', insert);
     await pool.query(insert);
-    result = await pool.query(
-      `select * from admin_user where user_name = '${req.body.userName}' and active = true`,
-    );
+    result = await getActiveAdminUser(req.body.userName);
     let obj;
-    if (result.rows.length === 1) {
+    if (result.rows.length) {
       obj = result.rows[0];
       //roles
       //role
