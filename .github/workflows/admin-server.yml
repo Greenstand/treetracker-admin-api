@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Admin Panel Server CI Pipeline
+name: Admin Panel Server CI/CD Pipeline
 
 on:
   push:
@@ -28,13 +28,13 @@ jobs:
         node-version: '12.x'
     - name: npm clean install
       run: npm ci
-      working-directory: ${{env.project-directory}}
+      working-directory: ${{ env.project-directory }}
     - name: run ESLint
       run: npm run lint
-      working-directory: ${{env.project-directory}}
+      working-directory: ${{ env.project-directory }}
     - name: build server project
       run: npm run build
-      working-directory: ${{env.project-directory}}
+      working-directory: ${{ env.project-directory }}
     - name: get-npm-version
       id: package-version
       uses: martinbeentjes/npm-get-version-action@master
@@ -69,10 +69,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install doctl for kubernetes
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
       uses: digitalocean/action-doctl@v2
       with:
         token: ${{ secrets.DIGITALOCEAN_TOKEN }}
     - name: Save DigitalOcean kubeconfig
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
       run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
     - name: Update kubernetes resources
-      run: kubectl -n development apply -f ./server/deployment/
+      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+      run: kubectl -n development apply --wait -f ./server/deployment/
