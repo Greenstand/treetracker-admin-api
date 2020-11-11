@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FilterModel from '../models/Filter';
+import FilterModel, {ALL_SPECIES, NO_SPECIES} from '../models/Filter';
 import DateFnsUtils from '@date-io/date-fns';
 import {connect} from 'react-redux';
 import {
@@ -66,7 +66,7 @@ function Filter(props) {
     filter.dateStart || dateStartDefault
   );
   const [dateEnd, setDateEnd] = useState(filter.dateEnd || dateEndDefault);
-  const [speciesId, setSpeciesId] = useState(0);
+  const [speciesId, setSpeciesId] = useState(ALL_SPECIES);
   const [tagId, setTagId] = useState(0);
   const [tagSearchString, setTagSearchString] = useState('');
 
@@ -209,7 +209,11 @@ function Filter(props) {
               value={speciesId}
               onChange={e => setSpeciesId(e.target.value)}
             >
-              {[{id:0,name:'all'}, ...props.speciesState.speciesList].map(species => (
+              {[
+                {id:ALL_SPECIES, name:'All'},
+                {id:NO_SPECIES, name:'(none)'},
+                ...props.speciesState.speciesList
+              ].map(species => (
                 <MenuItem key={species.id} value={species.id}>
                   {species.name}
                 </MenuItem>
