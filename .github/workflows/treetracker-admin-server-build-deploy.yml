@@ -54,8 +54,21 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Build and push on merge
-      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
+    - name: Set git sha
+      if: github.event_name == 'push' && github.repository == ‘Greenstand/treetracker-admin’
+      id: git-sha
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+    - name: Build snapshot with git sha and push on merge
+      if: github.event_name == 'push' && github.repository == ‘Greenstand/treetracker-admin’
+      id: docker_build_merge
+      uses: docker/build-push-action@v2
+      with:
+        context: ./server
+        file: ./server/Dockerfile
+        push: true
+        tags: greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }}-${{ steps.git-sha.outputs.sha_short }}
+    - name: Build snapshot and push on merge
+      if: github.event_name == 'push' && github.repository == ‘Greenstand/treetracker-admin’
       id: docker_build_merge
       uses: docker/build-push-action@v2
       with:
