@@ -3,7 +3,7 @@
  */
 
 export const ALL_SPECIES = 'ALL_SPECIES'
-export const NO_SPECIES = 'NO_SPECIES'
+export const SPECIES_NOT_SET = 'SPECIES_NOT_SET'
 
 export default class Filter {
   treeId
@@ -68,7 +68,7 @@ export default class Filter {
       where.planterIdentifier = this.planterIdentifier
     }
 
-    if (this.speciesId === NO_SPECIES) {
+    if (this.speciesId === SPECIES_NOT_SET) {
       where.speciesId = null
     } else if (this.speciesId !== ALL_SPECIES) {
       where.speciesId = this.speciesId

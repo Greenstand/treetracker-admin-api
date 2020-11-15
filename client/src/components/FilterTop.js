@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FilterModel, {ALL_SPECIES, NO_SPECIES} from '../models/Filter';
+import FilterModel, {ALL_SPECIES, SPECIES_NOT_SET} from '../models/Filter';
 import DateFnsUtils from '@date-io/date-fns';
 import {connect} from 'react-redux';
 import {
@@ -13,6 +13,7 @@ import {
   KeyboardDatePicker
 } from '@material-ui/pickers';
 import { getDatePickerLocale, getDateFormatLocale, convertDateToDefaultSqlDate } from '../common/locale'
+import { species } from 'models';
 
 export const FILTER_WIDTH = 330;
 
@@ -46,6 +47,9 @@ const styles = theme => {
     },
     autocompleteInputRoot: {
       padding: `${theme.spacing(0, 12, 0, 1)} !important`,
+    },
+    noSpecies: {
+      fontStyle: 'italic',
     },
   };
 };
@@ -211,9 +215,9 @@ function Filter(props) {
             >
               {[
                 {id:ALL_SPECIES, name:'All'},
-                {id:NO_SPECIES, name:'(none)'},
+                {id:SPECIES_NOT_SET, name:'Not set'},
                 ...props.speciesState.speciesList
-              ].map(species => (
+              ].map((species, idx) => (
                 <MenuItem key={species.id} value={species.id}>
                   {species.name}
                 </MenuItem>
