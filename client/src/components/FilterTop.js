@@ -13,6 +13,7 @@ import {
   KeyboardDatePicker
 } from '@material-ui/pickers';
 import { getDatePickerLocale, getDateFormatLocale, convertDateToDefaultSqlDate } from '../common/locale'
+import { species } from 'models';
 
 export const FILTER_WIDTH = 330;
 
@@ -216,7 +217,7 @@ function Filter(props) {
                 {id:ALL_SPECIES, name:'All'},
                 {id:SPECIES_NOT_SET, name:'Not set'},
                 ...props.speciesState.speciesList
-              ].map(species => (
+              ].map((species, idx) => (
                 <MenuItem key={species.id} value={species.id}>
                   {species.name}
                 </MenuItem>
