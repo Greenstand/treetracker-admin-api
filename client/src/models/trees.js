@@ -103,7 +103,7 @@ const trees = {
       this.invalidateTreeCount(false);
       let response = await Axios.get(
         `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?
-         where=${JSON.stringify(filter ? filter.getBackloopWhere(): {})}`,
+         where=${JSON.stringify(filter ? filter.getWhereObj(): {})}`,
         {
           headers: {
             'content-type': 'application/json',
@@ -128,7 +128,7 @@ const trees = {
 
       let response = await Axios.get(
         `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?
-         where=${JSON.stringify(filter ? filter.getBackloopWhere(): {})}`,
+         where=${JSON.stringify(filter ? filter.getWhereObj(): {})}`,
         {
           headers: {
             'content-type': 'application/json',
@@ -139,7 +139,7 @@ const trees = {
       const data = response.data
       this.receiveTreeCount(data)
 
-      const where = filter ? filter.getBackloopWhere() : {}
+      const where = filter ? filter.getWhereObj() : {}
    
       const lbFilter = JSON.stringify({
         where: {...where, active: true},

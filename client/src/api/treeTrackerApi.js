@@ -10,7 +10,7 @@ export default {
     //the filter model
     filter,
   }) {
-    const where = filter.getBackloopWhere()
+    const where = filter.getWhereObj()
    
     const lbFilter = {
       where,
@@ -122,7 +122,7 @@ export default {
   getTreeCount(filter) {
     const query = `${
       process.env.REACT_APP_API_ROOT
-    }/api/${getOrganization()}trees/count?where=${JSON.stringify(filter.getBackloopWhere())}`
+    }/api/${getOrganization()}trees/count?where=${JSON.stringify(filter.getWhereObj())}`
     console.log(query, session.token)
     return fetch(query, {
       headers: {

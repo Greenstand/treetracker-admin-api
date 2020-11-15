@@ -22,7 +22,7 @@ export default class Filter {
     Object.assign(this, options)
   }
 
-  getBackloopWhere() {
+  getWhereObj() {
     //{{{
     let where = {}
 
