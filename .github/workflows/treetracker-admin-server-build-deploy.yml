@@ -60,7 +60,7 @@ jobs:
       run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
     - name: Build snapshot with git sha and push on merge
       if: github.event_name == 'push' && github.repository == ‘Greenstand/treetracker-admin’
-      id: docker_build_merge
+      id: docker_build_snapshot_merge
       uses: docker/build-push-action@v2
       with:
         context: ./server
