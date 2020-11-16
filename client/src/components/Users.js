@@ -191,6 +191,7 @@ function Users(props) {
         }
       )
       if (res.status === 204) {
+        showSnackbar(`${userDelete.userName} successfully deleted`)
         setUserDelete(undefined)
         setErrorMessage('')
         load()

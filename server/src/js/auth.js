@@ -43,7 +43,47 @@ const generateSalt = function () {
 const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
 // const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
 
-router.get('/permissions', async function login(req, res) {
+async function getActiveAdminUserRoles(userId) {
+  if (userId == null) {
+    return null
+  }
+  return await pool.query(
+    `select * from admin_user_role where admin_user_id = ${userId} and active = true`,
+  );
+}
+
+async function clearAdminUserRoles(userId) {
+  if (userId == null) {
+    return
+  }
+  return await pool.query(
+    `update admin_user_role set active = false where admin_user_id = ${userId}`
+  )
+}
+
+async function addAdminUserRole(userId, roleId) {
+  if (userId == null || roleId == null) {
+    return
+  }
+  return await pool.query(
+    `insert into admin_user_role (role_id, admin_user_id, active) values (${roleId},${userId},true) on conflict (role_id, admin_user_id) do update set active = true`,
+  )
+}
+
+async function getActiveAdminUser(userName) {
+  return await pool.query(
+    `select * from admin_user where user_name = '${userName}' and active = true`,
+  );
+}
+
+async function deactivateAdminUser(userId) {
+  if (userId == null) {
+    return
+  }
+  return await pool.query(`update admin_user set active = false where id = ${userId}`);
+}
+
+router.get('/permissions', async function login(req, res, next) {
   try {
     const result = await pool.query(`select * from admin_role`);
     res.status(200).json(result.rows.map((r) => utils.convertCamel(r)));
@@ -60,36 +100,22 @@ router.post('/login', async function login(req, res, next) {
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
-    const user_rows = await pool.query(
-      `select * from admin_user where user_name = '${userName}'`,
-    );
+    let users = await getActiveAdminUser(userName);
 
-    //Check if user exists
-    if (user_rows.rowCount === 0) {
-      return res
-        .status(401)
-        .json({errorMessage: `The username: ${userName} does not exist.`});
-    }
-
-    const user_entity = user_rows.rows[0];
-    expect(user_entity.salt).toBeDefined();
-    const hash = sha512(password, user_entity.salt);
-    expect(hash).toBeDefined();
-
-    let result = await pool.query(
-      `select * from admin_user where user_name = '${userName}' and password_hash = '${hash}'`,
-    );
     let userLogin;
-    if (result.rows.length === 1) {
-      userLogin = utils.convertCamel(result.rows[0]);
-      //load role
-      //console.assert(userLogin.id >= 0, 'id?', userLogin);
-      result = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${userLogin.id} and active = true`,
-      );
-      userLogin.role = result.rows.map((r) => r.role_id);
-    } else {
-      console.log('can not find user by ', userName);
+    if (users.rows.length) {
+      const user_entity = utils.convertCamel(users.rows[0]);
+      const hash = sha512(password, user_entity.salt);
+
+      if (user_entity.passwordHash === hash) {
+        userLogin = user_entity;
+        //load role
+        //console.assert(userLogin.id >= 0, 'id?', userLogin);
+        const result = await getActiveAdminUserRoles(userLogin.id)
+        userLogin.role = result.rows.map(r => r.role_id);
+      }
+    }else{
+      console.log("can not find user by ", userName);
     }
 
     // If user exists in db AND user is active
@@ -126,20 +152,18 @@ router.post('/login', async function login(req, res, next) {
 
 // load roles and policy (permissions)
 async function loadUserPermissions(userId) {
-  const userDetails = {};
-  let result;
-  //get role
-  result = await pool.query(
-    `select * from admin_user_role where admin_user_id = ${userId} and active = true`,
-  );
-  expect(result.rows.length).toBeGreaterThan(0);
-  userDetails.role = result.rows.map(r => r.role_id);
-  //get policies
-  result = await pool.query(
-    `select * from admin_role where id = ${userDetails.role[0]}`,
-  );
-  userDetails.policy = result.rows.map(r => r.policy)[0];
-  return userDetails;
+    const userDetails = {};
+    let result;
+    //get role
+    result = await getActiveAdminUserRoles(userId);
+    expect(result.rows.length).toBeGreaterThan(0);
+    userDetails.role = result.rows.map(r => r.role_id);
+    //get policies
+    result = await pool.query(
+      `select * from admin_role where id = ${userDetails.role[0]}`,
+    );
+    userDetails.policy = result.rows.map(r => r.policy)[0];
+    return userDetails;
 }
 
 router.get('/test', async function login(req, res) {
@@ -150,16 +174,14 @@ router.get('/admin_users/:userId', async (req, res) => {
   try {
     //console.log(pool);
     let result = await pool.query(
-      `select * from admin_user where id=${req.params.userId}`,
+      `select * from admin_user where id=${req.params.userId} and active = true`,
     );
     let userGet;
     if (result.rows.length === 1) {
       userGet = utils.convertCamel(result.rows[0]);
       //load role
-      result = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${userGet.id} and active = true`,
-      );
-      userGet.role = result.rows.map((r) => r.role_id);
+      result = await getActiveAdminUserRoles(userGet.id);
+      userGet.role = result.rows.map(r => r.role_id);
     }
     if (userGet) {
       delete userGet.passwordHash;
@@ -194,16 +216,12 @@ router.patch('/admin_users/:userId', async (req, res) => {
       req.body,
     )} where id = ${req.params.userId}`;
     console.log('update:', update);
-    let result = await pool.query(update);
+    await pool.query(update);
     //set all roles for this user to inactive
-    result = await pool.query(
-      `update admin_user_role set active = false where admin_user_id = ${req.params.userId} `
-    );
+    await clearAdminUserRoles(req.params.userId);
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
-        await pool.query(
-          `insert into admin_user_role (role_id, admin_user_id, active) values (${req.body.role[i]},${req.params.userId},true) on conflict (role_id, admin_user_id) do update set active = true`,
-        );
+        await addAdminUserRole(req.params.userId, req.body.role[i])
       }
     }
     res.status(200).json();
@@ -215,12 +233,8 @@ router.patch('/admin_users/:userId', async (req, res) => {
 
 router.delete('/admin_users/:userId', async (req, res) => {
   try {
-    let deleteQuery = `delete from admin_user_role where admin_user_id = ${req.params.userId}`;
-    console.log('delete:', deleteQuery);
-    await pool.query(deleteQuery);
-    deleteQuery = `delete from admin_user where id = ${req.params.userId}`;
-    console.log('delete:', deleteQuery);
-    await pool.query(deleteQuery);
+    await clearAdminUserRoles(req.params.userId)
+    await deactivateAdminUser(req.params.userId)
     res.status(204).json();
   } catch (e) {
     console.error(e);
@@ -230,16 +244,14 @@ router.delete('/admin_users/:userId', async (req, res) => {
 
 router.get('/admin_users/', async (req, res) => {
   try {
-    const result = await pool.query(`select * from admin_user`);
+    let result = await pool.query(`select * from admin_user where active = true`);
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
-      const user = result.rows[i];
       delete user.password_hash;
       delete user.salt;
-      const roles = await pool.query(
-        `select * from admin_user_role where admin_user_id = ${user.id} and active = true`,
-      );
-      user.role = roles.rows.map((rr) => rr.role_id);
+      const user = result.rows[i];
+      const roles = await getActiveAdminUserRoles(user.id)
+      user.role = roles.rows.map(rr => rr.role_id);
       users.push(utils.convertCamel(user));
     }
     res.status(200).json(users);
@@ -277,10 +289,8 @@ router.post('/admin_users/', async (req, res) => {
   try {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
-    let result = await pool.query(
-      `select * from admin_user where user_name = '${req.body.userName}'`,
-    );
-    if (result.rows.length === 1) {
+    let result = await getActiveAdminUser(req.body.userName)
+    if (result.rows.length) {
       //TODO 401
       res.status(201).json({id: result.rows[0].id});
       return;
@@ -294,21 +304,15 @@ router.post('/admin_users/', async (req, res) => {
     )}`;
     console.log('insert:', insert);
     await pool.query(insert);
-    result = await pool.query(
-      `select * from admin_user where user_name = '${req.body.userName}'`,
-    );
+    result = await getActiveAdminUser(req.body.userName);
     let obj;
-    if (result.rows.length === 1) {
+    if (result.rows.length) {
       obj = result.rows[0];
       //roles
       //role
-      await pool.query(
-        `update admin_user_role set active = false where admin_user_id = ${obj.id} `
-      );
+      await clearAdminUserRoles(obj.id)
       for (let i = 0; i < req.body.role.length; i++) {
-        const insertRole = `insert into admin_user_role (role_id, admin_user_id, active) values (${req.body.role[i]},${obj.id},true) on conflict (role_id, admin_user_id) do update set active = true`;
-        console.log('insert role:', insertRole);
-        await pool.query(insertRole);
+        await addAdminUserRole(obj.id, req.body.role[i])
       }
     } else {
       throw new Error('can not find new user');
@@ -354,10 +358,10 @@ async function init() {
       `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true)`,
   );
   await pool.query(
-    `insert into admin_user_role (id, role_id, admin_user_id) ` +
-      `values ( 1, 1, 1), ` +
-      `(2, 2, 2), ` +
-      `(3, 3, 2)`,
+    `insert into admin_user_role (id, role_id, admin_user_id, active) ` +
+      `values ( 1, 1, 1, true), ` +
+      `(2, 2, 2, true), ` +
+      `(3, 3, 2, true)`,
   );
 }
 
@@ -405,18 +409,14 @@ const isAuth = async (req, res, next) => {
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
       console.log(user_id);
-      const result = await pool.query(
-        `select * from admin_user where id = '${user_id}'`,
-      );
+      let result = await getActiveAdminUserRoles(user_id);
       if (result.rows.length === 1) {
         const update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
         if (update_userSession.passwordHash === userSession.passwordHash) {
           /*get the role for updated usersession* */
-          const updated_role = await pool.query(
-            `select * from admin_user_role where admin_user_id = ${user_id} and active = true`,
-          );
-          update_userSession.role = updated_role.rows.map((r) => r.role_id);
+          const updated_role = await getActiveAdminUserRoles(user_id);
+          update_userSession.role = updated_role.rows.map(r => r.role_id);
           //compare wuth the updated role in case role is changed
           if (helper.needRoleUpdate(update_userSession, userSession)) {
             //reassign token with updated role if role changes
