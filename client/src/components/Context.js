@@ -187,7 +187,6 @@ export const AppProvider = (props) => {
       setRoutes(getRoutes(undefined))
       session.token = undefined
       session.user = undefined
-
       localStorage.removeItem('token')
       localStorage.removeItem('user')
     },
