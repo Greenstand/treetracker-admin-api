@@ -41,6 +41,7 @@ import Radio from '@material-ui/core/Radio'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Snackbar from '@material-ui/core/Snackbar'
 import CloseIcon from '@material-ui/icons/Close'
+import FormControl from '@material-ui/core/FormControl'
 
 const style = (theme) => ({
   box: {
@@ -69,7 +70,7 @@ const style = (theme) => ({
     color: 'white',
   },
   input: {
-    margin: theme.spacing(0, 1, 4, 1),
+    margin: theme.spacing(0, 0, 4, 0),
   },
   firstName: {
     marginRight: theme.spacing(1),
@@ -103,15 +104,13 @@ const style = (theme) => ({
     '&$radioChecked': { color: theme.palette.primary.main },
   },
   radioChecked: {},
-  radioGroup: {
-    position: 'relative',
-    bottom: 12,
-    left: 10,
-  },
   progressContainer: {
     justifyContent: 'space-around',
     padding: theme.spacing(2),
   },
+  disabledUser: {
+    color: 'red',
+  }
 })
 
 function not(a, b) {
@@ -141,6 +140,9 @@ function Users(props) {
   const [snackbarOpen, setSnackbarOpen] = React.useState(false)
   const [snackbarMessage, setSnackbarMesssage] = React.useState('')
   const [usersLoaded, setUsersLoaded] = React.useState(false)
+
+  const ENABLED = 'Enabled'
+  const DISABLED = 'Disabled'
 
   const load = useCallback(async () => {
     let res = await axios.get(`${process.env.REACT_APP_API_ROOT}/auth/permissions`, {
@@ -184,14 +186,16 @@ function Users(props) {
       return
     }
     try {
-      let res = await axios.delete(
+      setSaveInProgress(true)
+      const res = await axios.delete(
         `${process.env.REACT_APP_API_ROOT}/auth/admin_users/${userDelete.id}`,
         {
           headers: { Authorization: token },
         }
       )
+      setSaveInProgress(false)
       if (res.status === 204) {
-        showSnackbar(`${userDelete.userName} successfully deleted`)
+        showSnackbar(`User ${userDelete.userName} successfully deleted`)
         setUserDelete(undefined)
         setErrorMessage('')
         load()
@@ -201,6 +205,7 @@ function Users(props) {
         return
       }
     } catch (e) {
+      setSaveInProgress(false)
       console.error(e)
       setErrorMessage('An error occured while deleting user. Please contact the system admin.')
     }
@@ -305,10 +310,10 @@ function Users(props) {
       )
       setSaveInProgress(false)
       if (res.status === 201) {
+        showSnackbar(`User ${userEditing.userName} saved`)
         setUserEditing(undefined)
         setRight([])
         load()
-        showSnackbar('User saved')
       } else {
         console.error('load fail:', res)
         return
@@ -326,10 +331,10 @@ function Users(props) {
       )
       setSaveInProgress(false)
       if (res.status === 200) {
+        showSnackbar(`User ${userEditing.userName} saved`)
         setUserEditing(undefined)
         setRight([])
         load()
-        showSnackbar('User saved')
       } else {
         console.error('load fail:', res)
         return
@@ -361,9 +366,9 @@ function Users(props) {
     )
     setSaveInProgress(false)
     if (res.status === 200) {
+      showSnackbar(`Password saved for ${userPassword.userName}`)
       setUserPassword(undefined)
       load()
-      showSnackbar('Password saved')
     } else {
       console.error('load fail:', res)
       return
@@ -390,14 +395,12 @@ function Users(props) {
     setUserEditing({ ...userEditing, email: e.target.value })
   }
 
-  function handleActiveChange(e) {
-    //convert to boolean
-    let isTrueSet = e.target.value === 'active'
-    setUserEditing({ ...userEditing, active: isTrueSet })
+  function handleStatusChange(e) {
+    setUserEditing({ ...userEditing, enabled: e.target.value === ENABLED })
   }
 
   function handleAddUser() {
-    setUserEditing({})
+    setUserEditing({active: true, enabled: true})
     setLeft(permissions)
   }
 
@@ -448,7 +451,11 @@ function Users(props) {
         <TableCell component="th" scope="row">
           {user.firstName} {user.lastName}
         </TableCell>
-        <TableCell>{user.active ? 'active' : 'inactive'}</TableCell>
+        <TableCell>
+          {user.enabled ?
+            ENABLED : <span className={classes.disabledUser}>{DISABLED}</span>
+          }
+        </TableCell>
         <TableCell>
           {user.role.map((r, idx) => (
             <Grid key={`role_${idx}`}>
@@ -574,8 +581,7 @@ function Users(props) {
           />
           <Grid container>
             <Grid item className={classes.firstName}>
-              <TextField
-                autoFocus
+               <TextField
                 id="firstName"
                 label="First Name"
                 type="text"
@@ -591,7 +597,6 @@ function Users(props) {
             </Grid>
             <Grid item className={classes.lastName}>
               <TextField
-                autoFocus
                 id="lastName"
                 label="Last Name"
                 type="text"
@@ -607,7 +612,6 @@ function Users(props) {
             </Grid>
           </Grid>
           <TextField
-            autoFocus
             id="email"
             label="Email"
             type="text"
@@ -620,18 +624,18 @@ function Users(props) {
             className={classes.input}
             onChange={handleEmailChange}
           />
-          <FormLabel
-                variant="outlined">User Status</FormLabel>
-          <RadioGroup
-            row
-            name="User status radios"
-            value={(userEditing && userEditing.active ? 'active' : 'inactive')}
-            onChange={handleActiveChange}
-            className={classes.radioGroup}
-            >
-            <FormControlLabel value="active" control={<Radio />} label="Active" />
-            <FormControlLabel value="inactive" control={<Radio />} label="Inactive" />
-          </RadioGroup>
+          <FormControl>
+            <FormLabel>User Status</FormLabel>
+            <RadioGroup
+              row
+              name="User status radios"
+              value={(userEditing && userEditing.enabled ? ENABLED : DISABLED)}
+              onChange={handleStatusChange}
+              >
+              <FormControlLabel value={ENABLED} control={<Radio />} label={ENABLED} />
+              <FormControlLabel value={DISABLED} control={<Radio />} label={DISABLED} />
+            </RadioGroup>
+          </FormControl>
           {userEditing && userEditing.createdAt && (
             <Grid container spacing={2}>
               <Grid item>
@@ -702,7 +706,7 @@ function Users(props) {
         <DialogActions>
           <Button onClick={handleUserDetailClose} disabled={saveInProgress}>Cancel</Button>
           <Button onClick={handleSave} variant="contained" color="primary"
-            disabled={saveInProgress || !right || right.length === 0}>
+            disabled={saveInProgress || !userEditing || !userEditing.userName || !right || right.length === 0}>
             {saveInProgress ? <CircularProgress size={21} /> : 'Save'}
           </Button>
         </DialogActions>
@@ -792,7 +796,11 @@ function Users(props) {
           <Button onClick={handleDeleteCancel} variant="contained" color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDeleteConfirm}>Delete</Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            disabled={saveInProgress}>
+            {saveInProgress ? <CircularProgress size={21} /> : 'Confirm'}
+          </Button>
         </DialogActions>
       </Dialog>
       <Dialog open={isPermissionsShow} onClose={handleClose} aria-labelledby="form-dialog-title">
