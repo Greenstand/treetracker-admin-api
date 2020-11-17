@@ -247,9 +247,9 @@ router.get('/admin_users/', async (req, res) => {
     let result = await pool.query(`select * from admin_user where active = true`);
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
+      const user = result.rows[i];
       delete user.password_hash;
       delete user.salt;
-      const user = result.rows[i];
       const roles = await getActiveAdminUserRoles(user.id)
       user.role = roles.rows.map(rr => rr.role_id);
       users.push(utils.convertCamel(user));
@@ -298,6 +298,10 @@ router.post('/admin_users/', async (req, res) => {
     //active
     if (req.body.active == undefined) {
       req.body.active = true;
+    }
+    //enabled
+    if (req.body.enabled == undefined) {
+      req.body.enabled = true;
     }
     const insert = `insert into admin_user ${utils.buildInsertFields(
       req.body,
