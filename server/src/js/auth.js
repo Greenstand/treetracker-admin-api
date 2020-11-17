@@ -114,13 +114,13 @@ router.post('/login', async function login(req, res, next) {
         const result = await getActiveAdminUserRoles(userLogin.id)
         userLogin.role = result.rows.map(r => r.role_id);
       }
-    }else{
+    } else {
       console.log("can not find user by ", userName);
     }
 
     // If user exists in db AND user is active
     // query remaining details and return
-    if (userLogin && userLogin.active) {
+    if (userLogin && userLogin.enabled) {
       const userDetails = await loadUserPermissions(userLogin.id);
       userLogin = {...userLogin, ...userDetails};
       //TODO get user
