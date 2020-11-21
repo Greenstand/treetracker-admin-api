@@ -400,7 +400,14 @@ function Users(props) {
   }
 
   function handleAddUser() {
-    setUserEditing({active: true, enabled: true})
+    setUserEditing({
+      userName: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      active: true,
+      enabled: true,
+    })
     setLeft(permissions)
   }
 
