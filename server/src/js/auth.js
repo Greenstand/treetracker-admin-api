@@ -83,7 +83,7 @@ async function deactivateAdminUser(userId) {
   return await pool.query(`update admin_user set active = false where id = ${userId}`);
 }
 
-router.get('/permissions', async function login(req, res, next) {
+router.get('/permissions', async function login(req, res) {
   try {
     const result = await pool.query(`select * from admin_role`);
     res.status(200).json(result.rows.map((r) => utils.convertCamel(r)));
@@ -100,7 +100,7 @@ router.post('/login', async function login(req, res, next) {
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
-    let users = await getActiveAdminUser(userName);
+    const users = await getActiveAdminUser(userName);
 
     let userLogin;
     if (users.rows.length) {
@@ -244,7 +244,7 @@ router.delete('/admin_users/:userId', async (req, res) => {
 
 router.get('/admin_users/', async (req, res) => {
   try {
-    let result = await pool.query(`select * from admin_user where active = true`);
+    const result = await pool.query(`select * from admin_user where active = true`);
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
       const user = result.rows[i];
@@ -413,7 +413,7 @@ const isAuth = async (req, res, next) => {
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
       console.log(user_id);
-      let result = await getActiveAdminUserRoles(user_id);
+      const result = await getActiveAdminUserRoles(user_id);
       if (result.rows.length === 1) {
         const update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
