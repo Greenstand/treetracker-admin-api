@@ -47,7 +47,7 @@ function PlanterDetail(props){
       setPlanter(props.planter)
     }
  
-    useEffect(() => {
+    React.useEffect(() => {
       if (!planter.createdAt) {
         getPlanter(planter.id).then(planterDetail => {
           if (planterDetail && planterDetail.createdAt) {
