@@ -9,6 +9,7 @@ import Drawer from '@material-ui/core/Drawer'
 import Close from "@material-ui/icons/Close";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
+import { getPlanter } from '../models/planters';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -39,11 +40,23 @@ const useStyle = makeStyles(theme => ({
 
 function PlanterDetail(props){
 
+    const [planter, setPlanter] = React.useState({})
+
     const classes = useStyle();
-    const {
-      planter,
-    } = props;
-  
+    if (props.planter.id != planter.id) {
+      setPlanter(props.planter)
+    }
+ 
+    useEffect(() => {
+      if (!planter.createdAt) {
+        getPlanter(planter.id).then(planterDetail => {
+          if (planterDetail && planterDetail.createdAt) {
+            setPlanter(planterDetail)
+          }
+        })
+      }
+    }, [planter])
+
     return(
       <Drawer anchor="right" open={props.open} onClose={props.onClose}>
         <Grid className={classes.root} >
@@ -78,33 +91,37 @@ function PlanterDetail(props){
               }
             </Grid>
             <Grid item className={classes.box} >
-              <Typography variant="h5" color="primary" className={classes.name} >{props.planter.firstName} {props.planter.lastName}</Typography>
-              <Typography variant="body2">ID:{props.planter.id}</Typography>
+              <Typography variant="h5" color="primary" className={classes.name} >{planter.firstName} {planter.lastName}</Typography>
+              <Typography variant="body2">ID:{planter.id}</Typography>
             </Grid>
             <Divider/>
             <Grid container direction="column" className={classes.box}>
               <Typography variant="subtitle1" >Email address</Typography>
-              <Typography variant="body1" >{props.planter.email || "---"}</Typography>
+              <Typography variant="body1" >{planter.email || "---"}</Typography>
             </Grid>
             <Divider/>
             <Grid container direction="column" className={classes.box}>
               <Typography variant="subtitle1" >Phone number</Typography>
-              <Typography variant="body1" >{props.planter.phone || "---"}</Typography>
+              <Typography variant="body1" >{planter.phone || "---"}</Typography>
             </Grid>
             <Divider/>
             <Grid container direction="column" className={classes.box}>
               <Typography variant="subtitle1" >Person ID</Typography>
-              <Typography variant="body1" >{props.planter.personId || "---"}</Typography>
+              <Typography variant="body1" >{planter.personId || "---"}</Typography>
             </Grid>
             <Divider/>
             <Grid container direction="column" className={classes.box}>
               <Typography variant="subtitle1" >Organization</Typography>
-              <Typography variant="body1" >{props.planter.organization || "---" }</Typography>
+              <Typography variant="body1" >{planter.organization || "---" }</Typography>
             </Grid>
             <Divider />
             <Grid container direction="column" className={classes.box}>
               <Typography variant="subtitle1" >Organization ID</Typography>
-              <Typography variant="body1" >{props.planter.organizationId || "---"}</Typography>
+              <Typography variant="body1" >{planter.organizationId || "---"}</Typography>
+            </Grid>
+            <Grid container direction="column" className={classes.box}>
+              <Typography variant="subtitle1" >Registration Date</Typography>
+              <Typography variant="body1" >{planter.createdAt || "---"}</Typography>
             </Grid>
           </Grid>
         </Grid>
