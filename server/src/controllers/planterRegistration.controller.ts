@@ -46,3 +46,4 @@ export class PlanterRegistrationController {
   async findById(@param.path.number('id') id: number): Promise<PlanterRegistration> {
     return await this.planterRepository.findById(id);
   }
+}
