@@ -4,3 +4,4 @@ export * from './species.model';
 export * from './adminUser.model';
 export * from './tag.model';
 export * from './treeTag.model';
+export * from './organization.model';
