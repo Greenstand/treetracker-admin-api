@@ -119,7 +119,7 @@ function PlanterDetail(props){
           </Grid>
           <Divider />
           <Grid container direction="column" className={classes.box}>
-            <Typography variant="subtitle1" >Registration Date</Typography>
+            <Typography variant="subtitle1" >Registration</Typography>
             <Typography variant="body1" >
               {(planterRegistration && getDateTimeStringLocale(planterRegistration.createdAt)) || "---"}
             </Typography>
