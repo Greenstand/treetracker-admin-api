@@ -10,6 +10,7 @@ import Close from "@material-ui/icons/Close";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
 import api from '../api/planters';
+import { getDateTimeStringLocale } from '../common/locale';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -39,94 +40,94 @@ const useStyle = makeStyles(theme => ({
   }));
 
 function PlanterDetail(props){
+  
+  const [planterRegistration, setPlanterRegistration] = React.useState(null)
+  const classes = useStyle();
+  const {planter} = props;
 
-    const [planter, setPlanter] = React.useState({})
-
-    const classes = useStyle();
-    if (props.planter && props.planter.id !== planter.id) {
-      setPlanter(props.planter)
+  React.useEffect(() => {
+    if (planter && planter.id && (!planterRegistration || planterRegistration.planterId !== planter.id)) {
+      api.getPlanterRegistrations(planter.id).then(registrations => {
+        if (registrations && registrations.length) {
+          setPlanterRegistration(registrations[0])
+        }
+      })
     }
- 
-    React.useEffect(() => {
-      if (planter.id && !planter.createdAt) {
-        api.getPlanter(planter.id).then(planterDetail => {
-          if (planterDetail && planterDetail.createdAt) {
-            setPlanter(planterDetail)
-          }
-        })
-      }
-    }, [planter])
+  }, [planter])
 
-    return(
-      <Drawer anchor="right" open={props.open} onClose={props.onClose}>
-        <Grid className={classes.root} >
-          <Grid container direction="column">
-            <Grid item>
-              <Grid container justify="space-between" alignItems="center" >
-                <Grid item>
-                  <Box m={4} >
-                    <Typography color="primary" variant="h6" >
-                      Planter Detail
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item>
-                  <IconButton>
-                    <Close onClick={() => props.onClose()} />
-                  </IconButton>
-                </Grid>
+  return(
+    <Drawer anchor="right" open={props.open} onClose={props.onClose}>
+      <Grid className={classes.root} >
+        <Grid container direction="column">
+          <Grid item>
+            <Grid container justify="space-between" alignItems="center" >
+              <Grid item>
+                <Box m={4} >
+                  <Typography color="primary" variant="h6" >
+                    Planter Detail
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <IconButton onClick={() => props.onClose()}>
+                  <Close />
+                </IconButton>
               </Grid>
             </Grid>
-            <Grid item>
-  
-              {planter.imageUrl &&
-                <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
-              }
-              {!planter.imageUrl &&
-                <CardMedia className={classes.cardMedia} >
-                  <Grid container className={classes.personBox} >
-                    <Person className={classes.person} />
-                  </Grid>
-                </CardMedia>
-              }
-            </Grid>
-            <Grid item className={classes.box} >
-              <Typography variant="h5" color="primary" className={classes.name} >{planter.firstName} {planter.lastName}</Typography>
-              <Typography variant="body2">ID:{planter.id}</Typography>
-            </Grid>
-            <Divider/>
-            <Grid container direction="column" className={classes.box}>
-              <Typography variant="subtitle1" >Email address</Typography>
-              <Typography variant="body1" >{planter.email || "---"}</Typography>
-            </Grid>
-            <Divider/>
-            <Grid container direction="column" className={classes.box}>
-              <Typography variant="subtitle1" >Phone number</Typography>
-              <Typography variant="body1" >{planter.phone || "---"}</Typography>
-            </Grid>
-            <Divider/>
-            <Grid container direction="column" className={classes.box}>
-              <Typography variant="subtitle1" >Person ID</Typography>
-              <Typography variant="body1" >{planter.personId || "---"}</Typography>
-            </Grid>
-            <Divider/>
-            <Grid container direction="column" className={classes.box}>
-              <Typography variant="subtitle1" >Organization</Typography>
-              <Typography variant="body1" >{planter.organization || "---" }</Typography>
-            </Grid>
-            <Divider />
-            <Grid container direction="column" className={classes.box}>
-              <Typography variant="subtitle1" >Organization ID</Typography>
-              <Typography variant="body1" >{planter.organizationId || "---"}</Typography>
-            </Grid>
-            <Grid container direction="column" className={classes.box}>
-              <Typography variant="subtitle1" >Registration Date</Typography>
-              <Typography variant="body1" >{planter.createdAt || "---"}</Typography>
-            </Grid>
+          </Grid>
+          <Grid item>
+
+            {planter.imageUrl &&
+              <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
+            }
+            {!planter.imageUrl &&
+              <CardMedia className={classes.cardMedia} >
+                <Grid container className={classes.personBox} >
+                  <Person className={classes.person} />
+                </Grid>
+              </CardMedia>
+            }
+          </Grid>
+          <Grid item className={classes.box} >
+            <Typography variant="h5" color="primary" className={classes.name} >{planter.firstName} {planter.lastName}</Typography>
+            <Typography variant="body2">ID:{planter.id}</Typography>
+          </Grid>
+          <Divider/>
+          <Grid container direction="column" className={classes.box}>
+            <Typography variant="subtitle1" >Email address</Typography>
+            <Typography variant="body1" >{planter.email || "---"}</Typography>
+          </Grid>
+          <Divider/>
+          <Grid container direction="column" className={classes.box}>
+            <Typography variant="subtitle1" >Phone number</Typography>
+            <Typography variant="body1" >{planter.phone || "---"}</Typography>
+          </Grid>
+          <Divider/>
+          <Grid container direction="column" className={classes.box}>
+            <Typography variant="subtitle1" >Person ID</Typography>
+            <Typography variant="body1" >{planter.personId || "---"}</Typography>
+          </Grid>
+          <Divider/>
+          <Grid container direction="column" className={classes.box}>
+            <Typography variant="subtitle1" >Organization</Typography>
+            <Typography variant="body1" >{planter.organization || "---" }</Typography>
+          </Grid>
+          <Divider />
+          <Grid container direction="column" className={classes.box}>
+            <Typography variant="subtitle1" >Organization ID</Typography>
+            <Typography variant="body1" >{planter.organizationId || "---"}</Typography>
+          </Grid>
+          <Divider />
+          <Grid container direction="column" className={classes.box}>
+            <Typography variant="subtitle1" >Registration Date</Typography>
+            <Typography variant="body1" >
+              {(planterRegistration && getDateTimeStringLocale(planterRegistration.createdAt)) || "---"}
+            </Typography>
           </Grid>
         </Grid>
-      </Drawer>
-    )
-  }
+      </Grid>
+    </Drawer>
+  )
+}
 
-  export default (PlanterDetail)
+export default (PlanterDetail)

@@ -35,7 +35,7 @@ export class PlanterRegistrationController {
     return await this.planterRepository.find(filter);
   }
 
-  @get('/planter/{id}', {
+  @get('/planter_registration/{id}', {
     responses: {
       '200': {
         description: 'PlanterRegistration model instance',

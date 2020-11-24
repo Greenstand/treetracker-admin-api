@@ -7,35 +7,14 @@ import {session} from "../models/auth";
 
 export default {
   getPlanter(id) {
-    const apiRoot = `${process.env.REACT_APP_API_ROOT}/api`;
-    const planterQuery = `${apiRoot}/${getOrganization()}planter/${id}`;
-    const registrationQuery = `${apiRoot}/planter_registration/?filter=where[planterId]=${id}`;
+    const planterQuery = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/${id}`;
 
-    return Promise.all([
-      fetch(planterQuery, {
-        method: "GET",
-        headers: { 
-          "content-type": "application/json" ,
-          Authorization: session.token ,
-        },
-      }),
-      fetch(registrationQuery, {
-        method: "GET",
-        headers: { 
-          "content-type": "application/json" ,
-          Authorization: session.token ,
-        },
-      })
-    ])
-    .then(responses => {
-      let planter = responses[0]
-      const registrations = responses[1]
-      if (registrations.length) {
-        planter.lat = registrations[0].lat;
-        planter.lon = registrations[0].lon;
-        planter.createdAt = registrations[0].createdAt;
-      }
-      return planter;
+    return fetch(planterQuery, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
     })
       .then(handleResponse)
       .catch(handleError);
@@ -79,5 +58,19 @@ export default {
         Authorization: session.token ,
       },
     }).then(handleResponse).catch(handleError);
+  },
+
+  getPlanterRegistrations(planterId) {
+    const registrationQuery =
+      `${process.env.REACT_APP_API_ROOT}/api/planter_registration?filter[where][planterId]=${planterId}`;
+    return fetch(registrationQuery, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError)
   },
 };

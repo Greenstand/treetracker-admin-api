@@ -8,6 +8,20 @@ import {Entity, model, property} from '@loopback/repository';
 })
 export class PlanterRegistration extends Entity {
   @property({
+    type: Number,
+    required: true,
+    scale: 0,
+    id: 1,
+    postgresql: {
+      columnName: 'id',
+      dataType: 'integer',
+      dataScale: 0,
+      nullable: 'NO',
+    },
+  })
+  id: Number;
+
+  @property({
     type: 'number',
     postgresql: {
       columnName: 'planter_id',
