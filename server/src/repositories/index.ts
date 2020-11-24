@@ -5,3 +5,4 @@ export * from './adminUser.repository';
 export * from './tag.repository';
 export * from './treeTag.repository';
 export * from './planterRegistration.repository';
+export * from './organization.repository';
