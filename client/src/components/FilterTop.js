@@ -13,6 +13,13 @@ import {
   KeyboardDatePicker
 } from '@material-ui/pickers';
 import { getDatePickerLocale, getDateFormatLocale, convertDateToDefaultSqlDate } from '../common/locale'
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import Input from '@material-ui/core/Input';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+import api from '../api/treeTrackerApi';
 
 export const FILTER_WIDTH = 330;
 
@@ -72,10 +79,23 @@ function Filter(props) {
   const [speciesId, setSpeciesId] = useState(ALL_SPECIES);
   const [tagId, setTagId] = useState(0);
   const [tagSearchString, setTagSearchString] = useState('');
+  const [organizationList, setOrganizationList] = useState([]); //### Could move this to a model
+  const [organizations, setOrganizations] = useState([]);
 
   useEffect(() => {
     props.tagsDispatch.getTags(tagSearchString)
   }, [tagSearchString, props.tagsDispatch])
+
+  useEffect(() => {
+    api.getOrganizations().then(orgs => {
+      setOrganizationList([{
+          id: null,
+          name: 'null',
+        },
+        ...orgs,
+      ])
+    });
+  }, [])
 
   const handleDateStartChange = date => {
     setDateStart(date);
@@ -101,6 +121,7 @@ function Filter(props) {
     filter.active = active;
     filter.speciesId = speciesId;
     filter.tagId = tagId;
+    filter.organizations = organizations;
     props.onSubmit && props.onSubmit(filter);
   }
 
@@ -244,6 +265,25 @@ function Filter(props) {
                 />
               }
             />
+            <FormControl>
+              <InputLabel id="organizations-label">Organizations</InputLabel>
+              <Select
+                labelId="organizations-label"
+                id="organizations"
+                multiple
+                value={organizations}
+                onChange={e => setOrganizations(e.target.value)}
+                input={<Input />}
+                renderValue={(selected) => `${selected.length}/${organizationList.length} selected`}
+              >
+                {organizationList.map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    <Checkbox checked={organizations.indexOf(org.id) > -1} />
+                    <ListItemText primary={org.name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid className={classes.inputContainer}>
             <Button 

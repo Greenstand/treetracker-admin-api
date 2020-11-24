@@ -17,6 +17,7 @@ export default class Filter {
   planterIdentifier
   speciesId
   tagId
+  organizations
 
   constructor(options) {
     Object.assign(this, options)
@@ -76,6 +77,12 @@ export default class Filter {
  
     if (this.tagId) {
       where.tagId = this.tagId
+    }
+
+    if (this.organizations && this.organizations.length) {
+      where.plantingOrganizationId = {
+        inq: this.organizations
+      }
     }
 
     return where
