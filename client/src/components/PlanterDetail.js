@@ -9,7 +9,7 @@ import Drawer from '@material-ui/core/Drawer'
 import Close from "@material-ui/icons/Close";
 import Person from "@material-ui/icons/Person";
 import Divider from "@material-ui/core/Divider";
-import { getPlanter } from '../models/planters';
+import api from '../api/planters';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -43,13 +43,13 @@ function PlanterDetail(props){
     const [planter, setPlanter] = React.useState({})
 
     const classes = useStyle();
-    if (props.planter.id != planter.id) {
+    if (props.planter && props.planter.id !== planter.id) {
       setPlanter(props.planter)
     }
  
     React.useEffect(() => {
-      if (!planter.createdAt) {
-        getPlanter(planter.id).then(planterDetail => {
+      if (planter.id && !planter.createdAt) {
+        api.getPlanter(planter.id).then(planterDetail => {
           if (planterDetail && planterDetail.createdAt) {
             setPlanter(planterDetail)
           }
