@@ -13,31 +13,31 @@ import api from '../api/planters';
 import { getDateTimeStringLocale } from '../common/locale';
 
 const useStyle = makeStyles(theme => ({
-    root: {
-      width: 441,
-    },
-    box: {
-      padding: theme.spacing(4),
-    },
-    cardMedia: {
-      height: "378px",
-    },
-    personBox: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "lightgray",
-      height: "100%",
-    },
-    person: {
-      height: 180,
-      width: 180,
-      fill: "gray",
-    },
-    name: {
-      textTransform: "capitalize",
-    },
-  }));
+  root: {
+    width: 441,
+  },
+  box: {
+    padding: theme.spacing(4),
+  },
+  cardMedia: {
+    height: "378px",
+  },
+  personBox: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "lightgray",
+    height: "100%",
+  },
+  person: {
+    height: 180,
+    width: 180,
+    fill: "gray",
+  },
+  name: {
+    textTransform: "capitalize",
+  },
+}));
 
 function PlanterDetail(props){
   
@@ -47,13 +47,14 @@ function PlanterDetail(props){
 
   React.useEffect(() => {
     if (planter && planter.id && (!planterRegistration || planterRegistration.planterId !== planter.id)) {
+      setPlanterRegistration(null)
       api.getPlanterRegistrations(planter.id).then(registrations => {
         if (registrations && registrations.length) {
           setPlanterRegistration(registrations[0])
         }
       })
     }
-  }, [planter])
+  }, [planter, planterRegistration])
 
   return(
     <Drawer anchor="right" open={props.open} onClose={props.onClose}>
