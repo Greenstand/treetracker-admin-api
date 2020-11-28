@@ -40,16 +40,6 @@ export class PlanterRegistration extends Entity {
   })
   createdAt: string;
 
-  @property({
-    type: 'number',
-  })
-  lat?: number;
-
-  @property({
-    type: 'number',
-  })
-  lon?: number;
-
   // Define well-known properties here
 
   // Indexer property to allow additional data
