@@ -8,20 +8,20 @@ on:
     paths:
     - 'client/**'
     - '.github/workflows/treetracker-admin-client-build.yml'
-    # branches:
-    #   - master
+    branches:
+      - master
   pull_request:
     paths:
     - 'client/**'
     - '.github/workflows/treetracker-admin-client-build.yml'
-    # branches:
-    #   - master
+    branches:
+      - master
 
 env:
   project-directory: ./client
 
 jobs:
-  client: #Job ID Name
+  client:
     name: Build Client Project
     runs-on: ubuntu-latest
     steps:
@@ -37,9 +37,11 @@ jobs:
       run: npm run lint
       working-directory: ${{ env.project-directory }}
     - name: build client dev project
+      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       run: npm run build:dev
       working-directory: ${{ env.project-directory }}
     - uses: actions/upload-artifact@v2
+      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       with:
         name: client-bundle
         path: client/build-dev
@@ -56,18 +58,23 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Download bundled client resources
-      # if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
+      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       uses: actions/download-artifact@v2
       with:
         name: client-bundle
         path: build-dev
     - name: Configure AWS credentials from Test account
-      # if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
+      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
     - name: Copy front end resources to s3 bucket
+      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       run: |
-        aws s3 sync build-dev s3://treetracker-infrastructure-cdn --delete
+        aws s3 sync build-dev s3://${{ secrets.TEST_CDN_S3_BUCKET }} --delete
+    - name: Invalidate cloudfront caches
+      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
+      run: |
+        aws cloudfront create-invalidation --distribution-id ${{ secrets.TEST_CDN_DISTRIBUTION_ID }} --paths "/*"
