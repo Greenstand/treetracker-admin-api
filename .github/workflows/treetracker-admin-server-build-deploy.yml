@@ -7,11 +7,13 @@ on:
   push:
     paths:
     - 'server/**'
+    - '.github/workflows/treetracker-admin-server-build-deploy.yml'
     branches:
       - master
   pull_request:
     paths:
     - 'server/**'
+    - '.github/workflows/treetracker-admin-server-build-deploy.yml'
     branches:
       - master
 
@@ -81,16 +83,14 @@ jobs:
     name: Deploy latest to development environment
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
     steps:
     - uses: actions/checkout@v2
     - name: Install doctl for kubernetes
-      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       uses: digitalocean/action-doctl@v2
       with:
         token: ${{ secrets.DIGITALOCEAN_TOKEN }}
     - name: Save DigitalOcean kubeconfig
-      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
     - name: Update kubernetes resources
-      if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
       run: kubectl -n development apply --wait -f ./server/deployment/
