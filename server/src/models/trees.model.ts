@@ -69,20 +69,6 @@ export class Trees extends Entity {
   missing?: Boolean;
 
   @property({
-    type: Boolean,
-    required: false,
-    postgresql: {
-      columnName: 'priority',
-      dataType: 'boolean',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: null,
-      nullable: 'YES',
-    },
-  })
-  priority?: Boolean;
-
-  @property({
     type: Number,
     required: false,
     scale: 0,
@@ -115,81 +101,6 @@ export class Trees extends Entity {
   planterId?: Number;
 
   @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'primary_location_id',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'YES',
-    },
-  })
-  primaryLocationId?: Number;
-
-  @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'settings_id',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'YES',
-    },
-  })
-  settingsId?: Number;
-
-  @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'override_settings_id',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'YES',
-    },
-  })
-  overrideSettingsId?: Number;
-
-  @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'dead',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'NO',
-    },
-  })
-  dead: Number;
-
-  @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'photo_id',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'YES',
-    },
-  })
-  photoId?: Number;
-
-  @property({
     type: String,
     required: false,
     postgresql: {
@@ -202,35 +113,6 @@ export class Trees extends Entity {
     },
   })
   imageUrl?: String;
-
-  @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'certificate_id',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'YES',
-    },
-  })
-  certificateId?: Number;
-
-  @property({
-    type: String,
-    required: false,
-    postgresql: {
-      columnName: 'estimated_geometric_location',
-      dataType: 'USER-DEFINED',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: null,
-      nullable: 'YES',
-    },
-  })
-  estimatedGeometricLocation?: String;
 
   @property({
     type: Number,
@@ -261,21 +143,6 @@ export class Trees extends Entity {
   lon?: Number;
 
   @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'gps_accuracy',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'YES',
-    },
-  })
-  gpsAccuracy?: Number;
-
-  @property({
     type: Boolean,
     required: false,
     postgresql: {
@@ -288,20 +155,6 @@ export class Trees extends Entity {
     },
   })
   active?: Boolean;
-
-  @property({
-    type: String,
-    required: false,
-    postgresql: {
-      columnName: 'planter_photo_url',
-      dataType: 'character varying',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: null,
-      nullable: 'YES',
-    },
-  })
-  planterPhotoUrl?: String;
 
   @property({
     type: String,
@@ -333,21 +186,6 @@ export class Trees extends Entity {
   deviceId?: Number;
 
   @property({
-    type: Number,
-    required: false,
-    scale: 0,
-    postgresql: {
-      columnName: 'sequence',
-      dataType: 'integer',
-      dataLength: null,
-      dataPrecision: null,
-      dataScale: 0,
-      nullable: 'YES',
-    },
-  })
-  sequence?: Number;
-
-  @property({
     type: String,
     required: false,
     postgresql: {
@@ -374,21 +212,6 @@ export class Trees extends Entity {
     },
   })
   verified: Boolean;
-
-  @property({
-    type: String,
-    required: false,
-    length: 255,
-    postgresql: {
-      columnName: 'uuid',
-      dataType: 'character varying',
-      dataLength: 255,
-      dataPrecision: null,
-      dataScale: null,
-      nullable: 'YES',
-    },
-  })
-  uuid?: String;
 
   @property({
     type: Boolean,
