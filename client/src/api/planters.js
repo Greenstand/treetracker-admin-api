@@ -6,9 +6,10 @@ import {
 import {session} from "../models/auth";
 
 export default {
-  getPlanter(id){
-    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/${id}`;
-    return fetch(query, {
+  getPlanter(id) {
+    const planterQuery = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/${id}`;
+
+    return fetch(planterQuery, {
       method: "GET",
       headers: { 
         "content-type": "application/json" ,
@@ -57,5 +58,19 @@ export default {
         Authorization: session.token ,
       },
     }).then(handleResponse).catch(handleError);
+  },
+
+  getPlanterRegistrations(planterId) {
+    const registrationQuery =
+      `${process.env.REACT_APP_API_ROOT}/api/planter-registration?filter[where][planterId]=${planterId}`;
+    return fetch(registrationQuery, {
+      method: "GET",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError)
   },
 };
