@@ -62,7 +62,7 @@ export default {
 
   getPlanterRegistrations(planterId) {
     const registrationQuery =
-      `${process.env.REACT_APP_API_ROOT}/api/planter_registration?filter[where][planterId]=${planterId}`;
+      `${process.env.REACT_APP_API_ROOT}/api/planter-registration?filter[where][planterId]=${planterId}`;
     return fetch(registrationQuery, {
       method: "GET",
       headers: { 

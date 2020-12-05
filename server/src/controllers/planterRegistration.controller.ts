@@ -16,7 +16,7 @@ export class PlanterRegistrationController {
     public planterRepository: PlanterRegistrationRepository,
   ) {}
 
-  @get('/planter_registration', {
+  @get('/planter-registration', {
     responses: {
       '200': {
         description: 'Array of PlanterRegistration model instances',
@@ -35,7 +35,7 @@ export class PlanterRegistrationController {
     return await this.planterRepository.find(filter);
   }
 
-  @get('/planter_registration/{id}', {
+  @get('/planter-registration/{id}', {
     responses: {
       '200': {
         description: 'PlanterRegistration model instance',
