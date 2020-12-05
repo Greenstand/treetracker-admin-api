@@ -43,8 +43,13 @@ const generateSalt = function () {
 const jsonParser = app.use(bodyParser.urlencoded({extended: false})); // parse application/json
 // const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
 
+function isIdValid(id) {
+  // an ID is valid if it is not null or undefined
+  return id != null
+}
+
 async function getActiveAdminUserRoles(userId) {
-  if (userId == null) {
+  if (!isIdValid(userId)) {
     return null
   }
   return await pool.query(
@@ -53,7 +58,7 @@ async function getActiveAdminUserRoles(userId) {
 }
 
 async function clearAdminUserRoles(userId) {
-  if (userId == null) {
+  if (!isIdValid(userId)) {
     return
   }
   return await pool.query(
@@ -62,11 +67,14 @@ async function clearAdminUserRoles(userId) {
 }
 
 async function addAdminUserRole(userId, roleId) {
-  if (userId == null || roleId == null) {
+  if (!isIdValid(userId) || !isIdValid(roleId)) {
     return
   }
   return await pool.query(
-    `insert into admin_user_role (role_id, admin_user_id, active) values (${roleId},${userId},true) on conflict (role_id, admin_user_id) do update set active = true`,
+    `insert into admin_user_role (role_id, admin_user_id, active)
+     values (${roleId},${userId},true)
+     on conflict (role_id, admin_user_id)
+     do update set active = true`,
   )
 }
 
@@ -77,7 +85,7 @@ async function getActiveAdminUser(userName) {
 }
 
 async function deactivateAdminUser(userId) {
-  if (userId == null) {
+  if (!isIdValid(userId)) {
     return
   }
   return await pool.query(`update admin_user set active = false where id = ${userId}`);
