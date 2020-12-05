@@ -2,6 +2,9 @@
  * A simple model for tree filter
  */
 
+export const ALL_SPECIES = 'ALL_SPECIES'
+export const SPECIES_NOT_SET = 'SPECIES_NOT_SET'
+
 export default class Filter {
   treeId
   //status
@@ -19,56 +22,63 @@ export default class Filter {
     Object.assign(this, options)
   }
 
-  getBackloopString(includeFilterString = true) {
+  getWhereObj() {
     //{{{
-    let result = ''
-    const prefix = includeFilterString ? '&filter[where]' : '&where'
+    let where = {}
 
     if (this.treeId) {
-      result += `${prefix}[id]=${this.treeId}`
+      where.id = this.treeId
     }
 
-    //		if(this.status){
-    //			result		+= `${prefix}[status]=${this.status.toLowerCase()}`
-    //		}
-
     if (this.dateStart && this.dateEnd) {
-      result += `${prefix}[timeCreated][between]=${this.dateStart}${prefix}[timeCreated][between]=${this.dateEnd}`
+      where.timeCreated = {
+        between: [this.dateStart, this.dateEnd]
+      }
     } else if (this.dateStart && !this.dateEnd) {
-      result += `${prefix}[timeCreated][gte]=${this.dateStart}`
+      where.timeCreated = {
+        gte: this.dateStart
+      }
     } else if (!this.dateStart && this.dateEnd) {
-      result += `${prefix}[timeCreated][lte]=${this.dateEnd}`
+      where.timeCreated = {
+        lte: this.dateEnd
+      }
     }
 
     if (this.approved !== undefined) {
-      result += `${prefix}[approved]=${this.approved}`
+      where.approved = this.approved
+    }
+
+    if (this.rejected !== undefined) {
+      where.rejected = this.rejected
     }
 
     if (this.active !== undefined) {
-      result += `${prefix}[active]=${this.active}`
+      where.active = this.active
     }
 
     if (this.planterId !== undefined && this.planterId.length > 0) {
-      result += `${prefix}[planterId]=${this.planterId}`
+      where.planterId = this.planterId
     }
 
     if (this.deviceId !== undefined && this.deviceId.length > 0) {
-      result += `${prefix}[deviceId]=${this.deviceId}`
+      where.deviceId = this.deviceId
     }
 
     if (this.planterIdentifier !== undefined && this.planterIdentifier.length > 0) {
-      result += `${prefix}[planterIdentifier]=${this.planterIdentifier}`
+      where.planterIdentifier = this.planterIdentifier
     }
 
-    if (this.speciesId) {
-      result += `${prefix}[speciesId]=${this.speciesId}`
+    if (this.speciesId === SPECIES_NOT_SET) {
+      where.speciesId = null
+    } else if (this.speciesId !== ALL_SPECIES) {
+      where.speciesId = this.speciesId
     }
-
+ 
     if (this.tagId) {
-      result += `${prefix}[tagId]=${this.tagId}`
+      where.tagId = this.tagId
     }
 
-    return result
+    return where
     //}}}
   }
 

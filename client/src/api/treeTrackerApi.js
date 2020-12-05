@@ -10,25 +10,29 @@ export default {
     //the filter model
     filter,
   }) {
-    const query =
-      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?` +
-      `filter[order]=${orderBy} ${order}&` +
-      `filter[limit]=${rowsPerPage}&` +
-      `filter[skip]=${skip}&` +
-      `filter[fields][imageUrl]=true&` +
-      `filter[fields][lat]=true&` +
-      `filter[fields][lon]=true&` +
-      `filter[fields][id]=true&` +
-      `filter[fields][timeCreated]=true&` +
-      `filter[fields][timeUpdated]=true&` +
-      `filter[fields][active]=true&` +
-      `filter[fields][approved]=true&` +
-      `filter[fields][planterId]=true&` +
-      `filter[fields][deviceId]=true&` +
-      `filter[fields][planterIdentifier]=true&` +
-      `field[imageURL]` +
-      //the filter query
-      filter.getBackloopString()
+    const where = filter.getWhereObj()
+   
+    const lbFilter = {
+      where,
+      order: [`${orderBy} ${order}`],
+      limit: rowsPerPage,
+      skip,
+      fields: {
+        imageUrl: true,
+        lat: true,
+        lon: true,
+        id: true,
+        timeCreated: true,
+        timeUpdated: true,
+        active: true,
+        approved: true,
+        planterId: true,
+        deviceId: true,
+        planterIdentifier: true,
+      },
+    }
+    
+    const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?filter=${JSON.stringify(lbFilter)}`
     return fetch(query, {
       headers: {
         Authorization: session.token,
@@ -118,7 +122,7 @@ export default {
   getTreeCount(filter) {
     const query = `${
       process.env.REACT_APP_API_ROOT
-    }/api/${getOrganization()}trees/count?${filter.getBackloopString(false)}`
+    }/api/${getOrganization()}trees/count?where=${JSON.stringify(filter.getWhereObj())}`
     console.log(query, session.token)
     return fetch(query, {
       headers: {
