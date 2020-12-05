@@ -16,7 +16,6 @@ describe('Filter, with initial values about this filter object', () => {
 	})
 
 	it('getWhereObj() should be: ', () => {
-		console.log(filter.getWhereObj())
 		expect(filter.getWhereObj()).toEqual(expect.objectContaining({id: 10}))
 	})
 
@@ -113,7 +112,6 @@ describe('Filter, with initial values about this filter object', () => {
 		})
 
 		it('should be lte', () => {
-			console.log(filter.getWhereObj())
 			expect(filter.getWhereObj()).toEqual(expect.objectContaining({timeCreated: {lte: '2019-07-30'}}))
 		})
 		//}}}
@@ -126,7 +124,6 @@ describe('Filter, with initial values about this filter object', () => {
 		})
 
 		it('should be gte', () => {
-			console.log(filter.getWhereObj())
 			expect(filter.getWhereObj()).toEqual(expect.objectContaining({timeCreated: {gte: '2019-07-25'}}))
 		})
 		//}}}
