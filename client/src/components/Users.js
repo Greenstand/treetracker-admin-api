@@ -639,7 +639,9 @@ function Users(props) {
               value={(userEditing && userEditing.enabled ? ENABLED : DISABLED)}
               onChange={handleStatusChange}
               >
-              {[ENABLED, DISABLED].map(val => <FormControlLabel value={val} control={<Radio />} label={val} />)}
+              {[ENABLED, DISABLED].map(val =>
+                <FormControlLabel key={val} value={val} control={<Radio />} label={val} />
+              )}
             </RadioGroup>
           </FormControl>
           {userEditing && userEditing.createdAt && (
