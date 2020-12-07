@@ -44,13 +44,15 @@ export default function Routers() {
                 ))
               }
               <Route
-                render={({location}) => (
-                  appContext.isLoggedIn() ? (Page404) :
-                  (<Redirect to={{
-                    pathname: "/login",
-                    state: { from: location }
-                  }}/>)
-                )}
+                render={
+                  appContext.user ? (Page404) :
+                  ({location}) => (
+                    <Redirect to={{
+                      pathname: "/login",
+                      state: { from: location }
+                    }}/>
+                  )
+                }
               />
             </Switch>
           </Grid>

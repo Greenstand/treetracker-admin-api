@@ -1,6 +1,5 @@
 import React from 'react'
 
-import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
 
@@ -38,7 +37,8 @@ const style = (theme) => ({
   },
   text: {
     fontSize: '40px',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    textAlign: 'center',
   }
 })
 

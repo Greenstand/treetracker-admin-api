@@ -117,7 +117,7 @@ function getRoutes(user) {
       icon: IconPermIdentity,
       disabled: false,
     },
-  ].filter(({disabled}) => !disabled)
+  ]
 }
 
 export const AppProvider = (props) => {
@@ -182,9 +182,6 @@ export const AppProvider = (props) => {
           localStorage.setItem('token', JSON.stringify(newToken))
         }
       }
-    },
-    isLoggedIn: () => {
-      return !!user && !!token;
     },
     logout: () => {
       setUser(undefined)
