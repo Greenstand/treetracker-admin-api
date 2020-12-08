@@ -36,11 +36,11 @@ git clone https://github.com/Greenstand/treetracker-admin.git
 ```
 
 1. Get configurations files from our secrets vault
-  1. If you don't have access to the vault, askin the #development channel on Slack
-  2. Both client and server folders need environment files
-    1. treetracker-admin/server/.env 
-    2. treetracker-admin/server/.env.development
-    3. treetracker-admin/client/.env.development
+    1. If you don't have access to the vault, askin the #development channel on Slack
+    2. Both client and server folders need environment files
+        1. treetracker-admin/server/.env 
+        2. treetracker-admin/server/.env.development
+        3. treetracker-admin/client/.env.development
 
 
 ### Step 4: Install npm dependencies
