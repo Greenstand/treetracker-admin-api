@@ -26,7 +26,7 @@ Alternatively, you can install Node.js directly from https://nodejs.org/dist/lat
 
 _On MacOS, you can alleviate the need to run as sudo by using nvm or by [following John Papa's instructions](http://jpapa.me/nomoresudo)._
 
-### Step 3: Clone this project
+### Step 3: Clone this project and get configuration files
 
 1. Open terminal
 1. Go to a folder where you would like to install the project. Then type the following:
@@ -35,18 +35,12 @@ _On MacOS, you can alleviate the need to run as sudo by using nvm or by [followi
 git clone https://github.com/Greenstand/treetracker-admin.git
 ```
 
-1. Once cloned, type:
-
-```
-cd treetracker-admin/server && touch .env .env.development
-```
-
-This sets up the following:
-
-- A `.env` file in `server` that will contain a JWT secrect.
-- A `.env.development` file in `server` that will contain a development database connection string.
-
-_**Contact the #admin-panel channel** on Slack (you'll need to request access) to get our shared `.env` files._
+1. Get configurations files from our secrets vault
+  1. If you don't have access to the vault, askin the #development channel on Slack
+  2. Both client and server folders need environment files
+    1. treetracker-admin/server/.env 
+    2. treetracker-admin/server/.env.development
+    3. treetracker-admin/client/.env.development
 
 
 ### Step 4: Install npm dependencies
