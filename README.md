@@ -6,27 +6,27 @@ See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more in
 
 Please add any missing content to this readme.
 
-## Development Setup
+## Development Environment Quick Start
 
-### Install git
+### Step 1: Install git
 
 See https://git-scm.com/downloads for instructions.
 
-### Install Node.js
+### Step 2: Install Node.js
 
 _Node.js version 12.x works best for now; later versions have exhibited some strange behaviour with this project.
 If you encounter issues with the server, check your version of Node.js first._
 
 We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances.  More details here: https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/
-1. Install nvm
+1. Install nvm: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.2/install.sh | bash
 2. nvm install 12.20.0
-3. nmv use 12.20.0
+3. nvm use 12.20.0
 
 Alternatively, you can install Node.js directly from https://nodejs.org/dist/latest-v12.x/
 
 _On MacOS, you can alleviate the need to run as sudo by using nvm or by [following John Papa's instructions](http://jpapa.me/nomoresudo)._
 
-### Clone this project
+### Step 3: Clone this project
 
 1. Open terminal
 1. Go to a folder where you would like to install the project. Then type the following:
@@ -35,9 +35,7 @@ _On MacOS, you can alleviate the need to run as sudo by using nvm or by [followi
 git clone https://github.com/Greenstand/treetracker-admin.git
 ```
 
-### Project Setup
-
-Once cloned, type:
+1.Once cloned, type:
 
 ```
 cd treetracker-admin/server && touch .env .env.development
@@ -50,9 +48,8 @@ This sets up the following:
 
 _**Contact the #admin-panel channel** on Slack (you'll need to request access) to get our shared `.env` files._
 
-## Development Environment Quick Start
 
-### Install
+### Step 4: Install npm dependencies
 
 ```
 cd client
@@ -72,7 +69,7 @@ REACT_APP_API_ROOT=http://localhost:3000
 
 So the React App would connect to http://localhost:3000 for API server.
 
-### Start server
+### Step 5: Start server
 
 Normally, to start server:
 
@@ -92,14 +89,15 @@ NODE_ENV=development ./node_modules/.bin/nodemon
 
 > Using `nodemon` to run the server rather than `npm start` automatically refreshes the server when files change.
 
-### Start client
+### Step 6: Start client
 
 ```
 cd client
 npm start
 ```
 
-### Start developing
+### Step 7: You ready to start developing!
+
 
 ## Advanced local development using docker
 
