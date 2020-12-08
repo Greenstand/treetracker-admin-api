@@ -35,7 +35,7 @@ _On MacOS, you can alleviate the need to run as sudo by using nvm or by [followi
 git clone https://github.com/Greenstand/treetracker-admin.git
 ```
 
-1.Once cloned, type:
+1. Once cloned, type:
 
 ```
 cd treetracker-admin/server && touch .env .env.development
