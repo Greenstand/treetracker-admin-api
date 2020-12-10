@@ -46,12 +46,6 @@ git clone https://github.com/Greenstand/treetracker-admin.git
 ### Step 4: Install npm dependencies
 
 ```
-cd client
-npm install
-```
-
-```
-cd server
 npm install
 ```
 
