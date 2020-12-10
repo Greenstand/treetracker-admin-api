@@ -131,6 +131,17 @@ jobs:
       github.repository == 'Greenstand/treetracker-admin'
     steps:
     - uses: actions/checkout@v2
+    - name: get-npm-version
+      id: package-version
+      uses: martinbeentjes/npm-get-version-action@master
+      with:
+        path: ./
+    - name: Install kustomize
+      run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+    - name: Copy kustomize.yml
+      run: cp deployment/kustomize/kustomization.yaml deployment/kustomization.yaml
+    - name: Run kustomize
+      run: (cd deployment && ../kustomize edit set image greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }} )
     - name: Install doctl for kubernetes
       uses: digitalocean/action-doctl@v2
       with:
@@ -138,4 +149,4 @@ jobs:
     - name: Save DigitalOcean kubeconfig
       run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
     - name: Update kubernetes resources
-      run: kubectl -n development apply --wait -f ./server/deployment/
+      run: kubectl -n development apply --wait -k ./deployment/
