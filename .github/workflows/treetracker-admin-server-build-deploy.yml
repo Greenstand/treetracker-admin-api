@@ -121,6 +121,12 @@ jobs:
           file: ./server/Dockerfile
           push: true
           tags: greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }}
+      - id: export_bumped_version
+        run: |
+          export BUMPED_VERSION="${{ steps.package-version.outputs.current-version }}"
+          echo "::set-output name=bumped_version::${BUMPED_VERSION}"
+    outputs:
+      bumped_version: ${{ steps.export_bumped_version.outputs.bumped_version }}
   deploy:
     name: Deploy latest to development environment
     runs-on: ubuntu-latest
@@ -131,17 +137,12 @@ jobs:
       github.repository == 'Greenstand/treetracker-admin'
     steps:
     - uses: actions/checkout@v2
-    - name: get-npm-version
-      id: package-version
-      uses: martinbeentjes/npm-get-version-action@master
-      with:
-        path: ./
     - name: Install kustomize
       run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
     - name: Copy kustomize.yml
       run: cp server/deployment/kustomize/kustomization.yaml server/deployment/kustomization.yaml
     - name: Run kustomize
-      run: (cd server/deployment && ../../kustomize edit set image greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }} )
+      run: (cd server/deployment && ../../kustomize edit set image greenstand/treetracker-admin-api:${{ needs.release.outputs.bumped_version }} )
     - name: Install doctl for kubernetes
       uses: digitalocean/action-doctl@v2
       with:
