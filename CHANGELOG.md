@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/Greenstand/treetracker-admin/compare/v2.4.1...v2.4.2) (2020-12-10)
+
+
+### Bug Fixes
+
+* export bumped version as env variable and disable a few semantic-release bot features ([2ecd7ce](https://github.com/Greenstand/treetracker-admin/commit/2ecd7ce2153d843fa83b0f7c02ba96d73b99400f))
+
 ## [2.4.1](https://github.com/Greenstand/treetracker-admin/compare/v2.4.0...v2.4.1) (2020-12-10)
 
 
