@@ -2,7 +2,7 @@
   "name": "treetracker-admin",
   "version": "2.4.4",
   "private": true,
-  "description": "This portion of the project is to process tree data. TreeTracker's Admin Panel Frontend and RESTful API built with loopback.",
+  "description": "This portion of the project is to process tree data. Treetracker's Admin Panel frontend and RESTful API built with Loopback.",
   "dependencies": {},
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
@@ -10,7 +10,8 @@
     "husky": "^4.3.5"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "(cd server && npm install); (cd client && npm install)"
   },
   "repository": {
     "type": "git",
