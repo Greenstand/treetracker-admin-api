@@ -1,3 +1,10 @@
+## [2.4.4](https://github.com/Greenstand/treetracker-admin/compare/v2.4.3...v2.4.4) (2020-12-10)
+
+
+### Bug Fixes
+
+* remove duplicate github plugin ([#475](https://github.com/Greenstand/treetracker-admin/issues/475)) ([542f3ea](https://github.com/Greenstand/treetracker-admin/commit/542f3ea7dfda61143a7a5fe06431a5cc29f392ac))
+
 ## [2.4.3](https://github.com/Greenstand/treetracker-admin/compare/v2.4.2...v2.4.3) (2020-12-10)
 
 
