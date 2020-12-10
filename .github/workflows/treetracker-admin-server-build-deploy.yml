@@ -142,7 +142,7 @@ jobs:
     - name: Copy kustomize.yml
       run: cp server/deployment/kustomize/kustomization.yaml server/deployment/kustomization.yaml
     - name: Run kustomize
-      run: (cd server/deployment && ../../kustomize edit set image greenstand/treetracker-admin-api:${{ needs.release.bumped_version }} )
+      run: (cd server/deployment && ../../kustomize edit set image greenstand/treetracker-admin-api:${{ needs.release.outputs.bumped_version }} )
     - name: Install doctl for kubernetes
       uses: digitalocean/action-doctl@v2
       with:
