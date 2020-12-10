@@ -20,7 +20,6 @@
         "failTitle": false,
         "labels": false,
         "releasedLabels": false
-      }],
-      "@semantic-release/github"
+      }]
     ]
 }
