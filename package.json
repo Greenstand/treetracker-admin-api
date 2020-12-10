@@ -1,6 +1,6 @@
 {
   "name": "treetracker-admin",
-  "version": "1.3.0",
+  "version": "2.4.0",
   "private": true,
   "description": "This portion of the project is to process tree data. TreeTracker's Admin Panel Frontend and RESTful API built with loopback.",
   "dependencies": {},
