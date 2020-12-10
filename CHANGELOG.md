@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/Greenstand/treetracker-admin/compare/v2.4.0...v2.4.1) (2020-12-10)
+
+
+### Bug Fixes
+
+* read the root package.json ([8306304](https://github.com/Greenstand/treetracker-admin/commit/8306304ff40b76305e03f37b271e7e1b1b281390))
+
 # [2.4.0](https://github.com/Greenstand/treetracker-admin/compare/v2.3.0...v2.4.0) (2020-12-10)
 
 
