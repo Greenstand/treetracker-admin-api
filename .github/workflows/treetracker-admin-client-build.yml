@@ -24,6 +24,8 @@ jobs:
   client:
     name: Build Client Project
     runs-on: ubuntu-latest
+    if: |
+      !contains(github.event.head_commit.message, 'skip-ci')
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 12.x
@@ -51,11 +53,33 @@ jobs:
     - name: run React tests
       run: npm test
       working-directory: ${{ env.project-directory }}
+  release:
+    name: Release semantic version
+    needs: build
+    runs-on: ubuntu-latest
+    if: |
+      !contains(github.event.head_commit.message, 'skip-ci') &&
+      github.event_name == 'push' &&
+      github.repository == 'Greenstand/treetracker-admin'
+    steps:
+      # check out repository code and setup node
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+      # install dependencies and run semantic-release
+      - run: npm i -g semantic-release @semantic-release/{git,exec,changelog}
+      - run: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   deploy:
     name: Deploy to dev CDN
     runs-on: ubuntu-latest
-    needs: client
-    if: github.event_name == 'push' && github.repository == 'Greenstand/treetracker-admin'
+    needs: release
+    if: |
+      !contains(github.event.head_commit.message, 'skip-ci') &&
+      github.event_name == 'push' &&
+      github.repository == 'Greenstand/treetracker-admin'    
     steps:
     - uses: actions/checkout@v2
     - name: Download bundled client resources
