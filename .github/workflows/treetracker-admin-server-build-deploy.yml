@@ -80,6 +80,7 @@ jobs:
         file: ./server/Dockerfile
         push: true
         tags: greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }}-latest
+  
   release:
     name: Release semantic version
     needs: build
@@ -125,6 +126,7 @@ jobs:
           echo "::set-output name=bumped_version::${BUMPED_VERSION}"
     outputs:
       bumped_version: ${{ steps.export_bumped_version.outputs.bumped_version }}
+
   deploy:
     name: Deploy latest to development environment
     runs-on: ubuntu-latest
