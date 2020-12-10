@@ -102,8 +102,8 @@ const trees = {
 
       this.invalidateTreeCount(false);
       let response = await Axios.get(
-        `${process.env.REACT_APP_API_ROOT}/api/trees/count?` +
-          (filter ? filter.getBackloopString(false) : ''),
+        `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?
+         where=${JSON.stringify(filter ? filter.getWhereObj(): {})}`,
         {
           headers: {
             'content-type': 'application/json',
@@ -127,8 +127,8 @@ const trees = {
       }
 
       let response = await Axios.get(
-        `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?` +
-          (filter ? filter.getBackloopString(false) : ''),
+        `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?
+         where=${JSON.stringify(filter ? filter.getWhereObj(): {})}`,
         {
           headers: {
             'content-type': 'application/json',
@@ -139,14 +139,24 @@ const trees = {
       const data = response.data
       this.receiveTreeCount(data)
 
-      const query =
-        `${
-          process.env.REACT_APP_API_ROOT
-        }/api/${getOrganization()}trees?filter[order]=${orderBy} ${order}&filter[limit]=${rowsPerPage}&filter[skip]=${
-          page * rowsPerPage
-        }&filter[fields][id]=true&filter[fields][timeCreated]=true&filter[fields][status]=true` +
-        `&filter[fields][planterId]=true&filter[fields][treeTags]=true&filter[where][active]=true` +
-        (filter ? filter.getBackloopString() : '')
+      const where = filter ? filter.getWhereObj() : {}
+   
+      const lbFilter = JSON.stringify({
+        where: {...where, active: true},
+        order: [`${orderBy} ${order}`],
+        limit: rowsPerPage,
+        skip: page * rowsPerPage,
+        fields: {
+          id: true,
+          timeCreated: true,
+          status: true,
+          planterId: true,
+          treeTags: true,
+        },
+      })
+      
+      const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?filter=${JSON.stringify(lbFilter)}`
+                
       response = await Axios.get(query, {
         headers: {
           'content-type': 'application/json',

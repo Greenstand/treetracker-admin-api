@@ -69,6 +69,26 @@ export class AdminUser extends Entity {
   })
   email?: String;
 
+  @property({
+    type: Boolean,
+    required: true,
+    postgresql: {
+      columnName: 'active',
+      dataType: 'boolean',
+    },
+  })
+  active?: Boolean;
+
+  @property({
+    type: Boolean,
+    required: true,
+    postgresql: {
+      columnName: 'enabled',
+      dataType: 'boolean',
+    },
+  })
+  enabled?: Boolean;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
