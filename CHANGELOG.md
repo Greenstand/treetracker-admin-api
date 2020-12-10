@@ -1,3 +1,11 @@
+## [2.4.3](https://github.com/Greenstand/treetracker-admin/compare/v2.4.2...v2.4.3) (2020-12-10)
+
+
+### Bug Fixes
+
+* refactoring to trigger build ([9f6c514](https://github.com/Greenstand/treetracker-admin/commit/9f6c5140c44cdff9d2c5c8a0a4f39857e9ea51a2))
+* Set options on github plugin ([7f8bb42](https://github.com/Greenstand/treetracker-admin/commit/7f8bb42e71d7f05a483fec93e55dd28384b31b9d))
+
 ## [2.4.2](https://github.com/Greenstand/treetracker-admin/compare/v2.4.1...v2.4.2) (2020-12-10)
 
 
