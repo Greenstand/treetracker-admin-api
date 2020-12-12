@@ -18,6 +18,10 @@ const app = express();
 const pool = new Pool({connectionString: getDatasource().url});
 const jwtSecret = config.jwtSecret;
 
+//collect all those functions who visit DB into a variables, to give some convenience 
+//for testing.
+const helper = {};
+
 const POLICIES = {
   SUPER_PERMISSION: 'super_permission',
   LIST_USER: 'list_user',
@@ -48,7 +52,7 @@ function isIdValid(id) {
   return id != null
 }
 
-async function getActiveAdminUserRoles(userId) {
+helper.getActiveAdminUserRoles = async function (userId) {
   if (!isIdValid(userId)) {
     return null
   }
@@ -66,7 +70,7 @@ async function clearAdminUserRoles(userId) {
   )
 }
 
-async function addAdminUserRole(userId, roleId) {
+helper.addAdminUserRole = async function (userId, roleId) {
   if (!isIdValid(userId) || !isIdValid(roleId)) {
     return
   }
@@ -78,13 +82,13 @@ async function addAdminUserRole(userId, roleId) {
   )
 }
 
-async function getActiveAdminUser(userName) {
+helper.getActiveAdminUser = async function (userName) {
   return await pool.query(
     `select * from admin_user where user_name = '${userName}' and active = true`,
   );
 }
 
-async function deactivateAdminUser(userId) {
+helper.deactivateAdminUser = async function (userId) {
   if (!isIdValid(userId)) {
     return
   }
@@ -108,7 +112,7 @@ router.post('/login', async function login(req, res, next) {
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
-    const users = await getActiveAdminUser(userName);
+    const users = await helper.getActiveAdminUser(userName);
 
     let userLogin;
     if (users.rows.length) {
@@ -119,7 +123,7 @@ router.post('/login', async function login(req, res, next) {
         userLogin = user_entity;
         //load role
         //console.assert(userLogin.id >= 0, 'id?', userLogin);
-        const result = await getActiveAdminUserRoles(userLogin.id)
+        const result = await helper.getActiveAdminUserRoles(userLogin.id)
         userLogin.role = result.rows.map(r => r.role_id);
       }
     } else {
@@ -585,4 +589,6 @@ const isAuth = async (req, res, next) => {
 export default {
   router,
   isAuth,
+  //export just for write tests
+  helper,
 };

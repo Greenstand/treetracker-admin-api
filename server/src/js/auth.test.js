@@ -8,10 +8,14 @@ const {Pool, Client} = require('pg');
  * Cuz the js import way, we must mock it in this way
  */
 const query = jest.fn();
-Pool.mockImplementation(() => ({
-  query,
-}));
-const {auth} = require('./auth.js');
+Pool.mockImplementation(() => {
+  console.warn("mock pg!");
+  return ({
+    query,
+  })
+});
+//please require auth here to wait pool get mocked!
+const auth = require("./auth").default;
 
 //jest.mock('./Audit');
 //const Audit = require('./Audit');
@@ -20,7 +24,7 @@ const {auth} = require('./auth.js');
 //};
 //Audit.mockImplementation(() => audit);
 
-describe.skip('auth', () => {
+describe('auth', () => {
   let app;
 
   it('Check the config', () => {
@@ -30,6 +34,8 @@ describe.skip('auth', () => {
   });
 
   beforeEach(() => {
+    expect(auth).toBeDefined();
+    expect(auth).toHaveProperty("isAuth");
     app = express();
     app.use(express.json());
     app.use('*', auth.isAuth);
@@ -45,32 +51,41 @@ describe.skip('auth', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('/auth/login', async () => {
+  it.only('/auth/login', async () => {
     //    const p = new Pool();
     //    p.query.mockReturnValue("OK");
     //    console.warn("xxxx:", p.query);
     //    const r = await p.query();
     //    console.warn("rrrr:", r);
-    query
-      .mockReturnValueOnce({
-        rows: [
-          {
-            id: 0,
-            user_name: 'dadiorchen',
-            first_name: 'Dadior',
-          },
-        ],
-      })
-      .mockReturnValueOnce({
-        rows: [
-          {
-            role_id: 0,
-          },
-          {
-            role_id: 1,
-          },
-        ],
-      });
+//    query
+//      .mockResolvedValueOnce({
+//        rows: [
+//          {
+//            id: 0,
+//            user_name: 'dadiorchen',
+//            first_name: 'Dadior',
+//            salt: "test",
+//          },
+//        ],
+//      })
+//      .mockResolvedValueOnce({
+//        rows: [
+//          {
+//            role_id: 0,
+//          },
+//          {
+//            role_id: 1,
+//          },
+//        ],
+//      });
+    auth.helper.getActiveAdminUser = jest.fn().mockResolvedValueOnce({
+      rows: [{
+        id: 0,
+        user_name: 'dadiorchen',
+        first_name: 'Dadior',
+        salt: "test",
+      }],
+    })
     const response = await request(app).post('/auth/login').send({
       userName: 'dadiorchen',
       password: '123456',

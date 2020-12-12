@@ -3,7 +3,11 @@ import getDatasource from '../../../src/datasources/config';
 import {Pool} from 'pg';
 const pool = new Pool({connectionString: getDatasource().url});
 
-describe('Seed data into DB', () => {
+/*
+ * Skip integration tests, let's set up the DB appropriately in the future so we 
+ * use it again
+ */
+describe.skip('Seed data into DB', () => {
   beforeAll(async () => {
     //    console.log("The DB story:");
     //    console.log(seed.description);
