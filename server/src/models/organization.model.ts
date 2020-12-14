@@ -25,6 +25,15 @@ export class Organization extends Entity {
   })
   name: String;
 
+  @property({
+    type: String,
+    postgresql: {
+      columnName: 'type',
+      dataType: 'character varying',
+    },
+  })
+  type: String;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

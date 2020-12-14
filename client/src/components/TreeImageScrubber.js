@@ -166,7 +166,7 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-const ToVerifyCounter = withData(({data}) => <>{data && `${data} trees to verify`}</>);
+const ToVerifyCounter = withData(({data}) => <>{data !== null && `${data} trees to verify`}</>);
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;

@@ -338,7 +338,7 @@ export default {
    * get organizations
    */
   getOrganizations() {
-    const query = `${process.env.REACT_APP_API_ROOT}/api/organizations`;
+    const query = `${process.env.REACT_APP_API_ROOT}/api/organizations?filter[where][type]=o`;
     return fetch(query, {
       method: 'GET',
       headers: {

@@ -55,4 +55,24 @@ export class TreesRepository extends DefaultCrudRepository<
     expect(result).match([{id: expect.any(Number)}]);
     return result.map((e) => e.id);
   }
+
+  async getNonOrganizationPlanterIds(): Promise<Array<number>> {
+    const result = await this.execute(
+      `select * from planter where organization_id isnull`,
+      [],
+    );
+    expect(result).match([{id: expect.any(Number)}]);
+    return result.map((e) => e.id);
+  }
+
+  async getOrganizationWhereClause(organizationId) {
+    if (organizationId === null) {
+      const planterIds = await this.getNonOrganizationPlanterIds()
+      return {and: [{plantingOrganizationId: null}, {planterId: {inq: planterIds}}]};
+    } else {
+      const planterIds = await this.getPlanterIdsByOrganizationId(organizationId);
+      const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
+      return {or: [{plantingOrganizationId: {inq: entityIds}}, {planterId: {inq: planterIds}}]};
+    }
+  }
 }
