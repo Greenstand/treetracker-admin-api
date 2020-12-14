@@ -4,34 +4,29 @@ This portion of the project is to process tree data. Treetracker's Admin Panel F
 
 See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more info on goals
 
-### See [Current Milestone](https://github.com/Greenstand/treetracker-admin/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.1.0)
-
-See [Contributing to The Cause](https://github.com/Greenstand/Development-Overview#contributing-to-the-cause)
-
-### See [New Milestone](https://github.com/Greenstand/treetracker-admin/milestone/3)
-
-New milestone is about our new version 2.0 for the admin panel. Currently, we are on branch 'v2' to build this version, so if you have finished tickets in this milestone, please push/PR to this branch(v2).
-
 Please add any missing content to this readme.
 
-## Development Setup
+## Development Environment Quick Start
 
-### Install git
+### Step 1: Install git
 
 See https://git-scm.com/downloads for instructions.
 
-### Install Node.js
+### Step 2: Install Node.js
 
 _Node.js version 12.x works best for now; later versions have exhibited some strange behaviour with this project.
 If you encounter issues with the server, check your version of Node.js first._
 
-We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances.
+We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances.  More details here: https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/
+1. Install nvm: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.2/install.sh | bash
+2. nvm install 12.20.0
+3. nvm use 12.20.0
 
 Alternatively, you can install Node.js directly from https://nodejs.org/dist/latest-v12.x/
 
 _On MacOS, you can alleviate the need to run as sudo by using nvm or by [following John Papa's instructions](http://jpapa.me/nomoresudo)._
 
-### Clone this project
+### Step 3: Clone this project and get configuration files
 
 1. Open terminal
 1. Go to a folder where you would like to install the project. Then type the following:
@@ -40,26 +35,61 @@ _On MacOS, you can alleviate the need to run as sudo by using nvm or by [followi
 git clone https://github.com/Greenstand/treetracker-admin.git
 ```
 
-### Project Setup
+1. Get configurations files from our secrets vault
+    1. If you don't have access to the vault, askin the #development channel on Slack
+    2. Both client and server folders need environment files
+        1. treetracker-admin/server/.env 
+        2. treetracker-admin/server/.env.development
+        3. treetracker-admin/client/.env.development
 
-Once cloned, type:
+
+### Step 4: Install npm dependencies
 
 ```
-cd treetracker-admin/server && touch .env .env.development
+npm install
 ```
 
-This sets up the following:
+Add a `.env.local` file in the `client` directory for local config, it looks like this:
 
-- A `.env` file in `server` that will contain a JWT secrect.
-- A `.env.development` file in `server` that will contain a development database connection string.
+```
+REACT_APP_API_ROOT=http://localhost:3000
+```
 
-_**Contact the #admin-panel channel** on Slack (you'll need to request access) to get our shared `.env` files._
+So the React App would connect to http://localhost:3000 for API server.
 
-## Development Environment Quick Start
+### Step 5: Start server
 
-We provide a development environment through docker that can run on your local environment.
+Normally, to start server:
 
-### Set Up Docker
+```
+cd server
+npm start
+```
+
+But there is a better way for development:
+
+```
+cd server
+NODE_ENV=development ./node_modules/.bin/nodemon
+```
+
+> NOTE: Setting `NODE_ENV=development` means the Loopback API explorer is available at http://localhost:3000/api/explorer
+
+> Using `nodemon` to run the server rather than `npm start` automatically refreshes the server when files change.
+
+### Step 6: Start client
+
+```
+cd client
+npm start
+```
+
+### Step 7: You ready to start developing!
+
+
+## Advanced local development using docker
+
+For developers familiar with docker, we offer a dockerized setup for local development.
 
 To run docker on a local machine, you will have to install Docker first.
 Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM.
@@ -151,56 +181,7 @@ Here is our [wiki page for troubleshooting](https://github.com/Greenstand/treetr
 
 Help us to improve it by adding your experience solving this problem.
 
-### How to devlop without Docker
 
-If Docker is really a roadblock, please consider using this way below to bypass it.
-
-#### Install
-
-```
-cd client
-npm install
-```
-
-```
-cd server
-npm install
-```
-
-Add a `.env.local` file in the `client` directory for local config, it looks like this:
-
-```
-REACT_APP_API_ROOT=http://localhost:3000
-```
-
-So the React App would connect to http://localhost:3000 for API server.
-
-#### Start server
-
-Normally, to start server:
-
-```
-cd server
-npm start
-```
-
-But there is a better way for development:
-
-```
-cd server
-NODE_ENV=development ./node_modules/.bin/nodemon
-```
-
-> NOTE: Setting `NODE_ENV=development` means the Loopback API explorer is available at http://localhost:3000/api/explorer
-
-> Using `nodemon` to run the server rather than `npm start` automatically refreshes the server when files change.
-
-#### Start client
-
-```
-cd client
-npm start
-```
 
 #### View the Treetracker Admin Panel
 
@@ -412,6 +393,15 @@ npm run watch
 In this way, we can write the code and get the tests result immediately.
 
 NOTE: when running tests, the files related to Loopback are loaded from ./dist folder. That's because for Jest, it does not output compiled files at all, and Loopback will try to load the controllers at runtime.
+
+
+### See [Current Milestone](https://github.com/Greenstand/treetracker-admin/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.1.0)
+
+See [Contributing to The Cause](https://github.com/Greenstand/Development-Overview#contributing-to-the-cause)
+
+### See [New Milestone](https://github.com/Greenstand/treetracker-admin/milestone/3)
+
+New milestone is about our new version 2.0 for the admin panel. Currently, we are on branch 'v2' to build this version, so if you have finished tickets in this milestone, please push/PR to this branch(v2).
 
 ## Credit
 
