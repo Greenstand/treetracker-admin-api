@@ -22,7 +22,7 @@ import {TreesRepository} from '../repositories';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
-type TreesWhere = Where<Trees> & {tagId: string};
+type TreesWhere = Where<Trees> & {tagId?: string, organizationId?: Number};
 type TreesFilter = Filter<Trees> & {where: TreesWhere};
 
 export class TreesController {
@@ -42,6 +42,17 @@ export class TreesController {
   async count(
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
+
+    // Replace organizationId with full entity tree and planter
+    if (where && where.organizationId !== undefined) {
+      const clause = await this.treesRepository.getOrganizationWhereClause(where.organizationId)
+      where = {
+        ...where,
+        ...clause,
+      }
+      delete where.organizationId;
+    }
+
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack count()
     if (where && where.tagId !== undefined) {
       try {
@@ -86,6 +97,18 @@ export class TreesController {
   ): Promise<Trees[]> {
     console.log(filter, filter ? filter.where : null);
 
+    // Replace plantingOrganizationId with full entity tree and planter
+    if (filter && filter.where && filter.where.organizationId !== undefined) {
+      const clause = await this.treesRepository.getOrganizationWhereClause(
+        filter.where.organizationId
+      );
+      filter.where = {
+        ...filter.where,
+        ...clause,
+      }
+      delete filter.where.organizationId;
+    }
+    
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     if (filter && filter.where && filter.where.tagId !== undefined) {
       try {
