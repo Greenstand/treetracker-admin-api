@@ -43,11 +43,6 @@ describe('organizations', () => {
       it('loaded 2 organizations', () => {
         expect(store.getState().organizations.organizationList).toHaveLength(2)
       })
-
-      it('organizations are sorted alphabetically', () => {
-        const organizationsNames = store.getState().organizations.organizationList.map(el => el.name);
-        expect(organizationsNames).toStrictEqual(['Another Org','Dummy Org'])
-      })
     })
 
 		//}}}
