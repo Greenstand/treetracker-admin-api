@@ -68,7 +68,10 @@ export default function GSMenu(props) {
         <IconLogo />
       </Box>
       <Box height={20} />
-      {React.useMemo(() => (appContext.routes.map((item, i) => (
+      {React.useMemo(() => (
+        appContext.routes
+          .filter(({disabled}) => !disabled)
+          .map((item, i) => (
           <Link
             key={`menu_${i}`}
             className={classes.linkItemText + (item.disabled ? ' ' + classes.disabledLinkItem : '')}
