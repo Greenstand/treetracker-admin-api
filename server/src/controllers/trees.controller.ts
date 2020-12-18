@@ -108,7 +108,7 @@ export class TreesController {
       }
       delete filter.where.organizationId;
     }
-    
+
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     if (filter && filter.where && filter.where.tagId !== undefined) {
       try {

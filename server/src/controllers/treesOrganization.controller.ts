@@ -19,7 +19,6 @@ import {
 } from '@loopback/rest';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
-import expect from 'expect-runtime';
 
 export class TreesOrganizationController {
   constructor(

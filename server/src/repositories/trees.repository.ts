@@ -65,7 +65,7 @@ export class TreesRepository extends DefaultCrudRepository<
     return result.map((e) => e.id);
   }
 
-  async getOrganizationWhereClause(organizationId) {
+  async getOrganizationWhereClause(organizationId: number): Promise<Object> {
     if (organizationId === null) {
       const planterIds = await this.getNonOrganizationPlanterIds()
       return {and: [{plantingOrganizationId: null}, {planterId: {inq: planterIds}}]};
