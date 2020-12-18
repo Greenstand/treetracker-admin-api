@@ -22,7 +22,7 @@ import {TreesRepository} from '../repositories';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
-type TreesWhere = Where<Trees> & {tagId?: string, organizationId?: Number};
+type TreesWhere = Where<Trees> & {tagId?: string, organizationId?: number};
 type TreesFilter = Filter<Trees> & {where: TreesWhere};
 
 export class TreesController {
