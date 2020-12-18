@@ -19,7 +19,6 @@ import {
 } from '@loopback/rest';
 import {Trees} from '../models';
 import {TreesRepository} from '../repositories';
-import expect from 'expect-runtime';
 
 export class TreesOrganizationController {
   constructor(
@@ -39,26 +38,12 @@ export class TreesOrganizationController {
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
   ): Promise<Count> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
-    );
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
-      organizationId,
+    const clause = await this.treesRepository.getOrganizationWhereClause(
+      organizationId
     );
     where = {
       ...where,
-      and: [
-        {
-          or: [
-            {
-              plantingOrganizationId: {inq: entityIds},
-            },
-            {
-              planterId: {inq: planterIds},
-            },
-          ],
-        },
-      ],
+      ...clause,
     };
     return await this.treesRepository.count(where);
   }
@@ -80,30 +65,15 @@ export class TreesOrganizationController {
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: Filter<Trees>,
   ): Promise<Trees[]> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
-    );
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
-      organizationId,
-    );
-    expect(planterIds).a(expect.any(Array));
     if (filter) {
       //filter should be to deal with the organization, but here is just for
       //demonstration
+      const clause = await this.treesRepository.getOrganizationWhereClause(
+        organizationId
+      );
       filter.where = {
         ...filter.where,
-        and: [
-          {
-            or: [
-              {
-                plantingOrganizationId: {inq: entityIds},
-              },
-              {
-                planterId: {inq: planterIds},
-              },
-            ],
-          },
-        ],
+        ...clause,
       };
     }
     console.log('filter:', filter, filter ? filter.where : null);

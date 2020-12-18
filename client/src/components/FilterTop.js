@@ -5,7 +5,12 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FilterModel, {ALL_SPECIES, SPECIES_NOT_SET} from '../models/Filter';
+import FilterModel, {
+  ALL_SPECIES,
+  SPECIES_NOT_SET,
+  ALL_ORGANIZATIONS,
+  ORGANIZATION_NOT_SET,
+} from '../models/Filter';
 import DateFnsUtils from '@date-io/date-fns';
 import {connect} from 'react-redux';
 import {
@@ -13,6 +18,7 @@ import {
   KeyboardDatePicker
 } from '@material-ui/pickers';
 import { getDatePickerLocale, getDateFormatLocale, convertDateToDefaultSqlDate } from '../common/locale'
+import { getOrganization } from '../api/apiUtils';
 
 export const FILTER_WIDTH = 330;
 
@@ -72,10 +78,15 @@ function Filter(props) {
   const [speciesId, setSpeciesId] = useState(ALL_SPECIES);
   const [tagId, setTagId] = useState(0);
   const [tagSearchString, setTagSearchString] = useState('');
+  const [organizationId, setOrganizationId] = useState(ALL_ORGANIZATIONS);
 
   useEffect(() => {
     props.tagsDispatch.getTags(tagSearchString)
   }, [tagSearchString, props.tagsDispatch])
+
+  useEffect(() => {
+    props.organizationDispatch.loadOrganizations()
+  }, [props.organizationDispatch])
 
   const handleDateStartChange = date => {
     setDateStart(date);
@@ -101,6 +112,7 @@ function Filter(props) {
     filter.active = active;
     filter.speciesId = speciesId;
     filter.tagId = tagId;
+    filter.organizationId = organizationId;
     props.onSubmit && props.onSubmit(filter);
   }
 
@@ -244,6 +256,22 @@ function Filter(props) {
                 />
               }
             />
+            {!getOrganization() && <TextField
+              select
+              label='Organization'
+              value={organizationId}
+              onChange={e => setOrganizationId(e.target.value)}
+            >
+              {[
+                { id: ALL_ORGANIZATIONS, name:'All' },
+                { id: ORGANIZATION_NOT_SET, name:'Not set'},
+                ...props.organizationState.organizationList
+              ].map((org) => (
+                <MenuItem key={org.id} value={org.id}>
+                  {org.name}
+                </MenuItem>
+              ))}
+            </TextField>}
           </Grid>
           <Grid className={classes.inputContainer}>
             <Button 
@@ -267,9 +295,11 @@ export default withStyles(styles)(connect(
   state => ({
     speciesState: state.species,
     tagsState: state.tags,
+    organizationState: state.organizations,
   }),
   //dispatch
   dispatch => ({
     tagsDispatch: dispatch.tags,
+    organizationDispatch: dispatch.organizations,
   }),
 )(Filter));

@@ -4,6 +4,8 @@
 
 export const ALL_SPECIES = 'ALL_SPECIES'
 export const SPECIES_NOT_SET = 'SPECIES_NOT_SET'
+export const ALL_ORGANIZATIONS = 'ALL_ORGANIZATIONS'
+export const ORGANIZATION_NOT_SET = 'ORGANIZATION_NOT_SET'
 
 export default class Filter {
   treeId
@@ -17,6 +19,7 @@ export default class Filter {
   planterIdentifier
   speciesId
   tagId
+  organizationId
 
   constructor(options) {
     Object.assign(this, options)
@@ -76,6 +79,12 @@ export default class Filter {
  
     if (this.tagId) {
       where.tagId = this.tagId
+    }
+
+    if (this.organizationId === ORGANIZATION_NOT_SET) {
+      where.organizationId = null
+    } else if (this.organizationId !== ALL_ORGANIZATIONS) {
+      where.organizationId = this.organizationId
     }
 
     return where

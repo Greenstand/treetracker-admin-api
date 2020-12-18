@@ -334,4 +334,19 @@ export default {
       .then(handleResponse)
       .catch(handleError)
   },
+  /*
+   * get organizations
+   */
+  getOrganizations() {
+    const query = `${process.env.REACT_APP_API_ROOT}/api/organizations?filter[where][type]=o`;
+    return fetch(query, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: session.token,
+      },
+    })
+      .then(handleResponse)
+      .catch(handleError)
+  },
 }
