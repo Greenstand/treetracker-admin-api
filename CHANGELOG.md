@@ -1,3 +1,16 @@
+# [2.5.0](https://github.com/Greenstand/treetracker-admin/compare/v2.4.4...v2.5.0) (2020-12-22)
+
+
+### Bug Fixes
+
+* reinstate patch number in version ([aaede69](https://github.com/Greenstand/treetracker-admin/commit/aaede6972e5004256e2fcffc625f99c9e36a5e4a))
+
+
+### Features
+
+* bump release ([480bec5](https://github.com/Greenstand/treetracker-admin/commit/480bec538eb9ba98765753470d670f72082fa797))
+* bump release ([8f9d4e9](https://github.com/Greenstand/treetracker-admin/commit/8f9d4e9688432daba0573fa72dc90dbecd771e61))
+
 ## [2.4.4](https://github.com/Greenstand/treetracker-admin/compare/v2.4.3...v2.4.4) (2020-12-10)
 
 
