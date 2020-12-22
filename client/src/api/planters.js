@@ -73,4 +73,42 @@ export default {
       .then(handleResponse)
       .catch(handleError)
   },
+
+  getPlanterSelfies(planterId) {
+    // TODO: Add planterPhotoUrl not null to query
+    const treeQuery = 
+      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/?`+
+      `filter[order]=timeUpdated DESC&` +
+      `filter[limit]=100&`+
+      `filter[fields][planterPhotoUrl]=true&`+
+      `filter[where][planterId]=${planterId}`;
+
+     return fetch(treeQuery, {
+       method: 'GET',
+       headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .then((items) => {
+        return items.map(tree => tree.planterPhotoUrl)
+      })
+      .catch(handleError)
+  },
+
+  updatePlanter(id, planterUpdate) {
+    const planterQuery = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/${id}`;
+
+    return fetch(planterQuery, {
+      method: "PATCH",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+      body: JSON.stringify({...planterUpdate, id}),
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
 };
