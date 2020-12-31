@@ -62,7 +62,7 @@ helper.getActiveAdminUserRoles = async function (userId) {
   );
 }
 
-async function clearAdminUserRoles(userId) {
+helper.clearAdminUserRoles = async function (userId) {
   if (!isIdValid(userId)) {
     return
   }
@@ -96,6 +96,22 @@ helper.deactivateAdminUser = async function (userId) {
   return await pool.query(`update admin_user set active = false where id = ${userId}`);
 }
 
+// load roles and policy (permissions)
+helper.loadUserPermissions = async function (userId) {
+    const userDetails = {};
+    let result;
+    //get role
+    result = await helper.getActiveAdminUserRoles(userId);
+    expect(result.rows.length).toBeGreaterThan(0);
+    userDetails.role = result.rows.map(r => r.role_id);
+    //get policies
+    result = await pool.query(
+      `select * from admin_role where id = ${userDetails.role[0]}`,
+    );
+    userDetails.policy = result.rows.map(r => r.policy)[0];
+    return userDetails;
+}
+
 router.get('/permissions', async function login(req, res) {
   try {
     const result = await pool.query(`select * from admin_role`);
@@ -126,6 +142,8 @@ router.post('/login', async function login(req, res, next) {
         //console.assert(userLogin.id >= 0, 'id?', userLogin);
         const result = await helper.getActiveAdminUserRoles(userLogin.id)
         userLogin.role = result.rows.map(r => r.role_id);
+      }else{
+        console.log("checking password failed");
       }
     } else {
       console.log("can not find user by ", userName);
@@ -163,21 +181,6 @@ router.post('/login', async function login(req, res, next) {
   }
 });
 
-// load roles and policy (permissions)
-helper.loadUserPermissions = async function (userId) {
-    const userDetails = {};
-    let result;
-    //get role
-    result = await helper.getActiveAdminUserRoles(userId);
-    expect(result.rows.length).toBeGreaterThan(0);
-    userDetails.role = result.rows.map(r => r.role_id);
-    //get policies
-    result = await pool.query(
-      `select * from admin_role where id = ${userDetails.role[0]}`,
-    );
-    userDetails.policy = result.rows.map(r => r.policy)[0];
-    return userDetails;
-}
 
 router.get('/test', async function login(req, res) {
   res.send('OK');
@@ -231,7 +234,7 @@ router.patch('/admin_users/:userId', async (req, res) => {
     console.log('update:', update);
     await pool.query(update);
     //set all roles for this user to inactive
-    await clearAdminUserRoles(req.params.userId);
+    await helper.clearAdminUserRoles(req.params.userId);
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
         await addAdminUserRole(req.params.userId, req.body.role[i])
@@ -246,8 +249,8 @@ router.patch('/admin_users/:userId', async (req, res) => {
 
 router.delete('/admin_users/:userId', async (req, res) => {
   try {
-    await clearAdminUserRoles(req.params.userId)
-    await deactivateAdminUser(req.params.userId)
+    await helper.clearAdminUserRoles(req.params.userId)
+    await helper.deactivateAdminUser(req.params.userId)
     res.status(204).json();
   } catch (e) {
     console.error(e);
@@ -302,7 +305,7 @@ router.post('/admin_users/', async (req, res) => {
   try {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
-    let result = await getActiveAdminUser(req.body.userName)
+    let result = await helper.getActiveAdminUser(req.body.userName)
     if (result.rows.length) {
       //TODO 401
       res.status(201).json({id: result.rows[0].id});
@@ -321,15 +324,15 @@ router.post('/admin_users/', async (req, res) => {
     )}`;
     console.log('insert:', insert);
     await pool.query(insert);
-    result = await getActiveAdminUser(req.body.userName);
+    result = await helper.getActiveAdminUser(req.body.userName);
     let obj;
     if (result.rows.length) {
       obj = result.rows[0];
       //roles
       //role
-      await clearAdminUserRoles(obj.id)
+      await helper.clearAdminUserRoles(obj.id)
       for (let i = 0; i < req.body.role.length; i++) {
-        await addAdminUserRole(obj.id, req.body.role[i])
+        await helper.addAdminUserRole(obj.id, req.body.role[i])
       }
     } else {
       throw new Error('can not find new user');
@@ -479,6 +482,7 @@ const isAuth = async (req, res, next) => {
       } else if (url.match(/\/api\/tree_tags.*/)) {
         return next();
       }
+
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);
       if (matcher) {

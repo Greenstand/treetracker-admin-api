@@ -1,7 +1,9 @@
 const request = require('supertest');
 const express = require('express');
+const expectRuntime =require("expect-runtime");
 
 jest.mock('pg');
+jest.mock("jsonwebtoken");
 const {Pool, Client} = require('pg');
 
 /*
@@ -17,328 +19,369 @@ Pool.mockImplementation(() => {
 //please require auth here to wait pool get mocked!
 const auth = require("./auth").default;
 
-//jest.mock('./Audit');
-//const Audit = require('./Audit');
-//const audit = {
-//  did: jest.fn(),
-//};
-//Audit.mockImplementation(() => audit);
-
 describe('auth', () => {
   let app;
 
-  it('Check the config', () => {
-    expect(Pool).toHaveBeenCalledWith({
-      connectionString: expect.stringMatching(/postgres(ql)?:\/\/.*/),
+
+  describe("getActiveAdminUserRoles", () => {
+
+    it("success", async () => {
+      const getActiveAdminUserRoles = jest.requireActual('./auth').default.helper.getActiveAdminUserRoles;
+      await getActiveAdminUserRoles(1);
+      expect(query).toHaveBeenCalledWith(expect.stringMatching(/admin_user_role/));
     });
   });
 
-  beforeEach(() => {
-    expect(auth).toBeDefined();
-    expect(auth).toHaveProperty("isAuth");
-    app = express();
-    app.use(express.json());
-    app.use('*', auth.isAuth);
-    app.use('/auth', auth.router);
-    //mock api
-    app.use('/api', async (req, res, next) => {
-      res.status(200).send('OK');
+  describe("addAdminUserRole", () => {
+
+    it("success", async () => {
+      const addAdminUserRole = jest.requireActual('./auth').default.helper.addAdminUserRole;
+      await addAdminUserRole(1,1);
+      expect(query).toHaveBeenCalledWith(expect.stringMatching(/insert.*admin_user_role/));
     });
   });
 
-  it('get /auth/test', async () => {
-    const response = await request(app).get('/auth/test');
-    expect(response.statusCode).toBe(200);
-  });
+  describe("clearAdminUserRoles", () => {
 
-  it.only('/auth/login', async () => {
-    //mock
-    auth.helper.getActiveAdminUser = jest.fn().mockResolvedValueOnce({
-      rows: [{
-        id: 0,
-        user_name: 'dadiorchen',
-        first_name: 'Dadior',
-        salt: "test",
-        passwordHash: "test",
-        enabled: true,
-      }],
-    })
-    auth.helper.getActiveAdminUserRoles = jest.fn(() => ({rows:[]}));
-    auth.helper.sha512 = () => "test";
-    auth.helper.loadUserPermissions = jest.fn(() => ({}));
-    const response = await request(app).post('/auth/login').send({
-      userName: 'dadiorchen',
-      password: '123456',
-    });
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBeDefined();
-    expect(response.body.token).toMatch(/\S+/);
-    expect(response.body.user).toMatchObject({
-      userName: expect.anything(),
-      role: expect.any(Array),
+    it("success", async () => {
+      const clearAdminUserRoles = jest.requireActual('./auth').default.helper.clearAdminUserRoles;
+      await clearAdminUserRoles(1,1);
+      expect(query).toHaveBeenCalledWith(expect.stringMatching(/update admin_user_role set active = false/));
     });
   });
 
-  it('/auth/login fail', async () => {
-    query.mockReturnValueOnce({
-      rows: [],
+  describe("getActiveAdminUser", () => {
+
+    it("success", async () => {
+      const getActiveAdminUser = jest.requireActual('./auth').default.helper.getActiveAdminUser;
+      await getActiveAdminUser(1,1);
+      expect(query).toHaveBeenCalledWith(expect.stringMatching(/select \* from admin_user/));
     });
-    const response = await request(app).post('/auth/login').send({
-      userName: 'dadiorchen',
-      password: 'xxxxxxx',
-    });
-    expect(response.statusCode).toBe(401);
   });
 
-  it('401 /auth/admin_users/ cuz no token', async () => {
-    const response = await request(app).get('/auth/admin_users');
-    expect(response.statusCode).toBe(401);
+  describe("deactivateAdminUser", () => {
+
+    it("success", async () => {
+      const deactivateAdminUser = jest.requireActual('./auth').default.helper.deactivateAdminUser;
+      await deactivateAdminUser(1,1);
+      expect(query).toHaveBeenCalledWith(expect.stringMatching(/update admin_user set active = false/));
+    });
   });
 
-  describe('Login', () => {
-    let token;
+  describe("routers withouth isAuth", () => {
 
-    beforeEach(async () => {
-      query
-        .mockReset()
-        .mockReturnValueOnce({
-          rows: [
-            {
-              id: 0,
-              user_name: 'dadiorchen',
-              first_name: 'Dadior',
-              salt: 'xxx',
-            },
-          ],
-        })
-        .mockReturnValueOnce({
-          rows: [
-            {
-              id: 0,
-              user_name: 'dadiorchen',
-              first_name: 'Dadior',
-              salt: 'xxx',
-            },
-          ],
-        })
-        .mockReturnValueOnce({
-          rows: [
-            {
-              id: 0,
-              user_name: 'dadiorchen',
-              first_name: 'Dadior',
-              salt: 'xxx',
-            },
-          ],
-        })
-        .mockReturnValueOnce({
-          rows: [
-            {
-              role_id: 1,
-            },
-            {
-              role_id: 2,
-            },
-          ],
-        });
+    beforeEach(() => {
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("isAuth");
+      app = express();
+      app.use(express.json());
+      //app.use('*', auth.isAuth);
+      app.use('/auth', auth.router);
+      //mock api
+      app.use('/api', async (req, res, next) => {
+        res.status(200).send('OK');
+      });
+    });
+
+    it('/auth/login', async () => {
+      //mock
+      auth.helper.getActiveAdminUser = jest.fn().mockResolvedValueOnce({
+        rows: [{
+          id: 0,
+          user_name: 'dadiorchen',
+          first_name: 'Dadior',
+          salt: "test",
+          passwordHash: "test",
+          enabled: true,
+        }],
+      })
+      auth.helper.getActiveAdminUserRoles = jest.fn(() => ({rows:[]}));
+      auth.helper.sha512 = () => "test";
+      auth.helper.loadUserPermissions = jest.fn(() => ({}));
       const response = await request(app).post('/auth/login').send({
         userName: 'dadiorchen',
         password: '123456',
       });
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeDefined();
-      expect(response.body.token).toMatch(/\S+/);
-      token = response.body.token;
-    });
-
-    it('audit(login) should be called', () => {
-      expect(audit.did).toHaveBeenCalledWith(
-        expect.any(Number),
-        Audit.TYPE.LOGIN,
-        expect.anything(),
-      );
-    });
-
-    it('/permissions', async () => {
-      query.mockReturnValueOnce({
-        rows: [
-          {
-            id: 0,
-            role_name: 'role1',
-            description: 'role description',
-          },
-        ],
-      });
-      const res = await request(app)
-        .get('/auth/permissions')
-        .set('Authorization', token);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toBeInstanceOf(Array);
-      res.body.forEach((permission) => {
-        expect(permission).toMatchObject({
-          id: expect.any(Number),
-          roleName: expect.any(String),
-          description: expect.any(String),
-        });
+      expect(response.body.user).toMatchObject({
+        userName: expect.anything(),
+        role: expect.any(Array),
       });
     });
 
-    it('admin_users', async () => {
-      query
-        .mockReturnValueOnce({
-          rows: [
-            {
-              id: 0,
-              user_name: 'role1',
-            },
-          ],
-        })
-        .mockReturnValueOnce({
-          rows: [
-            {
-              id: 0,
-              role_id: 1,
-            },
-          ],
-        });
-      const res = await request(app)
-        .get('/auth/admin_users')
-        .set('Authorization', token);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toBeInstanceOf(Array);
-      res.body.forEach((user) => {
-        expect(user).toMatchObject({
-          id: expect.any(Number),
-          userName: expect.any(String),
-          role: expect.any(Array),
-        });
+    it('/auth/login fail', async () => {
+      auth.helper.getActiveAdminUser = jest.fn().mockResolvedValueOnce({
+        rows: [{
+          id: 0,
+          user_name: 'dadiorchen',
+          first_name: 'Dadior',
+          salt: "test",
+          passwordHash: "xxxx",
+          enabled: true,
+        }],
       });
-    });
-
-    describe('create user', () => {
-      let newUser = {
-        id: 3,
-        userName: 'ccc',
-        password: '123456',
-        firstName: 'C',
-        lastName: 'C',
-        email: 'c@g.com',
-        role: [1],
-      };
-
-      beforeEach(async () => {
-        query.mockReturnValueOnce({
-          rows: [
-            {
-              id: 1,
-            },
-          ],
-        });
-        const res = await request(app)
-          .post('/auth/admin_users')
-          .set('Authorization', token)
-          .send(newUser);
-        expect(res.statusCode).toBe(201);
-      });
-
-      describe('Edit user info', () => {
-        beforeEach(async () => {
-          const res = await request(app)
-            .patch('/auth/admin_users/3')
-            .set('Authorization', token)
-            .send({
-              email: 'new@q.com',
-            });
-          expect(res.statusCode).toBe(200);
-        });
-
-        it('should get new info', async () => {
-          query
-            .mockReturnValueOnce({
-              rows: [
-                {
-                  id: 1,
-                  email: 'new@q.com',
-                },
-              ],
-            })
-            .mockReturnValueOnce({
-              rows: [{}],
-            });
-          const res = await request(app)
-            .get('/auth/admin_users/3')
-            .set('Authorization', token);
-          expect(res.statusCode).toBe(200);
-          expect(res.body.email).toBe('new@q.com');
-        });
-      });
-
-      describe('Generate password', () => {
-        beforeEach(async () => {
-          const res = await request(app)
-            .put('/auth/admin_users/3/password')
-            .set('Authorization', token)
-            .send({
-              password: 'abcdef',
-            });
-          expect(res.statusCode).toBe(200);
-        });
-
-        it('', async () => {});
-      });
-    });
-  });
-
-  describe('Login B', () => {
-    let token;
-
-    beforeEach(async () => {
-      query
-        .mockReturnValueOnce({
-          rows: [
-            {
-              id: 0,
-              user_name: 'bbb',
-              first_name: '123456',
-            },
-          ],
-        })
-        .mockReturnValueOnce({
-          rows: [
-            {
-              role_id: 2,
-            },
-          ],
-        });
       const response = await request(app).post('/auth/login').send({
-        userName: 'bbb',
-        password: '123456',
+        userName: 'dadiorchen',
+        password: 'xxxxxxx',
       });
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toBeDefined();
-      expect(response.body.token).toMatch(/\S+/);
-      token = response.body.token;
+      expect(response.statusCode).toBe(401);
     });
 
-    it('admin_users 401', async () => {
-      const res = await request(app)
-        .get('/auth/admin_users')
-        .set('Authorization', token);
-      expect(res.statusCode).toBe(401);
+
+    describe("/permissions", () => {
+
+      it("successfully", async () => {
+        query.mockResolvedValue({rows:[]});
+        const response = await request(app).get('/auth/permissions');
+        expect(response.statusCode).toBe(200);
+      });
     });
 
-    it('api: /api/trees/count 200', async () => {
-      const res = await request(app)
-        .get('/api/trees/count')
-        .set('Authorization', token);
-      expect(res.statusCode).toBe(200);
+    describe("GET /admin_user/:id", () => {
+
+      it("successfully", async () => {
+        query.mockResolvedValue({rows:[{}]});
+        auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[]}));
+        const response = await request(app).get('/auth/admin_users/1');
+        expect(response.statusCode).toBe(200);
+        expect(query).toHaveBeenCalledWith(expect.stringMatching(/admin_user/));
+      });
+
+      //TODO test fail
     });
 
-    it('api: /api/planter/count 401', async () => {
-      const res = await request(app)
-        .get('/api/planter/count')
-        .set('Authorization', token);
-      expect(res.statusCode).toBe(401);
+    describe("PUT /admin_users/:id/password", () => {
+
+      it("successfully", async () => {
+        const response = await request(app).put('/auth/admin_users/1/password')
+          .send({password: "test"});
+        expect(response.statusCode).toBe(200);
+        expect(query).toHaveBeenCalledWith(expect.stringMatching(/update admin_user/));
+      });
     });
+
+    describe("PATCH /admin_users/:id", () => {
+
+      it("successfully", async () => {
+        query.mockResolvedValue({rows:[{}]});
+        auth.helper.clearAdminUserRoles = jest.fn();
+        const response = await request(app).patch('/auth/admin_users/1');
+        expect(response.statusCode).toBe(200);
+        expect(query).toHaveBeenCalledWith(expect.stringMatching(/update admin_user/));
+        expect(auth.helper.clearAdminUserRoles).toHaveBeenCalledWith("1");
+          
+      });
+    });
+
+    describe("DELETE /admin_users/:id", () => {
+
+      it("Successfully", async () => {
+        query.mockResolvedValue({rows:[{}]});
+        auth.helper.deactivateAdminUser = jest.fn();
+        const response = await request(app).delete('/auth/admin_users/1');
+        expect(response.statusCode).toBe(204);
+        expect(auth.helper.deactivateAdminUser).toHaveBeenCalledWith("1");
+      });
+    });
+
+    describe("GET /admin_user", () => {
+
+      it("Successfully", async () => {
+        query.mockResolvedValue({rows:[{}]});
+        auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[]}));
+        const response = await request(app).get('/auth/admin_users');
+        expect(response.statusCode).toBe(200);
+        expect(query).toHaveBeenCalledWith(expect.stringMatching(/select.*admin_user/));
+      });
+    });
+
+    describe("POST /validate", () => {
+
+      it("Successfully", async () => {
+        query.mockResolvedValue({rows:[{}]});
+        auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[]}));
+        auth.helper.sha512 = jest.fn(() => "testHash");
+        const jwt = require("jsonwebtoken");
+        expectRuntime(jwt).property("verify").defined();
+        jwt.verify.mockReturnValueOnce({passwordHash:"testHash"});
+        const response = await request(app).post('/auth/validate')
+          .set("authorization", "testToken");
+        expect(response.statusCode).toBe(200);
+      });
+    });
+
+    describe("POST /admin_users", () => {
+
+      it("Successfully", async () => {
+        query.mockResolvedValue({rows:[{}]});
+        auth.helper.getActiveAdminUser = jest.fn()
+          .mockResolvedValueOnce({rows:[]})
+          .mockResolvedValueOnce({rows:[{}]});
+
+        const response = await request(app).post('/auth/admin_users')
+          .send({
+            role: [1],
+          });
+        expect(response.statusCode).toBe(201);
+        expect(query).toHaveBeenCalledWith(expect.stringMatching(/insert.*admin_user/));
+      });
+    });
+
   });
+
+  describe("router with isAuth (to test isAuth)", () => {
+
+    beforeEach(() => {
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("isAuth");
+      app = express();
+      app.use(express.json());
+      app.use('*', auth.isAuth);
+      app.use('/auth', auth.router);
+      //mock api
+      app.use('/api', async (req, res, next) => {
+        res.status(200).send('OK');
+      });
+    });
+
+    it('GET /auth/test no need token', async () => {
+      const response = await request(app).get('/auth/test');
+      expect(response.statusCode).toBe(200);
+    });
+
+
+    it('401 /auth/admin_users/ cuz no token', async () => {
+      const response = await request(app).get('/auth/admin_users');
+      expect(response.statusCode).toBe(401);
+    });
+
+    describe("GET /auth/check_session", () => {
+
+      it("Successfully", async () => {
+          const jwt = require("jsonwebtoken");
+          jwt.verify.mockReturnValueOnce({policy:{
+            policies: [1,],
+            passwordHash: "testHash",
+          }});
+          query.mockResolvedValue({rows:[{}]});
+          auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+          const response = await request(app).get('/auth/check_session');
+          expect(response.statusCode).toBe(200);
+      });
+
+      //TODO test failure case
+    });
+
+    describe("/api", () => {
+
+      describe("/api/species", () => {
+
+        it("Successfully", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [1,],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/species');
+            expect(response.statusCode).toBe(200);
+        });
+      });
+
+      describe("trees", () => {
+
+        it("/trees successfully", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+                name: "list_tree",
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/trees');
+            expect(response.statusCode).toBe(200);
+        });
+
+        it("/trees 401 no permission", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/trees');
+            expect(response.statusCode).toBe(401);
+        });
+
+        it("/organization/trees/ successfully", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+                name: "list_tree",
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/organization/1/trees');
+            expect(response.statusCode).toBe(200);
+        });
+
+      });
+
+      describe("planter", () => {
+
+        it("/planter successfully", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+                name: "list_planter",
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/planter');
+            expect(response.statusCode).toBe(200);
+        });
+
+        it("/planter 401 no permission", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/planter');
+            expect(response.statusCode).toBe(401);
+        });
+
+        it("/organization/planter successfully", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+                name: "list_planter",
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/organization/1/planter');
+            expect(response.statusCode).toBe(200);
+        });
+
+      });
+
+    });
+
+  });
+
 });
