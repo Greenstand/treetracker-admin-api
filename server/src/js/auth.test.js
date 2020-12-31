@@ -52,40 +52,20 @@ describe('auth', () => {
   });
 
   it.only('/auth/login', async () => {
-    //    const p = new Pool();
-    //    p.query.mockReturnValue("OK");
-    //    console.warn("xxxx:", p.query);
-    //    const r = await p.query();
-    //    console.warn("rrrr:", r);
-//    query
-//      .mockResolvedValueOnce({
-//        rows: [
-//          {
-//            id: 0,
-//            user_name: 'dadiorchen',
-//            first_name: 'Dadior',
-//            salt: "test",
-//          },
-//        ],
-//      })
-//      .mockResolvedValueOnce({
-//        rows: [
-//          {
-//            role_id: 0,
-//          },
-//          {
-//            role_id: 1,
-//          },
-//        ],
-//      });
+    //mock
     auth.helper.getActiveAdminUser = jest.fn().mockResolvedValueOnce({
       rows: [{
         id: 0,
         user_name: 'dadiorchen',
         first_name: 'Dadior',
         salt: "test",
+        passwordHash: "test",
+        enabled: true,
       }],
     })
+    auth.helper.getActiveAdminUserRoles = jest.fn(() => ({rows:[]}));
+    auth.helper.sha512 = () => "test";
+    auth.helper.loadUserPermissions = jest.fn(() => ({}));
     const response = await request(app).post('/auth/login').send({
       userName: 'dadiorchen',
       password: '123456',
@@ -95,7 +75,7 @@ describe('auth', () => {
     expect(response.body.token).toMatch(/\S+/);
     expect(response.body.user).toMatchObject({
       userName: expect.anything(),
-      role: [0, 1],
+      role: expect.any(Array),
     });
   });
 

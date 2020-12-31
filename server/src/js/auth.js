@@ -13,6 +13,7 @@ import {helper} from './helper';
 import getDatasource from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
+import expectRuntime from 'expect-runtime';
 
 const app = express();
 const pool = new Pool({connectionString: getDatasource().url});
@@ -32,7 +33,7 @@ const POLICIES = {
   MANAGE_PLANTER: 'manage_planter',
 };
 
-const sha512 = function (password, salt) {
+helper.sha512 = function (password, salt) {
   const hash = Crypto.createHmac('sha512', salt);
   hash.update(password);
   const hashedPwd = hash.digest('hex');
@@ -117,7 +118,7 @@ router.post('/login', async function login(req, res, next) {
     let userLogin;
     if (users.rows.length) {
       const user_entity = utils.convertCamel(users.rows[0]);
-      const hash = sha512(password, user_entity.salt);
+      const hash = helper.sha512(password, user_entity.salt);
 
       if (user_entity.passwordHash === hash) {
         userLogin = user_entity;
@@ -133,7 +134,7 @@ router.post('/login', async function login(req, res, next) {
     // If user exists in db AND user is active
     // query remaining details and return
     if (userLogin && userLogin.enabled) {
-      const userDetails = await loadUserPermissions(userLogin.id);
+      const userDetails = await helper.loadUserPermissions(userLogin.id);
       userLogin = {...userLogin, ...userDetails};
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
@@ -163,11 +164,11 @@ router.post('/login', async function login(req, res, next) {
 });
 
 // load roles and policy (permissions)
-async function loadUserPermissions(userId) {
+helper.loadUserPermissions = async function (userId) {
     const userDetails = {};
     let result;
     //get role
-    result = await getActiveAdminUserRoles(userId);
+    result = await helper.getActiveAdminUserRoles(userId);
     expect(result.rows.length).toBeGreaterThan(0);
     userDetails.role = result.rows.map(r => r.role_id);
     //get policies
@@ -192,7 +193,7 @@ router.get('/admin_users/:userId', async (req, res) => {
     if (result.rows.length === 1) {
       userGet = utils.convertCamel(result.rows[0]);
       //load role
-      result = await getActiveAdminUserRoles(userGet.id);
+      result = await helper.getActiveAdminUserRoles(userGet.id);
       userGet.role = result.rows.map(r => r.role_id);
     }
     if (userGet) {
@@ -211,7 +212,7 @@ router.get('/admin_users/:userId', async (req, res) => {
 router.put('/admin_users/:userId/password', jsonParser, async (req, res) => {
   try {
     const salt = generateSalt();
-    const hash = sha512(req.body.password, salt);
+    const hash = helper.sha512(req.body.password, salt);
     await pool.query(
       `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
     );
@@ -262,7 +263,7 @@ router.get('/admin_users/', async (req, res) => {
       const user = result.rows[i];
       delete user.password_hash;
       delete user.salt;
-      const roles = await getActiveAdminUserRoles(user.id)
+      const roles = await helper.getActiveAdminUserRoles(user.id)
       user.role = roles.rows.map(rr => rr.role_id);
       users.push(utils.convertCamel(user));
     }
@@ -279,7 +280,7 @@ router.post('/validate/', async (req, res) => {
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
-    const hash = sha512(password, userSession.salt);
+    const hash = helper.sha512(password, userSession.salt);
 
     if (hash === userSession.passwordHash) {
       return res.status(200).json();
@@ -425,13 +426,13 @@ const isAuth = async (req, res, next) => {
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
       console.log(user_id);
-      const result = await getActiveAdminUserRoles(user_id);
+      const result = await helper.getActiveAdminUserRoles(user_id);
       if (result.rows.length === 1) {
         const update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
         if (update_userSession.passwordHash === userSession.passwordHash) {
           /*get the role for updated usersession* */
-          const updated_role = await getActiveAdminUserRoles(user_id);
+          const updated_role = await helper.getActiveAdminUserRoles(user_id);
           update_userSession.role = updated_role.rows.map(r => r.role_id);
           //compare wuth the updated role in case role is changed
           if (helper.needRoleUpdate(update_userSession, userSession)) {
