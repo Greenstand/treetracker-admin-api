@@ -9,7 +9,6 @@ import bodyParser from 'body-parser';
 import config from '../config';
 import {Pool} from 'pg';
 import {utils} from './utils';
-import {helper} from './helper';
 import getDatasource from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
@@ -19,9 +18,9 @@ const app = express();
 const pool = new Pool({connectionString: getDatasource().url});
 const jwtSecret = config.jwtSecret;
 
-//collect all those functions who visit DB into a variables, to give some convenience 
+//collect all those functions who visit DB into a variables, to give some convenience
 //for testing.
-const helper = {};
+let helper = {};
 
 const POLICIES = {
   SUPER_PERMISSION: 'super_permission',
