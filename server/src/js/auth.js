@@ -12,7 +12,6 @@ import {utils} from './utils';
 import getDatasource from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
-import expectRuntime from 'expect-runtime';
 
 const app = express();
 const pool = new Pool({connectionString: getDatasource().url});
@@ -20,7 +19,7 @@ const jwtSecret = config.jwtSecret;
 
 //collect all those functions who visit DB into a variables, to give some convenience
 //for testing.
-let helper = {};
+const helper = {};
 
 const POLICIES = {
   SUPER_PERMISSION: 'super_permission',
