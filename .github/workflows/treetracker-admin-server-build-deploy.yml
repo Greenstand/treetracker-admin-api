@@ -41,6 +41,9 @@ jobs:
     - name: build server project
       run: npm run build
       working-directory: ${{ env.project-directory }}
+    - name: run server tests
+      run: npm run test:ci
+      working-directory: ${{ env.project-directory }}
     - name: get-npm-version
       id: package-version
       uses: martinbeentjes/npm-get-version-action@master

@@ -9,7 +9,6 @@ import bodyParser from 'body-parser';
 import config from '../config';
 import {Pool} from 'pg';
 import {utils} from './utils';
-import {helper} from './helper';
 import getDatasource from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
@@ -17,6 +16,10 @@ import expect from 'expect';
 const app = express();
 const pool = new Pool({connectionString: getDatasource().url});
 const jwtSecret = config.jwtSecret;
+
+//collect all those functions who visit DB into a variables, to give some convenience
+//for testing.
+const helper = {};
 
 const POLICIES = {
   SUPER_PERMISSION: 'super_permission',
@@ -28,7 +31,21 @@ const POLICIES = {
   MANAGE_PLANTER: 'manage_planter',
 };
 
-const sha512 = function (password, salt) {
+helper.needRoleUpdate = function(update_userSession, userSession) {
+  /* if no role exists prev/current, then update regardless and don't check if both are equal */
+  const hasRoles = !!update_userSession.role && !!userSession.role;
+  if (!hasRoles) {
+    return true;
+  } else {
+    /*check if roles equal */
+    const isEqual =
+      update_userSession.role.length === userSession.role.length &&
+      userSession.role.every((val) => update_userSession.role.includes(val));
+    return isEqual ? false : true;
+  }
+};
+
+helper.sha512 = function (password, salt) {
   const hash = Crypto.createHmac('sha512', salt);
   hash.update(password);
   const hashedPwd = hash.digest('hex');
@@ -48,7 +65,7 @@ function isIdValid(id) {
   return id != null
 }
 
-async function getActiveAdminUserRoles(userId) {
+helper.getActiveAdminUserRoles = async function (userId) {
   if (!isIdValid(userId)) {
     return null
   }
@@ -57,7 +74,7 @@ async function getActiveAdminUserRoles(userId) {
   );
 }
 
-async function clearAdminUserRoles(userId) {
+helper.clearAdminUserRoles = async function (userId) {
   if (!isIdValid(userId)) {
     return
   }
@@ -66,7 +83,7 @@ async function clearAdminUserRoles(userId) {
   )
 }
 
-async function addAdminUserRole(userId, roleId) {
+helper.addAdminUserRole = async function (userId, roleId) {
   if (!isIdValid(userId) || !isIdValid(roleId)) {
     return
   }
@@ -78,17 +95,33 @@ async function addAdminUserRole(userId, roleId) {
   )
 }
 
-async function getActiveAdminUser(userName) {
+helper.getActiveAdminUser = async function (userName) {
   return await pool.query(
     `select * from admin_user where user_name = '${userName}' and active = true`,
   );
 }
 
-async function deactivateAdminUser(userId) {
+helper.deactivateAdminUser = async function (userId) {
   if (!isIdValid(userId)) {
     return
   }
   return await pool.query(`update admin_user set active = false where id = ${userId}`);
+}
+
+// load roles and policy (permissions)
+helper.loadUserPermissions = async function (userId) {
+    const userDetails = {};
+    let result;
+    //get role
+    result = await helper.getActiveAdminUserRoles(userId);
+    expect(result.rows.length).toBeGreaterThan(0);
+    userDetails.role = result.rows.map(r => r.role_id);
+    //get policies
+    result = await pool.query(
+      `select * from admin_role where id = ${userDetails.role[0]}`,
+    );
+    userDetails.policy = result.rows.map(r => r.policy)[0];
+    return userDetails;
 }
 
 router.get('/permissions', async function login(req, res) {
@@ -108,19 +141,21 @@ router.post('/login', async function login(req, res, next) {
     const {userName, password} = req.body;
 
     //find the user to get the salt, validate if hashed password matches
-    const users = await getActiveAdminUser(userName);
+    const users = await helper.getActiveAdminUser(userName);
 
     let userLogin;
     if (users.rows.length) {
       const user_entity = utils.convertCamel(users.rows[0]);
-      const hash = sha512(password, user_entity.salt);
+      const hash = helper.sha512(password, user_entity.salt);
 
       if (user_entity.passwordHash === hash) {
         userLogin = user_entity;
         //load role
         //console.assert(userLogin.id >= 0, 'id?', userLogin);
-        const result = await getActiveAdminUserRoles(userLogin.id)
+        const result = await helper.getActiveAdminUserRoles(userLogin.id)
         userLogin.role = result.rows.map(r => r.role_id);
+      }else{
+        console.log("checking password failed");
       }
     } else {
       console.log("can not find user by ", userName);
@@ -129,7 +164,7 @@ router.post('/login', async function login(req, res, next) {
     // If user exists in db AND user is active
     // query remaining details and return
     if (userLogin && userLogin.enabled) {
-      const userDetails = await loadUserPermissions(userLogin.id);
+      const userDetails = await helper.loadUserPermissions(userLogin.id);
       userLogin = {...userLogin, ...userDetails};
       //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
@@ -158,21 +193,6 @@ router.post('/login', async function login(req, res, next) {
   }
 });
 
-// load roles and policy (permissions)
-async function loadUserPermissions(userId) {
-    const userDetails = {};
-    let result;
-    //get role
-    result = await getActiveAdminUserRoles(userId);
-    expect(result.rows.length).toBeGreaterThan(0);
-    userDetails.role = result.rows.map(r => r.role_id);
-    //get policies
-    result = await pool.query(
-      `select * from admin_role where id = ${userDetails.role[0]}`,
-    );
-    userDetails.policy = result.rows.map(r => r.policy)[0];
-    return userDetails;
-}
 
 router.get('/test', async function login(req, res) {
   res.send('OK');
@@ -188,7 +208,7 @@ router.get('/admin_users/:userId', async (req, res) => {
     if (result.rows.length === 1) {
       userGet = utils.convertCamel(result.rows[0]);
       //load role
-      result = await getActiveAdminUserRoles(userGet.id);
+      result = await helper.getActiveAdminUserRoles(userGet.id);
       userGet.role = result.rows.map(r => r.role_id);
     }
     if (userGet) {
@@ -207,7 +227,7 @@ router.get('/admin_users/:userId', async (req, res) => {
 router.put('/admin_users/:userId/password', jsonParser, async (req, res) => {
   try {
     const salt = generateSalt();
-    const hash = sha512(req.body.password, salt);
+    const hash = helper.sha512(req.body.password, salt);
     await pool.query(
       `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
     );
@@ -226,7 +246,7 @@ router.patch('/admin_users/:userId', async (req, res) => {
     console.log('update:', update);
     await pool.query(update);
     //set all roles for this user to inactive
-    await clearAdminUserRoles(req.params.userId);
+    await helper.clearAdminUserRoles(req.params.userId);
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
         await addAdminUserRole(req.params.userId, req.body.role[i])
@@ -241,8 +261,8 @@ router.patch('/admin_users/:userId', async (req, res) => {
 
 router.delete('/admin_users/:userId', async (req, res) => {
   try {
-    await clearAdminUserRoles(req.params.userId)
-    await deactivateAdminUser(req.params.userId)
+    await helper.clearAdminUserRoles(req.params.userId)
+    await helper.deactivateAdminUser(req.params.userId)
     res.status(204).json();
   } catch (e) {
     console.error(e);
@@ -258,7 +278,7 @@ router.get('/admin_users/', async (req, res) => {
       const user = result.rows[i];
       delete user.password_hash;
       delete user.salt;
-      const roles = await getActiveAdminUserRoles(user.id)
+      const roles = await helper.getActiveAdminUserRoles(user.id)
       user.role = roles.rows.map(rr => rr.role_id);
       users.push(utils.convertCamel(user));
     }
@@ -275,7 +295,7 @@ router.post('/validate/', async (req, res) => {
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
-    const hash = sha512(password, userSession.salt);
+    const hash = helper.sha512(password, userSession.salt);
 
     if (hash === userSession.passwordHash) {
       return res.status(200).json();
@@ -297,7 +317,7 @@ router.post('/admin_users/', async (req, res) => {
   try {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
-    let result = await getActiveAdminUser(req.body.userName)
+    let result = await helper.getActiveAdminUser(req.body.userName)
     if (result.rows.length) {
       //TODO 401
       res.status(201).json({id: result.rows[0].id});
@@ -316,15 +336,15 @@ router.post('/admin_users/', async (req, res) => {
     )}`;
     console.log('insert:', insert);
     await pool.query(insert);
-    result = await getActiveAdminUser(req.body.userName);
+    result = await helper.getActiveAdminUser(req.body.userName);
     let obj;
     if (result.rows.length) {
       obj = result.rows[0];
       //roles
       //role
-      await clearAdminUserRoles(obj.id)
+      await helper.clearAdminUserRoles(obj.id)
       for (let i = 0; i < req.body.role.length; i++) {
-        await addAdminUserRole(obj.id, req.body.role[i])
+        await helper.addAdminUserRole(obj.id, req.body.role[i])
       }
     } else {
       throw new Error('can not find new user');
@@ -421,13 +441,13 @@ const isAuth = async (req, res, next) => {
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
       console.log(user_id);
-      const result = await getActiveAdminUserRoles(user_id);
+      const result = await helper.getActiveAdminUserRoles(user_id);
       if (result.rows.length === 1) {
         const update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
         if (update_userSession.passwordHash === userSession.passwordHash) {
           /*get the role for updated usersession* */
-          const updated_role = await getActiveAdminUserRoles(user_id);
+          const updated_role = await helper.getActiveAdminUserRoles(user_id);
           update_userSession.role = updated_role.rows.map(r => r.role_id);
           //compare wuth the updated role in case role is changed
           if (helper.needRoleUpdate(update_userSession, userSession)) {
@@ -474,6 +494,7 @@ const isAuth = async (req, res, next) => {
       } else if (url.match(/\/api\/tree_tags.*/)) {
         return next();
       }
+
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);
       if (matcher) {
@@ -585,4 +606,6 @@ const isAuth = async (req, res, next) => {
 export default {
   router,
   isAuth,
+  //export just for write tests
+  helper,
 };

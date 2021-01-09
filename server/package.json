@@ -26,6 +26,7 @@
     "startTest": "NODE_ENV=test npm run build && NODE_ENV=test DEBUG=loopback:* node ./dist/indexTest.js",
     "prepublishOnly": "npm run test",
     "test": "NODE_ENV=test jest --watchAll --runInBand",
+    "test:ci": "NODE_ENV=test jest --ci",
     "test:debug": "NODE_ENV=test DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand",
     "watch": "onchange 'src/controllers/**/*.ts' 'src/models/**/*.ts' 'src/repositories/**/*.ts' -- npm run build"
   },
@@ -54,7 +55,7 @@
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "expect": "^26.1.0",
-    "expect-runtime": "^0.2.0",
+    "expect-runtime": "^0.7.0",
     "express-list-endpoints": "^5.0.0",
     "generate-password": "^1.5.1",
     "jsonwebtoken": "^8.5.1",

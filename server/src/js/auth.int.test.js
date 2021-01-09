@@ -2,6 +2,10 @@ const request = require('supertest');
 const express = require('express');
 const {auth} = require('./auth.js');
 
+/*
+ * Skip integration tests, let's set up the DB appropriately in the future so we 
+ * use it again
+ */
 describe.skip('auth int', () => {
   let app;
 
