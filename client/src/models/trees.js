@@ -141,7 +141,7 @@ const trees = {
 
       const where = filter ? filter.getWhereObj() : {}
    
-      const lbFilter = JSON.stringify({
+      const lbFilter = {
         where: {...where, active: true},
         order: [`${orderBy} ${order}`],
         limit: rowsPerPage,
@@ -153,7 +153,7 @@ const trees = {
           planterId: true,
           treeTags: true,
         },
-      })
+      }
       
       const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?filter=${JSON.stringify(lbFilter)}`
                 
