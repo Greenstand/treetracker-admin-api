@@ -44,8 +44,9 @@ const useStyle = makeStyles(theme => ({
   },
   editButton: {
     position: 'absolute',
-    bottom: '0',
-    right: '10%',
+    right: 0,
+    bottom: 0,
+    transform: 'translate(-50%, 50%)',
   },
   imageContainer: {
     position: 'relative',
