@@ -1,3 +1,10 @@
+# [2.6.0](https://github.com/Greenstand/treetracker-admin/compare/v2.5.0...v2.6.0) (2021-01-09)
+
+
+### Features
+
+* trying to fix tests on server ([#479](https://github.com/Greenstand/treetracker-admin/issues/479)) ([4b9c8ed](https://github.com/Greenstand/treetracker-admin/commit/4b9c8edfd916664cf6065cc620360daa223acfe4))
+
 # [2.5.0](https://github.com/Greenstand/treetracker-admin/compare/v2.4.4...v2.5.0) (2020-12-22)
 
 
