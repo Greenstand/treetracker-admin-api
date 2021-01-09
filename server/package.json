@@ -26,6 +26,7 @@
     "startTest": "NODE_ENV=test npm run build && NODE_ENV=test DEBUG=loopback:* node ./dist/indexTest.js",
     "prepublishOnly": "npm run test",
     "test": "NODE_ENV=test jest --watchAll --runInBand",
+    "test:ci": "NODE_ENV=test jest --ci",
     "test:debug": "NODE_ENV=test DEBUG=loopback:*,express:* jest --no-cache --watchAll --runInBand",
     "watch": "onchange 'src/controllers/**/*.ts' 'src/models/**/*.ts' 'src/repositories/**/*.ts' -- npm run build"
   },

@@ -42,7 +42,7 @@ jobs:
       run: npm run build
       working-directory: ${{ env.project-directory }}
     - name: run server tests
-      run: npm test
+      run: npm run test:ci
       working-directory: ${{ env.project-directory }}
     - name: get-npm-version
       id: package-version
