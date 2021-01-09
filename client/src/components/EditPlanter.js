@@ -8,15 +8,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Fab,
+  // Fab,
   Grid,
   TextField,
   CircularProgress,
 } from '@material-ui/core'
 import {
   CheckCircle,
-  ChevronLeft,
-  ChevronRight,
+  // ChevronLeft,
+  // ChevronRight,
 } from '@material-ui/icons'
 import api from '../api/planters'
 
@@ -72,17 +72,19 @@ function EditPlanter(props) {
 
   const [planterImages, setPlanterImages] = useState([])
   const [planterUpdate, setPlanterUpdate] = useState(null)
+  const [loadingPlanterImages, setLoadingPlanterImages] = useState(false)
   const [saveInProgress, setSaveInProgress] = useState(false)
   const [maxImages, setMaxImages] = useState(MAX_IMAGES_INCREMENT)
 
   useEffect(() => {
     async function loadPlanterImages() {
       if (planter?.id) {
+        setLoadingPlanterImages(true)
         const selfies = await api.getPlanterSelfies(planter.id)
+        setLoadingPlanterImages(false)
 
-        // TODO: Remove duplicates
         setPlanterImages([
-          ...(planter?.imageUrl ? [planter.imageUrl] : []),
+          ...(planter.imageUrl ? [planter.imageUrl] : []),
           ...selfies.filter(img => img !== planter.imageUrl),
         ])
       }
@@ -124,20 +126,25 @@ function EditPlanter(props) {
     })
   }
 
+  // TODO separate image scroller into a function component
   return(
     <Dialog open={isOpen} aria-labelledby="form-dialog-title" maxWidth={false}>
       <DialogTitle id="form-dialog-title">Edit Planter</DialogTitle>
       <DialogContent>
         <Grid container direction="column">
           <Grid item className={classes.imageScroller}>
-            {planterImages.slice(0,maxImages).map((img, idx) =>
-              <Card key={`${idx}_${img}`} className={classes.planterImageCard} onClick={(e) => setPlanterImage(img)}>
-                <CardMedia image={img} title={img} className={classes.planterImage}/>
-                {(img === planterUpdate?.imageUrl || (!planterUpdate?.imageUrl && img === planter.imageUrl)) &&
-                  <CheckCircle color="primary" className={classes.imageCheck} />
-                }
-              </Card>
-            )}
+            {loadingPlanterImages ? <CircularProgress/> :
+              (planterImages.length ? 
+                planterImages.slice(0, maxImages).map((img, idx) =>
+                  <Card key={`${idx}_${img}`} className={classes.planterImageCard} onClick={() => setPlanterImage(img)}>
+                    <CardMedia image={img} title={img} className={classes.planterImage}/>
+                    {(img === planterUpdate?.imageUrl || (!planterUpdate?.imageUrl && img === planter.imageUrl)) &&
+                      <CheckCircle color="primary" className={classes.imageCheck} />
+                    }
+                  </Card>
+                )
+              : 'No planter images available')
+            }
             {maxImages < planterImages.length && <Button onClick={loadMoreImages}>Load more</Button>}
           </Grid>
           {/* <Fab className={classes.scrollLeft}>
