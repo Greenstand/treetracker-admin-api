@@ -92,7 +92,8 @@ export default {
     })
       .then(handleResponse)
       .then((items) => {
-        return items.map(tree => tree.planterPhotoUrl)
+        // Remove duplicates
+        return [...new Set(items.map(tree => tree.planterPhotoUrl))]
       })
       .catch(handleError)
   },
