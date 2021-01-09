@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Button,
@@ -59,13 +60,14 @@ const useStyle = makeStyles(theme => ({
     right: 0,
   },
   textInput: {
-    margin: theme.spacing()
+    margin: theme.spacing(),
+    flexGrow: 1,
   },
 }));
 
 const MAX_IMAGES_INCREMENT = 20
 
-function EditPlanter(props) {
+const EditPlanter = (props) => {
   
   const classes = useStyle()
   const { isOpen, planter, onClose } = props
@@ -99,7 +101,7 @@ function EditPlanter(props) {
     if (planterUpdate) {
       setSaveInProgress(true)
       // TODO handle errors
-      await api.updatePlanter(planter.id, planterUpdate)
+      await props.plantersDispatch.updatePlanter({id: planter.id, ...planterUpdate})
       setSaveInProgress(false)
     }
     onClose()
@@ -154,7 +156,6 @@ function EditPlanter(props) {
             <ChevronRight />
           </Fab> */}
           <Grid item container direction="row">
-            <Grid item>
               <TextField
                 className={classes.textInput}
                 id="firstName"
@@ -167,8 +168,6 @@ function EditPlanter(props) {
                 onChange={(e) => {handleChange('firstName', e.target.value)}}
                 value={planterUpdate?.firstName || planter.firstName}
               />
-            </Grid>
-            <Grid item>
               <TextField
                 className={classes.textInput}
                 id="lastName"
@@ -181,7 +180,6 @@ function EditPlanter(props) {
                 onChange={(e) => {handleChange('lastName', e.target.value)}}
                 value={planterUpdate?.lastName || planter.lastName}
               />
-            </Grid>
           </Grid>
         </Grid>
       </DialogContent>
@@ -189,12 +187,21 @@ function EditPlanter(props) {
         <Button onClick={handleCancel}>
           Cancel
         </Button>
-        <Button onClick={handleSave} variant="contained" color="primary" disabled={!planterUpdate || saveInProgress}>
+        <Button onClick={handleSave} variant="contained" color="primary"
+                disabled={!planterUpdate || saveInProgress}>
           {saveInProgress ? <CircularProgress size={21} /> : 'Save'}
         </Button>
       </DialogActions>
     </Dialog>
   )
 }
+export {EditPlanter}
 
-export default (EditPlanter)
+export default connect(
+  (state) => ({
+    plantersState: state.planters,
+  }),
+  (dispatch) => ({
+    plantersDispatch: dispatch.planters,
+  }),
+)(EditPlanter)

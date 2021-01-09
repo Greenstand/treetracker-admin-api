@@ -68,7 +68,7 @@ const planters = {
     async load(payload, state){
       this.setIsLoading(true);
       const filter = payload.filter || state.planters.filter || new FilterPlanter()
-      const pageNumber = payload.pageNumber === undefined ? state.payload.pageNumber : payload.pageNumber
+      const pageNumber = payload.pageNumber === undefined ? state.planters.currentPage : payload.pageNumber
       const planters = await api.getPlanters({
         skip: pageNumber * state.planters.pageSize,
         rowsPerPage: state.planters.pageSize,
@@ -88,6 +88,14 @@ const planters = {
       const {count} = await api.getCount({filter: state.planters.filter});
       this.setCount(count);
       return true;
+    },
+    async updatePlanter(payload, state) {
+      await api.updatePlanter(payload);
+      const updatedPlanter = await api.getPlanter(payload.id);
+      const index = state.planters.planters.findIndex((p) => p.id === updatedPlanter.id);
+      if (index >= 0) {
+        this.setPlanters(Object.assign([], state.planters.planters, {[index]: updatedPlanter}));
+      }
     },
   },
 };

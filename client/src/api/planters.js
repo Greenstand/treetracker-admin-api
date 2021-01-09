@@ -75,13 +75,15 @@ export default {
   },
 
   getPlanterSelfies(planterId) {
-    // TODO: Add planterPhotoUrl not null to query
+    const filter = {
+      order: 'timeUpdated DESC',
+      limit: 100,
+      fields: ['planterPhotoUrl'],
+      where: { planterId, planterPhotoUrl: { neq: null } }
+    }
+
     const treeQuery = 
-      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/?`+
-      `filter[order]=timeUpdated DESC&` +
-      `filter[limit]=100&`+
-      `filter[fields][planterPhotoUrl]=true&`+
-      `filter[where][planterId]=${planterId}`;
+      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/?filter=${JSON.stringify(filter)}`
 
      return fetch(treeQuery, {
        method: 'GET',
@@ -98,7 +100,8 @@ export default {
       .catch(handleError)
   },
 
-  updatePlanter(id, planterUpdate) {
+  updatePlanter(planterUpdate) {
+    const { id } = planterUpdate;
     const planterQuery = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/${id}`;
 
     return fetch(planterQuery, {
@@ -107,7 +110,7 @@ export default {
         "content-type": "application/json" ,
         Authorization: session.token ,
       },
-      body: JSON.stringify({...planterUpdate, id}),
+      body: JSON.stringify(planterUpdate),
     })
       .then(handleResponse)
       .catch(handleError);
