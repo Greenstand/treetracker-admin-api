@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import CardMedia from '@material-ui/core/CardMedia'
@@ -53,25 +54,40 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-function PlanterDetail(props){
+const PlanterDetail = (props) => {
   
   const [planterRegistration, setPlanterRegistration] = React.useState(null)
   const [editDialogOpen, setEditDialogOpen] = React.useState(false)
-  const classes = useStyle();
-  const {planter} = props;
+  const [planter, setPlanter] = React.useState({})
+  const classes = useStyle()
+  const { planterId } = props
   const { user } = React.useContext(AppContext)
 
   React.useEffect(() => {
-    if (planter && planter.id && (!planterRegistration || planterRegistration.planterId !== planter.id)) {
-      setPlanterRegistration(null)
-      api.getPlanterRegistrations(planter.id).then(registrations => {
-        if (registrations && registrations.length) {
-          setPlanterRegistration(registrations[0])
-        }
-      })
-    }
-  }, [planter, planterRegistration])
+    async function loadPlanterDetail() {
+      if (planter && planter.id !== planterId) {
+        setPlanter({})
+      }
 
+      if (planterId) {
+        const match = await props.plantersDispatch.getPlanter({id: planterId})
+        setPlanter(match)
+
+        if (!planterRegistration || planterRegistration.planterId !== planterId) {
+          setPlanterRegistration(null)
+          api.getPlanterRegistrations(planterId).then(registrations => {
+            if (registrations && registrations.length) {
+              setPlanterRegistration(registrations[0])
+            }
+          })
+        }
+      }
+    }
+
+    loadPlanterDetail()
+  // eslint-disable-next-line
+  }, [planterId, planterRegistration, props.plantersState.planters, props.plantersDispatch])
+    
   function handleEditClick() {
     setEditDialogOpen(true)
   }
@@ -165,5 +181,13 @@ function PlanterDetail(props){
     </React.Fragment>
   )
 }
+export { PlanterDetail }
 
-export default (PlanterDetail)
+export default connect(
+  (state) => ({
+    plantersState: state.planters,
+  }),
+  (dispatch) => ({
+    plantersDispatch: dispatch.planters,
+  }),
+)(PlanterDetail)

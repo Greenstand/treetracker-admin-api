@@ -58,10 +58,14 @@ const planters = {
      * }
      */
     async getPlanter(payload, state){
-      this.setIsLoading(true);
-      const planter = await api.getPlanter(payload.id);
-      this.setPlanters([planter, ...state.planters.planters]);
-      this.setIsLoading(false);
+      const { id } = payload;
+      // Look for a match in the local model first
+      let planter = state.planters.planters.find(p => p.id === id);
+      if (!planter) {
+        // Otherwise query the API
+        planter = await api.getPlanter(id);
+        this.setPlanters([planter, ...state.planters.planters]);
+      }
       return planter;
     },
 

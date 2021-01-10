@@ -146,18 +146,6 @@ const Planters = (props) => {
     })
   }, [props.plantersDispatch, props.plantersState.filter])
 
-  // Update PlanterDetail if the displayed planter changes
-  useEffect(() => {
-    if (isDetailShown) {
-      const planter = props.plantersState.planters.find((p) => p.id === planterDetail.id)
-      if (planter) {
-        setPlanterDetail(planter)
-      }
-    }
-  },
-  // eslint-disable-next-line
-  [props.plantersState.planters])
-
   function handlePlanterClick(planter){
     setDetailShown(true);
     setPlanterDetail(planter);
@@ -272,7 +260,7 @@ const Planters = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      <PlanterDetail open={isDetailShown} planter={planterDetail} onClose={() => setDetailShown(false)} />
+      <PlanterDetail open={isDetailShown} planterId={planterDetail.id} onClose={() => setDetailShown(false)} />
     </React.Fragment>
   )
 }
