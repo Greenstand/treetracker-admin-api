@@ -39,7 +39,7 @@ const trees = {
       }
     },
     receiveTreeCount(state, payload) {
-      return { ...state, treeCount: payload.count, invalidateTreeCount: false }
+      return { ...state, treeCount: payload, invalidateTreeCount: false }
     },
     invalidateTreeCount(state, payload) {
       return { ...state, invalidateTreeCount: payload }
@@ -111,8 +111,8 @@ const trees = {
           },
         }
       )
-      const data = response.data
-      this.receiveTreeCount(data)
+      const {count} = response.data
+      this.receiveTreeCount(count)
     },
 
     async getTreesAsync(payload, rootState) {
@@ -125,19 +125,6 @@ const trees = {
       if (!rootState.treeCount) {
         await this.getTreeCount(payload, rootState);
       }
-
-      let response = await Axios.get(
-        `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count?
-         where=${JSON.stringify(filter ? filter.getWhereObj(): {})}`,
-        {
-          headers: {
-            'content-type': 'application/json',
-            Authorization: session.token,
-          },
-        }
-      )
-      const data = response.data
-      this.receiveTreeCount(data)
 
       const where = filter ? filter.getWhereObj() : {}
    
@@ -157,7 +144,7 @@ const trees = {
       
       const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?filter=${JSON.stringify(lbFilter)}`
                 
-      response = await Axios.get(query, {
+      const response = await Axios.get(query, {
         headers: {
           'content-type': 'application/json',
           Authorization: session.token,
@@ -169,17 +156,6 @@ const trees = {
         orderBy,
         order,
         filter,
-      })
-    },
-    async requestTreeCount(payload, rootState) {
-      Axios.get(`${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/count`, {
-        headers: {
-          'content-type': 'application/json',
-          Authorization: session.token,
-        },
-      }).then((response) => {
-        const data = response.data
-        this.receiveTreeCount(data)
       })
     },
     async getTreeAsync(id) {
