@@ -11,7 +11,6 @@ class App extends Component {
   componentDidMount() {
     // in the future we want to maybe restore the users last filter set from the server
     // as well as deal with all the login state stuff.
-    this.props.requestTreeCount()
     setLocaleLanguage(navigator.language);
   }
 
@@ -34,9 +33,6 @@ const mapState = (state) => {
   return state
 }
 
-const mapDispatch = (dispatch) => ({
-  requestTreeCount: () => dispatch.trees.requestTreeCount(),
-  requestTrees: () => dispatch.trees.requestTrees(),
-})
+const mapDispatch = (dispatch) => ({})
 
 export default connect(mapState, mapDispatch)(App)
