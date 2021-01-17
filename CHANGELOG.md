@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/Greenstand/treetracker-admin/compare/v2.6.0...v2.6.1) (2021-01-17)
+
+
+### Bug Fixes
+
+* trees page ([#487](https://github.com/Greenstand/treetracker-admin/issues/487)) ([cdf2de5](https://github.com/Greenstand/treetracker-admin/commit/cdf2de5f42c6ca9590a30706ebde96193f822ef8))
+
 # [2.6.0](https://github.com/Greenstand/treetracker-admin/compare/v2.5.0...v2.6.0) (2021-01-09)
 
 
