@@ -47,20 +47,14 @@ const useStyle = makeStyles(theme => ({
     width: `${IMAGE_CARD_SIZE - theme.spacing(3)}px`,
     cursor: 'pointer',
     position: 'relative',
-    transition: 'box-shadow 0.1s ease-in-out',
   },
   planterImage: {
     width: '100%',
     height: '100%',
-    transition: 'box-shadow 0.1s ease-in-out',
   },
-  selectedImage: {
-    boxShadow: `inset 0 0 0 ${theme.spacing()}px ${theme.palette.primary.main}`,
-  },
-  imageCheck: {
-    position: 'absolute',
-    top: theme.spacing(2),
-    left: theme.spacing(2),
+  selectedImageCard: {
+    border: `solid ${theme.spacing(1.5)}px ${theme.palette.primary.main}`,
+    margin: 0,
   },
   scrollButton: {
     height: `${SCROLL_BUTTON_SIZE}px`,
@@ -130,7 +124,16 @@ const EditPlanter = (props) => {
   function handleChange(key, val) {
     let newPlanter = {...planterUpdate}
     newPlanter[key] = val
-    setPlanterUpdate(newPlanter)
+
+    const changed = Object.keys(newPlanter).some((key) => {
+      return newPlanter[key] !== planter[key];
+    })
+
+    if (changed) {
+      setPlanterUpdate(newPlanter)
+    } else {
+      setPlanterUpdate(null)
+    }
   }
 
   function loadMoreImages() {
@@ -207,10 +210,10 @@ const EditPlanter = (props) => {
             {loadingPlanterImages ? <CircularProgress/> :
               (planterImages.length ? 
                 planterImages.slice(0, maxImages).map((img, idx) =>
-                  <Card key={`${idx}_${img}`} className={classes.planterImageCard}
-                        onClick={() => setPlanterImage(img)} raised={isImageSelected(img)}>
+                  <Card key={`${idx}_${img}`} onClick={() => setPlanterImage(img)}
+                        className={`${classes.planterImageCard} ${isImageSelected(img) && classes.selectedImageCard}`}>
                     <CardMedia image={img} title={img}
-                               className={`${classes.planterImage} ${isImageSelected(img) && classes.selectedImage}`}/>
+                               className={classes.planterImage}/>
                   </Card>
                 )
               : 'No planter images available')
@@ -252,7 +255,7 @@ const EditPlanter = (props) => {
         <Button onClick={handleCancel}>
           Cancel
         </Button>
-        <Button onClick={handleSave} variant="contained" color="primary"
+        <Button id="save" onClick={handleSave} variant="contained" color="primary"
                 disabled={!planterUpdate || saveInProgress}>
           {saveInProgress ? <CircularProgress size={21} /> : 'Save'}
         </Button>
