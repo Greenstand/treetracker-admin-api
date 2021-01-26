@@ -14,6 +14,7 @@ import {
   DashStatVerifiedTrees
 } from './DashStat.container';
 
+
 // const logo = (
 //   <svg
 //     className="logo"
@@ -168,9 +169,12 @@ function Home(props) {
             POLICIES.LIST_PLANTER,
           ]) && (
             <DashStatPlanterCount />
+
           )}
         </Grid>
+
       </div>
+
     </div>
   )
 }

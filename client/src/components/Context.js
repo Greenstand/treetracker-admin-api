@@ -8,6 +8,7 @@ import Account from './Account'
 import Home from './Home'
 import Users from './Users'
 import SpeciesMgt from './SpeciesMgt'
+import CaptureMachingFrame from './CaptureMatching/CaptureMachineFrame'
 
 import IconSettings from '@material-ui/icons/Settings'
 import IconShowChart from '@material-ui/icons/ShowChart'
@@ -115,6 +116,13 @@ function getRoutes(user) {
       icon: IconPermIdentity,
       disabled: false,
     },
+
+    {
+      name: 'Capture Matching',
+      component: CaptureMachingFrame,
+      linkTo: '/capture',
+      disabled: false,
+    }
   ].filter(({disabled}) => !disabled)
 }
 
@@ -145,7 +153,7 @@ export const AppProvider = (props) => {
           } else {
             //role has changed, update the token
             context.login(localUser, response.data.token, true)
-          }  
+          }
         } else if (response.status === 401) {
           // Unauthorized - log out
           context.logout()
@@ -167,7 +175,7 @@ export const AppProvider = (props) => {
         if (rememberDetails) {
           localStorage.setItem('user', JSON.stringify(newUser))
         }
-  
+
         // By not updating routes object, we can memoize the menu and routes better
         setRoutes(getRoutes(newUser))
       }

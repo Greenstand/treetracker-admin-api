@@ -162,6 +162,7 @@ AppFrame.propTypes = {
   theme: PropTypes.object.isRequired
 }
 
+
 export default compose(
   withStyles(styles, { withTheme: true, name: 'AppFrame' }),
   connect(
