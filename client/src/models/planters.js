@@ -85,10 +85,10 @@ const planters = {
       this.setIsLoading(false);
       return true;
     },
-    async changePageSize(payload, state){
+    async changePageSize(payload, _state){
       this.setPageSize(payload.pageSize);
     },
-    async count(payload, state){
+    async count(_payload, state){
       const {count} = await api.getCount({filter: state.planters.filter});
       this.setCount(count);
       return true;

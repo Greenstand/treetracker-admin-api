@@ -19,7 +19,7 @@ describe('EditPlanter', () => {
         planters: {
           state: {},
           effects: {
-            updatePlanter(payload, state) { }
+            updatePlanter(_payload, _state) { }
           }
         }
       }
