@@ -3,12 +3,9 @@ import React, {useState, useEffect} from 'react'
 
 import { Paper, Typography, Box, Button, Grid, Backdrop} from '@material-ui/core';
 import PhotoCameraOutlinedIcon from '@material-ui/icons/PhotoCameraOutlined';
-
+import Pagination from './Pagination'
 
 import FilterListIcon from '@material-ui/icons/FilterList';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import orange from '@material-ui/core/colors/orange'
 import { makeStyles } from '@material-ui/core/styles';
 
 import {trees} from './CaptureData.json'
@@ -33,38 +30,26 @@ const useStyles = makeStyles({
 
 function Captures(props) {
 
-    const [startNum, setStartNum] = useState([])
-    const [loading, setLoading] = useState(false)
-    const [currentPage, setCurrentpage] = useState(1)
-    const [imgPerPage] = useState(1)
-    const iconImgLogo = <PhotoCameraOutlinedIcon style={{flex: "1", fontSize: "37px", color: "#666", padding: '5px'}} />
+    const treeList = props.treeList
 
-    // useEffect(() => {
-    //     const fetchImages = async () => {
-    //         setLoading(true);
-    //         const res = await axios.get('https://jsonplaceholder.typicode.com/users');
-    //         setStartNum(res.data);
-    //         setLoading(false);
-    //     }
+    const {
+        imageData, 
+        loading, 
+        currentPage,
+        noOfPages,
+        handleChange,
+        captureApiFetch,
+        imgPerPage,
+        skipCapture
+    } = props;
 
-    //     fetchImages();
-    // }, [])
-
-
-
-    // Get current Img
-
-    const indexOfLastImg = currentPage * imgPerPage;
-    const IndexOfFirstImg = indexOfLastImg - imgPerPage;
-    const currentImage = startNum.slice(IndexOfFirstImg, indexOfLastImg)
-
-    // change page
-
-    const handlePagePeginateNext = (num) => {
-
-        setCurrentpage(num)
-
-    }
+     const iconImgLogo = <PhotoCameraOutlinedIcon style={{
+                            flex: "1", 
+                            fontSize: "37px", 
+                            color: "#666", 
+                            padding: '5px'
+                        }} 
+                        />
 
 
     return (
@@ -72,30 +57,63 @@ function Captures(props) {
 
             <Box>
 
-            <Grid  container direction="row" justify="space-around" alignItems="baseline">
-            <Box style={{paddingTop: '15px', marginLeft: '-22px'}}>
-            <CurrentCaptureNumber text='Unmatched Captures' style={{paddingTop: '10px'}} cameraImg={iconImgLogo}/>
-            </Box>
-            <Box>
-            <Button variant="contained"
-            style={{height: "30px", margin: "0 20px 0 20px", textTransform: 'capitalize', borderRadius: "15px"}}>My Organizations
-            </Button>
-            {/* <Filter count={}/> */}
-            <FilterListIcon style={{color: "#666", fontSize: "40",  margin: "0 20px 0 20px;"}}/>
-            <ChevronLeftIcon style={{ margin: "0 10px 0 20px"}}/>
-            <Typography
-            style={{color: orange, display: "inline-block",  margin: "0 20px 0 10px"}}>1 of 20
-             </Typography>
-             <ChevronRightIcon/>
-            </Box>
+        <Grid  
+            container direction="row" 
+            justify="space-around" 
+            alignItems="baseline"
+            >
 
-            </Grid>
-
-
+            <Box style={{
+                paddingTop: '15px', 
+                marginLeft: '-22px'
+             }}
+            >
+                <CurrentCaptureNumber 
+                text='Unmatched Captures' 
+                style={{paddingTop: '10px'}} 
+                cameraImg={iconImgLogo} 
+                />
             </Box>
 
-           <CaptureImage treeList={props.treeList}/>
-        </div>
+            <Box style={{display: 'flex', flexDirection: 'wrap'}}>
+                <Button variant="contained" style={{
+                    height: "30px", 
+                    margin: "0 20px 0 20px", 
+                    textTransform: 'capitalize', 
+                    borderRadius: "15px"
+                    }}>My Organizations
+                </Button>
+
+                <FilterListIcon style={{
+                    color: "#666", 
+                    fontSize: "40",  
+                    margin: "0 20px 0 20px;"
+                    }}
+                />
+            
+                <Pagination 
+                    currentPage={currentPage}
+                    noOfPages={noOfPages}
+                    handleChange={handleChange}
+                />
+            </Box>
+        </Grid>
+
+            </Box>
+
+    <CaptureImage 
+        treeList={treeList} 
+        imageData={imageData}
+        currentPage={currentPage}
+        loading={loading}
+        noOfPages={noOfPages}
+        // handleChange={handleChange}
+        captureApiFetch={captureApiFetch}
+        imgPerPage={imgPerPage}
+    />
+       
+ </div>
+ 
     )
 }
 

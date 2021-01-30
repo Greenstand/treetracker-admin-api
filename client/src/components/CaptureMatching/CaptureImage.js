@@ -1,5 +1,7 @@
-import React from 'react'
+import React,{useState, useEffect} from 'react'
 import Data from './ImageData.json';
+import axios from 'axios';
+// import Pagination from './Pagination'
 
 import { Typography, Box, Button, Grid} from '@material-ui/core';
 import ZoomOutMapOutlinedIcon from '@material-ui/icons/ZoomOutMapOutlined';
@@ -45,6 +47,9 @@ const useStyles = makeStyles({
 
 
 
+
+
+
 // const treeList = Data.catptureImages
 
 
@@ -57,19 +62,30 @@ const handleSkip = (id) => {
     let date = (showdate.getMonth() + 1) + '-' + showdate.getDate() + '-' + showdate.getFullYear();
 
 // Get current time
-let showTime = new Date()
-let time = showTime.getHours() + ':' + showTime.getMinutes() + ':' + showTime.getSeconds();
+    let showTime = new Date()
+    let time = showTime.getHours() + ':' + showTime.getMinutes() + ':' + showTime.getSeconds();
 
 
 
 function CaptureImage(props) {
 
-    // const [treeCount, setTreeCount] = useState([])
-    const treeList = props.treeList
-    const classes = useStyles()
+    const {
+        imageData, 
+        loading, 
+        currentPage,
+        noOfPages,
+        handleChange,
+        captureApiFetch, 
+        imgPerPage, 
+        skipCapture
+    } = props
+
+     const classes = useStyles()
 
     return (
+
         <div className={classes.containerBox}>
+    
             <Box className={classes.headerBox}>
 
                     <Grid
@@ -80,30 +96,50 @@ function CaptureImage(props) {
                     >
                      <Box style={{marginTop: '15px' }}>
                         <Typography variant='h5'>Catures 1234</Typography>
-                        <Box><AccessTimeIcon/><Typography variant='p'>{date + ', ' + time}</Typography></Box>
-                        <Box><LocationOnOutlinedIcon/><Typography variant='p'>USA</Typography></Box>
+                        <Box>
+                            <AccessTimeIcon/>
+                            <Typography variant='p'>{date + ', ' + time}</Typography>
+                        </Box>
+
+                        <Box>
+                            <LocationOnOutlinedIcon/>
+                            <Typography variant='p'>USA</Typography>
+                        </Box>
                         {/* <UseLoocation/> */}
                      </Box>
 
                     <Grower/>
 
-                    <Button variant='outlined' color='primary' style={{height: '50px', width: '100px', marginTop: '10px' }}  onClick={handleSkip(treeList.id)}>Skip<SkipNextIcon/></Button>
-
+                    <Button 
+                    variant='outlined' 
+                    color='primary' 
+                    style={{
+                    height: '50px', 
+                    width: '100px', 
+                    marginTop: '10px' 
+                    }}  
+                    onClick={skipCapture}>Skip<SkipNextIcon/></Button>
+                    
                 </Grid>
 
 
             </Box>
 
             <Box className={classes.imgBox}>
-                {treeList.slice(0, 1).map( img => {
+                {/* {treeList.slice(0, 1).map( img => { */}
+                    {imageData
+                    .slice((currentPage - 1) * imgPerPage, currentPage * imgPerPage)
+                    .map( img => {
                     return (
-                        <img isEqual={props.isEqual} key={img.id} className={classes.imgContainer} src={img.imgSrc}/>
+                        <img isEqual={props.isEqual} key={img.id} className={classes.imgContainer} src={img.url}/>
                     )
                 })}
-                    {/* <img className={classes.imgContainer} src='https://source.unsplash.com/user/erondu/'/> */}
+                   
              </Box>
         </div>
+    
     )
 }
 
 export default CaptureImage
+

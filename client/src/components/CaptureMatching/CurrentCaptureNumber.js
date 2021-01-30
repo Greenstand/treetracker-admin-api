@@ -17,15 +17,22 @@ const [treeCount, setTreeCount] = useState(treeList)
     return (
         <div>
             <Paper  elevation={2}>
+             
              <Box p={2} style={{display: "flex",  width: "200px"}}>
-             {/* <Icon style={{flex: "1", fontSize: "37px", color: "#666"}}/> */}
-             <Box>{props.cameraImg}{props.treeIcon}</Box>
-             {/* <PhotoCameraOutlinedIcon style={{flex: "1", fontSize: "37px", color: "#666"}}/> */}
-             <Typography variant="p" width="65%"style={{fontSize: "14px", padding: '5px'}}>{treeCount.length}<span style={{display: "block"}}>{props.text}</span></Typography>
+                <Box>{props.cameraImg}{props.treeIcon}</Box>
+                    <Typography 
+                        variant="p" 
+                        width="65%"
+                        style={{fontSize: "14px", padding: '5px'}}
+                    >{treeCount.length}
+                        <span style={{display: "block"}}>
+                            {props.text}
+                        </span>
+                    </Typography>
 
             </Box>
-            </Paper>
-        </div>
+        </Paper>
+    </div>
     )
 }
 

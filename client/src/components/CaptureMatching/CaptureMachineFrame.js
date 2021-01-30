@@ -1,9 +1,11 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
+import axios from 'axios'
 import Captures from './Captures'
 import CandidateCapture from './CandidateCapture'
 import CurrentCaptureNumber from './CurrentCaptureNumber'
 import {catptureImages} from './ImageData.json'
 import {trees} from './CaptureData.json';
+
 
 import {makeStyles} from '@material-ui/core/styles'
 import {Grid, Box} from '@material-ui/core'
@@ -34,61 +36,69 @@ function CaptureMachineFrame() {
 
 
 
-    // Matching tree images function
+    const [imageData, setImageData] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [loading, setLoading] = useState(false)
+    const [imgPerPage, setImgPerPage] = [1]
+    const [noOfPages, setNoOfPages] = useState(null);
 
-    const isEqual = (treeList, imageList) => {
-               const treeListKeys = Object.keys(treeList);
-               const imageListKeys = Object.keys(imageList);
+    const handleChange = (event, value) => {
+        setCurrentPage(value);
+      };
+    
+    // Setting API as a variable
+    const captureApiFetch = 'https://jsonplaceholder.typicode.com/photos'
 
-               if(treeListKeys.length !== imageListKeys.length) {
-                   return false;
-               }
-
-               for (let key of treeListKeys) {
-                   if (treeListKeys[key] === imageListKeys[key]) {
-                       if(typeof treeListKeys[key] == "object" && typeof imageListKeys[key] == "object") {
-                           if(isEqual(treeListKeys[key], imageListKeys[key])) {
-                               console.log( "same data " );
-                               return true;
-
-                           }
-                    }
-                       else {
-                           return false;
-                       }
-                   }
-               }
+    // fatchData from api Variable
+    useEffect(() => {
+        setLoading(true)
+       axios.get(captureApiFetch)
+            .then(response => {
+                setImageData(response.data)
+                setNoOfPages( Math.ceil(response.data.length/ imgPerPage))
+                setLoading(false)
+            })
+            
+        }, [])
 
 
-               return true;
+// Skip button  function
 
-           };
+    const skipCapture = () => {
+        // setImgPerPage(imgPerPage);
 
-           console.log(isEqual(treeList, imageList))
-
+    }
 
 
     return (
-
-
 
         <div className={classes.container}>
             <Grid
             container
             direction="row"
-            // justify="left"
-            // alignItems="left"
+           
              >
-            <Captures treeList={treeList}/>
+            <Captures 
+            treeList={treeList} 
+            imageData={imageData}
+            currentPage={currentPage}
+            loading={loading}
+            noOfPages={noOfPages}
+            handleChange={handleChange}
+            captureApiFetch={captureApiFetch}
+            imgPerPage={imgPerPage}
+            skipCapture={skipCapture}
+            />
 
-{/*
-            <CurrentCaptureNumber style={{paddingTop: '10px'}}/> */}
 
            <Box style={{width: '50%'}}>
             <Box p={2} style={{width: '220px', margin: '10px 0 0 12px' }}>
-            <CurrentCaptureNumber text='Candidate Match' style={{paddingTop: '10px'}} treeIcon={treeIcon}/>
+            <CurrentCaptureNumber 
+                text='Candidate Match' 
+                style={{paddingTop: '10px'}} 
+                treeIcon={treeIcon}
+            />
             </Box>
-           {/* <CurrentCaptureNumber style={{paddingTop: '10px', width: '200px'}}/> */}
             <CandidateCapture imageList={imageList}/>
 
             </Box>

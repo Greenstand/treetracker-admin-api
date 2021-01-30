@@ -8,9 +8,6 @@ import { Typography, Box, Button, GridList, Grid} from '@material-ui/core';
 
 const useStyles = makeStyles({
     gridList: {
-      // flexWrap: 'nowrap',
-      //  transform: 'translateZ(0)',
-      //  margin: '20px',
       padding: '10px',
       display: 'flex',
       overflowX: 'auto'

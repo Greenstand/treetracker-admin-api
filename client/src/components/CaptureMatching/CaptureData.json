@@ -6,76 +6,44 @@
             "time": "12:39:10",
             "area": "xyz",
             "imgSrc": [
-              {"img": "https://source.unsplash.com/random/800x600"},
-              {"img": "https://source.unsplash.com/random/800x600"},
-              {"img": "https://source.unsplash.com/random/800x600"}
+              {"img": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"},
+              {"img": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"},
+              {"img": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"}
             ]
         },
         {
-            "id": 2,
+          "id": 2,
             "date": "01/10/2021",
             "time": "12:39:10",
             "area": "xyz",
-            "imgSrc": "https://live.staticflickr.com/3241/3159698078_14af2c080b_b.jpg",
-            "imgSrc2": "https://live.staticflickr.com/3241/3159698078_14af2c080b_b.jpg"
+            "imgSrc": [
+              {"img": "https://live.staticflickr.com/3241/3159698078_14af2c080b_b.jpg"},
+              {"img": "https://live.staticflickr.com/3241/3159698078_14af2c080b_b.jpg"},
+              {"img": "https://live.staticflickr.com/3241/3159698078_14af2c080b_b.jpg"}
+            ]
+        },
 
-        },
         {
-          "id": "3",
-          "date": "11/10/2020",
-          "time": "14:39:10",
-          "imgSrc": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"
-
-        },
-        {
-            "id": 4,
-            "title": "capture-image4",
+          "id": 3,
+            "date": "01/10/2021",
+            "time": "12:39:10",
             "area": "xyz",
-            "imgSrc": "https://live.staticflickr.com/3241/3159698078_14af2c080b_b.jpg"
+            "imgSrc": [
+              {"img": "https://live.staticflickr.com/7093/7188220935_8b34647de6_b.jpg"},
+              {"img": "https://live.staticflickr.com/7093/7188220935_8b34647de6_b.jpg"},
+              {"img": "https://live.staticflickr.com/7093/7188220935_8b34647de6_b.jpg"}
+            ]
         },
         {
-            "id": 5,
-            "title": "capture-image5",
+          "id": 4,
+            "date": "01/10/2021",
+            "time": "12:39:10",
             "area": "xyz",
-            "imgSrc": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"
-        },
-        {
-            "id": 6,
-            "title": "capture-image6",
-            "area": "xyz",
-            "imgSrc": "https://live.staticflickr.com/7093/7188220935_8b34647de6_b.jpg"
-        },
-        {
-            "id": 7,
-            "title": "capture-image7",
-            "area": "xyz",
-            "imgSrc": "https://live.staticflickr.com/7262/13748315503_447be7c731_b.jpg"
-        },
-        {
-            "id": 8,
-            "title": "capture-image8",
-            "area": "xyz",
-            "imgSrc": "https://source.unsplash.com/random/800x600"
-        },
-        {
-            "id": 9,
-            "title": "capture-image9",
-            "imgSrc": "https://source.unsplash.com/random/800x600"
-        },
-        {
-            "id": 10,
-            "title": "capture-image10",
-            "imgSrc": "https://source.unsplash.com/random/800x600"
-        },
-        {
-            "id": 11,
-            "title": "capture-image11",
-            "imgSrc": "https://source.unsplash.com/random/800x600"
-        },
-        {
-            "id": 12,
-            "title": "capture-image12",
-            "imgSrc": "https://source.unsplash.com/random/800x600"
+            "imgSrc": [
+              {"img": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"},
+              {"img": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"},
+              {"img": "https://live.staticflickr.com/7/10490859_ee110d0ae3.jpg"}
+            ]
         }
 
     ],
