@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/Greenstand/treetracker-admin/compare/v2.6.1...v2.7.0) (2021-02-02)
+
+
+### Features
+
+* add planter org name ([#493](https://github.com/Greenstand/treetracker-admin/issues/493)) ([0217e48](https://github.com/Greenstand/treetracker-admin/commit/0217e48a1646e0379eb435798fc1a6abf5747250))
+
 ## [2.6.1](https://github.com/Greenstand/treetracker-admin/compare/v2.6.0...v2.6.1) (2021-01-17)
 
 
