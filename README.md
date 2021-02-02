@@ -69,6 +69,15 @@ npm start
 ### Step 8: Start developing!
 
 
+## Commit Message Format
+
+We use automatic semantic versioning, which looks at commit messages to determine how to increment the version number for deployment.
+
+Your commit messages will need to follow the [Conventional Commits](https://www.conventionalcommits.org/) format, for example:
+```
+feat: add new button
+```
+
 ## Advanced local development using docker
 
 For developers familiar with docker, we offer a dockerized setup for local development.
