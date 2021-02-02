@@ -36,6 +36,11 @@ _On MacOS, you can alleviate the need to run as sudo by using nvm or by [followi
 git clone https://github.com/<username>/treetracker-admin.git
 ```
 
+Add Greenstand as a remote:
+```
+git add remote upstream https://github.com/Greenstand/treetracker-admin
+```
+
 ### Step 4: Get configuration files
 1. Get the server dev env file pinned to the admin_panel_chat channel in Greenstand Slack: `.env.development`
 1. Copy the file to the `./server` directory within your local repo
@@ -68,14 +73,27 @@ npm start
 
 ### Step 8: Start developing!
 
-
-## Commit Message Format
+## Commit Message and PR Title Format
 
 We use automatic semantic versioning, which looks at commit messages to determine how to increment the version number for deployment.
 
 Your commit messages will need to follow the [Conventional Commits](https://www.conventionalcommits.org/) format, for example:
 ```
 feat: add new button
+```
+Since we squash commits on merging PRs into `master`, this applies to PR titles as well.
+
+## Keeping Your Fork in Sync
+
+Your forked repo won't automatically stay in sync with Greenstand, so you'll need to occassionally sync manually (typically before starting work on a new feature).
+```
+git pull upstream master --rebase
+git push origin master
+```
+You might also need to sync and merge `master` into your feature branch before submitting a PR to resolve any conflicts.
+```
+git checkout <feature_branch>
+git merge master
 ```
 
 ## Advanced local development using docker
