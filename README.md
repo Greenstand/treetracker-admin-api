@@ -26,38 +26,31 @@ Alternatively, you can install Node.js directly from https://nodejs.org/dist/lat
 
 _On MacOS, you can alleviate the need to run as sudo by using nvm or by [following John Papa's instructions](http://jpapa.me/nomoresudo)._
 
-### Step 3: Clone this project and get configuration files
+### Step 3: Fork and clone this repository
 
+1. Click _Fork_ on this GitHub repo and follow the steps to fork the repo to your account
 1. Open terminal
-1. Go to a folder where you would like to install the project. Then type the following:
+1. Go to a folder where you would like to install the project. Then type the following, replacing `<username>` with your GitHub username:
 
 ```
-git clone https://github.com/Greenstand/treetracker-admin.git
+git clone https://github.com/<username>/treetracker-admin.git
 ```
 
-1. Get configurations files from our secrets vault
-    1. If you don't have access to the vault, askin the #development channel on Slack
-    2. Both client and server folders need environment files
-        1. treetracker-admin/server/.env 
-        2. treetracker-admin/server/.env.development
-        3. treetracker-admin/client/.env.development
+### Step 4: Get configuration files
+1. Get the server dev env file pinned to the admin_panel_chat channel in Greenstand Slack: `.env.development`
+1. Copy the file to the `./server` directory within your local repo
+1. Add a `.env.local` file in the `./client` directory containing the following line:
+```
+REACT_APP_API_ROOT=http://localhost:3000
+```
 
-
-### Step 4: Install npm dependencies
+### Step 5: Install npm dependencies
 
 ```
 npm install
 ```
 
-Add a `.env.local` file in the `client` directory for local config, it looks like this:
-
-```
-REACT_APP_API_ROOT=http://localhost:3000
-```
-
-So the React App would connect to http://localhost:3000 for API server.
-
-### Step 5: Start server
+### Step 6: Start server
 
 Normally, to start server:
 
@@ -66,25 +59,14 @@ cd server
 npm start
 ```
 
-But there is a better way for development:
-
-```
-cd server
-NODE_ENV=development ./node_modules/.bin/nodemon
-```
-
-> NOTE: Setting `NODE_ENV=development` means the Loopback API explorer is available at http://localhost:3000/api/explorer
-
-> Using `nodemon` to run the server rather than `npm start` automatically refreshes the server when files change.
-
-### Step 6: Start client
+### Step 7: Start client
 
 ```
 cd client
 npm start
 ```
 
-### Step 7: You ready to start developing!
+### Step 8: Start developing!
 
 
 ## Advanced local development using docker
@@ -95,7 +77,7 @@ To run docker on a local machine, you will have to install Docker first.
 Docker is a linux container technology, so running it on Mac or Windows requires an application with an attached linux VM.
 Docker provides one for each OS by default.
 
-#### Mac
+### Mac
 
 Install Docker for Mac using homebrew, using the following command
 
@@ -107,7 +89,7 @@ You can alternatively install Docker via: [Docker for Mac](https://docs.docker.c
 
 Once Docker is installed, lauch Docker from the Applications GUI.
 
-#### Windows
+### Windows
 
 For most versions of Windows: [Docker for Windows](https://docs.docker.com/docker-for-windows/install/)
 
@@ -123,7 +105,7 @@ then re-run the QuickStart terminal script.
 > If you use Docker Toolbox, check the IP address in the output of the QuickStart terminal script.
 > You will use this IP address later instead of `localhost`.
 
-#### Linux
+### Linux
 
 To install on linux, you can run
 `sudo apt-get install -y docker-ce`
