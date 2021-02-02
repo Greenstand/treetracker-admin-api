@@ -1,10 +1,10 @@
 /*
  * Planter page
  */
-import React, { useEffect} from 'react'
+import React, {useEffect} from 'react'
 import clsx from 'clsx'
-import { connect } from 'react-redux'
-import { makeStyles } from '@material-ui/core/styles'
+import {connect} from 'react-redux'
+import {makeStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
@@ -12,7 +12,7 @@ import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import TablePagination from '@material-ui/core/TablePagination'
 
-import { selectedHighlightColor } from '../common/variables.js'
+import {selectedHighlightColor} from '../common/variables.js'
 import Grid from '@material-ui/core/Grid'
 import IconFilter from '@material-ui/icons/FilterList'
 import IconButton from '@material-ui/core/IconButton'
@@ -146,7 +146,7 @@ const Planters = (props) => {
     })
   }, [props.plantersDispatch, props.plantersState.filter])
 
-  function handlePlanterClick(planter){
+  function handlePlanterClick(planter) {
     setDetailShown(true);
     setPlanterDetail(planter);
   }
@@ -159,15 +159,15 @@ const Planters = (props) => {
   });
 
   let plantersItems = (props.plantersState.isLoading ?
-                       placeholderPlanters :
-                       props.plantersState.planters
-                      ).map((planter) => {
+    placeholderPlanters :
+    props.plantersState.planters
+  ).map((planter) => {
     return (
       <Planter
         onClick={() => handlePlanterClick(planter)}
-        key={planter.id} 
+        key={planter.id}
         planter={planter}
-        placeholder={planter.placeholder}/>
+        placeholder={planter.placeholder} />
     )
   })
 
@@ -179,18 +179,18 @@ const Planters = (props) => {
     }
   }
 
-  function handlePageChange(e, page){
+  function handlePageChange(e, page) {
     props.plantersDispatch.load({
       pageNumber: page,
       filter: props.plantersState.filter,
     });
   }
 
-  function handleChangePageSize(e, option){
+  function handleChangePageSize(e, option) {
     props.plantersDispatch.changePageSize({pageSize: option.props.value})
   }
 
-  function updateFilter(filter){
+  function updateFilter(filter) {
     props.plantersDispatch.load({
       pageNumber: 0,
       filter,
@@ -265,42 +265,43 @@ const Planters = (props) => {
   )
 }
 
-function Planter (props){
+function Planter(props) {
   const {
     planter
   } = props;
   const classes = useStyles(props);
-  return(
-      <div onClick={() => props.onClick()} className={clsx(classes.cardWrapper)} key={planter.id}>
-        <Card
-          id={`card_${planter.id}`}
-          className={clsx(classes.card, props.placeholder && classes.placeholderCard)} 
-          classes={{
-            root: classes.planterCard,
-          }}
-        >
-          <CardContent className={classes.cardContent}>
-            {planter.imageUrl &&
-              <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
-            }
-            {!planter.imageUrl &&
-              <CardMedia className={classes.cardMedia} >
-                <Grid container className={classes.personBox} >
-                  <Person className={classes.person} />
-                </Grid>
-              </CardMedia>
-            }
-          </CardContent>
-          <CardActions className={classes.cardActions}>
-            <Grid justify="flex-start" container >
-              <Grid container direction="column">
-                <Typography className={classes.name} >{planter.firstName} {planter.lastName}</Typography>
-                <Typography>ID:{planter.id}</Typography>
+  return (
+    <div onClick={() => props.onClick()} className={clsx(classes.cardWrapper)} key={planter.id}>
+      <Card
+        id={`card_${planter.id}`}
+        className={clsx(classes.card, props.placeholder && classes.placeholderCard)}
+        classes={{
+          root: classes.planterCard,
+        }}
+      >
+        <CardContent className={classes.cardContent}>
+          {planter.imageUrl &&
+            <CardMedia className={classes.cardMedia} image={planter.imageUrl} />
+          }
+          {!planter.imageUrl &&
+            <CardMedia className={classes.cardMedia} >
+              <Grid container className={classes.personBox} >
+                <Person className={classes.person} />
               </Grid>
+            </CardMedia>
+          }
+        </CardContent>
+        <CardActions className={classes.cardActions}>
+          <Grid justify="flex-start" container >
+            <Grid container direction="column">
+              <Typography className={classes.name} >{planter.firstName} {planter.lastName}</Typography>
+              <Typography>ID: {planter.id}</Typography>
+              {planter.organization && <Typography>Organization: {planter.organization}</Typography>}
             </Grid>
-          </CardActions>
-        </Card>
-      </div>
+          </Grid>
+        </CardActions>
+      </Card>
+    </div>
   )
 }
 export {Planter};
