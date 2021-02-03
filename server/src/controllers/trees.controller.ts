@@ -68,7 +68,6 @@ export class TreesController {
           await this.treesRepository
             .execute(query.sql, query.params)
             .then((res) => {
-              console.log('MY DATA', res)
               return (res && res[0]) || { count: 0 };
             })
         );
@@ -119,22 +118,18 @@ export class TreesController {
           // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
           const columnNames = connector
             .buildColumnNames('Trees', filter)
-            .replace('"id"', '"tree_id" as "id"');
+            .replace('"id"', 'trees.id as "id"')
 
           const isTagNull = filter.where.tagId === null
           const query = this.buildFilterQuery(
             `SELECT ${columnNames} from trees`,
-            `${isTagNull ? 'LEFT JOIN' : 'JOIN'} tree_tag ON trees.id=tree_tag.tree_id`,
+            `${isTagNull ?
+              'LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id ORDER BY "time_created" DESC'
+              :
+              'JOIN tree_tag ON trees.id=tree_tag.tree_id'}`,
             `WHERE tree_tag.tag_id ${isTagNull ? 'IS NULL' : `=${filter.where.tagId}`}`,
             filter.where,
           );
-
-          // const query = this.buildFilterQuery(
-          //   `SELECT ${columnNames} from trees`,
-          //   `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
-          //   `WHERE tree_tag.tag_id=${filter.where.tagId} `,
-          //   filter.where,
-          // );
 
           return <Promise<Trees[]>>(
             await this.treesRepository
