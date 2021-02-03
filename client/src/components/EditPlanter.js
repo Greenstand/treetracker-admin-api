@@ -10,9 +10,11 @@ import {
   Grid,
   TextField,
   CircularProgress,
+  MenuItem,
 } from '@material-ui/core'
 import api from '../api/planters'
 import ImageScroller from './ImageScroller'
+import { getOrganization } from '../api/apiUtils';
 
 const useStyle = makeStyles(theme => ({
   container: {
@@ -34,6 +36,10 @@ const EditPlanter = (props) => {
   const [planterUpdate, setPlanterUpdate] = useState(null)
   const [loadingPlanterImages, setLoadingPlanterImages] = useState(false)
   const [saveInProgress, setSaveInProgress] = useState(false)
+
+  useEffect(() => {
+    props.organizationDispatch.loadOrganizations()
+  }, [props.organizationDispatch])
 
   useEffect(() => {
     async function loadPlanterImages() {
@@ -149,6 +155,23 @@ const EditPlanter = (props) => {
               ))}
             </Grid>
           ))}
+          <Grid item container>
+            {!getOrganization() && <TextField
+                select
+                className={classes.textInput}
+                label='Organization'
+                value={getValue('organizationId')}
+                onChange={(e) => {handleChange('organizationId', e.target.value)}}
+                >
+                {[
+                  ...props.organizationState.organizationList
+                ].map((org) => (
+                  <MenuItem key={org.id} value={org.id}>
+                    {org.name}
+                  </MenuItem>
+                ))}
+              </TextField>}
+          </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
@@ -168,8 +191,10 @@ export {EditPlanter}
 export default connect(
   (state) => ({
     plantersState: state.planters,
+    organizationState: state.organizations,
   }),
   (dispatch) => ({
     plantersDispatch: dispatch.planters,
+    organizationDispatch: dispatch.organizations,
   }),
 )(EditPlanter)

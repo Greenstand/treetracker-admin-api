@@ -64,7 +64,6 @@ const planters = {
       if (!planter) {
         // Otherwise query the API
         planter = await api.getPlanter(id);
-        this.setPlanters([planter, ...state.planters.planters]);
       }
       return planter;
     },

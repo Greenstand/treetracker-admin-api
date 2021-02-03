@@ -176,7 +176,6 @@ const PlanterDetail = (props) => {
           </Grid>
         </Grid>
       </Drawer>
-      {/* TODO: Reload planter details on save */}
       <EditPlanter isOpen={editDialogOpen} planter={planter} onClose={handleEditClose}></EditPlanter>
     </React.Fragment>
   )
