@@ -10,9 +10,10 @@ import FilterModel, {
   SPECIES_NOT_SET,
   ALL_ORGANIZATIONS,
   ORGANIZATION_NOT_SET,
+  TAG_NOT_SET
 } from '../models/Filter';
 import DateFnsUtils from '@date-io/date-fns';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
@@ -106,8 +107,8 @@ function Filter(props) {
     filter.planterId = planterId;
     filter.deviceId = deviceId;
     filter.planterIdentifier = planterIdentifier;
-    filter.dateStart = dateStart? formatDate(dateStart) : undefined;
-    filter.dateEnd = dateEnd? formatDate(dateEnd) : undefined;
+    filter.dateStart = dateStart ? formatDate(dateStart) : undefined;
+    filter.dateEnd = dateEnd ? formatDate(dateEnd) : undefined;
     filter.approved = approved;
     filter.active = active;
     filter.speciesId = speciesId;
@@ -132,8 +133,8 @@ function Filter(props) {
                   e.target.value === 'All'
                     ? undefined
                     : e.target.value === 'true'
-                    ? true
-                    : false
+                      ? true
+                      : false
                 )
               }
             >
@@ -157,8 +158,8 @@ function Filter(props) {
                   e.target.value === 'All'
                     ? undefined
                     : e.target.value === 'true'
-                    ? false
-                    : true
+                      ? false
+                      : true
                 )
               }
             >
@@ -225,8 +226,8 @@ function Filter(props) {
               onChange={e => setSpeciesId(e.target.value)}
             >
               {[
-                {id:ALL_SPECIES, name:'All'},
-                {id:SPECIES_NOT_SET, name:'Not set'},
+                { id: ALL_SPECIES, name: 'All' },
+                { id: SPECIES_NOT_SET, name: 'Not set' },
                 ...props.speciesState.speciesList
               ].map(species => (
                 <MenuItem key={species.id} value={species.id}>
@@ -238,7 +239,10 @@ function Filter(props) {
               classes={{
                 inputRoot: classes.autocompleteInputRoot,
               }}
-              options={props.tagsState.tagList}
+              options={[
+                { id: TAG_NOT_SET, tagName: 'Not set', active: true, public: true },
+                ...props.tagsState.tagList
+              ]}
               getOptionLabel={(tag) => tag.tagName}
               onChange={(_oldVal, newVal) => {
                 console.log(newVal)
@@ -247,9 +251,9 @@ function Filter(props) {
               onInputChange={(_oldVal, newVal) => {
                 setTagSearchString(newVal)
               }}
-              renderInput={(params) => 
+              renderInput={(params) =>
                 <TextField
-                  {...params} 
+                  {...params}
                   label='Tag'
                   value={tagId}
                   onChange={e => setTagId(e.target.value)}
@@ -263,8 +267,8 @@ function Filter(props) {
               onChange={e => setOrganizationId(e.target.value)}
             >
               {[
-                { id: ALL_ORGANIZATIONS, name:'All' },
-                { id: ORGANIZATION_NOT_SET, name:'Not set'},
+                { id: ALL_ORGANIZATIONS, name: 'All' },
+                { id: ORGANIZATION_NOT_SET, name: 'Not set' },
                 ...props.organizationState.organizationList
               ].map((org) => (
                 <MenuItem key={org.id} value={org.id}>
@@ -274,10 +278,10 @@ function Filter(props) {
             </TextField>}
           </Grid>
           <Grid className={classes.inputContainer}>
-            <Button 
+            <Button
               className={classes.apply}
               variant='outlined' color='primary' onClick={handleSubmit}>
-              Apply 
+              Apply
             </Button>
           </Grid>
         </Grid>
