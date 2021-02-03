@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/Greenstand/treetracker-admin/compare/v2.7.0...v2.8.0) (2021-02-03)
+
+
+### Features
+
+* add note to tree dialog on /verify ([#494](https://github.com/Greenstand/treetracker-admin/issues/494)) ([b13d4f3](https://github.com/Greenstand/treetracker-admin/commit/b13d4f3b162435bc14462f7ee6392926bec4e05b))
+
 # [2.7.0](https://github.com/Greenstand/treetracker-admin/compare/v2.6.1...v2.7.0) (2021-02-02)
 
 
