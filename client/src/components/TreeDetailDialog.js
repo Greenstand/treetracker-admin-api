@@ -37,9 +37,9 @@ const useStyles = makeStyles((theme) => ({
 function TreeDetailDialog(props) {
   const { open, TransitionComponent, tree } = props
 
-  const [ snackbarOpen, setSnackbarOpen ] = useState(false)
-  const [ snackbarLabel, setSnackbarLabel ] = useState('')
-  const [ renderTree, setRenderTree ] = useState(tree)
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarLabel, setSnackbarLabel] = useState('')
+  const [renderTree, setRenderTree] = useState(tree)
   const classes = useStyles();
   const textAreaRef = useRef(null);
 
@@ -64,7 +64,7 @@ function TreeDetailDialog(props) {
     props.treeDetailDispatch.reset()
     props.onClose()
   }
-  
+
   function Tags(props) {
     const { tree, species, treeTags } = props
     const allTags = [
@@ -74,7 +74,7 @@ function TreeDetailDialog(props) {
       tree.rejectionReason,
       ...treeTags.map(t => t.tagName)
     ]
-    .filter(tag => !!tag)
+      .filter(tag => !!tag)
 
     const dateCreated = new Date(Date.parse(tree.timeCreated))
     function confirmCopy(label) {
@@ -85,7 +85,7 @@ function TreeDetailDialog(props) {
 
     function handleSnackbarClose(event, reason) {
       if (reason === 'clickaway') {
-        return 
+        return
       }
       setSnackbarOpen(false)
     }
@@ -102,8 +102,8 @@ function TreeDetailDialog(props) {
             confirmCopy(label)
           }}
         >
-        <FileCopy fontSize='small'/>
-      </IconButton>
+          <FileCopy fontSize='small' />
+        </IconButton>
       )
     }
 
@@ -112,10 +112,10 @@ function TreeDetailDialog(props) {
         <Grid item>
           <Typography color='primary' variant='h6'>
             {`Tree ${tree.id}`}
-            <CopyButton label='Tree ID' value={tree.id}/>
+            <CopyButton label='Tree ID' value={tree.id} />
           </Typography>
         </Grid>
-        <Divider/>
+        <Divider />
         {[
           { label: 'Planter ID', value: tree.planterId, copy: true },
           { label: 'Planter Identifier', value: tree.planterIdentifier, copy: true },
@@ -125,6 +125,7 @@ function TreeDetailDialog(props) {
           { label: 'Status', value: tree.status },
           { label: 'Species', value: species && species.name },
           { label: 'Created', value: dateCreated.toLocaleString() },
+          { label: 'Note', value: renderTree.note },
         ].map(item =>
           <Fragment key={item.label}>
             <Grid item>
@@ -132,11 +133,11 @@ function TreeDetailDialog(props) {
               <Typography variant='body1'>
                 {item.value || '---'}
                 {item.value && item.copy &&
-                  <CopyButton label={item.label} value={item.value}/>
+                  <CopyButton label={item.label} value={item.value} />
                 }
               </Typography>
             </Grid>
-            <Divider/>
+            <Divider />
           </Fragment>
         )}
         <Grid item>
@@ -145,9 +146,9 @@ function TreeDetailDialog(props) {
           </Typography>
           {
             allTags.length === 0 ? <Typography variant='body1'>---</Typography> :
-            <div className={classes.chipRoot}>
-              {allTags.map(tag => <Chip key={tag} label={tag} className={classes.chip}/>)}
-            </div>
+              <div className={classes.chipRoot}>
+                {allTags.map(tag => <Chip key={tag} label={tag} className={classes.chip} />)}
+              </div>
           }
         </Grid>
         <Snackbar
@@ -156,7 +157,7 @@ function TreeDetailDialog(props) {
             horizontal: 'right',
           }}
           key={snackbarLabel.length ? snackbarLabel : undefined}
-          open={snackbarOpen} 
+          open={snackbarOpen}
           autoHideDuration={2000}
           onClose={handleSnackbarClose}
           message={`${snackbarLabel} copied to clipboard`}
@@ -171,7 +172,7 @@ function TreeDetailDialog(props) {
         />
       </Grid>
     )
-  } 
+  }
 
   return (
     <Dialog
@@ -183,11 +184,11 @@ function TreeDetailDialog(props) {
       <DialogContent>
         <Grid container spacing={4} wrap='nowrap'>
           <Grid item>
-            <img alt={`Tree ${renderTree}`} style={{maxWidth: '100%'}} src={renderTree.imageUrl} />
+            <img alt={`Tree ${renderTree}`} style={{ maxWidth: '100%' }} src={renderTree.imageUrl} />
           </Grid>
-          <Grid container item style={{width: '300px'}} spacing={2}>
+          <Grid container item style={{ width: '300px' }} spacing={2}>
             <Grid container direction='row' spacing={4}>
-              <Tags tree={renderTree} species={props.treeDetail.species} treeTags={props.treeDetail.tags}/>
+              <Tags tree={renderTree} species={props.treeDetail.species} treeTags={props.treeDetail.tags} />
             </Grid>
           </Grid>
         </Grid>
@@ -195,7 +196,7 @@ function TreeDetailDialog(props) {
       <DialogActions justify='center'>
         <Button onClick={handleClose} color='primary'>Close</Button>
       </DialogActions>
-      <textarea ref={textAreaRef} hidden/>
+      <textarea ref={textAreaRef} hidden />
     </Dialog>
   )
 }
