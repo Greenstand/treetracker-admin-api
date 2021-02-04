@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/Greenstand/treetracker-admin/compare/v2.8.0...v2.9.0) (2021-02-04)
+
+
+### Features
+
+* edit planter ([#495](https://github.com/Greenstand/treetracker-admin/issues/495)) ([6b03509](https://github.com/Greenstand/treetracker-admin/commit/6b03509027cd126901641d2016e6c589ab56009e))
+
 # [2.8.0](https://github.com/Greenstand/treetracker-admin/compare/v2.7.0...v2.8.0) (2021-02-03)
 
 
