@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/Greenstand/treetracker-admin/compare/v2.9.0...v2.10.0) (2021-02-04)
+
+
+### Features
+
+* filter by not tagged on /verify ([#496](https://github.com/Greenstand/treetracker-admin/issues/496)) ([2369718](https://github.com/Greenstand/treetracker-admin/commit/236971823232a40c64b2332603d1b6272c62dbe5))
+
 # [2.9.0](https://github.com/Greenstand/treetracker-admin/compare/v2.8.0...v2.9.0) (2021-02-04)
 
 
