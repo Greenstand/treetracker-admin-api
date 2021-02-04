@@ -175,7 +175,7 @@ export default {
   /*
    * create new species
    */
-  createSpecies(name) {
+  createSpecies(payload) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/species`
     return fetch(query, {
       method: 'POST',
@@ -184,8 +184,8 @@ export default {
         Authorization: session.token,
       },
       body: JSON.stringify({
-        name: name,
-        desc: name,
+        name: payload.name,
+        desc: payload.desc,
         active: 0,
         valueFactor: 0,
       }),
