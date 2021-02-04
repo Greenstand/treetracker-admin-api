@@ -6,6 +6,7 @@ export const ALL_SPECIES = 'ALL_SPECIES'
 export const SPECIES_NOT_SET = 'SPECIES_NOT_SET'
 export const ALL_ORGANIZATIONS = 'ALL_ORGANIZATIONS'
 export const ORGANIZATION_NOT_SET = 'ORGANIZATION_NOT_SET'
+export const TAG_NOT_SET = 'TAG_NOT_SET'
 
 export default class Filter {
   treeId
@@ -76,8 +77,10 @@ export default class Filter {
     } else if (this.speciesId !== ALL_SPECIES) {
       where.speciesId = this.speciesId
     }
- 
-    if (this.tagId) {
+
+    if (this.tagId === TAG_NOT_SET) {
+      where.tagId = null
+    } else if (this.tagId) {
       where.tagId = this.tagId
     }
 
