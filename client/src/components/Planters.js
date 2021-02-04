@@ -260,7 +260,7 @@ const Planters = (props) => {
           </Grid>
         </Grid>
       </Grid>
-      <PlanterDetail open={isDetailShown} planter={planterDetail} onClose={() => setDetailShown(false)} />
+      <PlanterDetail open={isDetailShown} planterId={planterDetail.id} onClose={() => setDetailShown(false)} />
     </React.Fragment>
   )
 }

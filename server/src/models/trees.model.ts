@@ -335,6 +335,16 @@ export class Trees extends Entity {
   })
   plantingOrganizationId?: Number;
 
+  @property({
+    type: Number,
+    required: false,
+    postgresql: {
+      columnName: 'planter_photo_url',
+      dataType: 'character varying',
+    },
+  })
+  planterPhotoUrl?: Number;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

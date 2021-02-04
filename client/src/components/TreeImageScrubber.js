@@ -279,23 +279,16 @@ const TreeImageScrubber = (props) => {
   async function handlePlanterDetail(e, tree) {
     e.preventDefault();
     e.stopPropagation();
-    let planter = props.plantersState.planters.find(x => x.id === tree.planterId);
-    if (!planter) {
-      planter = await props.plantersDispatch.getPlanter({ id: tree.planterId });
-    }
-    if (!planter) {
-      window.alert(`Planter not found id:${tree.planterId}`)
-    }
     setPlanterDetail({
       isOpen: true,
-      planter: planter,
+      planterId: tree.planterId,
     });
   }
 
   function handlePlanterDetailClose() {
     setPlanterDetail({
       isOpen: false,
-      planter: {},
+      planterId: null,
     })
   }
 
@@ -552,7 +545,7 @@ const TreeImageScrubber = (props) => {
         )}
       <PlanterDetail
         open={planterDetail.isOpen}
-        planter={planterDetail.planter}
+        planterId={planterDetail.planterId}
         onClose={() => handlePlanterDetailClose()}
       />
       <TreeDetailDialog
