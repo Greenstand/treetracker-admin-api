@@ -142,10 +142,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install kustomize
       run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-    - name: Copy kustomize.yml
-      run: cp server/deployment/kustomize/kustomization.yaml server/deployment/kustomization.yaml
     - name: Run kustomize
-      run: (cd server/deployment && ../../kustomize edit set image greenstand/treetracker-admin-api:${{ needs.release.outputs.bumped_version }} )
+      run: (cd server/deployment/base && ../../../kustomize edit set image greenstand/treetracker-admin-api:${{ needs.release.outputs.bumped_version }} )
     - name: Install doctl for kubernetes
       uses: digitalocean/action-doctl@v2
       with:
@@ -153,4 +151,4 @@ jobs:
     - name: Save DigitalOcean kubeconfig
       run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
     - name: Update kubernetes resources
-      run: kubectl -n development apply --wait -k server/deployment/
+      run: kustomize build server/deployment/overlays/development | kubectl apply -n development apply --wait -f -

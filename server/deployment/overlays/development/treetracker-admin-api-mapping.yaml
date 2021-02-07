@@ -1,0 +1,8 @@
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: treetracker-admin-api
+spec:
+  cors:
+    origins: "*"
+    methods: GET
