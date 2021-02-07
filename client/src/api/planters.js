@@ -73,4 +73,46 @@ export default {
       .then(handleResponse)
       .catch(handleError)
   },
+
+  getPlanterSelfies(planterId) {
+    const filter = {
+      order: 'timeUpdated DESC',
+      limit: 100,
+      fields: ['planterPhotoUrl'],
+      where: { planterId, planterPhotoUrl: { neq: null } }
+    }
+
+    const treeQuery = 
+      `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/?filter=${JSON.stringify(filter)}`
+
+     return fetch(treeQuery, {
+       method: 'GET',
+       headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+    })
+      .then(handleResponse)
+      .then((items) => {
+        // Remove duplicates
+        return [...new Set(items.map(tree => tree.planterPhotoUrl))]
+      })
+      .catch(handleError)
+  },
+
+  updatePlanter(planterUpdate) {
+    const { id } = planterUpdate;
+    const planterQuery = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}planter/${id}`;
+
+    return fetch(planterQuery, {
+      method: "PATCH",
+      headers: { 
+        "content-type": "application/json" ,
+        Authorization: session.token ,
+      },
+      body: JSON.stringify(planterUpdate),
+    })
+      .then(handleResponse)
+      .catch(handleError);
+  },
 };

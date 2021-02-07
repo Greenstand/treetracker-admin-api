@@ -16,26 +16,26 @@ import {
   // del,
   requestBody,
 } from '@loopback/rest';
-import {ParameterizedSQL} from 'loopback-connector';
-import {Trees} from '../models';
-import {TreesRepository} from '../repositories';
+import { ParameterizedSQL } from 'loopback-connector';
+import { Trees } from '../models';
+import { TreesRepository } from '../repositories';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
-type TreesWhere = Where<Trees> & {tagId?: string, organizationId?: number};
-type TreesFilter = Filter<Trees> & {where: TreesWhere};
+type TreesWhere = Where<Trees> & { tagId?: string, organizationId?: number };
+type TreesFilter = Filter<Trees> & { where: TreesWhere };
 
 export class TreesController {
   constructor(
     @repository(TreesRepository)
     public treesRepository: TreesRepository,
-  ) {}
+  ) { }
 
   @get('/trees/count', {
     responses: {
       '200': {
         description: 'Trees model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -56,10 +56,11 @@ export class TreesController {
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack count()
     if (where && where.tagId !== undefined) {
       try {
+        const isTagNull = where.tagId === null
         const query = this.buildFilterQuery(
           `SELECT COUNT(*) FROM trees`,
-          `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
-          `WHERE tree_tag.tag_id=${where.tagId} `,
+          `${isTagNull ? 'LEFT JOIN' : 'JOIN'} tree_tag ON trees.id=tree_tag.tree_id`,
+          `WHERE tree_tag.tag_id ${isTagNull ? 'IS NULL' : `=${where.tagId}`}`,
           where,
         );
 
@@ -67,7 +68,7 @@ export class TreesController {
           await this.treesRepository
             .execute(query.sql, query.params)
             .then((res) => {
-              return (res && res[0]) || {count: 0};
+              return (res && res[0]) || { count: 0 };
             })
         );
       } catch (e) {
@@ -85,7 +86,7 @@ export class TreesController {
         description: 'Array of Trees model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Trees}},
+            schema: { type: 'array', items: { 'x-ts-type': Trees } },
           },
         },
       },
@@ -117,13 +118,19 @@ export class TreesController {
           // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
           const columnNames = connector
             .buildColumnNames('Trees', filter)
-            .replace('"id"', '"tree_id" as "id"');
+            .replace('"id"', 'trees.id as "id"')
+
+          const isTagNull = filter.where.tagId === null
           const query = this.buildFilterQuery(
             `SELECT ${columnNames} from trees`,
-            `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`,
-            `WHERE tree_tag.tag_id=${filter.where.tagId} `,
+            `${isTagNull ?
+              'LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id ORDER BY "time_created" DESC'
+              :
+              'JOIN tree_tag ON trees.id=tree_tag.tree_id'}`,
+            `WHERE tree_tag.tag_id ${isTagNull ? 'IS NULL' : `=${filter.where.tagId}`}`,
             filter.where,
           );
+
           return <Promise<Trees[]>>(
             await this.treesRepository
               .execute(query.sql, query.params)
@@ -147,13 +154,13 @@ export class TreesController {
     responses: {
       '200': {
         description: 'Trees model instance',
-        content: {'application/json': {schema: {'x-ts-type': Trees}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Trees } } },
       },
     },
   })
   async findById(@param.path.number('id') id: number): Promise<Trees> {
     return await this.treesRepository.findById(id, {
-      include: [{relation: 'treeTags'}],
+      include: [{ relation: 'treeTags' }],
     });
   }
 
@@ -165,7 +172,7 @@ export class TreesController {
         description: 'Find trees near a lat/lon with a radius in meters',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Trees}},
+            schema: { type: 'array', items: { 'x-ts-type': Trees } },
           },
         },
       },
@@ -178,7 +185,7 @@ export class TreesController {
       name: 'radius',
       in: 'query',
       required: false,
-      schema: {type: 'number'},
+      schema: { type: 'number' },
       description: 'measured in meters (default: 100 meters)',
     })
     radius: number,
@@ -186,14 +193,13 @@ export class TreesController {
       name: 'limit',
       in: 'query',
       required: false,
-      schema: {type: 'number'},
+      schema: { type: 'number' },
       description: 'default is 100',
     })
     limit: number,
   ): Promise<Trees[]> {
-    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${
-      radius ? radius : 100
-    }, false) LIMIT ${limit ? limit : 100}`;
+    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius ? radius : 100
+      }, false) LIMIT ${limit ? limit : 100}`;
     console.log(`near query: ${query}`);
     return <Promise<Trees[]>>await this.treesRepository.execute(query, []);
   }
@@ -245,9 +251,8 @@ export class TreesController {
           const whereObjClause = connector._buildWhere('Trees', safeWhere);
 
           if (whereObjClause && whereObjClause.sql) {
-            query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${
-              whereObjClause.sql
-            }`;
+            query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql
+              }`;
             query.params = whereObjClause.params;
           }
 

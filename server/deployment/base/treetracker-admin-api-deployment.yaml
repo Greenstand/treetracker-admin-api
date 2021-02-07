@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: treetracker-admin-api
-        image: greenstand/treetracker-admin-api:1.0.0-latest
+        image: greenstand/treetracker-admin-api:VERSION
         ports:
         - containerPort: 80
         env:

@@ -1,3 +1,24 @@
+# [2.10.0](https://github.com/Greenstand/treetracker-admin/compare/v2.9.0...v2.10.0) (2021-02-04)
+
+
+### Features
+
+* filter by not tagged on /verify ([#496](https://github.com/Greenstand/treetracker-admin/issues/496)) ([2369718](https://github.com/Greenstand/treetracker-admin/commit/236971823232a40c64b2332603d1b6272c62dbe5))
+
+# [2.9.0](https://github.com/Greenstand/treetracker-admin/compare/v2.8.0...v2.9.0) (2021-02-04)
+
+
+### Features
+
+* edit planter ([#495](https://github.com/Greenstand/treetracker-admin/issues/495)) ([6b03509](https://github.com/Greenstand/treetracker-admin/commit/6b03509027cd126901641d2016e6c589ab56009e))
+
+# [2.8.0](https://github.com/Greenstand/treetracker-admin/compare/v2.7.0...v2.8.0) (2021-02-03)
+
+
+### Features
+
+* add note to tree dialog on /verify ([#494](https://github.com/Greenstand/treetracker-admin/issues/494)) ([b13d4f3](https://github.com/Greenstand/treetracker-admin/commit/b13d4f3b162435bc14462f7ee6392926bec4e05b))
+
 # [2.7.0](https://github.com/Greenstand/treetracker-admin/compare/v2.6.1...v2.7.0) (2021-02-02)
 
 

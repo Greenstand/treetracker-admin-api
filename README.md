@@ -38,13 +38,13 @@ git clone https://github.com/<username>/treetracker-admin.git
 
 Add Greenstand as a remote:
 ```
-git add remote upstream https://github.com/Greenstand/treetracker-admin
+git remote add upstream https://github.com/Greenstand/treetracker-admin
 ```
 
 ### Step 4: Get configuration files
-1. Get the server dev env file pinned to the admin_panel_chat channel in Greenstand Slack: `.env.development`
+1. Get the server dev env file pinned to the #admin_panel_chat channel in Greenstand Slack: `.env.development` (Note that the leading `.` may be removed if you download the file from Slack, so you'll need to rename it)
 1. Copy the file to the `./server` directory within your local repo
-1. Add a `.env.development.local` file in the `./client` directory containing the following line:
+1. Add a `.env.local` file in the `./client` directory containing the following line:
 ```
 REACT_APP_API_ROOT=http://localhost:3000
 ```

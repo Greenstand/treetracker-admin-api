@@ -27,7 +27,7 @@ export class Planter extends Entity {
 
   @property({
     type: String,
-    required: true,
+    required: false,
     length: 30,
     postgresql: {
       columnName: 'first_name',
@@ -42,7 +42,7 @@ export class Planter extends Entity {
 
   @property({
     type: String,
-    required: true,
+    required: false,
     length: 30,
     postgresql: {
       columnName: 'last_name',
