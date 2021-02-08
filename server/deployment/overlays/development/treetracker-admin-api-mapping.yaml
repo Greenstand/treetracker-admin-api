@@ -6,4 +6,6 @@ spec:
   cors:
     origins: "*"
     methods: GET, POST, OPTIONS
-    headers: Content-Type
+    headers: 
+    - Content-Type
+    - Authorization
