@@ -74,6 +74,7 @@ export default {
       headers: {
         'content-type': 'application/json',
         Authorization: session.token,
+        user: JSON.stringify(session.user)
       },
       body: JSON.stringify({
         id: id,
@@ -97,6 +98,7 @@ export default {
       headers: {
         'content-type': 'application/json',
         Authorization: session.token,
+        user: JSON.stringify(session.user)
       },
       body: JSON.stringify({
         id: id,

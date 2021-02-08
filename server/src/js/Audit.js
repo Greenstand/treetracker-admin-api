@@ -26,6 +26,7 @@ export const auditMiddleware = (request, response, next) => {
         //console.log('req.header:', request.headers);
         //just audit when success
         //assert(response.statusCode);
+        console.log(request.url)
         if (/2\d\d/.test(response.statusCode)) {
           const audit = new Audit();
           await audit.did(request, response);
