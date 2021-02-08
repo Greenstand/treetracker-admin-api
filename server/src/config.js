@@ -9,6 +9,7 @@ dotenv.config({path: path.resolve(__dirname, `../.env.${process.env.NODE_ENV}`)}
 
 const config = {
   jwtSecret: process.env.JWT_SECRET,
+  enableVerificationPublishing: true
 };
 
-module.exports = config;
+export default config;

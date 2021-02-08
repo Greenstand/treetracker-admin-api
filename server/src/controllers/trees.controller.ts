@@ -19,6 +19,8 @@ import {
 import { ParameterizedSQL } from 'loopback-connector';
 import { Trees } from '../models';
 import { TreesRepository } from '../repositories';
+import { publishMessage } from '../messaging/RabbitMQMessaging.js';
+import config from '../config';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
@@ -215,6 +217,18 @@ export class TreesController {
     @param.path.number('id') id: number,
     @requestBody() trees: Trees,
   ): Promise<void> {
+    if(config.enableVerificationPublishing) {
+      const storedTree = await this.treesRepository.findById(id);
+      // Raise an event to indicate verification is processed
+      if(storedTree.approved != trees.approved) {
+        publishMessage({
+          id: storedTree.uuid,
+          type: "VerifyCaptureProcessed",
+          verified: trees.approved,
+          created_at: new Date().toISOString()
+        })
+      }
+    }
     await this.treesRepository.updateById(id, trees);
   }
 
