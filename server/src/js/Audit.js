@@ -26,7 +26,6 @@ export const auditMiddleware = (request, response, next) => {
         //console.log('req.header:', request.headers);
         //just audit when success
         //assert(response.statusCode);
-        console.log(request.url)
         if (/2\d\d/.test(response.statusCode)) {
           const audit = new Audit();
           await audit.did(request, response);
@@ -91,7 +90,7 @@ class Audit {
       //assert(res.myData);
       //assert(!isNaN(res.myData.user.id), res.myData.user.id);
       operator = res.myData.user.id;
-    } else if (/.*\/api\/trees\/\d+/.test(url)) {
+    } else if (/(?:.*\/api\/trees\/\d+|.*\/api\/organization\/\d+\/trees\/\d+)/.test(url)) {
       console.info('tree event');
       //assert(req.method, req.method);
       //assert(req.user);
