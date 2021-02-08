@@ -95,7 +95,8 @@ class Audit {
       //assert(req.method, req.method);
       //assert(req.user);
       //assert(req.user.id);
-      operator = req.user.id;
+      operator = JSON.parse(req.headers.user)
+      operator = operator.id;
       if (req.method.match(/patch/i)) {
         console.info('verify event');
         //assert(req.body.id, req.body.id);
@@ -116,7 +117,6 @@ class Audit {
       operation,
     )}')`;
     //console.debug('audit sql:', sql);
-
     await this.pool.query(sql);
   }
 }

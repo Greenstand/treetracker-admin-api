@@ -30,7 +30,14 @@ function hasPermission(user, p){
 /*
  * to save the token
  */
-const session = {
+const session = () => {
+  let token = localStorage.getItem('token') || ''
+  let user = localStorage.getItem('user') || ''
+
+  return {
+    token,
+    user
+  }
 }
 
 export {PERMISSIONS, POLICIES, hasPermission, session};

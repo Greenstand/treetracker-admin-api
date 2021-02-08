@@ -31,10 +31,11 @@ describe('Audit', () => {
     });
     app.use('/api/admin/api/admin/api/trees/20866', async (req, res, next) => {
       //mock to inject user in middleware
-      req.user = {
+      const user = {
         id: 555,
-        email: '555@qq.com',
-      };
+        name: 'admin'
+      }
+      req.headers.user = JSON.stringify(user)
       console.log('verify success');
       res.status(201).send({});
     });

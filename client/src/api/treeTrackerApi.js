@@ -45,12 +45,12 @@ export default {
   approveTreeImage(id, morphology, age, captureApprovalTag, speciesId) {
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees/${id}`
     console.log(query)
-
     return fetch(query, {
       method: 'PATCH',
       headers: {
         'content-type': 'application/json',
         Authorization: session.token,
+        user: JSON.stringify(session.user)
       },
       body: JSON.stringify({
         id: id,

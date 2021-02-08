@@ -29,7 +29,7 @@ See https://git-scm.com/downloads for instructions.
 ### Step 2: Install Node.js
 
 _Node.js version 12.x works best for now; later versions have exhibited some strange behaviour with this project.
-If you encounter issues with the server, check your version of Node.js first._
+If you encounter issues with the server, check your version of Node.js first. This includes CORS related issues when fetching the API._
 
 We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances.  More details here: https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/
 1. Install nvm: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.2/install.sh | bash

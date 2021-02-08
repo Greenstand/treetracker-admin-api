@@ -178,7 +178,7 @@ router.post('/login', async function login(req, res, next) {
         policy,
       } = userLogin;
       console.log('login success');
-      res.json({
+      return res.json({
         token,
         user: {id, userName, firstName, lastName, email, role, policy},
       });
