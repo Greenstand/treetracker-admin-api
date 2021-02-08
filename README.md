@@ -8,6 +8,20 @@ Please add any missing content to this readme.
 
 ## Development Environment Quick Start
 
+We support both front end and backend development in this repository currently.  Depending on which part of the admin panel you are contributing too, you have different options for setting up development.  
+
+There are three options for setting up your development environment:
+1. For frontend work only
+   1. Use REACT_APP_API_ROOT=https://dev-k8s.treetracker.org/api/admin/
+   1. Skip installing and running the API locally
+2. For backend work only
+   1. Skip installing and running the frontend locally
+   1. Use our development database credentials (available via team leads in slack)
+3. As a completely local development environment
+   1. Install postgres and postgis locally, install a database seed, and run database migrations
+   1. Install and run the backend API, configured to use your local database
+   1. Install and run the frontend, configured to user you local backend API
+
 ### Step 1: Install git
 
 See https://git-scm.com/downloads for instructions.
