@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/Greenstand/treetracker-admin/compare/v2.10.0...v2.11.0) (2021-02-08)
+
+
+### Features
+
+* add species on /species ([#497](https://github.com/Greenstand/treetracker-admin/issues/497)) ([bbb20a0](https://github.com/Greenstand/treetracker-admin/commit/bbb20a06aafa6f49ce6799d5e45e7a7f9108c1e2))
+
 # [2.10.0](https://github.com/Greenstand/treetracker-admin/compare/v2.9.0...v2.10.0) (2021-02-04)
 
 
