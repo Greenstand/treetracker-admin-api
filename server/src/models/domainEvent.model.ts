@@ -9,16 +9,17 @@ export class DomainEvent extends Entity {
   @property({
     type: String,
     required: true,
+    id: true,
     postgresql: {
       columnName: 'id',
       dataType: 'uuid',
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: String;
 
   @property({
-      type: String,
+      type: 'object',
       required: true,
       postgresql: {
           columnName: 'payload',
@@ -26,7 +27,7 @@ export class DomainEvent extends Entity {
           nullable: 'NO',
       },
   })
-  payload: String;
+  payload: object;
 
   @property({
     type: String,
@@ -59,7 +60,12 @@ export class DomainEvent extends Entity {
            nullable: 'NO',
         },
     })
-    updated_at: String;
+    updatedAt: String;
     
 }
 
+export interface DomainEventRelations {
+    // describe navigational properties here
+}
+
+export type DomainEventWithRelations = DomainEvent & DomainEventRelations;

@@ -12,4 +12,4 @@ const config = {
   enableVerificationPublishing: true
 };
 
-export default config;
+export { config };
