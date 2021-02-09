@@ -61,7 +61,6 @@ export class DomainEvent extends Entity {
         },
     })
     updatedAt: String;
-    
 }
 
 export interface DomainEventRelations {

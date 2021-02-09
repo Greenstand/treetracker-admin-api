@@ -1,6 +1,7 @@
 import {
   Count,
   CountSchema,
+  DefaultTransactionalRepository,
   Filter,
   repository,
   Where,
@@ -23,8 +24,7 @@ import { publishMessage } from '../messaging/RabbitMQMessaging.js';
 import { config } from '../config.js';
 import { domain } from 'process';
 import { v4 as uuid } from 'uuid';
-
-const Transaction = require('loopback-datasource-juggler');
+import { Transaction } from 'loopback-connector';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
@@ -223,15 +223,14 @@ export class TreesController {
     @param.path.number('id') id: number,
     @requestBody() trees: Trees,
   ): Promise<void> {
-    const tx = await this.treesRepository.dataSource.beginTransaction({ 
-      isolationLevel: Transaction.READ_COMMITTED
-    });
+    const tx = await this.treesRepository.dataSource.beginTransaction(
+      { isolationLevel: Transaction.READ_COMMITTED }
+    );
     try{
       let verifyCaptureProcessed;
       let domainEvent;
       if(config.enableVerificationPublishing) {
         const storedTree = await this.treesRepository.findById(id);
-        console.log(storedTree.id);
         // Raise an event to indicate verification is processed
         if(storedTree.approved != trees.approved) {
           verifyCaptureProcessed = {
@@ -257,7 +256,7 @@ export class TreesController {
       if(verifyCaptureProcessed) {
         await publishMessage(verifyCaptureProcessed, () => {
           this.domainEventRepository.updateById(
-              domainEvent.id, { status: 'sent', updatedAt: new Date().toISOString()}); 
+              domainEvent.id, { status: 'sent', updatedAt: new Date().toISOString()});
         });
       }
     } catch(e) {
