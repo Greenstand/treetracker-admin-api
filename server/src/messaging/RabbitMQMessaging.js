@@ -1,15 +1,19 @@
-const Broker = require('rascal').BrokerAsPromised
-const config = require('./config').config
+import { BrokerAsPromised as Broker } from 'rascal';
+import { config } from './config';
 
-const publishMessage = (async (payload) => {
-     const broker = await Broker.create(config);
-     broker.publish('admin-verification', payload, function(err, publication) {
-         if (err) throw err;
-         publication.on('error', (err, messageId)=> {
-             console.error("Error with id ${messageId} ${err.message}");
-             throw err;
-         });
-     });
-})
+const publishMessage = (async (payload, resultHandler) => {
+    const broker = await Broker.create(config);
+    try {
+        const publication = await broker.publish("admin-verification", payload);
+        publication.on("success", (messageId)=> {
+            resultHandler();
+        }).on("error", (err, messageId)=> {
+            console.error(`Error with id ${messageId} ${err.message}`);
+            throw err;
+        });
+    } catch(err) {
+        console.error(`Error publishing message ${err}`);
+    }
+});
 
-module.exports = { publishMessage };
+export { publishMessage };

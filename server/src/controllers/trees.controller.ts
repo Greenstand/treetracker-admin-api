@@ -1,7 +1,6 @@
 import {
   Count,
   CountSchema,
-  DefaultTransactionalRepository,
   Filter,
   repository,
   Where,
@@ -18,7 +17,7 @@ import {
   requestBody,
 } from '@loopback/rest';
 import { ParameterizedSQL } from 'loopback-connector';
-import { DomainEvent, Trees } from '../models';
+import { Trees } from '../models';
 import { TreesRepository, DomainEventRepository } from '../repositories';
 import { publishMessage } from '../messaging/RabbitMQMessaging.js';
 import { config } from '../config.js';
@@ -256,15 +255,15 @@ export class TreesController {
       await this.treesRepository.updateById(id, trees, { transaction: tx });
       await tx.commit();
       if(verifyCaptureProcessed) {
-        publishMessage(verifyCaptureProcessed);
-        await this.domainEventRepository.updateById(
-          domainEvent.id, { status: 'sent', updatedAt: new Date().toISOString()});
+        await publishMessage(verifyCaptureProcessed, () => {
+          this.domainEventRepository.updateById(
+              domainEvent.id, { status: 'sent', updatedAt: new Date().toISOString()}); 
+        });
       }
     } catch(e) {
       await tx.rollback();
       throw e;
     }
-    
   }
 
   private getConnector() {
