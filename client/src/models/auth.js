@@ -32,11 +32,9 @@ function hasPermission(user, p){
  */
 const session = () => {
   let token = localStorage.getItem('token') || ''
-  let user = localStorage.getItem('user') || ''
 
   return {
-    token,
-    user
+    token
   }
 }
 

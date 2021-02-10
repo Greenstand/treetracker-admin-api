@@ -7,7 +7,10 @@ import {Pool} from 'pg';
 // import log from 'loglevel';
 // import {strict as assert} from 'assert';
 import getDatasource from '../datasources/config';
+import jwt from 'jsonwebtoken';
+import config from '../config';
 
+const jwtSecret = config.jwtSecret;
 const operations = {
   login: {
     type: 'login',
@@ -26,7 +29,12 @@ export const auditMiddleware = (request, response, next) => {
         //console.log('req.header:', request.headers);
         //just audit when success
         //assert(response.statusCode);
-        console.log(request.url)
+        const token = request.headers.authorization || '';
+        if (token) {
+          const user = jwt.verify(token, jwtSecret);
+          request.user = user
+        }
+
         if (/2\d\d/.test(response.statusCode)) {
           const audit = new Audit();
           await audit.did(request, response);
@@ -90,14 +98,13 @@ class Audit {
       operation = operations.login;
       //assert(res.myData);
       //assert(!isNaN(res.myData.user.id), res.myData.user.id);
-      operator = res.myData.user.id;
-    } else if (/.*\/api\/trees\/\d+/.test(url)) {
+      operator = res.myData.user.id; // change to operator = req.user.id
+    } else if (/(?:.*\/api\/trees\/\d+|.*\/api\/organization\/\d+\/trees\/\d+)/.test(url)) {
       console.info('tree event');
       //assert(req.method, req.method);
       //assert(req.user);
       //assert(req.user.id);
-      operator = JSON.parse(req.headers.user)
-      operator = operator.id;
+      operator = req.user.id
       if (req.method.match(/patch/i)) {
         console.info('verify event');
         //assert(req.body.id, req.body.id);
