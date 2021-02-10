@@ -1,7 +1,6 @@
 import {
   Count,
   CountSchema,
-  DefaultTransactionalRepository,
   Filter,
   repository,
   Where,
@@ -22,7 +21,6 @@ import { Trees } from '../models';
 import { TreesRepository, DomainEventRepository } from '../repositories';
 import { publishMessage } from '../messaging/RabbitMQMessaging.js';
 import { config } from '../config.js';
-import { domain } from 'process';
 import { v4 as uuid } from 'uuid';
 import { Transaction } from 'loopback-connector';
 
@@ -232,12 +230,15 @@ export class TreesController {
       if(config.enableVerificationPublishing) {
         const storedTree = await this.treesRepository.findById(id);
         // Raise an event to indicate verification is processed
-        if(storedTree.approved != trees.approved) {
+        // on both rejection and approval
+        if((!trees.approved && !trees.active && storedTree.active) ||
+            storedTree.approved != trees.approved) {
           verifyCaptureProcessed = {
             id: storedTree.uuid,
             reference_id: storedTree.id,
             type: "VerifyCaptureProcessed",
-            verified: trees.approved,
+            approved: trees.approved,
+            rejectionReason: trees.rejectionReason,
             created_at: new Date().toISOString()
           };
           domainEvent = {

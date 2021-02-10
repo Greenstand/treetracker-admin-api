@@ -5,9 +5,9 @@ const publishMessage = (async (payload, resultHandler) => {
     const broker = await Broker.create(config);
     try {
         const publication = await broker.publish("admin-verification", payload);
-        publication.on("success", (messageId)=> {
-            resultHandler();
-        }).on("error", (err, messageId)=> {
+        publication
+        .on("success", resultHandler)
+        .on("error", (err, messageId)=> {
             console.error(`Error with id ${messageId} ${err.message}`);
             throw err;
         });
