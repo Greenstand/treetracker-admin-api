@@ -1,3 +1,10 @@
+## [2.11.1](https://github.com/Greenstand/treetracker-admin/compare/v2.11.0...v2.11.1) (2021-02-10)
+
+
+### Bug Fixes
+
+* point dev client at deployed dev API by default ([#505](https://github.com/Greenstand/treetracker-admin/issues/505)) ([97968a8](https://github.com/Greenstand/treetracker-admin/commit/97968a8a8fff2cca3ad92cfd3317c6ab191fa7fb))
+
 # [2.11.0](https://github.com/Greenstand/treetracker-admin/compare/v2.10.0...v2.11.0) (2021-02-08)
 
 
