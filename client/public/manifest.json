@@ -1,6 +1,6 @@
 {
-  "short_name": "Tree Tracker Admin",
-  "name": "Greenstand Tree Tracker Admin Panel",
+  "short_name": "Treetracker Admin",
+  "name": "Greenstand Treetracker Admin Panel",
   "icons": [
     {
       "src": "favicon.ico",

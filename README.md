@@ -12,7 +12,6 @@ We support both front end and backend development in this repository currently. 
 
 There are three options for setting up your development environment:
 1. For frontend work only
-   1. Use REACT_APP_API_ROOT=https://dev-k8s.treetracker.org/api/admin/
    1. Skip installing and running the API locally
 2. For backend work only
    1. Skip installing and running the frontend locally
@@ -56,6 +55,9 @@ git remote add upstream https://github.com/Greenstand/treetracker-admin
 ```
 
 ### Step 4: Get configuration files
+
+_Only required for backend/API development_
+
 1. Get the server dev env file pinned to the #admin_panel_chat channel in Greenstand Slack: `.env.development` (Note that the leading `.` may be removed if you download the file from Slack, so you'll need to rename it)
 1. Copy the file to the `./server` directory within your local repo
 1. Add a `.env.local` file in the `./client` directory containing the following line:
