@@ -56,7 +56,7 @@ export class ExpressServer {
     const port = this.lbApp.restServer.config.port || 3000;
     //    const host = this.lbApp.restServer.config.host || '0.0.0.0';
     const host = '0.0.0.0';
-    console.log(`listerning at: ${host}:${port}`);
+    console.log(`Listening at: ${host}:${port}`);
     this.server = this.app.listen(port, host);
     //await once(this.server, 'listening');
   }
