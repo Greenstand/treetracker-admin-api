@@ -248,7 +248,7 @@ export class TreesController {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           };
-          const result = await this.domainEventRepository.create(
+          await this.domainEventRepository.create(
             domainEvent, { transaction: tx });
         }
       }
