@@ -10,7 +10,7 @@ const useStyles = makeStyles({
     }
 });
   
-//   export default function BasicPagination({handleChange, currentPage, noOfPages}) {
+
     export default function BasicPagination(props) {
     const classes = useStyles();
 
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
         onChange={handleChange}
         defaultPage={1}
         color="#666"
-        size="medium"
+        size="small"
         siblingCount={0}
         />
         

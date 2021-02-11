@@ -19,6 +19,7 @@ import IconCompareArrows from '@material-ui/icons/CompareArrows'
 import IconPermIdentity from '@material-ui/icons/PermIdentity'
 import CategoryIcon from '@material-ui/icons/Category'
 import HomeIcon from '@material-ui/icons/Home'
+import CompareIcon from '@material-ui/icons/Compare';
 
 import { session, hasPermission, POLICIES } from '../models/auth'
 import axios from 'axios'
@@ -119,8 +120,10 @@ function getRoutes(user) {
 
     {
       name: 'Capture Matching',
+      linkTo: '/captures',
       component: CaptureMachingFrame,
-      linkTo: '/capture',
+      icon: CompareIcon,
+
       disabled: false,
     }
   ].filter(({disabled}) => !disabled)

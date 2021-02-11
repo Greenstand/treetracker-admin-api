@@ -1,24 +1,19 @@
 import React,{useState, useEffect} from 'react'
-import Data from './ImageData.json';
-import axios from 'axios';
-// import Pagination from './Pagination'
+
+import CaptureHeader from './CaptureHeader'
+import Grower from './Grower'
 
 import { Typography, Box, Button, Grid} from '@material-ui/core';
-import ZoomOutMapOutlinedIcon from '@material-ui/icons/ZoomOutMapOutlined';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import {makeStyles} from '@material-ui/core/styles'
-import { sizing } from '@material-ui/system';
-
-
-import Grower from './Grower'
 
 
 
 const useStyles = makeStyles({
     containerBox: {
-        margin: '20px 20px 10px 40px',
+        margin: '20px 20px 0 40px',
         paddingTop: '30px',
        background: '#fff',
        borderRadius: '4px'
@@ -30,32 +25,14 @@ const useStyles = makeStyles({
         flexDirection: 'spaceBetween'
     },
 
-    // imgBox: {
-    //     paddingBottom: '20px'
-    // },
-
     imgContainer: {
         width: '100%',
-        height: '77vh',
         objectFit: 'cover',
         marginTop: '20px',
-        // paddingBottom: '10px',
 
-        // backgroundSize: 'cover'
     }
 })
 
-
-
-
-
-
-// const treeList = Data.catptureImages
-
-
-const handleSkip = (id) => {
-  console.log(id)
-}
 
 // Get current Date
     let showdate = new Date();
@@ -66,26 +43,37 @@ const handleSkip = (id) => {
     let time = showTime.getHours() + ':' + showTime.getMinutes() + ':' + showTime.getSeconds();
 
 
-
 function CaptureImage(props) {
 
     const {
-        imageData, 
-        loading, 
+        imageData,
+        loading,
         currentPage,
         noOfPages,
         handleChange,
-        captureApiFetch, 
-        imgPerPage, 
-        skipCapture
+        captureApiFetch,
+        imgPerPage,
+        imgCount,
+        handleSkip,
+
     } = props
 
      const classes = useStyles()
 
-    return (
 
+
+    return (
+        <>
+         <CaptureHeader
+            currentPage = {currentPage}
+            handleChange = {handleChange}
+            imgCount = {imgCount}
+            handleSkip = {handleSkip}
+            noOfPages = {noOfPages}
+            imageData = {imageData}
+         />
         <div className={classes.containerBox}>
-    
+
             <Box className={classes.headerBox}>
 
                     <Grid
@@ -95,7 +83,7 @@ function CaptureImage(props) {
                     // alignItems="baseline"
                     >
                      <Box style={{marginTop: '15px' }}>
-                        <Typography variant='h5'>Catures 1234</Typography>
+                        <Typography variant='h5'>{`Captures ${imgCount}`}</Typography>
                         <Box>
                             <AccessTimeIcon/>
                             <Typography variant='p'>{date + ', ' + time}</Typography>
@@ -110,16 +98,16 @@ function CaptureImage(props) {
 
                     <Grower/>
 
-                    <Button 
-                    variant='outlined' 
-                    color='primary' 
+                    <Button
+                    variant='outlined'
+                    color='primary'
                     style={{
-                    height: '50px', 
-                    width: '100px', 
-                    marginTop: '10px' 
-                    }}  
-                    onClick={skipCapture}>Skip<SkipNextIcon/></Button>
-                    
+                    height: '50px',
+                    width: '100px',
+                    marginTop: '10px'
+                    }}
+                    onClick={handleSkip}>Skip<SkipNextIcon/></Button>
+
                 </Grid>
 
 
@@ -130,14 +118,16 @@ function CaptureImage(props) {
                     {imageData
                     .slice((currentPage - 1) * imgPerPage, currentPage * imgPerPage)
                     .map( img => {
+                        {console.log(img)}
                     return (
-                        <img isEqual={props.isEqual} key={img.id} className={classes.imgContainer} src={img.url}/>
+
+                        <img  key={img.id} className={classes.imgContainer} src={img.url}/>
                     )
                 })}
-                   
+
              </Box>
         </div>
-    
+    </>
     )
 }
 
