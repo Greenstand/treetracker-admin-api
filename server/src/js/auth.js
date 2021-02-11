@@ -442,7 +442,8 @@ const isAuth = async (req, res, next) => {
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
       const result = await helper.getActiveAdminUser(userSession.userName);
-      if (result.rows.length >= 1) {
+
+      if (result.rows.length) {
         const update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
         if (update_userSession.passwordHash === userSession.passwordHash) {
