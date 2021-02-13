@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import generator from 'generate-password';
 import Crypto from 'crypto';
 import bodyParser from 'body-parser';
-import config from '../config';
+import { config } from '../config';
 import {Pool} from 'pg';
 import {utils} from './utils';
 import getDatasource from '../datasources/config';
