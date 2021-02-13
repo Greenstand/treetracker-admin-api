@@ -2,7 +2,7 @@ import React from 'react'
 
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
+import Box from '@material-ui/core/Box'
 import { withStyles } from '@material-ui/core/styles'
 
 import Menu, { MENU_WIDTH } from './common/Menu'
@@ -152,13 +152,12 @@ function Home(props) {
       </div>
 
       <div className={classes.rightBox}>
-        <Grid container>
+        <Grid container spacing={5}>
           <Grid item xs={3}>
             {logo}
-            <Typography variant="subtitle2" display="inline">
+            <Box display="inline" ml={2}>
               Version: XX.XX
-            </Typography>
-            {/* <p>Version: XX.XX</p> */}
+            </Box>
           </Grid>
         </Grid>
         <Grid container spacing={5} className={classes.welcomeBox} justify="center">
