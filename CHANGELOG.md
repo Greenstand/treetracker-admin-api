@@ -1,3 +1,10 @@
+## [2.11.2](https://github.com/Greenstand/treetracker-admin/compare/v2.11.1...v2.11.2) (2021-02-13)
+
+
+### Bug Fixes
+
+* reinstate dev webmap domain ([8915ceb](https://github.com/Greenstand/treetracker-admin/commit/8915ceb2d070a0836c0cf3a6e23f7d9393de31f9))
+
 ## [2.11.1](https://github.com/Greenstand/treetracker-admin/compare/v2.11.0...v2.11.1) (2021-02-10)
 
 
