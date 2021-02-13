@@ -380,12 +380,14 @@ describe('auth', () => {
 
       });
 
-      describe("/api/organizations", () => {
+      describe("organizations", () => {
 
-        it("Successfully", async () => {
+        it("/planter successfully", async () => {
             const jwt = require("jsonwebtoken");
             jwt.verify.mockReturnValueOnce({policy:{
-              policies: [1,],
+              policies: [{
+                name: "list_tree",
+              }],
               passwordHash: "testHash",
             }});
             query.mockResolvedValue({rows:[{}]});
@@ -393,6 +395,34 @@ describe('auth', () => {
             const response = await request(app).get('/api/organizations');
             expect(response.statusCode).toBe(200);
         });
+
+        it("/planter 401 no permission", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/organizations');
+            expect(response.statusCode).toBe(401);
+        });
+
+        it("/organization/planter successfully", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [{
+                name: "manage_planter",
+              }],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/organization/1/organizations');
+            expect(response.statusCode).toBe(200);
+        });
+
       });
 
 
