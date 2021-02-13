@@ -411,7 +411,7 @@ const isAuth = async (req, res, next) => {
   //white list
   const url = req.originalUrl;
   const isDevEnvironment = utils.getEnvironment() === 'development';
-  const isApiExplorerReq = isDevEnvironment;
+  const isApiExplorerReq = isDevEnvironment && false; // TODO: find Loopback explorer identifier
   if (
     url === '/auth/login' ||
     url === '/auth/test' ||
@@ -585,6 +585,24 @@ const isAuth = async (req, res, next) => {
               });
               return;
             }
+          }
+        }
+      }
+
+      matcher = url.match(/\/api\/(organization\/(\d+)\/)?organizations.*/);
+      if (matcher) {
+        if (matcher[1]) {
+          return next();
+        } else {
+          //normal case
+          //organizational user can not visit it directly
+          if (organization && organization.id > 0) {
+            res.status(401).json({
+              error: new Error('No permission'),
+            });
+            return;
+          } else {
+            return next();
           }
         }
       }

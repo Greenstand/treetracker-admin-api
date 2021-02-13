@@ -380,6 +380,22 @@ describe('auth', () => {
 
       });
 
+      describe("/api/organizations", () => {
+
+        it("Successfully", async () => {
+            const jwt = require("jsonwebtoken");
+            jwt.verify.mockReturnValueOnce({policy:{
+              policies: [1,],
+              passwordHash: "testHash",
+            }});
+            query.mockResolvedValue({rows:[{}]});
+            auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+            const response = await request(app).get('/api/organizations');
+            expect(response.statusCode).toBe(200);
+        });
+      });
+
+
     });
 
   });
