@@ -22,6 +22,25 @@ const auth = require("./auth").default;
 describe('auth', () => {
   let app;
 
+  // SAMPLE USER SESSION
+  // const testAdminUser = {
+  //   id: 1,
+  //   userName: 'test',
+  //   firstName: 'testFirst',
+  //   lastName: 'testLast',
+  //   passwordHash: 'testHash',
+  //   email: 'test@greenstand.org',
+  //   active: true,
+  //   enabled: true,
+  //   role: [1, 2, 5, 6],
+  //   policy: {
+  //     policies: [
+  //       {name: 'super_permission', description: 'Can do anything'},
+  //       {name: 'list_user', description: 'Can view admin users'},
+  //       {name: 'manager_user', description: 'Can create/modify admin user'}
+  //     ]
+  //   }
+  // };
 
   describe("getActiveAdminUserRoles", () => {
 
@@ -170,7 +189,7 @@ describe('auth', () => {
         expect(response.statusCode).toBe(200);
         expect(query).toHaveBeenCalledWith(expect.stringMatching(/update admin_user/));
         expect(auth.helper.clearAdminUserRoles).toHaveBeenCalledWith("1");
-          
+
       });
     });
 
@@ -185,7 +204,7 @@ describe('auth', () => {
       });
     });
 
-    describe("GET /admin_user", () => {
+    describe("GET /admin_users", () => {
 
       it("Successfully", async () => {
         query.mockResolvedValue({rows:[{}]});
@@ -219,7 +238,8 @@ describe('auth', () => {
           .mockResolvedValueOnce({rows:[]})
           .mockResolvedValueOnce({rows:[{}]});
 
-        const response = await request(app).post('/auth/admin_users')
+        const response = await request(app)
+          .post('/auth/admin_users')
           .send({
             role: [1],
           });
@@ -260,12 +280,13 @@ describe('auth', () => {
 
       it("Successfully", async () => {
           const jwt = require("jsonwebtoken");
-          jwt.verify.mockReturnValueOnce({policy:{
-            policies: [1,],
+          jwt.verify.mockReturnValueOnce({
+            policy:{ policies: [1]},
             passwordHash: "testHash",
-          }});
+            userName: "test"
+          });
           query.mockResolvedValue({rows:[{}]});
-          auth.helper.getActiveAdminUserRoles = jest.fn(() => Promise.resolve({rows:[{passwordHasht:"testHash"}]}));
+          auth.helper.getActiveAdminUser = jest.fn(() => Promise.resolve({rows:[{passwordHash:"testHash"}]}));
           const response = await request(app).get('/auth/check_session');
           expect(response.statusCode).toBe(200);
       });

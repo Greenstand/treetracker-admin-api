@@ -11,7 +11,7 @@ export default {
     filter,
   }) {
     const where = filter.getWhereObj()
-   
+
     const lbFilter = {
       where,
       order: [`${orderBy} ${order}`],
@@ -31,7 +31,7 @@ export default {
         planterIdentifier: true,
       },
     }
-    
+
     const query = `${process.env.REACT_APP_API_ROOT}/api/${getOrganization()}trees?filter=${JSON.stringify(lbFilter)}`
     return fetch(query, {
       headers: {
@@ -123,7 +123,7 @@ export default {
     const query = `${
       process.env.REACT_APP_API_ROOT
     }/api/${getOrganization()}trees/count?where=${JSON.stringify(filter.getWhereObj())}`
-    console.log(query, session.token)
+    // console.log('getTreeCount --- ', filter)
     return fetch(query, {
       headers: {
         Authorization: session.token,

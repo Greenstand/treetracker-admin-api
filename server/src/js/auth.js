@@ -418,23 +418,23 @@ const hasPermission = (userPolicies, allowedPolicies, orgReq, organization) => {
 const isAuth = async (req, res, next) => {
   //white list
   const url = req.originalUrl;
-  const isDevEnvironment = utils.getEnvironment() === 'development';
-  const isApiExplorerReq = isDevEnvironment && false; // TODO: find Loopback explorer identifier
   if (
     url === '/auth/login' ||
     url === '/auth/test' ||
-    url === '/auth/init' ||
-    isApiExplorerReq
+    url === '/auth/init'
   ) {
     next();
     return;
   }
+
   try {
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
     //inject the user extract from token to request object
     req.user = userSession;
+
+    // VALIDATE USER DATA
     // const roles = userSession.role;
     expect(userSession.policy).toBeInstanceOf(Object);
     const policies = userSession.policy.policies;
@@ -445,12 +445,13 @@ const isAuth = async (req, res, next) => {
         name: expect.any(String),
         id: expect.any(Number),
       });
+
     let matcher;
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
-      console.log(user_id);
-      const result = await helper.getActiveAdminUserRoles(user_id);
-      if (result.rows.length === 1) {
+      const result = await helper.getActiveAdminUser(userSession.userName);
+
+      if (result.rows.length) {
         const update_userSession = utils.convertCamel(result.rows[0]);
         //compare wuth the updated pwd in case pwd is changed
         if (update_userSession.passwordHash === userSession.passwordHash) {
