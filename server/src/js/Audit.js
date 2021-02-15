@@ -8,7 +8,7 @@ import {Pool} from 'pg';
 // import {strict as assert} from 'assert';
 import getDatasource from '../datasources/config';
 import jwt from 'jsonwebtoken';
-import config from '../config';
+import { config } from '../config';
 
 const jwtSecret = config.jwtSecret;
 const operations = {
