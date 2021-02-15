@@ -1,3 +1,10 @@
+## [2.11.6](https://github.com/Greenstand/treetracker-admin/compare/v2.11.5...v2.11.6) (2021-02-15)
+
+
+### Bug Fixes
+
+* correct import syntax for config ([#516](https://github.com/Greenstand/treetracker-admin/issues/516)) ([e713a71](https://github.com/Greenstand/treetracker-admin/commit/e713a71d5370d83fad3841a6cf5fb898513f71b8))
+
 ## [2.11.5](https://github.com/Greenstand/treetracker-admin/compare/v2.11.4...v2.11.5) (2021-02-15)
 
 
