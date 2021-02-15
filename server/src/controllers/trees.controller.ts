@@ -238,7 +238,7 @@ export class TreesController {
             reference_id: storedTree.id,
             type: "VerifyCaptureProcessed",
             approved: trees.approved,
-            rejectionReason: trees.rejectionReason,
+            rejection_reason: trees.rejectionReason,
             created_at: new Date().toISOString()
           };
           domainEvent = {
