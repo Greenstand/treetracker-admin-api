@@ -33,8 +33,8 @@ describe('Audit', () => {
       //mock to inject user in middleware
       req.user = {
         id: 555,
-        email: '555@qq.com',
-      };
+        name: 'admin'
+      }
       console.log('verify success');
       res.status(201).send({});
     });
