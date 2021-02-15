@@ -156,7 +156,7 @@ function Home(props) {
           <Grid item xs={3}>
             {logo}
             <Box display="inline" ml={2}>
-              Version: XX.XX
+              Version: {`${process.env.REACT_APP_VERSION}`}
             </Box>
           </Grid>
         </Grid>
