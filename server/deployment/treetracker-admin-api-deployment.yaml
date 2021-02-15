@@ -30,3 +30,10 @@ spec:
               secretKeyRef:
                 name: treetracker-api-database-connection
                 key: db
+          - name: RABBIT_MQ_URL
+            valueFrom:
+              secretKeyRef:
+                name: treetracker-rabbitmq-connection
+                key: messageQueue
+          - name: ENABLE_VERIFY_PUBLISHING
+            value: true
