@@ -45,7 +45,7 @@ export class DomainEvent extends Entity {
     required: true,
     postgresql: {
       columnName: 'created_at',
-      dataType: 'timestampz',
+      dataType: 'timestamptz',
       nullable: 'NO',
     },
   })
