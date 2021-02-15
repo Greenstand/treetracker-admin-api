@@ -30,6 +30,20 @@ export class Trees extends Entity {
     type: String,
     required: false,
     postgresql: {
+      columnName: 'uuid',
+      dataType: 'varchar',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
+  })
+  uuid: String;
+
+  @property({
+    type: String,
+    required: false,
+    postgresql: {
       columnName: 'time_created',
       dataType: 'timestamp without time zone',
       dataLength: null,

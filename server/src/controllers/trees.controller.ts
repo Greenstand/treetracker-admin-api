@@ -18,7 +18,11 @@ import {
 } from '@loopback/rest';
 import { ParameterizedSQL } from 'loopback-connector';
 import { Trees } from '../models';
-import { TreesRepository } from '../repositories';
+import { TreesRepository, DomainEventRepository } from '../repositories';
+import { publishMessage } from '../messaging/RabbitMQMessaging.js';
+import { config } from '../config.js';
+import { v4 as uuid } from 'uuid';
+import { Transaction } from 'loopback-connector';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
@@ -29,6 +33,8 @@ export class TreesController {
   constructor(
     @repository(TreesRepository)
     public treesRepository: TreesRepository,
+    @repository(DomainEventRepository)
+    public domainEventRepository: DomainEventRepository
   ) { }
 
   @get('/trees/count', {
@@ -215,7 +221,49 @@ export class TreesController {
     @param.path.number('id') id: number,
     @requestBody() trees: Trees,
   ): Promise<void> {
-    await this.treesRepository.updateById(id, trees);
+    const tx = await this.treesRepository.dataSource.beginTransaction(
+      { isolationLevel: Transaction.READ_COMMITTED }
+    );
+    try{
+      let verifyCaptureProcessed;
+      let domainEvent;
+      if(config.enableVerificationPublishing) {
+        const storedTree = await this.treesRepository.findById(id);
+        // Raise an event to indicate verification is processed
+        // on both rejection and approval
+        if((!trees.approved && !trees.active && storedTree.active) ||
+            storedTree.approved != trees.approved) {
+          verifyCaptureProcessed = {
+            id: storedTree.uuid,
+            reference_id: storedTree.id,
+            type: "VerifyCaptureProcessed",
+            approved: trees.approved,
+            rejectionReason: trees.rejectionReason,
+            created_at: new Date().toISOString()
+          };
+          domainEvent = {
+            id: uuid(),
+            payload: verifyCaptureProcessed,
+            status: 'raised',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          await this.domainEventRepository.create(
+            domainEvent, { transaction: tx });
+        }
+      }
+      await this.treesRepository.updateById(id, trees, { transaction: tx });
+      await tx.commit();
+      if(verifyCaptureProcessed) {
+        await publishMessage(verifyCaptureProcessed, () => {
+          this.domainEventRepository.updateById(
+              domainEvent.id, { status: 'sent', updatedAt: new Date().toISOString()});
+        });
+      }
+    } catch(e) {
+      await tx.rollback();
+      throw e;
+    }
   }
 
   private getConnector() {

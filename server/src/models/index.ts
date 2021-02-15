@@ -6,3 +6,4 @@ export * from './tag.model';
 export * from './treeTag.model';
 export * from './planterRegistration.model';
 export * from './organization.model';
+export * from './domainEvent.model';

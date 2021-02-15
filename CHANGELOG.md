@@ -1,3 +1,17 @@
+## [2.11.4](https://github.com/Greenstand/treetracker-admin/compare/v2.11.3...v2.11.4) (2021-02-15)
+
+
+### Bug Fixes
+
+* timestamptz datatype spelling mistake ([#513](https://github.com/Greenstand/treetracker-admin/issues/513)) ([09413b2](https://github.com/Greenstand/treetracker-admin/commit/09413b24cab83dc8f7e82cdd6f7de1660541db1c))
+
+## [2.11.3](https://github.com/Greenstand/treetracker-admin/compare/v2.11.2...v2.11.3) (2021-02-13)
+
+
+### Bug Fixes
+
+* 404 error at /check_session ([#506](https://github.com/Greenstand/treetracker-admin/issues/506)) ([f025de0](https://github.com/Greenstand/treetracker-admin/commit/f025de00d8916c2cd4c68518a330af9d3772b3f0))
+
 ## [2.11.2](https://github.com/Greenstand/treetracker-admin/compare/v2.11.1...v2.11.2) (2021-02-13)
 
 
