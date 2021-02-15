@@ -1,3 +1,10 @@
+## [2.11.5](https://github.com/Greenstand/treetracker-admin/compare/v2.11.4...v2.11.5) (2021-02-15)
+
+
+### Bug Fixes
+
+* audit logging ([#501](https://github.com/Greenstand/treetracker-admin/issues/501)) ([de5840a](https://github.com/Greenstand/treetracker-admin/commit/de5840ab0204a4099dde0b2afdca3d8e646fb99e))
+
 ## [2.11.4](https://github.com/Greenstand/treetracker-admin/compare/v2.11.3...v2.11.4) (2021-02-15)
 
 
