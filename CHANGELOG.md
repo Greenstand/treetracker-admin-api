@@ -1,3 +1,17 @@
+# [2.12.0](https://github.com/Greenstand/treetracker-admin/compare/v2.11.6...v2.12.0) (2021-02-16)
+
+
+### Features
+
+* fixes based on PR feedback ([1b18a27](https://github.com/Greenstand/treetracker-admin/commit/1b18a27752e458f0d2a1a4efebbc1bad3cd421f1))
+* make error handling robust when publishing messages ([df80411](https://github.com/Greenstand/treetracker-admin/commit/df80411be1161fc15840f64c902de157301a14a4))
+* propagate rejection reason as part of verificaton event ([9fb6790](https://github.com/Greenstand/treetracker-admin/commit/9fb67904235c146b6df2e4dcaf0562354467e87d))
+* raise and publish domainevent on verification ([8f89f3e](https://github.com/Greenstand/treetracker-admin/commit/8f89f3eed285a6a14ba42bb9cd66f90076a5b259))
+* remove unused variable ([19b93ab](https://github.com/Greenstand/treetracker-admin/commit/19b93abd4cddb2a04f0d0ee90603bfbd95bbd0b6))
+* Use env variable for a config property ([ebc8339](https://github.com/Greenstand/treetracker-admin/commit/ebc8339f3e7649742c4571dc25e5616ba2b069d6))
+* use loopback connector transaction using import instead of require ([b213dd9](https://github.com/Greenstand/treetracker-admin/commit/b213dd91b65b9581d07129b073e61ef7efd5470d))
+* WIP - publishing verification messages on verify action ([85d0bec](https://github.com/Greenstand/treetracker-admin/commit/85d0becf24cf1a669d3cb53191ea07333c6e17ed))
+
 ## [2.11.6](https://github.com/Greenstand/treetracker-admin/compare/v2.11.5...v2.11.6) (2021-02-15)
 
 
