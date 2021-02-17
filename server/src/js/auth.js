@@ -407,6 +407,14 @@ router.post('/init', async (req, res) => {
   }
 });
 
+const hasPermission = (userPolicies, allowedPolicies, orgReq, organization) => {
+  if (orgReq && organization && organization.id > 0) {
+    return false;
+  }
+
+  return (userPolicies.some((r) => allowedPolicies.some(p => r.name === p)))
+}
+
 const isAuth = async (req, res, next) => {
   //white list
   const url = req.originalUrl;
@@ -496,98 +504,52 @@ const isAuth = async (req, res, next) => {
         return next();
       }
 
-
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);
       if (matcher) {
-        if (matcher[1]) {
-          //organization case
-          if (
-            policies.some(
-              (r) =>
-                r.name === POLICIES.SUPER_PERMISSION ||
-                r.name === POLICIES.LIST_TREE ||
-                r.name === POLICIES.APPROVE_TREE,
-            )
-          ) {
-            return next();
-          } else {
-            res.status(401).json({
-              error: new Error('No permission'),
-            });
-            return;
-          }
-        } else {
-          //normal case
-          //organizational user can not visit it directly
-          if (organization && organization.id > 0) {
-            res.status(401).json({
-              error: new Error('No permission'),
-            });
-            return;
-          }
-          if (
-            policies.some(
-              (r) =>
-                r.name === POLICIES.SUPER_PERMISSION ||
-                r.name === POLICIES.LIST_TREE ||
-                r.name === POLICIES.APPROVE_TREE,
-            )
-          ) {
-            return next();
-          } else {
-            res.status(401).json({
-              error: new Error('No permission'),
-            });
-            return;
-          }
+        if (hasPermission(
+          policies,
+          [POLICIES.SUPER_PERMISSION, POLICIES.LIST_TREE, POLICIES.APPROVE_TREE],
+          matcher[1],
+          organization)) {
+          return next();
         }
+
+        res.status(401).json({
+          error: new Error('No permission'),
+        })
+        return;
       }
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/);
       if (matcher) {
-        if (matcher[1]) {
-          //organization case
-          if (
-            policies.some(
-              (r) =>
-                r.name === POLICIES.SUPER_PERMISSION ||
-                r.name === POLICIES.LIST_PLANTER ||
-                r.name === POLICIES.MANAGE_PLANTER,
-            )
-          ) {
-            return next();
-          } else {
-            res.status(401).json({
-              error: new Error('No permission'),
-            });
-            return;
-          }
-        } else {
-          //normal case
-          //organizational user can not visit it directly
-          if (organization && organization.id > 0) {
-            res.status(401).json({
-              error: new Error('No permission'),
-            });
-            return;
-          } else {
-            if (
-              policies.some(
-                (r) =>
-                  r.name === POLICIES.SUPER_PERMISSION ||
-                  r.name === POLICIES.LIST_PLANTER ||
-                  r.name === POLICIES.MANAGE_PLANTER,
-              )
-            ) {
-              return next();
-            } else {
-              res.status(401).json({
-                error: new Error('No permission'),
-              });
-              return;
-            }
-          }
+        if (hasPermission(
+          policies,
+          [POLICIES.SUPER_PERMISSION, POLICIES.LIST_PLANTER, POLICIES.MANAGE_PLANTER],
+          matcher[1],
+          organization)) {
+          return next();
         }
+
+        res.status(401).json({
+          error: new Error('No permission'),
+        })
+        return;
+      }
+
+      matcher = url.match(/\/api\/(organization\/(\d+)\/)?organizations.*/);
+      if (matcher) {
+        if (hasPermission(
+          policies,
+          [POLICIES.SUPER_PERMISSION, POLICIES.LIST_TREE, POLICIES.APPROVE_TREE, POLICIES.MANAGE_PLANTER],
+          matcher[1],
+          organization)) {
+          return next();
+        }
+
+        res.status(401).json({
+          error: new Error('No permission'),
+        })
+        return;
       }
     } else {
       return next();
