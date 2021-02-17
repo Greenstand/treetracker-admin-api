@@ -36,4 +36,4 @@ spec:
                 name: treetracker-rabbitmq-connection
                 key: messageQueue
           - name: ENABLE_VERIFY_PUBLISHING
-            value: true
+            value: "true"
