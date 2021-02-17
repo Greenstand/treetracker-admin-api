@@ -225,11 +225,6 @@ const TreeImageScrubber = (props) => {
     window.open(url, '_blank').opener = null;
   }
 
-  function resetApprovalFields() {
-    props.tagDispatch.setTagInput([])
-    props.speciesDispatch.setSpeciesInput('')
-  }
-
   async function handleSubmit(approveAction) {
     console.log('approveAction:', approveAction)
     //check selection
@@ -270,8 +265,6 @@ const TreeImageScrubber = (props) => {
     const result = await props.verityDispatch.approveAll({ approveAction });
     if (!result) {
       window.alert('sorry, failed to approve some picture');
-    } else {
-      resetApprovalFields();
     }
     props.verityDispatch.loadTreeImages();
   }
