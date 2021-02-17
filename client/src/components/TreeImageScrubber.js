@@ -166,7 +166,7 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-const ToVerifyCounter = withData(({data}) => <>{data !== null && `${data} trees to verify`}</>);
+const ToVerifyCounter = withData(({ data }) => <>{data !== null && `${data} trees to verify`}</>);
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -237,7 +237,7 @@ const TreeImageScrubber = (props) => {
      */
     const isNew = await props.speciesDispatch.isNewSpecies()
     if (isNew) {
-      const answer = await new Promise((resolve, reject) => {
+      const answer = await new Promise((resolve) => {
         if (window.confirm(`The species ${props.speciesState.speciesInput} is a new one, create it?`)) {
           resolve(true)
         } else {
@@ -301,7 +301,7 @@ const TreeImageScrubber = (props) => {
     })
   }
 
-  function handleChangePageSize(event, value) {
+  function handleChangePageSize(event) {
     props.verityDispatch.set({ pageSize: event.target.value });
   }
 
@@ -459,7 +459,7 @@ const TreeImageScrubber = (props) => {
                     <Typography variant='h5'>
                       <ToVerifyCounter needsRefresh={props.verityState.invalidateTreeCount}
                         fetch={props.verityDispatch.getTreeCount}
-                        data={props.verityState.treeCount}/>
+                        data={props.verityState.treeCount} />
                     </Typography>
                   </Grid>
                   <Grid item>
