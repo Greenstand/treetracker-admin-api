@@ -1,3 +1,10 @@
+## [2.12.1](https://github.com/Greenstand/treetracker-admin/compare/v2.12.0...v2.12.1) (2021-02-17)
+
+
+### Bug Fixes
+
+* allow users to list organizations ([#511](https://github.com/Greenstand/treetracker-admin/issues/511)) ([f54f992](https://github.com/Greenstand/treetracker-admin/commit/f54f99293386b26e4156dac90754ffe96eafe9d0))
+
 # [2.12.0](https://github.com/Greenstand/treetracker-admin/compare/v2.11.6...v2.12.0) (2021-02-16)
 
 
