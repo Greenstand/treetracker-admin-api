@@ -335,28 +335,28 @@ If you are using VSCode as your IDE, please follow [this guide](https://www.digi
 **Quotes** Use single quotes unless you are writing JSON
 
 ```js
-const foo = "bar";
+const foo = 'bar';
 ```
 
 **Braces** Opening braces go on the same line as the statement
 
 ```js
 if (true) {
-  console.log("here");
+  console.log('here');
 }
 ```
 
 **Variable declaration** Declare one Variable per statement
 
 ```js
-const dog = ["bark", "woof"];
-let cat = ["meow", "sleep"];
+const dog = ['bark', 'woof'];
+let cat = ['meow', 'sleep'];
 ```
 
 **Variable, properties and function names** Use lowerCamelCase for variables, properties and function names
 
 ```js
-const adminUser = db.query("SELECT * From users ...");
+const adminUser = db.query('SELECT * From users ...');
 ```
 
 **Class names** Use UpperCamelCase for class names
@@ -364,7 +364,7 @@ const adminUser = db.query("SELECT * From users ...");
 ```js
 class Dog {
   bark() {
-    console.log("woof");
+    console.log('woof');
   }
 }
 ```
@@ -379,10 +379,10 @@ const isValidPassword =
 **Object/Array creation** Use trailing commas and put short declarations on a single line. Only quote keys when your interpreter complains:
 
 ```js
-var a = ["hello", "world"];
+var a = ['hello', 'world'];
 var b = {
-  good: "code",
-  "is generally": "pretty",
+  good: 'code',
+  'is generally': 'pretty',
 };
 ```
 
