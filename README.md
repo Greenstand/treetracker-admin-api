@@ -8,9 +8,10 @@ Please add any missing content to this readme.
 
 ## Development Environment Quick Start
 
-We support both front end and backend development in this repository currently.  Depending on which part of the admin panel you are contributing too, you have different options for setting up development.  
+We support both front end and backend development in this repository currently. Depending on which part of the admin panel you are contributing too, you have different options for setting up development.
 
 There are three options for setting up your development environment:
+
 1. For frontend work only
    1. Skip installing and running the API locally
 2. For backend work only
@@ -30,7 +31,8 @@ See https://git-scm.com/downloads for instructions.
 _Node.js version 12.x works best for now; later versions have exhibited some strange behaviour with this project.
 If you encounter issues with the server, check your version of Node.js first. This includes CORS related issues when fetching the API._
 
-We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances.  More details here: https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/
+We recommend using [nvm](https://github.com/nvm-sh/nvm) to install and manage your Node.js instances. More details here: https://www.sitepoint.com/quick-tip-multiple-versions-node-nvm/
+
 1. Install nvm: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.2/install.sh | bash
 2. nvm install 12.20.0
 3. nvm use 12.20.0
@@ -50,6 +52,7 @@ git clone https://github.com/<username>/treetracker-admin.git
 ```
 
 Add Greenstand as a remote:
+
 ```
 git remote add upstream https://github.com/Greenstand/treetracker-admin
 ```
@@ -61,6 +64,7 @@ _Only required for backend/API development_
 1. Get the server dev env file pinned to the #admin_panel_chat channel in Greenstand Slack: `.env.development` (Note that the leading `.` may be removed if you download the file from Slack, so you'll need to rename it)
 1. Copy the file to the `./server` directory within your local repo
 1. Add a `.env.local` file in the `./client` directory containing the following line:
+
 ```
 REACT_APP_API_ROOT=http://localhost:3000
 ```
@@ -94,19 +98,24 @@ npm start
 We use automatic semantic versioning, which looks at commit messages to determine how to increment the version number for deployment.
 
 Your commit messages will need to follow the [Conventional Commits](https://www.conventionalcommits.org/) format, for example:
+
 ```
 feat: add new button
 ```
+
 Since we squash commits on merging PRs into `master`, this applies to PR titles as well.
 
 ## Keeping Your Fork in Sync
 
 Your forked repo won't automatically stay in sync with Greenstand, so you'll need to occassionally sync manually (typically before starting work on a new feature).
+
 ```
 git pull upstream master --rebase
 git push origin master
 ```
+
 You might also need to sync and merge `master` into your feature branch before submitting a PR to resolve any conflicts.
+
 ```
 git checkout <feature_branch>
 git merge master
@@ -205,8 +214,6 @@ https://code.visualstudio.com/docs
 Here is our [wiki page for troubleshooting](https://github.com/Greenstand/treetracker-admin/wiki/Set-Up-Issues), take a look.
 
 Help us to improve it by adding your experience solving this problem.
-
-
 
 #### View the Treetracker Admin Panel
 
@@ -317,6 +324,8 @@ Redux-connected component, and how to test it.
 
 ## Code style guide
 
+If you are using VSCode as your IDE, please follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-format-code-with-prettier-in-visual-studio-code) to setup Prettier and automatically format your code on file save. Configuration files are already included in this repo.
+
 **Indention** 2 Spaces for indentation
 
 **Semicolon** Use semicolons at the end of each line
@@ -329,7 +338,7 @@ Redux-connected component, and how to test it.
 const foo = 'bar';
 ```
 
-**Braces** Opening braces go on the same line as the statment
+**Braces** Opening braces go on the same line as the statement
 
 ```js
 if (true) {
@@ -337,7 +346,7 @@ if (true) {
 }
 ```
 
-**Variable declaration** Declare one Varable per statment
+**Variable declaration** Declare one Variable per statement
 
 ```js
 const dog = ['bark', 'woof'];
@@ -354,13 +363,13 @@ const adminUser = db.query('SELECT * From users ...');
 
 ```js
 class Dog {
-  bark(){
+  bark() {
     console.log('woof');
   }
 }
 ```
 
-**Descriptive conditions** Make sure to to have a descriptive name that tells the use and meaning of the code
+**Descriptive conditions** Make sure to have a descriptive name that tells the use and meaning of the code
 
 ```js
 const isValidPassword =
@@ -418,7 +427,6 @@ npm run watch
 In this way, we can write the code and get the tests result immediately.
 
 NOTE: when running tests, the files related to Loopback are loaded from ./dist folder. That's because for Jest, it does not output compiled files at all, and Loopback will try to load the controllers at runtime.
-
 
 ### See [Current Milestone](https://github.com/Greenstand/treetracker-admin/issues?q=is%3Aopen+is%3Aissue+milestone%3A1.1.0)
 
