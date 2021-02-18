@@ -1,3 +1,10 @@
+## [2.12.2](https://github.com/Greenstand/treetracker-admin/compare/v2.12.1...v2.12.2) (2021-02-18)
+
+
+### Bug Fixes
+
+* prettier config files for client/server ([#519](https://github.com/Greenstand/treetracker-admin/issues/519)) ([9f233dd](https://github.com/Greenstand/treetracker-admin/commit/9f233dd976a432fb6852f4cf5ee2c2903fe2d533))
+
 ## [2.12.1](https://github.com/Greenstand/treetracker-admin/compare/v2.12.0...v2.12.1) (2021-02-17)
 
 
