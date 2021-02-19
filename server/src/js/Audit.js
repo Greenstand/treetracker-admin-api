@@ -87,7 +87,7 @@ class Audit {
     //assert(req.headers.host);
     //assert(req.headers['user-agent']);
     const host =
-      req.headers['x-real-ip'] || req.headers.host.match(/(.*):(.*)/)[1];
+      req.headers['x-real-ip'];
     const userAgent = req.headers['user-agent'];
     let operation;
     let operator;
