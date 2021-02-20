@@ -1,0 +1,4 @@
+bases:
+  - ../../base
+patchesStrategicMerge:
+  - treetracker-admin-api-mapping.yaml
