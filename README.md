@@ -17,7 +17,7 @@ There are three main options for development in the Admin Panel:
 1. For frontend work only
    1. Follow setup instructions in the [treetracker-admin-client](https://github.com/Greenstand/treetracker-admin-client) project
 2. For API work only
-   1. Fork and clone this repo
+   1. Fork and clone this repo as described below
    1. Use our development database credentials (available via team leads in Slack)
 3. As a completely local development environment
    1. Install postgres and postgis locally, install a database seed, and run database migrations
