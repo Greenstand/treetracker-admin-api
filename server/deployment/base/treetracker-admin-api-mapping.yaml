@@ -1,8 +1,0 @@
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: treetracker-admin-api
-spec:
-  prefix: /api/admin/
-  service: treetracker-admin-api
-  rewrite: /
