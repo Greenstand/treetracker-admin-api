@@ -3,7 +3,7 @@
 /*
  * To record operation on the system
  */
-import {Pool} from 'pg';
+import { Pool } from 'pg';
 // import log from 'loglevel';
 // import {strict as assert} from 'assert';
 import getDatasource from '../datasources/config';
@@ -32,7 +32,7 @@ export const auditMiddleware = (request, response, next) => {
         const token = request.headers.authorization || '';
         if (token) {
           const user = jwt.verify(token, jwtSecret);
-          request.user = user
+          request.user = user;
         }
 
         if (/2\d\d/.test(response.statusCode)) {
@@ -78,7 +78,7 @@ export const auditMiddleware = (request, response, next) => {
 
 class Audit {
   constructor() {
-    this.pool = new Pool({connectionString: getDatasource().url});
+    this.pool = new Pool({ connectionString: getDatasource().url });
   }
 
   async did(req, res) {
@@ -86,8 +86,7 @@ class Audit {
     //assert(req.headers);
     //assert(req.headers.host);
     //assert(req.headers['user-agent']);
-    const host =
-      req.headers['x-real-ip'] || req.headers.host.match(/(.*):(.*)/)[1];
+    const host = req.headers['x-real-ip'];
     const userAgent = req.headers['user-agent'];
     let operation;
     let operator;
@@ -99,12 +98,14 @@ class Audit {
       //assert(res.myData);
       //assert(!isNaN(res.myData.user.id), res.myData.user.id);
       operator = res.myData.user.id; // change to operator = req.user.id
-    } else if (/(?:.*\/api\/trees\/\d+|.*\/api\/organization\/\d+\/trees\/\d+)/.test(url)) {
+    } else if (
+      /(?:.*\/api\/trees\/\d+|.*\/api\/organization\/\d+\/trees\/\d+)/.test(url)
+    ) {
       console.info('tree event');
       //assert(req.method, req.method);
       //assert(req.user);
       //assert(req.user.id);
-      operator = req.user.id
+      operator = req.user.id;
       if (req.method.match(/patch/i)) {
         console.info('verify event');
         //assert(req.body.id, req.body.id);
