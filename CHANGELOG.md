@@ -1,3 +1,10 @@
+## [2.12.3](https://github.com/Greenstand/treetracker-admin/compare/v2.12.2...v2.12.3) (2021-02-22)
+
+
+### Bug Fixes
+
+* don't look for host ip from request headers while auditing ([2dd0af2](https://github.com/Greenstand/treetracker-admin/commit/2dd0af2def7e74efebaf3f4599d785dd2925b368))
+
 ## [2.12.2](https://github.com/Greenstand/treetracker-admin/compare/v2.12.1...v2.12.2) (2021-02-18)
 
 
