@@ -16,20 +16,22 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Species} from '../models';
-import {SpeciesRepository} from '../repositories';
+import { Species } from '../models';
+import { SpeciesRepository, TreesRepository } from '../repositories';
 
 export class SpeciesController {
   constructor(
     @repository(SpeciesRepository)
     public speciesRepository: SpeciesRepository,
+    @repository(TreesRepository)
+    public treesRepository: TreesRepository,
   ) {}
 
   @get('/species/count', {
     responses: {
       '200': {
         description: 'Species model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -46,7 +48,7 @@ export class SpeciesController {
         description: 'Array of Species model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Species}},
+            schema: { type: 'array', items: { 'x-ts-type': Species } },
           },
         },
       },
@@ -64,7 +66,7 @@ export class SpeciesController {
     responses: {
       '200': {
         description: 'Species model instance',
-        content: {'application/json': {schema: {'x-ts-type': Species}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Species } } },
       },
     },
   })
@@ -84,6 +86,25 @@ export class SpeciesController {
     @requestBody() species: Species,
   ): Promise<void> {
     await this.speciesRepository.updateById(id, species);
+  }
+
+  @post('/species/combine', {
+    responses: {
+      '204': {
+        description: 'Species POST success',
+      },
+    },
+  })
+  async combine(
+    @requestBody() request: { combine: number[]; species: Species },
+  ): Promise<void> {
+    const newSpecies = await this.speciesRepository.create(request.species);
+    console.log(newSpecies);
+    for (const id of request.combine) {
+      const query = `UPDATE trees SET species_id=${newSpecies.id} WHERE species_id=${id}`;
+      await this.treesRepository.execute(query, []);
+      await this.speciesRepository.deleteById(id);
+    }
   }
 
   @post('/species/', {
