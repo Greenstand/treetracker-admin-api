@@ -99,12 +99,17 @@ export class SpeciesController {
     @requestBody() request: { combine: number[]; species: Species },
   ): Promise<void> {
     const newSpecies = await this.speciesRepository.create(request.species);
-    console.log(newSpecies);
-    for (const id of request.combine) {
-      const query = `UPDATE trees SET species_id=${newSpecies.id} WHERE species_id=${id}`;
-      await this.treesRepository.execute(query, []);
-      await this.speciesRepository.deleteById(id);
-    }
+
+    const updateQuery = `UPDATE trees SET species_id=${
+      newSpecies.id
+    } WHERE species_id IN (${request.combine.join(', ')})`;
+
+    const deleteQuery = `UPDATE tree_species SET active=false WHERE id IN (${request.combine.join(
+      ', ',
+    )})`;
+
+    await this.treesRepository.execute(updateQuery, []);
+    await this.speciesRepository.execute(deleteQuery, []);
   }
 
   @post('/species/', {
@@ -126,6 +131,7 @@ export class SpeciesController {
     },
   })
   async delete(@param.path.number('id') id: number): Promise<void> {
-    await this.speciesRepository.deleteById(id);
+    const deleteQuery = `UPDATE tree_species SET active=false WHERE id=${id}`;
+    await this.speciesRepository.execute(deleteQuery, []);
   }
 }
