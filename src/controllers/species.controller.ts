@@ -16,20 +16,22 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Species} from '../models';
-import {SpeciesRepository} from '../repositories';
+import { Species } from '../models';
+import { SpeciesRepository, TreesRepository } from '../repositories';
 
 export class SpeciesController {
   constructor(
     @repository(SpeciesRepository)
     public speciesRepository: SpeciesRepository,
+    @repository(TreesRepository)
+    public treesRepository: TreesRepository,
   ) {}
 
   @get('/species/count', {
     responses: {
       '200': {
         description: 'Species model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -46,7 +48,7 @@ export class SpeciesController {
         description: 'Array of Species model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Species}},
+            schema: { type: 'array', items: { 'x-ts-type': Species } },
           },
         },
       },
@@ -64,7 +66,7 @@ export class SpeciesController {
     responses: {
       '200': {
         description: 'Species model instance',
-        content: {'application/json': {schema: {'x-ts-type': Species}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Species } } },
       },
     },
   })
@@ -86,6 +88,30 @@ export class SpeciesController {
     await this.speciesRepository.updateById(id, species);
   }
 
+  @post('/species/combine', {
+    responses: {
+      '204': {
+        description: 'Species POST success',
+      },
+    },
+  })
+  async combine(
+    @requestBody() request: { combine: number[]; species: Species },
+  ): Promise<void> {
+    const newSpecies = await this.speciesRepository.create(request.species);
+
+    const updateQuery = `UPDATE trees SET species_id=${
+      newSpecies.id
+    } WHERE species_id IN (${request.combine.join(', ')})`;
+
+    const deleteQuery = `UPDATE tree_species SET active=false WHERE id IN (${request.combine.join(
+      ', ',
+    )})`;
+
+    await this.treesRepository.execute(updateQuery, []);
+    await this.speciesRepository.execute(deleteQuery, []);
+  }
+
   @post('/species/', {
     responses: {
       '204': {
@@ -105,6 +131,7 @@ export class SpeciesController {
     },
   })
   async delete(@param.path.number('id') id: number): Promise<void> {
-    await this.speciesRepository.deleteById(id);
+    const deleteQuery = `UPDATE tree_species SET active=false WHERE id=${id}`;
+    await this.speciesRepository.execute(deleteQuery, []);
   }
 }
