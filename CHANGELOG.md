@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/Greenstand/treetracker-admin/compare/v2.12.3...v2.13.0) (2021-02-28)
+
+
+### Features
+
+* add /species/combine controller ([#530](https://github.com/Greenstand/treetracker-admin/issues/530)) ([c5a589d](https://github.com/Greenstand/treetracker-admin/commit/c5a589d7930c947f0a7ada2a7959eed41e9da387))
+
 ## [2.12.3](https://github.com/Greenstand/treetracker-admin/compare/v2.12.2...v2.12.3) (2021-02-22)
 
 
