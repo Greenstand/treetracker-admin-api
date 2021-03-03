@@ -1,6 +1,4 @@
-
-name: Deploy to Prod Env
-
+name: Deploy Admin API to Prod Env
 
 on:
   workflow_dispatch:
