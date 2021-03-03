@@ -1,0 +1,47 @@
+
+name: Deploy to Prod Env
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'git-tag'
+        required: true
+
+env: 
+  project-directory: ./
+
+jobs:
+  deploy-test:
+    name: Deploy latest to prod environment, requires approval
+    runs-on: ubuntu-latest
+    if: |
+      github.repository == 'Greenstand/treetracker-admin-api'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.git-tag }}
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+        with:
+          path: ${{ env.project-directory }}
+      - name: Install kustomize
+        run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+        working-directory: ${{ env.project-directory }}
+      - name: Copy kustomize.yml
+        run: cp ./deployment/kustomize/kustomization.yaml ./deployment/kustomization.yaml
+        working-directory: ${{ env.project-directory }}
+      - name: Run kustomize
+        run: (cd ./deployment && ../kustomize edit set image greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }} )
+        working-directory: ${{ env.project-directory }}
+      - name: Install doctl for kubernetes
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      - name: Save DigitalOcean kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ secrets.TEST_CLUSTER_NAME }}
+      - name: Update kubernetes resources
+        run: kubectl -n admin apply --wait -k ./deployment/
+        working-directory: ${{ env.project-directory }}
