@@ -1,3 +1,11 @@
+## [2.13.1](https://github.com/Greenstand/treetracker-admin/compare/v2.13.0...v2.13.1) (2021-03-04)
+
+
+### Bug Fixes
+
+* base sealed secrets should be empty ([bb50255](https://github.com/Greenstand/treetracker-admin/commit/bb5025568c32f3cb51c213640dbb1a202c4d182d))
+* use kustomize to generate resource definitions from overlays ([9f5e801](https://github.com/Greenstand/treetracker-admin/commit/9f5e8016ee3dfabd289fca682028dd320dd96c8d))
+
 # [2.13.0](https://github.com/Greenstand/treetracker-admin/compare/v2.12.3...v2.13.0) (2021-02-28)
 
 
