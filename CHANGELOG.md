@@ -1,3 +1,10 @@
+## [2.13.4](https://github.com/Greenstand/treetracker-admin/compare/v2.13.3...v2.13.4) (2021-03-04)
+
+
+### Bug Fixes
+
+* use admin-api namespace ([ce2b66d](https://github.com/Greenstand/treetracker-admin/commit/ce2b66d835961e2f0fd310d201e57c14e604dc0e))
+
 ## [2.13.3](https://github.com/Greenstand/treetracker-admin/compare/v2.13.2...v2.13.3) (2021-03-04)
 
 
