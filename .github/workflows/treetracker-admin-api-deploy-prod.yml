@@ -7,7 +7,7 @@ on:
         description: 'git-tag'
         required: true
 
-env: 
+env:
   project-directory: ./
 
 jobs:
@@ -41,5 +41,4 @@ jobs:
       - name: Save DigitalOcean kubeconfig
         run: doctl kubernetes cluster kubeconfig save ${{ secrets.PRODUCTION_CLUSTER_NAME }}
       - name: Update kubernetes resources
-        run: kubectl -n admin apply --wait -k ./deployment/
-        working-directory: ${{ env.project-directory }}
+        run: kustomize build deployment/overlays/production | kubectl apply -n admin-api --wait -f -
