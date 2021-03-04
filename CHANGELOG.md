@@ -1,3 +1,10 @@
+## [2.13.2](https://github.com/Greenstand/treetracker-admin/compare/v2.13.1...v2.13.2) (2021-03-04)
+
+
+### Bug Fixes
+
+* call kustomize the right way for overlays ([c8cfa7c](https://github.com/Greenstand/treetracker-admin/commit/c8cfa7c955bdecd538b40aef019de8e62945703d))
+
 ## [2.13.1](https://github.com/Greenstand/treetracker-admin/compare/v2.13.0...v2.13.1) (2021-03-04)
 
 
