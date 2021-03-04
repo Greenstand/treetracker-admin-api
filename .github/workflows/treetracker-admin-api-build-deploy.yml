@@ -143,4 +143,4 @@ jobs:
       - name: Save DigitalOcean kubeconfig
         run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
       - name: Update kubernetes resources
-        run: kustomize build deployment/overlays/development | kubectl apply -n development --wait -f -
+        run: kustomize build deployment/overlays/development | kubectl apply -n admin-api --wait -f -
