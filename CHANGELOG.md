@@ -1,3 +1,10 @@
+## [2.13.3](https://github.com/Greenstand/treetracker-admin/compare/v2.13.2...v2.13.3) (2021-03-04)
+
+
+### Bug Fixes
+
+* fix GVK path to sealed secret ([740bf86](https://github.com/Greenstand/treetracker-admin/commit/740bf86e4733922f4ea6a2b3661c25322d1640af))
+
 ## [2.13.2](https://github.com/Greenstand/treetracker-admin/compare/v2.13.1...v2.13.2) (2021-03-04)
 
 
