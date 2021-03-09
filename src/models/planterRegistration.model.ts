@@ -1,12 +1,12 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 @model({
   settings: {
     idInjection: false,
-    postgresql: {schema: 'public', table: 'planter_registrations'},
-  }
+    postgresql: { schema: 'public', table: 'planter_registrations' },
+  },
 })
 export class PlanterRegistration extends Entity {
   @property({
@@ -42,6 +42,26 @@ export class PlanterRegistration extends Entity {
   })
   createdAt: string;
 
+  @property({
+    type: 'number',
+    required: false,
+    dataType: 'latitude',
+    postgresql: {
+      columnName: 'lat',
+    },
+  })
+  lat: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    dataType: 'longitude',
+    postgresql: {
+      columnName: 'lon',
+    },
+  })
+  lon: number;
+
   // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
@@ -55,4 +75,5 @@ export interface PlanterRegistrationRelations {
   // describe navigational properties here
 }
 
-export type PlanterRegistrationWithRelations = PlanterRegistration & PlanterRegistrationRelations;
+export type PlanterRegistrationWithRelations = PlanterRegistration &
+  PlanterRegistrationRelations;
