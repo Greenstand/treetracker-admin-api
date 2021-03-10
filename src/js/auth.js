@@ -69,8 +69,10 @@ helper.getActiveAdminUserRoles = async function (userId) {
   if (!isIdValid(userId)) {
     return null
   }
+  // Include role details
   return await pool.query(
-    `select * from admin_user_role where admin_user_id = ${userId} and active = true`,
+    `select * from admin_user_role aur left join admin_role ar on aur.role_id = ar.id
+     where aur.admin_user_id = ${userId} and aur.active = true`,
   );
 }
 
@@ -115,6 +117,7 @@ helper.loadUserPermissions = async function (userId) {
   const result = await helper.getActiveAdminUserRoles(userId);
   expect(result.rows.length).toBeGreaterThan(0);
   userDetails.role = result.rows.map(r => r.role_id);
+  userDetails.roleNames = result.rows.map(r => r.role_name);
   //get policies
   const policyObjects = await Promise.all(userDetails.role.map(async (role) => {
     const res = await pool.query(`select * from admin_role where id = ${role}`);
@@ -169,6 +172,7 @@ router.post('/login', async function login(req, res, next) {
         //console.assert(userLogin.id >= 0, 'id?', userLogin);
         const result = await helper.getActiveAdminUserRoles(userLogin.id)
         userLogin.role = result.rows.map(r => r.role_id);
+        userLogin.roleNames = result.rows.map(r => r.role_name);
       } else {
         console.log("checking password failed");
       }
@@ -191,11 +195,12 @@ router.post('/login', async function login(req, res, next) {
         email,
         role,
         policy,
+        roleNames,
       } = userLogin;
       console.log('login success');
       return res.json({
         token,
-        user: { id, userName, firstName, lastName, email, role, policy },
+        user: { id, userName, firstName, lastName, email, role, policy, roleNames },
       });
     } else {
       console.log('login failed:', userLogin);
