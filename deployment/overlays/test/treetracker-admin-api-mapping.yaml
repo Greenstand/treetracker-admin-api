@@ -4,7 +4,9 @@ metadata:
   name: treetracker-admin-api
 spec:
   cors:
-    origins: https://test.admin.treetracker.org
+    origins:
+      - https://test.admin.treetracker.org
+      - https://d2s7z62c7yrbt1.cloudfront.net
     methods: GET, POST, PATCH, PUT, OPTIONS
     headers:
       - Content-Type
