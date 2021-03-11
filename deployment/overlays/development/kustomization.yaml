@@ -3,3 +3,5 @@ bases:
 patchesStrategicMerge:
   - treetracker-admin-api-mapping.yaml
   - database-connection-sealed-secret.yaml
+  - treetracker-admin-api-jwt-sealed-secret.yaml
+  - treetracker-dev-rabbitmq-sealedsecret.yaml
