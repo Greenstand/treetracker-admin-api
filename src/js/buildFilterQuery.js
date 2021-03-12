@@ -23,7 +23,7 @@ export function buildFilterQuery(sql, params) {
           query.sql += ` ${hasWhere ? 'AND' : 'WHERE'} ${whereObjClause.sql}`;
           query.params = whereObjClause.params;
         }
-        console.log(query);
+
         query = connector.parameterize(query);
       }
     }

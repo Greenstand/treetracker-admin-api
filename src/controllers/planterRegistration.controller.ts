@@ -4,15 +4,6 @@ import { PlanterRegistration } from '../models';
 import { PlanterRegistrationRepository } from '../repositories';
 import { buildFilterQuery } from '../js/buildFilterQuery.js';
 
-// Extend the LoopBack filter types for the Trees model to include tagId
-// This is a workaround for the lack of proper join support in LoopBack
-type PlanterRegistrationWhere = Where<PlanterRegistration> & {
-  planterId?: number;
-};
-type PlanterRegistrationFilter = Filter<PlanterRegistration> & {
-  where: PlanterRegistrationWhere;
-};
-
 export class PlanterRegistrationController {
   constructor(
     @repository(PlanterRegistrationRepository)
@@ -36,7 +27,7 @@ export class PlanterRegistrationController {
   })
   async find(
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
-    filter?: PlanterRegistrationFilter,
+    filter?: Filter<PlanterRegistration>,
   ): Promise<PlanterRegistration[]> {
     const sql = `SELECT * FROM planter_registrations 
         LEFT JOIN (
