@@ -23,10 +23,11 @@ import { publishMessage } from '../messaging/RabbitMQMessaging.js';
 import { config } from '../config.js';
 import { v4 as uuid } from 'uuid';
 import { Transaction } from 'loopback-connector';
+import { getConnector, buildFilterQuery } from '../js/buildFilterQuery.js';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
-type TreesWhere = Where<Trees> & { tagId?: string, organizationId?: number };
+type TreesWhere = Where<Trees> & { tagId?: string; organizationId?: number };
 type TreesFilter = Filter<Trees> & { where: TreesWhere };
 
 export class TreesController {
@@ -34,8 +35,8 @@ export class TreesController {
     @repository(TreesRepository)
     public treesRepository: TreesRepository,
     @repository(DomainEventRepository)
-    public domainEventRepository: DomainEventRepository
-  ) { }
+    public domainEventRepository: DomainEventRepository,
+  ) {}
 
   @get('/trees/count', {
     responses: {
@@ -48,27 +49,36 @@ export class TreesController {
   async count(
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
-
     // Replace organizationId with full entity tree and planter
     if (where && where.organizationId !== undefined) {
-      const clause = await this.treesRepository.getOrganizationWhereClause(where.organizationId)
+      const clause = await this.treesRepository.getOrganizationWhereClause(
+        where.organizationId,
+      );
       where = {
         ...where,
         ...clause,
-      }
+      };
       delete where.organizationId;
     }
 
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack count()
     if (where && where.tagId !== undefined) {
       try {
-        const isTagNull = where.tagId === null
-        const query = this.buildFilterQuery(
-          `SELECT COUNT(*) FROM trees`,
-          `${isTagNull ? 'LEFT JOIN' : 'JOIN'} tree_tag ON trees.id=tree_tag.tree_id`,
-          `WHERE tree_tag.tag_id ${isTagNull ? 'IS NULL' : `=${where.tagId}`}`,
-          where,
-        );
+        const isTagNull = where.tagId === null;
+
+        const sql = `SELECT COUNT(*) FROM trees ${
+          isTagNull ? 'LEFT JOIN' : 'JOIN'
+        } tree_tag ON trees.id=tree_tag.tree_id WHERE tree_tag.tag_id ${
+          isTagNull ? 'IS NULL' : `=${where.tagId}`
+        }`;
+
+        const params = {
+          filter: where,
+          repo: this.treesRepository,
+          model: 'Trees',
+        };
+
+        const query = buildFilterQuery(sql, params);
 
         return <Promise<Count>>(
           await this.treesRepository
@@ -107,35 +117,42 @@ export class TreesController {
     // Replace plantingOrganizationId with full entity tree and planter
     if (filter && filter.where && filter.where.organizationId !== undefined) {
       const clause = await this.treesRepository.getOrganizationWhereClause(
-        filter.where.organizationId
+        filter.where.organizationId,
       );
       filter.where = {
         ...filter.where,
         ...clause,
-      }
+      };
       delete filter.where.organizationId;
     }
 
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     if (filter && filter.where && filter.where.tagId !== undefined) {
       try {
-        const connector = this.getConnector();
+        const connector = getConnector(this.treesRepository);
         if (connector) {
           // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
           const columnNames = connector
             .buildColumnNames('Trees', filter)
-            .replace('"id"', 'trees.id as "id"')
+            .replace('"id"', 'trees.id as "id"');
 
-          const isTagNull = filter.where.tagId === null
-          const query = this.buildFilterQuery(
-            `SELECT ${columnNames} from trees`,
-            `${isTagNull ?
-              'LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id ORDER BY "time_created" DESC'
-              :
-              'JOIN tree_tag ON trees.id=tree_tag.tree_id'}`,
-            `WHERE tree_tag.tag_id ${isTagNull ? 'IS NULL' : `=${filter.where.tagId}`}`,
-            filter.where,
-          );
+          const isTagNull = filter.where.tagId === null;
+
+          const sql = `SELECT ${columnNames} from trees ${
+            isTagNull
+              ? 'LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id ORDER BY "time_created" DESC'
+              : 'JOIN tree_tag ON trees.id=tree_tag.tree_id'
+          } WHERE tree_tag.tag_id ${
+            isTagNull ? 'IS NULL' : `=${filter.where.tagId}`
+          }`;
+
+          const params = {
+            filter: filter?.where,
+            repo: this.treesRepository,
+            model: 'Trees',
+          };
+
+          const query = buildFilterQuery(sql, params);
 
           return <Promise<Trees[]>>(
             await this.treesRepository
@@ -204,8 +221,9 @@ export class TreesController {
     })
     limit: number,
   ): Promise<Trees[]> {
-    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${radius ? radius : 100
-      }, false) LIMIT ${limit ? limit : 100}`;
+    const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${
+      radius ? radius : 100
+    }, false) LIMIT ${limit ? limit : 100}`;
     console.log(`near query: ${query}`);
     return <Promise<Trees[]>>await this.treesRepository.execute(query, []);
   }
@@ -221,94 +239,53 @@ export class TreesController {
     @param.path.number('id') id: number,
     @requestBody() trees: Trees,
   ): Promise<void> {
-    const tx = await this.treesRepository.dataSource.beginTransaction(
-      { isolationLevel: Transaction.READ_COMMITTED }
-    );
-    try{
+    const tx = await this.treesRepository.dataSource.beginTransaction({
+      isolationLevel: Transaction.READ_COMMITTED,
+    });
+    try {
       let verifyCaptureProcessed;
       let domainEvent;
-      if(config.enableVerificationPublishing) {
+      if (config.enableVerificationPublishing) {
         const storedTree = await this.treesRepository.findById(id);
         // Raise an event to indicate verification is processed
         // on both rejection and approval
-        if((!trees.approved && !trees.active && storedTree.active) ||
-            storedTree.approved != trees.approved) {
+        if (
+          (!trees.approved && !trees.active && storedTree.active) ||
+          storedTree.approved != trees.approved
+        ) {
           verifyCaptureProcessed = {
             id: storedTree.uuid,
             reference_id: storedTree.id,
-            type: "VerifyCaptureProcessed",
+            type: 'VerifyCaptureProcessed',
             approved: trees.approved,
             rejection_reason: trees.rejectionReason,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
           };
           domainEvent = {
             id: uuid(),
             payload: verifyCaptureProcessed,
             status: 'raised',
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           };
-          await this.domainEventRepository.create(
-            domainEvent, { transaction: tx });
+          await this.domainEventRepository.create(domainEvent, {
+            transaction: tx,
+          });
         }
       }
       await this.treesRepository.updateById(id, trees, { transaction: tx });
       await tx.commit();
-      if(verifyCaptureProcessed) {
+      if (verifyCaptureProcessed) {
         await publishMessage(verifyCaptureProcessed, () => {
-          this.domainEventRepository.updateById(
-              domainEvent.id, { status: 'sent', updatedAt: new Date().toISOString()});
+          this.domainEventRepository.updateById(domainEvent.id, {
+            status: 'sent',
+            updatedAt: new Date().toISOString(),
+          });
         });
       }
-    } catch(e) {
+    } catch (e) {
       await tx.rollback();
       throw e;
     }
-  }
-
-  private getConnector() {
-    return this.treesRepository.dataSource.connector;
-  }
-
-  private buildFilterQuery(
-    selectClause: string,
-    joinClause?: string,
-    whereClause?: string,
-    whereObj?: TreesWhere,
-  ) {
-    let sql = selectClause;
-    if (joinClause) {
-      sql += ` ${joinClause}`;
-    }
-
-    if (whereClause) {
-      sql += ` ${whereClause}`;
-    }
-
-    let query = new ParameterizedSQL(sql);
-
-    if (whereObj) {
-      const connector = this.getConnector();
-      if (connector) {
-        const model = connector._models.Trees.model;
-
-        if (model) {
-          let safeWhere = model._sanitizeQuery(whereObj);
-          safeWhere = model._coerce(safeWhere);
-
-          const whereObjClause = connector._buildWhere('Trees', safeWhere);
-
-          if (whereObjClause && whereObjClause.sql) {
-            query.sql += ` ${whereClause ? 'AND' : 'WHERE'} ${whereObjClause.sql
-              }`;
-            query.params = whereObjClause.params;
-          }
-
-          query = connector.parameterize(query);
-        }
-      }
-    }
-
-    return query;
   }
 }

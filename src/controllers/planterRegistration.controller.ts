@@ -1,14 +1,8 @@
-import {
-  Filter,
-  repository,
-} from '@loopback/repository';
-import {
-  param,
-  get,
-  getFilterSchemaFor,
-} from '@loopback/rest';
-import {PlanterRegistration} from '../models';
-import {PlanterRegistrationRepository} from '../repositories';
+import { Filter, repository, Where } from '@loopback/repository';
+import { param, get, getFilterSchemaFor } from '@loopback/rest';
+import { PlanterRegistration } from '../models';
+import { PlanterRegistrationRepository } from '../repositories';
+import { buildFilterQuery } from '../js/buildFilterQuery.js';
 
 export class PlanterRegistrationController {
   constructor(
@@ -22,7 +16,10 @@ export class PlanterRegistrationController {
         description: 'Array of PlanterRegistration model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': PlanterRegistration}},
+            schema: {
+              type: 'array',
+              items: { 'x-ts-type': PlanterRegistration },
+            },
           },
         },
       },
@@ -32,18 +29,38 @@ export class PlanterRegistrationController {
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
     filter?: Filter<PlanterRegistration>,
   ): Promise<PlanterRegistration[]> {
-    return await this.planterRepository.find(filter);
+    const sql = `SELECT * FROM planter_registrations 
+        LEFT JOIN (
+        SELECT region.name AS country, region.geom FROM region, region_type
+        WHERE region_type.type='country' AND region.type_id=region_type.id
+    ) AS region ON ST_DWithin(region.geom, planter_registrations.geom, 0.01)`;
+
+    const params = {
+      filter: filter?.where,
+      repo: this.planterRepository,
+      model: 'PlanterRegistration',
+    };
+
+    const query = buildFilterQuery(sql, params);
+
+    return <Promise<PlanterRegistration[]>>(
+      await this.planterRepository.execute(query.sql, query.params)
+    );
   }
 
   @get('/planter-registration/{id}', {
     responses: {
       '200': {
         description: 'PlanterRegistration model instance',
-        content: {'application/json': {schema: {'x-ts-type': PlanterRegistration}}},
+        content: {
+          'application/json': { schema: { 'x-ts-type': PlanterRegistration } },
+        },
       },
     },
   })
-  async findById(@param.path.number('id') id: number): Promise<PlanterRegistration> {
+  async findById(
+    @param.path.number('id') id: number,
+  ): Promise<PlanterRegistration> {
     return await this.planterRepository.findById(id);
   }
 }
