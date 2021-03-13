@@ -119,10 +119,8 @@ helper.loadUserPermissions = async function (userId) {
   userDetails.role = result.rows.map(r => r.role_id);
   userDetails.roleNames = result.rows.map(r => r.role_name);
   //get policies
-  const policyObjects = await Promise.all(userDetails.role.map(async (role) => {
-    const res = await pool.query(`select * from admin_role where id = ${role}`);
-    return res.rows.map(r => r.policy)[0];
-  }));
+  const roleResult = await pool.query(`select * from admin_role where id in (${userDetails.role.join(',')}) and active = true`);
+  const policyObjects = roleResult.rows.map(r => r.policy);
 
   // Build a composite policy object from the various roles
   userDetails.policy = policyObjects.reduce((compositePolicy, policyObj) => {
