@@ -1,3 +1,10 @@
+## [2.14.1](https://github.com/Greenstand/treetracker-admin/compare/v2.14.0...v2.14.1) (2021-03-14)
+
+
+### Bug Fixes
+
+* make 'active' a bool in species model ([#539](https://github.com/Greenstand/treetracker-admin/issues/539)) ([4664716](https://github.com/Greenstand/treetracker-admin/commit/46647166f8d4c2dc9215c9d008046ebe4874e9d3))
+
 # [2.14.0](https://github.com/Greenstand/treetracker-admin/compare/v2.13.4...v2.14.0) (2021-03-12)
 
 
