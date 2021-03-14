@@ -1,3 +1,10 @@
+## [2.14.2](https://github.com/Greenstand/treetracker-admin/compare/v2.14.1...v2.14.2) (2021-03-14)
+
+
+### Bug Fixes
+
+* exclude inactive species ([#541](https://github.com/Greenstand/treetracker-admin/issues/541)) ([dd51baa](https://github.com/Greenstand/treetracker-admin/commit/dd51baa7c5041dfc21bb88bf319583438efac7ca))
+
 ## [2.14.1](https://github.com/Greenstand/treetracker-admin/compare/v2.14.0...v2.14.1) (2021-03-14)
 
 
