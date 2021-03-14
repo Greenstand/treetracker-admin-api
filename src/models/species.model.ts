@@ -1,11 +1,11 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 @model({
   settings: {
     idInjection: false,
-    postgresql: {schema: 'public', table: 'tree_species'},
+    postgresql: { schema: 'public', table: 'tree_species' },
   },
 })
 export class Species extends Entity {
@@ -56,16 +56,15 @@ export class Species extends Entity {
   desc: String;
 
   @property({
-    type: Number,
+    type: Boolean,
     required: false,
-    scale: 0,
     postgresql: {
       columnName: 'active',
-      dataType: 'integer',
+      dataType: 'boolean',
       dataLength: null,
       dataPrecision: null,
-      dataScale: 0,
-      nullable: 'NO',
+      dataScale: null,
+      nullable: 'YES',
     },
   })
   active: Number;
