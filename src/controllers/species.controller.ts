@@ -25,7 +25,7 @@ export class SpeciesController {
     public speciesRepository: SpeciesRepository,
     @repository(TreesRepository)
     public treesRepository: TreesRepository,
-  ) {}
+  ) { }
 
   @get('/species/count', {
     responses: {
@@ -39,6 +39,8 @@ export class SpeciesController {
     @param.query.object('where', getWhereSchemaFor(Species))
     where?: Where<Species>,
   ): Promise<Count> {
+    // Only include active species
+    where = { ...where, active: true };
     return await this.speciesRepository.count(where);
   }
 
@@ -59,6 +61,8 @@ export class SpeciesController {
     filter?: Filter<Species>,
   ): Promise<Species[]> {
     console.log(filter, filter ? filter.where : null);
+    // Only include active species
+    filter = { ...filter, where: { ...filter?.where, active: true } };
     return await this.speciesRepository.find(filter);
   }
 
@@ -100,9 +104,8 @@ export class SpeciesController {
   ): Promise<void> {
     const newSpecies = await this.speciesRepository.create(request.species);
 
-    const updateQuery = `UPDATE trees SET species_id=${
-      newSpecies.id
-    } WHERE species_id IN (${request.combine.join(', ')})`;
+    const updateQuery = `UPDATE trees SET species_id=${newSpecies.id
+      } WHERE species_id IN (${request.combine.join(', ')})`;
 
     const deleteQuery = `UPDATE tree_species SET active=false WHERE id IN (${request.combine.join(
       ', ',
