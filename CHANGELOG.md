@@ -1,3 +1,10 @@
+## [2.14.3](https://github.com/Greenstand/treetracker-admin/compare/v2.14.2...v2.14.3) (2021-03-25)
+
+
+### Bug Fixes
+
+* force a release ([60b9dcb](https://github.com/Greenstand/treetracker-admin/commit/60b9dcb15eff9a6a5cb15d43974f4cc42b4d6fb2))
+
 ## [2.14.2](https://github.com/Greenstand/treetracker-admin/compare/v2.14.1...v2.14.2) (2021-03-14)
 
 
