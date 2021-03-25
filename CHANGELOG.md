@@ -1,3 +1,10 @@
+## [2.14.4](https://github.com/Greenstand/treetracker-admin/compare/v2.14.3...v2.14.4) (2021-03-25)
+
+
+### Bug Fixes
+
+* remove namespace from sealed secret ([35b06d0](https://github.com/Greenstand/treetracker-admin/commit/35b06d01edbe05cfeeee93cb0a376e08ebc6a32c))
+
 ## [2.14.3](https://github.com/Greenstand/treetracker-admin/compare/v2.14.2...v2.14.3) (2021-03-25)
 
 
