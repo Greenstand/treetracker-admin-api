@@ -1,3 +1,10 @@
+## [2.14.6](https://github.com/Greenstand/treetracker-admin/compare/v2.14.5...v2.14.6) (2021-03-25)
+
+
+### Bug Fixes
+
+* fix up sealed secret overlay to match base ([8c2b102](https://github.com/Greenstand/treetracker-admin/commit/8c2b102fa58cd79dde9301d1065d5841f9977ba6))
+
 ## [2.14.5](https://github.com/Greenstand/treetracker-admin/compare/v2.14.4...v2.14.5) (2021-03-25)
 
 
