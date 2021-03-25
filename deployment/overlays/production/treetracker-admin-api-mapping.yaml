@@ -1,0 +1,13 @@
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: treetracker-admin-api
+spec:
+  cors:
+    origins:
+      - https://admin.treetracker.org
+      - https://d2swy6guhjfbkg.cloudfront.net
+    methods: GET, POST, PATCH, PUT, OPTIONS
+    headers:
+      - Content-Type
+      - Authorization
