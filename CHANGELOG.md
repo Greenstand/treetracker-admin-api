@@ -1,3 +1,10 @@
+## [2.14.5](https://github.com/Greenstand/treetracker-admin/compare/v2.14.4...v2.14.5) (2021-03-25)
+
+
+### Bug Fixes
+
+* fix rabbitmq sealed secret ([07a507e](https://github.com/Greenstand/treetracker-admin/commit/07a507e8dfe746fc8211f2f9730260c44b1d269f))
+
 ## [2.14.4](https://github.com/Greenstand/treetracker-admin/compare/v2.14.3...v2.14.4) (2021-03-25)
 
 
