@@ -62,53 +62,66 @@ const jsonParser = app.use(bodyParser.urlencoded({ extended: false })); // parse
 
 function isIdValid(id) {
   // an ID is valid if it is not null or undefined
-  return id != null
+  return id != null;
 }
 
 helper.getActiveAdminUserRoles = async function (userId) {
   if (!isIdValid(userId)) {
-    return null
+    return null;
   }
   // Include role details
   return await pool.query(
     `select * from admin_user_role aur left join admin_role ar on aur.role_id = ar.id
      where aur.admin_user_id = ${userId} and aur.active = true`,
   );
-}
+};
 
 helper.clearAdminUserRoles = async function (userId) {
   if (!isIdValid(userId)) {
-    return
+    return;
   }
   return await pool.query(
-    `update admin_user_role set active = false where admin_user_id = ${userId}`
-  )
-}
+    `update admin_user_role set active = false where admin_user_id = ${userId}`,
+  );
+};
 
 helper.addAdminUserRole = async function (userId, roleId) {
   if (!isIdValid(userId) || !isIdValid(roleId)) {
-    return
+    return;
   }
   return await pool.query(
     `insert into admin_user_role (role_id, admin_user_id, active)
      values (${roleId},${userId},true)
      on conflict (role_id, admin_user_id)
      do update set active = true`,
-  )
-}
+  );
+};
 
 helper.getActiveAdminUser = async function (userName) {
   return await pool.query(
     `select * from admin_user where user_name = '${userName}' and active = true`,
   );
-}
+};
 
 helper.deactivateAdminUser = async function (userId) {
   if (!isIdValid(userId)) {
-    return
+    return;
   }
-  return await pool.query(`update admin_user set active = false where id = ${userId}`);
-}
+  return await pool.query(
+    `update admin_user set active = false where id = ${userId}`,
+  );
+};
+
+helper.getAdminRoles = async function (roleIds) {
+  if (!roleIds) {
+    return null;
+  }
+  return await await pool.query(
+    `select * from admin_role where id in (${roleIds.join(
+      ',',
+    )}) and active = true`,
+  );
+};
 
 // load roles and policy (permissions)
 helper.loadUserPermissions = async function (userId) {
@@ -116,29 +129,31 @@ helper.loadUserPermissions = async function (userId) {
   //get roles
   const result = await helper.getActiveAdminUserRoles(userId);
   expect(result.rows.length).toBeGreaterThan(0);
-  userDetails.role = result.rows.map(r => r.role_id);
-  userDetails.roleNames = result.rows.map(r => r.role_name);
+  userDetails.role = result.rows.map((r) => r.role_id);
+  userDetails.roleNames = result.rows.map((r) => r.role_name);
   //get policies
-  const roleResult = await pool.query(`select * from admin_role where id in (${userDetails.role.join(',')}) and active = true`);
-  const policyObjects = roleResult.rows.map(r => r.policy);
+  const roleResult = helper.getAdminRoles(userDetails.role);
+  const policyObjects = roleResult?.rows.map((r) => r.policy);
 
   // Build a composite policy object from the various roles
-  userDetails.policy = policyObjects.reduce((compositePolicy, policyObj) => {
-    // Assume one organization and apply to all policies
-    if (policyObj.organization) {
-      compositePolicy.organization = policyObj.organization;
-    }
-    policyObj.policies.forEach(p => {
-      if (!compositePolicy.policies.find((cp) => cp.name === p.name)) {
-        compositePolicy.policies.push(p);
+  userDetails.policy = policyObjects?.reduce(
+    (compositePolicy, policyObj) => {
+      // Assume one organization and apply to all policies
+      if (policyObj.organization) {
+        compositePolicy.organization = policyObj.organization;
       }
-    });
+      policyObj.policies.forEach((p) => {
+        if (!compositePolicy.policies.find((cp) => cp.name === p.name)) {
+          compositePolicy.policies.push(p);
+        }
+      });
 
-    return compositePolicy;
-  }, { policies: [] });
+      return compositePolicy;
+    },
+    { policies: [] },
+  );
   return userDetails;
-}
-
+};
 
 router.get('/permissions', async function login(req, res) {
   try {
@@ -168,14 +183,14 @@ router.post('/login', async function login(req, res, next) {
         userLogin = user_entity;
         //load role
         //console.assert(userLogin.id >= 0, 'id?', userLogin);
-        const result = await helper.getActiveAdminUserRoles(userLogin.id)
-        userLogin.role = result.rows.map(r => r.role_id);
-        userLogin.roleNames = result.rows.map(r => r.role_name);
+        const result = await helper.getActiveAdminUserRoles(userLogin.id);
+        userLogin.role = result.rows.map((r) => r.role_id);
+        userLogin.roleNames = result.rows.map((r) => r.role_name);
       } else {
-        console.log("checking password failed");
+        console.log('checking password failed');
       }
     } else {
-      console.log("can not find user by ", userName);
+      console.log('can not find user by ', userName);
     }
 
     // If user exists in db AND user is active
@@ -198,7 +213,16 @@ router.post('/login', async function login(req, res, next) {
       console.log('login success');
       return res.json({
         token,
-        user: { id, userName, firstName, lastName, email, role, policy, roleNames },
+        user: {
+          id,
+          userName,
+          firstName,
+          lastName,
+          email,
+          role,
+          policy,
+          roleNames,
+        },
       });
     } else {
       console.log('login failed:', userLogin);
@@ -210,7 +234,6 @@ router.post('/login', async function login(req, res, next) {
     next(err);
   }
 });
-
 
 router.get('/test', async function login(req, res) {
   res.send('OK');
@@ -227,7 +250,7 @@ router.get('/admin_users/:userId', async (req, res) => {
       userGet = utils.convertCamel(result.rows[0]);
       //load roles
       result = await helper.getActiveAdminUserRoles(userGet.id);
-      userGet.role = result.rows.map(r => r.role_id);
+      userGet.role = result.rows.map((r) => r.role_id);
     }
     if (userGet) {
       delete userGet.passwordHash;
@@ -267,7 +290,7 @@ router.patch('/admin_users/:userId', async (req, res) => {
     await helper.clearAdminUserRoles(req.params.userId);
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
-        await addAdminUserRole(req.params.userId, req.body.role[i])
+        await addAdminUserRole(req.params.userId, req.body.role[i]);
       }
     }
     res.status(200).json();
@@ -279,8 +302,8 @@ router.patch('/admin_users/:userId', async (req, res) => {
 
 router.delete('/admin_users/:userId', async (req, res) => {
   try {
-    await helper.clearAdminUserRoles(req.params.userId)
-    await helper.deactivateAdminUser(req.params.userId)
+    await helper.clearAdminUserRoles(req.params.userId);
+    await helper.deactivateAdminUser(req.params.userId);
     res.status(204).json();
   } catch (e) {
     console.error(e);
@@ -290,14 +313,16 @@ router.delete('/admin_users/:userId', async (req, res) => {
 
 router.get('/admin_users/', async (req, res) => {
   try {
-    const result = await pool.query(`select * from admin_user where active = true`);
+    const result = await pool.query(
+      `select * from admin_user where active = true`,
+    );
     const users = [];
     for (let i = 0; i < result.rows.length; i++) {
       const user = result.rows[i];
       delete user.password_hash;
       delete user.salt;
-      const roles = await helper.getActiveAdminUserRoles(user.id)
-      user.role = roles.rows.map(rr => rr.role_id);
+      const roles = await helper.getActiveAdminUserRoles(user.id);
+      user.role = roles.rows.map((rr) => rr.role_id);
       users.push(utils.convertCamel(user));
     }
     res.status(200).json(users);
@@ -335,7 +360,7 @@ router.post('/admin_users/', async (req, res) => {
   try {
     req.body.passwordHash = req.body.password;
     delete req.body.password;
-    let result = await helper.getActiveAdminUser(req.body.userName)
+    let result = await helper.getActiveAdminUser(req.body.userName);
     if (result.rows.length) {
       //TODO 401
       res.status(201).json({ id: result.rows[0].id });
@@ -358,9 +383,9 @@ router.post('/admin_users/', async (req, res) => {
     let obj;
     if (result.rows.length) {
       obj = result.rows[0];
-      await helper.clearAdminUserRoles(obj.id)
+      await helper.clearAdminUserRoles(obj.id);
       for (const role of req.body.role) {
-        await helper.addAdminUserRole(obj.id, role)
+        await helper.addAdminUserRole(obj.id, role);
       }
     } else {
       throw new Error('can not find new user');
@@ -387,29 +412,29 @@ async function init() {
 
   await pool.query(
     `insert into admin_role (id, role_name, description, policy) ` +
-    `values (1, 'Admin', 'The super administrator role, having all permissions','${JSON.stringify(
-      [policy.policies[0], policy.policies[1], policy.policies[2]],
-    )}'),` +
-    `(2, 'Tree Manager', 'Check, verify, manage trees','${JSON.stringify([
-      policy.policies[3],
-      policy.policies[4],
-    ])}'),` +
-    `(3, 'Planter Manager', 'Check, manage planters','${JSON.stringify([
-      policy.policies[5],
-      policy.policies[6],
-    ])}')`,
+      `values (1, 'Admin', 'The super administrator role, having all permissions','${JSON.stringify(
+        [policy.policies[0], policy.policies[1], policy.policies[2]],
+      )}'),` +
+      `(2, 'Tree Manager', 'Check, verify, manage trees','${JSON.stringify([
+        policy.policies[3],
+        policy.policies[4],
+      ])}'),` +
+      `(3, 'Planter Manager', 'Check, manage planters','${JSON.stringify([
+        policy.policies[5],
+        policy.policies[6],
+      ])}')`,
   );
 
   await pool.query(
     `insert into admin_user (id, user_name, first_name, last_name, password_hash, salt, email, active) ` +
-    `values ( 1, 'admin', 'Admin', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org', true),` +
-    `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true)`,
+      `values ( 1, 'admin', 'Admin', 'Panel', 'eab8461725c44aa1532ed88de947fe0706c00c31ed6d832218a6cf59d7602559a7d372d42a64130f21f1f33091105548514bca805b81ee1f01a068a7b0fa2d80', 'OglBTs','admin@greenstand.org', true),` +
+      `(2, 'test', 'Admin', 'Test', '539430ec2a48fd607b6e06f3c3a7d3f9b46ac5acb7e81b2633678a8fe3ce6216e2abdfa2bc41bbaa438ba55e5149efb7ad522825d9e98df5300b801c7f8d2c86', 'WjSO0T','test@greenstand.org', true)`,
   );
   await pool.query(
     `insert into admin_user_role (id, role_id, admin_user_id, active) ` +
-    `values ( 1, 1, 1, true), ` +
-    `(2, 2, 2, true), ` +
-    `(3, 3, 2, true)`,
+      `values ( 1, 1, 1, true), ` +
+      `(2, 2, 2, true), ` +
+      `(3, 3, 2, true)`,
   );
 }
 
@@ -428,17 +453,13 @@ const hasPermission = (userPolicies, allowedPolicies, orgReq, organization) => {
     return false;
   }
 
-  return (userPolicies.some((r) => allowedPolicies.some(p => r.name === p)))
-}
+  return userPolicies.some((r) => allowedPolicies.some((p) => r.name === p));
+};
 
 const isAuth = async (req, res, next) => {
   //white list
   const url = req.originalUrl;
-  if (
-    url === '/auth/login' ||
-    url === '/auth/test' ||
-    url === '/auth/init'
-  ) {
+  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init') {
     next();
     return;
   }
@@ -473,7 +494,7 @@ const isAuth = async (req, res, next) => {
         if (update_userSession.passwordHash === userSession.passwordHash) {
           /*get the role for updated usersession* */
           const updated_roles = await helper.getActiveAdminUserRoles(user_id);
-          update_userSession.role = updated_roles.rows.map(r => r.role_id);
+          update_userSession.role = updated_roles.rows.map((r) => r.role_id);
           //compare wuth the updated role in case role is changed
           if (helper.needRoleUpdate(update_userSession, userSession)) {
             //reassign token with updated roles if roles change
@@ -517,49 +538,71 @@ const isAuth = async (req, res, next) => {
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);
       if (matcher) {
-        if (hasPermission(
-          policies,
-          [POLICIES.SUPER_PERMISSION, POLICIES.LIST_TREE, POLICIES.APPROVE_TREE],
-          matcher[1],
-          organization)) {
+        if (
+          hasPermission(
+            policies,
+            [
+              POLICIES.SUPER_PERMISSION,
+              POLICIES.LIST_TREE,
+              POLICIES.APPROVE_TREE,
+            ],
+            matcher[1],
+            organization,
+          )
+        ) {
           return next();
         }
 
         res.status(401).json({
           error: new Error('No permission'),
-        })
+        });
         return;
       }
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/);
       if (matcher) {
-        if (hasPermission(
-          policies,
-          [POLICIES.SUPER_PERMISSION, POLICIES.LIST_PLANTER, POLICIES.MANAGE_PLANTER],
-          matcher[1],
-          organization)) {
+        if (
+          hasPermission(
+            policies,
+            [
+              POLICIES.SUPER_PERMISSION,
+              POLICIES.LIST_PLANTER,
+              POLICIES.MANAGE_PLANTER,
+            ],
+            matcher[1],
+            organization,
+          )
+        ) {
           return next();
         }
 
         res.status(401).json({
           error: new Error('No permission'),
-        })
+        });
         return;
       }
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?organizations.*/);
       if (matcher) {
-        if (hasPermission(
-          policies,
-          [POLICIES.SUPER_PERMISSION, POLICIES.LIST_TREE, POLICIES.APPROVE_TREE, POLICIES.MANAGE_PLANTER],
-          matcher[1],
-          organization)) {
+        if (
+          hasPermission(
+            policies,
+            [
+              POLICIES.SUPER_PERMISSION,
+              POLICIES.LIST_TREE,
+              POLICIES.APPROVE_TREE,
+              POLICIES.MANAGE_PLANTER,
+            ],
+            matcher[1],
+            organization,
+          )
+        ) {
           return next();
         }
 
         res.status(401).json({
           error: new Error('No permission'),
-        })
+        });
         return;
       }
     } else {
