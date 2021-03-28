@@ -97,6 +97,30 @@ describe('auth', () => {
     });
   });
 
+  describe('hasPermission', () => {
+    it('success', async () => {
+      const hasPermission = jest.requireActual('./auth').default.helper
+        .hasPermission;
+      expect(hasPermission([{ name: 'test' }], null, ['test'], null)).toBe(
+        true,
+      );
+      expect(hasPermission([{ name: 'test' }], { id: 1 }, ['test'], 1)).toBe(
+        true,
+      );
+      expect(hasPermission([{ name: 'test' }], { id: 2 }, ['test'], 1)).toBe(
+        false,
+      );
+      expect(hasPermission([{ name: 'test' }], null, ['test'], 1)).toBe(true);
+      expect(hasPermission([{ name: 'test' }], { id: 1 }, ['test'], null)).toBe(
+        false,
+      );
+      expect(hasPermission([{ name: 'test' }], null, ['other'], null)).toBe(
+        false,
+      );
+      expect(hasPermission([], null, ['test'], null)).toBe(false);
+    });
+  });
+
   describe('routers withouth isAuth', () => {
     beforeEach(() => {
       expect(auth).toBeDefined();
@@ -378,8 +402,9 @@ describe('auth', () => {
           jwt.verify.mockReturnValueOnce({
             policy: {
               policies: [1],
-              passwordHash: 'testHash',
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -400,8 +425,9 @@ describe('auth', () => {
                   name: 'list_tree',
                 },
               ],
-              passwordHash: 'testHash',
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -416,8 +442,9 @@ describe('auth', () => {
           jwt.verify.mockReturnValueOnce({
             policy: {
               policies: [{}],
-              passwordHash: 'testHash',
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -436,8 +463,13 @@ describe('auth', () => {
                   name: 'list_tree',
                 },
               ],
-              passwordHash: 'testHash',
+              organization: {
+                id: 1,
+                name: 'test org',
+              },
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -458,8 +490,9 @@ describe('auth', () => {
                   name: 'list_planter',
                 },
               ],
-              passwordHash: 'testHash',
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -474,12 +507,13 @@ describe('auth', () => {
           jwt.verify.mockReturnValueOnce({
             policy: {
               policies: [{}],
-              passwordHash: 'testHash',
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
-            Promise.resolve({ rows: [{ passwordHasht: 'testHash' }] }),
+            Promise.resolve({ rows: [] }),
           );
           const response = await request(app).get('/api/planter');
           expect(response.statusCode).toBe(401);
@@ -494,8 +528,13 @@ describe('auth', () => {
                   name: 'list_planter',
                 },
               ],
-              passwordHash: 'testHash',
+              organization: {
+                id: 1,
+                name: 'test org',
+              },
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -518,8 +557,9 @@ describe('auth', () => {
                   name: 'list_tree',
                 },
               ],
-              passwordHash: 'testHash',
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -534,8 +574,9 @@ describe('auth', () => {
           jwt.verify.mockReturnValueOnce({
             policy: {
               policies: [{}],
-              passwordHash: 'testHash',
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -554,8 +595,13 @@ describe('auth', () => {
                   name: 'manage_planter',
                 },
               ],
-              passwordHash: 'testHash',
+              organization: {
+                id: 1,
+                name: 'test org',
+              },
             },
+            passwordHash: 'testHash',
+            userName: 'test',
           });
           query.mockResolvedValue({ rows: [{}] });
           auth.helper.getActiveAdminUserRoles = jest.fn(() =>

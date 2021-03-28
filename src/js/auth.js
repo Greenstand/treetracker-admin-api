@@ -132,7 +132,7 @@ helper.loadUserPermissions = async function (userId) {
   userDetails.role = result.rows.map((r) => r.role_id);
   userDetails.roleNames = result.rows.map((r) => r.role_name);
   //get policies
-  const roleResult = helper.getAdminRoles(userDetails.role);
+  const roleResult = await helper.getAdminRoles(userDetails.role);
   const policyObjects = roleResult?.rows.map((r) => r.policy);
 
   // Build a composite policy object from the various roles
@@ -153,6 +153,23 @@ helper.loadUserPermissions = async function (userId) {
     { policies: [] },
   );
   return userDetails;
+};
+
+helper.hasPermission = (
+  userPolicies,
+  userOrganization,
+  allowedPolicyNames,
+  requestedOrgId,
+) => {
+  if (userOrganization && requestedOrgId !== userOrganization.id) {
+    return false;
+  }
+
+  return userPolicies.some((userPolicy) =>
+    allowedPolicyNames.some(
+      (allowedPolicyName) => userPolicy.name === allowedPolicyName,
+    ),
+  );
 };
 
 router.get('/permissions', async function login(req, res) {
@@ -290,7 +307,7 @@ router.patch('/admin_users/:userId', async (req, res) => {
     await helper.clearAdminUserRoles(req.params.userId);
     if (req.body.role) {
       for (let i = 0; i < req.body.role.length; i++) {
-        await addAdminUserRole(req.params.userId, req.body.role[i]);
+        await helper.addAdminUserRole(req.params.userId, req.body.role[i]);
       }
     }
     res.status(200).json();
@@ -448,14 +465,6 @@ router.post('/init', async (req, res) => {
   }
 });
 
-const hasPermission = (userPolicies, allowedPolicies, orgReq, organization) => {
-  if (orgReq && organization && organization.id > 0) {
-    return false;
-  }
-
-  return userPolicies.some((r) => allowedPolicies.some((p) => r.name === p));
-};
-
 const isAuth = async (req, res, next) => {
   //white list
   const url = req.originalUrl;
@@ -538,16 +547,17 @@ const isAuth = async (req, res, next) => {
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);
       if (matcher) {
+        const requestedOrgId = matcher.length > 1 && parseInt(matcher[2], 10);
         if (
-          hasPermission(
+          helper.hasPermission(
             policies,
+            organization,
             [
               POLICIES.SUPER_PERMISSION,
               POLICIES.LIST_TREE,
               POLICIES.APPROVE_TREE,
             ],
-            matcher[1],
-            organization,
+            requestedOrgId,
           )
         ) {
           return next();
@@ -561,16 +571,17 @@ const isAuth = async (req, res, next) => {
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/);
       if (matcher) {
+        const requestedOrgId = matcher.length > 1 && parseInt(matcher[2], 10);
         if (
-          hasPermission(
+          helper.hasPermission(
             policies,
+            organization,
             [
               POLICIES.SUPER_PERMISSION,
               POLICIES.LIST_PLANTER,
               POLICIES.MANAGE_PLANTER,
             ],
-            matcher[1],
-            organization,
+            requestedOrgId,
           )
         ) {
           return next();
@@ -584,17 +595,18 @@ const isAuth = async (req, res, next) => {
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?organizations.*/);
       if (matcher) {
+        const requestedOrgId = matcher.length > 1 && parseInt(matcher[2], 10);
         if (
-          hasPermission(
+          helper.hasPermission(
             policies,
+            organization,
             [
               POLICIES.SUPER_PERMISSION,
               POLICIES.LIST_TREE,
               POLICIES.APPROVE_TREE,
               POLICIES.MANAGE_PLANTER,
             ],
-            matcher[1],
-            organization,
+            requestedOrgId,
           )
         ) {
           return next();
