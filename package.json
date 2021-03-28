@@ -23,7 +23,7 @@
     "migrate": "node ./dist/migrate",
     "prestart": "npm run clean && npm run build",
     "start": "NODE_ENV=development node .",
-    "start:debug": "NODE_ENV=development node --inspect .",
+    "start:debug": "NODE_ENV=development DEBUG=loopback:*,express:* node --inspect .",
     "startTest": "NODE_ENV=test npm run build && NODE_ENV=test DEBUG=loopback:* node ./dist/indexTest.js",
     "prepublishOnly": "npm run test",
     "test": "NODE_ENV=test jest --watchAll --runInBand",
