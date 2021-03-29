@@ -1,3 +1,10 @@
+## [2.14.8](https://github.com/Greenstand/treetracker-admin/compare/v2.14.7...v2.14.8) (2021-03-29)
+
+
+### Bug Fixes
+
+* update database-connection sealed secret ([ca20b8e](https://github.com/Greenstand/treetracker-admin/commit/ca20b8ef323227774fdb32f9c28fe18568eec13a))
+
 ## [2.14.7](https://github.com/Greenstand/treetracker-admin/compare/v2.14.6...v2.14.7) (2021-03-29)
 
 
