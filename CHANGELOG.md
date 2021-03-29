@@ -1,3 +1,10 @@
+## [2.14.7](https://github.com/Greenstand/treetracker-admin/compare/v2.14.6...v2.14.7) (2021-03-29)
+
+
+### Bug Fixes
+
+* user roles and policies ([#543](https://github.com/Greenstand/treetracker-admin/issues/543)) ([6e257a0](https://github.com/Greenstand/treetracker-admin/commit/6e257a0fe55d46d2d8a6529fbd7669709cf76869))
+
 ## [2.14.6](https://github.com/Greenstand/treetracker-admin/compare/v2.14.5...v2.14.6) (2021-03-25)
 
 
