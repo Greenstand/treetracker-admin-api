@@ -1,3 +1,10 @@
+## [2.14.9](https://github.com/Greenstand/treetracker-admin/compare/v2.14.8...v2.14.9) (2021-03-30)
+
+
+### Bug Fixes
+
+* disable verify publishing ([35b6c01](https://github.com/Greenstand/treetracker-admin/commit/35b6c0103cd9e5d7a4e5489f13c15e34f9de741f))
+
 ## [2.14.8](https://github.com/Greenstand/treetracker-admin/compare/v2.14.7...v2.14.8) (2021-03-29)
 
 
