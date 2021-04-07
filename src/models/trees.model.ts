@@ -1,12 +1,12 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
-import {TreeTag} from './treeTag.model';
+import { Entity, model, property, hasMany } from '@loopback/repository';
+import { TreeTag } from './treeTag.model';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 @model({
   settings: {
     idInjection: false,
-    postgresql: {schema: 'public', table: 'trees'},
+    postgresql: { schema: 'public', table: 'trees' },
   },
 })
 export class Trees extends Entity {
@@ -301,7 +301,7 @@ export class Trees extends Entity {
   })
   speciesId?: Number;
 
-  @hasMany(() => TreeTag, {keyTo: 'treeId'})
+  @hasMany(() => TreeTag, { keyTo: 'treeId' })
   treeTags: TreeTag[];
 
   @property({

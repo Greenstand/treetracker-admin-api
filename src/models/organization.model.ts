@@ -1,9 +1,12 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 @model({
-  settings: {idInjection: false, postgresql: {schema: 'public', table: 'entity'}},
+  settings: {
+    idInjection: false,
+    postgresql: { schema: 'public', table: 'entity' },
+  },
 })
 export class Organization extends Entity {
   @property({

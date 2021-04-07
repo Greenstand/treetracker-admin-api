@@ -11,8 +11,8 @@ import {
   getFilterSchemaFor,
   getWhereSchemaFor,
 } from '@loopback/rest';
-import {Organization} from '../models';
-import {OrganizationRepository} from '../repositories';
+import { Organization } from '../models';
+import { OrganizationRepository } from '../repositories';
 
 export class OrganizationController {
   constructor(
@@ -24,12 +24,13 @@ export class OrganizationController {
     responses: {
       '200': {
         description: 'Organization model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Organization)) where?: Where<Organization>,
+    @param.query.object('where', getWhereSchemaFor(Organization))
+    where?: Where<Organization>,
   ): Promise<Count> {
     return await this.organizationRepository.count(where);
   }
@@ -40,14 +41,15 @@ export class OrganizationController {
         description: 'Array of Organization model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Organization}},
+            schema: { type: 'array', items: { 'x-ts-type': Organization } },
           },
         },
       },
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Organization)) filter?: Filter<Organization>,
+    @param.query.object('filter', getFilterSchemaFor(Organization))
+    filter?: Filter<Organization>,
   ): Promise<Organization[]> {
     console.log(filter, filter ? filter.where : null);
     return await this.organizationRepository.find(filter);
@@ -57,7 +59,9 @@ export class OrganizationController {
     responses: {
       '200': {
         description: 'Organization model instance',
-        content: {'application/json': {schema: {'x-ts-type': Organization}}},
+        content: {
+          'application/json': { schema: { 'x-ts-type': Organization } },
+        },
       },
     },
   })

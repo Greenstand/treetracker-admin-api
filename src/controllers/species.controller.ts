@@ -25,7 +25,7 @@ export class SpeciesController {
     public speciesRepository: SpeciesRepository,
     @repository(TreesRepository)
     public treesRepository: TreesRepository,
-  ) { }
+  ) {}
 
   @get('/species/count', {
     responses: {
@@ -104,8 +104,9 @@ export class SpeciesController {
   ): Promise<void> {
     const newSpecies = await this.speciesRepository.create(request.species);
 
-    const updateQuery = `UPDATE trees SET species_id=${newSpecies.id
-      } WHERE species_id IN (${request.combine.join(', ')})`;
+    const updateQuery = `UPDATE trees SET species_id=${
+      newSpecies.id
+    } WHERE species_id IN (${request.combine.join(', ')})`;
 
     const deleteQuery = `UPDATE tree_species SET active=false WHERE id IN (${request.combine.join(
       ', ',

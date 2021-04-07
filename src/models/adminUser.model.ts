@@ -1,11 +1,11 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 @model({
   settings: {
     idInjection: false,
-    postgresql: {schema: 'public', table: 'admin_user'},
+    postgresql: { schema: 'public', table: 'admin_user' },
   },
 })
 export class AdminUser extends Entity {

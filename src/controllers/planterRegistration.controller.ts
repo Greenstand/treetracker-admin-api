@@ -1,4 +1,4 @@
-import { Filter, repository, Where } from '@loopback/repository';
+import { Filter, repository } from '@loopback/repository';
 import { param, get, getFilterSchemaFor } from '@loopback/rest';
 import { PlanterRegistration } from '../models';
 import { PlanterRegistrationRepository } from '../repositories';

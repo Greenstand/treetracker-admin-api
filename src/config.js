@@ -5,11 +5,13 @@ import path from 'path';
 dotenv.config();
 
 // Read Node environment-specific config
-dotenv.config({ path: path.resolve(__dirname, `../.env.${process.env.NODE_ENV}`) });
+dotenv.config({
+  path: path.resolve(__dirname, `../.env.${process.env.NODE_ENV}`),
+});
 
 const config = {
   jwtSecret: process.env.JWT_SECRET,
-  enableVerificationPublishing: process.env.ENABLE_VERIFY_PUBLISHING
+  enableVerificationPublishing: process.env.ENABLE_VERIFY_PUBLISHING,
 };
 
 export { config };

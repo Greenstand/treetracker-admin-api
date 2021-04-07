@@ -17,8 +17,8 @@ import {
   requestBody,
   HttpErrors,
 } from '@loopback/rest';
-import {Trees} from '../models';
-import {TreesRepository} from '../repositories';
+import { Trees } from '../models';
+import { TreesRepository } from '../repositories';
 
 export class TreesOrganizationController {
   constructor(
@@ -30,7 +30,7 @@ export class TreesOrganizationController {
     responses: {
       '200': {
         description: 'Trees model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -39,7 +39,7 @@ export class TreesOrganizationController {
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
   ): Promise<Count> {
     const clause = await this.treesRepository.getOrganizationWhereClause(
-      organizationId
+      organizationId,
     );
     where = {
       ...where,
@@ -54,7 +54,7 @@ export class TreesOrganizationController {
         description: 'Array of Trees model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Trees}},
+            schema: { type: 'array', items: { 'x-ts-type': Trees } },
           },
         },
       },
@@ -69,7 +69,7 @@ export class TreesOrganizationController {
       //filter should be to deal with the organization, but here is just for
       //demonstration
       const clause = await this.treesRepository.getOrganizationWhereClause(
-        organizationId
+        organizationId,
       );
       filter.where = {
         ...filter.where,
@@ -84,7 +84,7 @@ export class TreesOrganizationController {
     responses: {
       '200': {
         description: 'Trees model instance',
-        content: {'application/json': {schema: {'x-ts-type': Trees}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Trees } } },
       },
     },
   })
@@ -118,7 +118,7 @@ export class TreesOrganizationController {
         description: 'Find trees near a lat/lon with a radius in meters',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Trees}},
+            schema: { type: 'array', items: { 'x-ts-type': Trees } },
           },
         },
       },
@@ -131,7 +131,7 @@ export class TreesOrganizationController {
       name: 'radius',
       in: 'query',
       required: false,
-      schema: {type: 'number'},
+      schema: { type: 'number' },
       description: 'measured in meters (default: 100 meters)',
     })
     radius: number,
@@ -139,7 +139,7 @@ export class TreesOrganizationController {
       name: 'limit',
       in: 'query',
       required: false,
-      schema: {type: 'number'},
+      schema: { type: 'number' },
       description: 'default is 100',
     })
     limit: number,

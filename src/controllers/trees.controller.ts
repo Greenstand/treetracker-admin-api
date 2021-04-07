@@ -16,7 +16,6 @@ import {
   // del,
   requestBody,
 } from '@loopback/rest';
-import { ParameterizedSQL } from 'loopback-connector';
 import { Trees } from '../models';
 import { TreesRepository, DomainEventRepository } from '../repositories';
 import { publishMessage } from '../messaging/RabbitMQMessaging.js';

@@ -15,8 +15,8 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {Trees, TreeTag} from '../models';
-import {TreesRepository} from '../repositories';
+import { Trees, TreeTag } from '../models';
+import { TreesRepository } from '../repositories';
 
 export class TreesTreeTagController {
   constructor(
@@ -29,7 +29,7 @@ export class TreesTreeTagController {
         description: 'Array of Trees has many TreeTag',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(TreeTag)},
+            schema: { type: 'array', items: getModelSchemaRef(TreeTag) },
           },
         },
       },
@@ -46,7 +46,7 @@ export class TreesTreeTagController {
     responses: {
       '200': {
         description: 'Trees model instance',
-        content: {'application/json': {schema: getModelSchemaRef(TreeTag)}},
+        content: { 'application/json': { schema: getModelSchemaRef(TreeTag) } },
       },
     },
   })
@@ -72,7 +72,7 @@ export class TreesTreeTagController {
     responses: {
       '200': {
         description: 'Trees.TreeTag PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -81,7 +81,7 @@ export class TreesTreeTagController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(TreeTag, {partial: true}),
+          schema: getModelSchemaRef(TreeTag, { partial: true }),
         },
       },
     })
@@ -96,7 +96,7 @@ export class TreesTreeTagController {
     responses: {
       '200': {
         description: 'Trees.TreeTag DELETE success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })

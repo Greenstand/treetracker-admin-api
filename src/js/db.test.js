@@ -1,4 +1,4 @@
-const {Pool, Client} = require('pg');
+const { Pool, Client } = require('pg');
 
 //const pool = new Pool({ connectionString: "postgres://deanchen:@localhost:5432/treetracker"});
 

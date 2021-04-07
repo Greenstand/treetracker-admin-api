@@ -17,7 +17,7 @@ import {
 //   requestBody,
 // } from '@loopback/rest';
 // import {AdminUser} from '../models';
-import {AdminUserRepository} from '../repositories';
+import { AdminUserRepository } from '../repositories';
 
 export class AdminUserController {
   constructor(

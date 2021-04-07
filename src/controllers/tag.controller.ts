@@ -16,8 +16,8 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Tag} from '../models';
-import {TagRepository} from '../repositories';
+import { Tag } from '../models';
+import { TagRepository } from '../repositories';
 
 export class TagController {
   constructor(
@@ -29,7 +29,7 @@ export class TagController {
     responses: {
       '200': {
         description: 'Tag model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -45,7 +45,7 @@ export class TagController {
         description: 'Array of Tag model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Tag}},
+            schema: { type: 'array', items: { 'x-ts-type': Tag } },
           },
         },
       },
@@ -62,7 +62,7 @@ export class TagController {
     responses: {
       '200': {
         description: 'Tag model instance',
-        content: {'application/json': {schema: {'x-ts-type': Tag}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Tag } } },
       },
     },
   })
@@ -94,7 +94,7 @@ export class TagController {
   async create(@requestBody() tag: Tag): Promise<Tag> {
     // Only create the tag if it doesn't already exist
     const match = await this.tagRepository.findOne({
-      where: {tagName: {ilike: tag.tagName}},
+      where: { tagName: { ilike: tag.tagName } },
     });
     if (match) {
       return match;

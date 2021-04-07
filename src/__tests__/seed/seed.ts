@@ -1,10 +1,10 @@
 import seed from '../../tests/seed/seed';
 import getDatasource from '../../../src/datasources/config';
-import {Pool} from 'pg';
-const pool = new Pool({connectionString: getDatasource().url});
+import { Pool } from 'pg';
+const pool = new Pool({ connectionString: getDatasource().url });
 
 /*
- * Skip integration tests, let's set up the DB appropriately in the future so we 
+ * Skip integration tests, let's set up the DB appropriately in the future so we
  * use it again
  */
 describe.skip('Seed data into DB', () => {

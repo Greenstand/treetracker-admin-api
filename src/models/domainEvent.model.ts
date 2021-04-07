@@ -3,7 +3,10 @@ import { Entity, model, property } from '@loopback/repository';
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 @model({
-  settings: { idInjection: false, postgresql: { schema: 'public', table: 'domain_event' } },
+  settings: {
+    idInjection: false,
+    postgresql: { schema: 'public', table: 'domain_event' },
+  },
 })
 export class DomainEvent extends Entity {
   @property({

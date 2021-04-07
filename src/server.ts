@@ -1,18 +1,21 @@
 //import {once} from 'events';
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 import cors from 'cors';
 import * as http from 'http';
 import * as path from 'path';
 import express from 'express';
-import {ApplicationConfig, TreetrackerAdminApiApplication} from './application';
+import {
+  ApplicationConfig,
+  TreetrackerAdminApiApplication,
+} from './application';
 import auth from './js/auth.js';
-import {auditMiddleware} from './js/Audit';
+import { auditMiddleware } from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
 
 //TODO import better
 //const express = require('express').default;
 
-export {ApplicationConfig};
+export { ApplicationConfig };
 
 export class ExpressServer {
   public readonly app: express.Application;

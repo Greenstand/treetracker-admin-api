@@ -1,7 +1,7 @@
 /*
  * To test organizational user, like login, permission, and so on
  */
-import {ExpressServer} from '../../server';
+import { ExpressServer } from '../../server';
 
 import request from 'supertest';
 import seed from '../../tests/seed/seed';
@@ -9,7 +9,7 @@ import seed from '../../tests/seed/seed';
 console.log(seed.description);
 
 /*
- * Skip integration tests, let's set up the DB appropriately in the future so we 
+ * Skip integration tests, let's set up the DB appropriately in the future so we
  * use it agaion
  */
 describe.skip('Integration', () => {

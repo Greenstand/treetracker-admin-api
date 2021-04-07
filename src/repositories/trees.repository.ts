@@ -3,10 +3,10 @@ import {
   repository,
   HasManyRepositoryFactory,
 } from '@loopback/repository';
-import {Trees, TreesRelations, TreeTag} from '../models';
-import {TreetrackerDataSource} from '../datasources';
-import {inject, Getter} from '@loopback/core';
-import {TreeTagRepository} from './treeTag.repository';
+import { Trees, TreesRelations, TreeTag } from '../models';
+import { TreetrackerDataSource } from '../datasources';
+import { inject, Getter } from '@loopback/core';
+import { TreeTagRepository } from './treeTag.repository';
 import expect from 'expect-runtime';
 
 export class TreesRepository extends DefaultCrudRepository<
@@ -52,7 +52,7 @@ export class TreesRepository extends DefaultCrudRepository<
       `select * from planter where organization_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`,
       [],
     );
-    expect(result).match([{id: expect.any(Number)}]);
+    expect(result).match([{ id: expect.any(Number) }]);
     return result.map((e) => e.id);
   }
 
@@ -61,18 +61,30 @@ export class TreesRepository extends DefaultCrudRepository<
       `select * from planter where organization_id isnull`,
       [],
     );
-    expect(result).match([{id: expect.any(Number)}]);
+    expect(result).match([{ id: expect.any(Number) }]);
     return result.map((e) => e.id);
   }
 
   async getOrganizationWhereClause(organizationId: number): Promise<Object> {
     if (organizationId === null) {
-      const planterIds = await this.getNonOrganizationPlanterIds()
-      return {and: [{plantingOrganizationId: null}, {planterId: {inq: planterIds}}]};
+      const planterIds = await this.getNonOrganizationPlanterIds();
+      return {
+        and: [
+          { plantingOrganizationId: null },
+          { planterId: { inq: planterIds } },
+        ],
+      };
     } else {
-      const planterIds = await this.getPlanterIdsByOrganizationId(organizationId);
+      const planterIds = await this.getPlanterIdsByOrganizationId(
+        organizationId,
+      );
       const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
-      return {or: [{plantingOrganizationId: {inq: entityIds}}, {planterId: {inq: planterIds}}]};
+      return {
+        or: [
+          { plantingOrganizationId: { inq: entityIds } },
+          { planterId: { inq: planterIds } },
+        ],
+      };
     }
   }
 }

@@ -16,8 +16,8 @@ import {
   // del,
   requestBody,
 } from '@loopback/rest';
-import {Planter} from '../models';
-import {PlanterRepository} from '../repositories';
+import { Planter } from '../models';
+import { PlanterRepository } from '../repositories';
 
 export class PlanterController {
   constructor(
@@ -29,7 +29,7 @@ export class PlanterController {
     responses: {
       '200': {
         description: 'Planter model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -46,7 +46,7 @@ export class PlanterController {
         description: 'Array of Planter model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Planter}},
+            schema: { type: 'array', items: { 'x-ts-type': Planter } },
           },
         },
       },
@@ -63,7 +63,7 @@ export class PlanterController {
     responses: {
       '200': {
         description: 'Planter model instance',
-        content: {'application/json': {schema: {'x-ts-type': Planter}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Planter } } },
       },
     },
   })

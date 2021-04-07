@@ -3,8 +3,8 @@
  */
 import getDatasource from '../../datasources/config';
 const db = getDatasource();
-import {Pool} from 'pg';
-const pool = new Pool({connectionString: db.url});
+import { Pool } from 'pg';
+const pool = new Pool({ connectionString: db.url });
 import policy from '../../policy.json';
 
 const users = {

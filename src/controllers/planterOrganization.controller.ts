@@ -17,8 +17,8 @@ import {
   requestBody,
   HttpErrors,
 } from '@loopback/rest';
-import {Planter} from '../models';
-import {PlanterRepository, TreesRepository} from '../repositories';
+import { Planter } from '../models';
+import { PlanterRepository, TreesRepository } from '../repositories';
 // import expect from "expect-runtime";
 
 export class PlanterOrganizationController {
@@ -33,7 +33,7 @@ export class PlanterOrganizationController {
     responses: {
       '200': {
         description: 'Planter model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -60,7 +60,7 @@ export class PlanterOrganizationController {
         description: 'Array of Planter model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Planter}},
+            schema: { type: 'array', items: { 'x-ts-type': Planter } },
           },
         },
       },
@@ -91,7 +91,7 @@ export class PlanterOrganizationController {
     responses: {
       '200': {
         description: 'Planter model instance',
-        content: {'application/json': {schema: {'x-ts-type': Planter}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Planter } } },
       },
     },
   })
