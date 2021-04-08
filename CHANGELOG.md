@@ -1,3 +1,10 @@
+# [2.15.0](https://github.com/Greenstand/treetracker-admin/compare/v2.14.9...v2.15.0) (2021-04-08)
+
+
+### Features
+
+* add deviceIdentifier to trees model ([#546](https://github.com/Greenstand/treetracker-admin/issues/546)) ([4be4845](https://github.com/Greenstand/treetracker-admin/commit/4be48452c679d4c0aa22f0a5577706c136de564c))
+
 ## [2.14.9](https://github.com/Greenstand/treetracker-admin/compare/v2.14.8...v2.14.9) (2021-03-30)
 
 
