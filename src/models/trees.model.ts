@@ -203,6 +203,20 @@ export class Trees extends Entity {
     type: String,
     required: false,
     postgresql: {
+      columnName: 'device_identifier',
+      dataType: 'character varying',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
+  })
+  deviceIdentifier?: Number;
+
+  @property({
+    type: String,
+    required: false,
+    postgresql: {
       columnName: 'note',
       dataType: 'character varying',
       dataLength: null,
