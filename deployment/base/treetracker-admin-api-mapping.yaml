@@ -6,3 +6,4 @@ spec:
   prefix: /api/admin/
   service: treetracker-admin-api
   rewrite: /
+  timeout_ms: 30000
