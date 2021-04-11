@@ -1,3 +1,10 @@
+## [2.15.1](https://github.com/Greenstand/treetracker-admin/compare/v2.15.0...v2.15.1) (2021-04-11)
+
+
+### Bug Fixes
+
+* force build for new mapping ([9eaf547](https://github.com/Greenstand/treetracker-admin/commit/9eaf547b0e35a152605163da427a23478dac3267))
+
 # [2.15.0](https://github.com/Greenstand/treetracker-admin/compare/v2.14.9...v2.15.0) (2021-04-08)
 
 
