@@ -108,6 +108,13 @@ export class TreesRepository extends DefaultCrudRepository<
     };
   }
 
+  getTreeTagJoinClause(tagId: string): string {
+    if (tagId === null) {
+      return `LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id ISNULL)`;
+    }
+    return `JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id=${tagId})`;
+  }
+
   // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
   async findWithTagId(
     filter?: Filter<Trees>,
@@ -125,13 +132,9 @@ export class TreesRepository extends DefaultCrudRepository<
           .buildColumnNames('Trees', filter)
           .replace('"id"', 'trees.id as "id"');
 
-        const isTagNull = tagId === null;
-
-        const sql = `SELECT ${columnNames} from trees ${
-          isTagNull
-            ? 'LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id ORDER BY "time_created" DESC'
-            : 'JOIN tree_tag ON trees.id=tree_tag.tree_id'
-        } WHERE tree_tag.tag_id ${isTagNull ? 'IS NULL' : `=${tagId}`}`;
+        const sql = `SELECT ${columnNames} from trees ${this.getTreeTagJoinClause(
+          tagId,
+        )}`;
 
         const params = {
           filter: filter?.where,
@@ -170,13 +173,9 @@ export class TreesRepository extends DefaultCrudRepository<
     }
 
     try {
-      const isTagNull = tagId === null;
-
-      const sql = `SELECT COUNT(*) FROM trees ${
-        isTagNull ? 'LEFT JOIN' : 'JOIN'
-      } tree_tag ON trees.id=tree_tag.tree_id WHERE tree_tag.tag_id ${
-        isTagNull ? 'IS NULL' : `=${tagId}`
-      }`;
+      const sql = `SELECT COUNT(*) FROM trees ${this.getTreeTagJoinClause(
+        tagId,
+      )}`;
 
       const params = {
         filter: where,
