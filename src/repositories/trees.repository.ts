@@ -12,8 +12,7 @@ import { TreetrackerDataSource } from '../datasources';
 import { inject, Getter } from '@loopback/core';
 import { TreeTagRepository } from './treeTag.repository';
 import expect from 'expect-runtime';
-import { buildFilterQuery } from '../js/buildFilterQuery.js';
-
+import { buildFilterQuery } from '../js/buildFilterQuery';
 export class TreesRepository extends DefaultCrudRepository<
   Trees,
   typeof Trees.prototype.id,
@@ -132,17 +131,17 @@ export class TreesRepository extends DefaultCrudRepository<
           .buildColumnNames('Trees', filter)
           .replace('"id"', 'trees.id as "id"');
 
-        const sql = `SELECT ${columnNames} from trees ${this.getTreeTagJoinClause(
+        const selectStmt = `SELECT ${columnNames} from trees ${this.getTreeTagJoinClause(
           tagId,
         )}`;
 
         const params = {
-          filter: filter?.where,
+          filter,
           repo: this,
-          model: 'Trees',
+          modelName: 'Trees',
         };
 
-        const query = buildFilterQuery(sql, params);
+        const query = buildFilterQuery(selectStmt, params);
 
         return <Promise<Trees[]>>await this.execute(
           query.sql,
@@ -173,17 +172,17 @@ export class TreesRepository extends DefaultCrudRepository<
     }
 
     try {
-      const sql = `SELECT COUNT(*) FROM trees ${this.getTreeTagJoinClause(
+      const selectStmt = `SELECT COUNT(*) FROM trees ${this.getTreeTagJoinClause(
         tagId,
       )}`;
 
       const params = {
-        filter: where,
+        filter: { where },
         repo: this,
-        model: 'Trees',
+        modelName: 'Trees',
       };
 
-      const query = buildFilterQuery(sql, params);
+      const query = buildFilterQuery(selectStmt, params);
 
       return <Promise<Count>>await this.execute(
         query.sql,
