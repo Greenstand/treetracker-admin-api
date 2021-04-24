@@ -5,6 +5,9 @@ export function getConnector(repo) {
   return repo?.dataSource?.connector;
 }
 
+// This method is based on LoopBack's SQLConnector.prototype.buildSelect(),
+// but caters for JOINS and existing WHERE in the SELECT statement passed in.
+// (See node_modules/loopback_connector/lib/sql.js)
 export function buildFilterQuery(selectStmt, params) {
   let query = new ParameterizedSQL(selectStmt);
 
