@@ -20,6 +20,13 @@ import {
 import { Trees } from '../models';
 import { TreesRepository } from '../repositories';
 
+// Extend the LoopBack filter types for the Trees model to include tagId
+// This is a workaround for the lack of proper join support in LoopBack
+type TreesWhere =
+  | (Where<Trees> & { tagId?: string; organizationId?: number })
+  | undefined;
+type TreesFilter = Filter<Trees> & { where: TreesWhere };
+
 export class TreesOrganizationController {
   constructor(
     @repository(TreesRepository)
@@ -36,16 +43,14 @@ export class TreesOrganizationController {
   })
   async count(
     @param.path.number('organizationId') organizationId: number,
-    @param.query.object('where', getWhereSchemaFor(Trees)) where?: Where<Trees>,
+    @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
-    const clause = await this.treesRepository.getOrganizationWhereClause(
+    const orgWhere = await this.treesRepository.applyOrganizationWhereClause(
+      where,
       organizationId,
     );
-    where = {
-      ...where,
-      ...clause,
-    };
-    return await this.treesRepository.count(where);
+    const tagId = where?.tagId;
+    return await this.treesRepository.countWithTagId(orgWhere, tagId);
   }
 
   @get('/organization/{organizationId}/trees', {
@@ -63,21 +68,16 @@ export class TreesOrganizationController {
   async find(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Trees))
-    filter?: Filter<Trees>,
+    filter?: TreesFilter,
   ): Promise<Trees[]> {
-    if (filter) {
-      //filter should be to deal with the organization, but here is just for
-      //demonstration
-      const clause = await this.treesRepository.getOrganizationWhereClause(
+    const tagId = filter?.where?.tagId;
+    if (filter?.where) {
+      filter.where = await this.treesRepository.applyOrganizationWhereClause(
+        filter.where,
         organizationId,
       );
-      filter.where = {
-        ...filter.where,
-        ...clause,
-      };
     }
-    console.log('filter:', filter, filter ? filter.where : null);
-    return await this.treesRepository.find(filter);
+    return await this.treesRepository.findWithTagId(filter, tagId);
   }
 
   @get('/organization/{organizationId}/trees/{id}', {
@@ -92,7 +92,10 @@ export class TreesOrganizationController {
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
   ): Promise<Trees> {
-    const result = await this.treesRepository.findById(id);
+    const result = await this.treesRepository.findById(id, {
+      include: [{ relation: 'treeTags' }],
+    });
+
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
       organizationId,
     );

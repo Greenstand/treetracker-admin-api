@@ -22,11 +22,12 @@ import { publishMessage } from '../messaging/RabbitMQMessaging.js';
 import { config } from '../config.js';
 import { v4 as uuid } from 'uuid';
 import { Transaction } from 'loopback-connector';
-import { getConnector, buildFilterQuery } from '../js/buildFilterQuery.js';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
-type TreesWhere = Where<Trees> & { tagId?: string; organizationId?: number };
+type TreesWhere =
+  | (Where<Trees> & { tagId?: string; organizationId?: number })
+  | undefined;
 type TreesFilter = Filter<Trees> & { where: TreesWhere };
 
 export class TreesController {
@@ -48,51 +49,21 @@ export class TreesController {
   async count(
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
+    const tagId = where?.tagId;
+
     // Replace organizationId with full entity tree and planter
-    if (where && where.organizationId !== undefined) {
-      const clause = await this.treesRepository.getOrganizationWhereClause(
-        where.organizationId,
+    if (where) {
+      const { organizationId, ...whereWithoutOrganizationId } = where;
+      where = await this.treesRepository.applyOrganizationWhereClause(
+        whereWithoutOrganizationId,
+        organizationId,
       );
-      where = {
-        ...where,
-        ...clause,
-      };
-      delete where.organizationId;
     }
 
-    // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack count()
-    if (where && where.tagId !== undefined) {
-      try {
-        const isTagNull = where.tagId === null;
-
-        const sql = `SELECT COUNT(*) FROM trees ${
-          isTagNull ? 'LEFT JOIN' : 'JOIN'
-        } tree_tag ON trees.id=tree_tag.tree_id WHERE tree_tag.tag_id ${
-          isTagNull ? 'IS NULL' : `=${where.tagId}`
-        }`;
-
-        const params = {
-          filter: where,
-          repo: this.treesRepository,
-          model: 'Trees',
-        };
-
-        const query = buildFilterQuery(sql, params);
-
-        return <Promise<Count>>(
-          await this.treesRepository
-            .execute(query.sql, query.params)
-            .then((res) => {
-              return (res && res[0]) || { count: 0 };
-            })
-        );
-      } catch (e) {
-        console.log(e);
-        return await this.treesRepository.count(where);
-      }
-    } else {
-      return await this.treesRepository.count(where);
-    }
+    return await this.treesRepository.countWithTagId(
+      where as Where<Trees>,
+      tagId,
+    );
   }
 
   @get('/trees', {
@@ -113,63 +84,19 @@ export class TreesController {
   ): Promise<Trees[]> {
     console.log(filter, filter ? filter.where : null);
 
-    // Replace plantingOrganizationId with full entity tree and planter
-    if (filter && filter.where && filter.where.organizationId !== undefined) {
-      const clause = await this.treesRepository.getOrganizationWhereClause(
-        filter.where.organizationId,
+    const tagId = filter?.where?.tagId;
+
+    // Replace organizationId with full entity tree and planter
+    if (filter?.where) {
+      const { organizationId, ...whereWithoutOrganizationId } = filter.where;
+      filter.where = await this.treesRepository.applyOrganizationWhereClause(
+        whereWithoutOrganizationId,
+        organizationId,
       );
-      filter.where = {
-        ...filter.where,
-        ...clause,
-      };
-      delete filter.where.organizationId;
     }
 
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
-    if (filter && filter.where && filter.where.tagId !== undefined) {
-      try {
-        const connector = getConnector(this.treesRepository);
-        if (connector) {
-          // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
-          const columnNames = connector
-            .buildColumnNames('Trees', filter)
-            .replace('"id"', 'trees.id as "id"');
-
-          const isTagNull = filter.where.tagId === null;
-
-          const sql = `SELECT ${columnNames} from trees ${
-            isTagNull
-              ? 'LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id ORDER BY "time_created" DESC'
-              : 'JOIN tree_tag ON trees.id=tree_tag.tree_id'
-          } WHERE tree_tag.tag_id ${
-            isTagNull ? 'IS NULL' : `=${filter.where.tagId}`
-          }`;
-
-          const params = {
-            filter: filter?.where,
-            repo: this.treesRepository,
-            model: 'Trees',
-          };
-
-          const query = buildFilterQuery(sql, params);
-
-          return <Promise<Trees[]>>(
-            await this.treesRepository
-              .execute(query.sql, query.params)
-              .then((data) => {
-                return data.map((obj) => connector.fromRow('Trees', obj));
-              })
-          );
-        } else {
-          throw 'Connector not defined';
-        }
-      } catch (e) {
-        console.log(e);
-        return await this.treesRepository.find(filter);
-      }
-    } else {
-      return await this.treesRepository.find(filter);
-    }
+    return await this.treesRepository.findWithTagId(filter, tagId);
   }
 
   @get('/trees/{id}', {

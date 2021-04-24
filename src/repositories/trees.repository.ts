@@ -2,12 +2,17 @@ import {
   DefaultCrudRepository,
   repository,
   HasManyRepositoryFactory,
+  Filter,
+  Options,
+  Where,
+  Count,
 } from '@loopback/repository';
 import { Trees, TreesRelations, TreeTag } from '../models';
 import { TreetrackerDataSource } from '../datasources';
 import { inject, Getter } from '@loopback/core';
 import { TreeTagRepository } from './treeTag.repository';
 import expect from 'expect-runtime';
+import { buildFilterQuery } from '../js/buildFilterQuery.js';
 
 export class TreesRepository extends DefaultCrudRepository<
   Trees,
@@ -85,6 +90,111 @@ export class TreesRepository extends DefaultCrudRepository<
           { planterId: { inq: planterIds } },
         ],
       };
+    }
+  }
+
+  async applyOrganizationWhereClause(
+    where: Object | undefined,
+    organizationId: number | undefined,
+  ): Promise<Object | undefined> {
+    if (!where || organizationId === undefined) {
+      return Promise.resolve(where);
+    }
+    const organizationWhereClause = await this.getOrganizationWhereClause(
+      organizationId,
+    );
+    return {
+      and: [where, organizationWhereClause],
+    };
+  }
+
+  getTreeTagJoinClause(tagId: string): string {
+    if (tagId === null) {
+      return `LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id ISNULL)`;
+    }
+    return `JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id=${tagId})`;
+  }
+
+  // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
+  async findWithTagId(
+    filter?: Filter<Trees>,
+    tagId?: string,
+    options?: Options,
+  ): Promise<(Trees & TreesRelations)[]> {
+    if (!filter || tagId === undefined) {
+      return await this.find(filter, options);
+    }
+
+    try {
+      if (this.dataSource.connector) {
+        // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
+        const columnNames = this.dataSource.connector
+          .buildColumnNames('Trees', filter)
+          .replace('"id"', 'trees.id as "id"');
+
+        const sql = `SELECT ${columnNames} from trees ${this.getTreeTagJoinClause(
+          tagId,
+        )}`;
+
+        const params = {
+          filter: filter?.where,
+          repo: this,
+          model: 'Trees',
+        };
+
+        const query = buildFilterQuery(sql, params);
+
+        return <Promise<Trees[]>>await this.execute(
+          query.sql,
+          query.params,
+          options,
+        ).then((data) => {
+          return data.map((obj) =>
+            this.dataSource.connector?.fromRow('Trees', obj),
+          );
+        });
+      } else {
+        throw 'Connector not defined';
+      }
+    } catch (e) {
+      console.log(e);
+      return await this.find(filter, options);
+    }
+  }
+
+  // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack count()
+  async countWithTagId(
+    where?: Where<Trees>,
+    tagId?: string,
+    options?: Options,
+  ): Promise<Count> {
+    if (!where || tagId === undefined) {
+      return await this.count(where, options);
+    }
+
+    try {
+      const sql = `SELECT COUNT(*) FROM trees ${this.getTreeTagJoinClause(
+        tagId,
+      )}`;
+
+      const params = {
+        filter: where,
+        repo: this,
+        model: 'Trees',
+      };
+
+      const query = buildFilterQuery(sql, params);
+
+      return <Promise<Count>>await this.execute(
+        query.sql,
+        query.params,
+        options,
+      ).then((res) => {
+        return (res && res[0]) || { count: 0 };
+      });
+    } catch (e) {
+      console.log(e);
+      return await this.count(where, options);
     }
   }
 }
