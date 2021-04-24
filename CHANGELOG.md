@@ -1,3 +1,10 @@
+## [2.15.2](https://github.com/Greenstand/treetracker-admin/compare/v2.15.1...v2.15.2) (2021-04-24)
+
+
+### Bug Fixes
+
+* organization and tree tag filters  ([#549](https://github.com/Greenstand/treetracker-admin/issues/549)) ([72a9ced](https://github.com/Greenstand/treetracker-admin/commit/72a9ced0f4f2fc90816fc58c31b00188d7dc0b79))
+
 ## [2.15.1](https://github.com/Greenstand/treetracker-admin/compare/v2.15.0...v2.15.1) (2021-04-11)
 
 
