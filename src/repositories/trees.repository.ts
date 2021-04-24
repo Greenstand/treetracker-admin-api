@@ -13,6 +13,7 @@ import { inject, Getter } from '@loopback/core';
 import { TreeTagRepository } from './treeTag.repository';
 import expect from 'expect-runtime';
 import { buildFilterQuery } from '../js/buildFilterQuery';
+
 export class TreesRepository extends DefaultCrudRepository<
   Trees,
   typeof Trees.prototype.id,
