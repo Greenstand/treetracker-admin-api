@@ -1,3 +1,10 @@
+## [2.15.3](https://github.com/Greenstand/treetracker-admin/compare/v2.15.2...v2.15.3) (2021-04-26)
+
+
+### Bug Fixes
+
+* apply pagination to Verify tree query when filtering by tag ([#555](https://github.com/Greenstand/treetracker-admin/issues/555)) ([ca75dbd](https://github.com/Greenstand/treetracker-admin/commit/ca75dbd99b0326247af237fcba754110c080f93e))
+
 ## [2.15.2](https://github.com/Greenstand/treetracker-admin/compare/v2.15.1...v2.15.2) (2021-04-24)
 
 
