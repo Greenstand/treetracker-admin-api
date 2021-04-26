@@ -36,9 +36,9 @@ export class PlanterRegistrationController {
     ) AS region ON ST_DWithin(region.geom, planter_registrations.geom, 0.01)`;
 
     const params = {
-      filter: filter?.where,
+      filter,
       repo: this.planterRepository,
-      model: 'PlanterRegistration',
+      modelName: 'PlanterRegistration',
     };
 
     const query = buildFilterQuery(sql, params);

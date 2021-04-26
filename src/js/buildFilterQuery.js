@@ -5,28 +5,45 @@ export function getConnector(repo) {
   return repo?.dataSource?.connector;
 }
 
-export function buildFilterQuery(sql, params) {
-  let query = new ParameterizedSQL(sql);
+// This method is based on LoopBack's SQLConnector.prototype.buildSelect(),
+// but caters for JOINS and existing WHERE in the SELECT statement passed in.
+// (See node_modules/loopback_connector/lib/sql.js)
+export function buildFilterQuery(selectStmt, params) {
+  let query = new ParameterizedSQL(selectStmt);
 
-  if (params.filter) {
-    const connector = getConnector(params.repo);
-    if (connector) {
-      const model = connector._models[params.model].model;
+  if (!params) {
+    return query;
+  }
+
+  const { modelName, repo, filter } = params;
+  const connector = getConnector(repo);
+
+  if (filter && modelName && connector) {
+    if (filter.where) {
+      const model = connector.getModelDefinition(modelName)?.model;
 
       if (model) {
-        let safeWhere = model._sanitizeQuery(params.filter);
+        let safeWhere = model._sanitizeQuery(filter.where);
         safeWhere = model._coerce(safeWhere);
 
-        const whereObjClause = connector._buildWhere(params.model, safeWhere);
+        const whereObjClause = connector._buildWhere(modelName, safeWhere);
 
         if (whereObjClause.sql) {
-          const hasWhere = /WHERE(?![^(]*\))/i.test(sql);
+          const hasWhere = /WHERE(?![^(]*\))/i.test(selectStmt);
           query.sql += ` ${hasWhere ? 'AND' : 'WHERE'} ${whereObjClause.sql}`;
           query.params = whereObjClause.params;
         }
 
         query = connector.parameterize(query);
       }
+    }
+
+    if (filter.order) {
+      query.merge(connector.buildOrderBy(modelName, filter.order));
+    }
+
+    if (filter.limit || filter.skip || filter.offset) {
+      query = connector.applyPagination(modelName, query, filter);
     }
   }
 
