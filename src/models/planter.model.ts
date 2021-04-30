@@ -152,6 +152,9 @@ export class Planter extends Entity {
   @property({
     type: Number,
     required: false,
+    jsonSchema: {
+      nullable: true,
+    },
     scale: 0,
     postgresql: {
       columnName: 'organization_id',
