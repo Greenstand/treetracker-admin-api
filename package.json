@@ -1,6 +1,6 @@
 {
   "name": "treetracker-admin-api",
-  "version": "2.15.4",
+  "version": "2.15.5",
   "private": true,
   "description": "Treetracker Admin API Server",
   "keywords": [

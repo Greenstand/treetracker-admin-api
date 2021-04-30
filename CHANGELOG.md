@@ -1,3 +1,10 @@
+## [2.15.5](https://github.com/Greenstand/treetracker-admin/compare/v2.15.4...v2.15.5) (2021-04-30)
+
+
+### Bug Fixes
+
+* use local dns name for rabbitmq messaging system in k8 cluster ([#547](https://github.com/Greenstand/treetracker-admin/issues/547)) ([0239dff](https://github.com/Greenstand/treetracker-admin/commit/0239dff1b90d2a378b146d77f71e4edb98b87408))
+
 ## [2.15.4](https://github.com/Greenstand/treetracker-admin/compare/v2.15.3...v2.15.4) (2021-04-30)
 
 
