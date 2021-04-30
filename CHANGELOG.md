@@ -1,3 +1,10 @@
+## [2.15.4](https://github.com/Greenstand/treetracker-admin/compare/v2.15.3...v2.15.4) (2021-04-30)
+
+
+### Bug Fixes
+
+* setting organizationID to null ([#557](https://github.com/Greenstand/treetracker-admin/issues/557)) ([74af2d5](https://github.com/Greenstand/treetracker-admin/commit/74af2d580ea73bd5cc979cb7de19b98da4754235))
+
 ## [2.15.3](https://github.com/Greenstand/treetracker-admin/compare/v2.15.2...v2.15.3) (2021-04-26)
 
 
