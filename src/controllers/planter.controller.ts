@@ -16,13 +16,16 @@ import {
   // del,
   requestBody,
 } from '@loopback/rest';
-import { Planter } from '../models';
-import { PlanterRepository } from '../repositories';
+import { Planter, Trees } from '../models';
+import { TreesFilter } from './trees.controller';
+import { PlanterRepository, TreesRepository } from '../repositories';
 
 export class PlanterController {
   constructor(
     @repository(PlanterRepository)
     public planterRepository: PlanterRepository,
+    @repository(TreesRepository)
+    public treesRepository: TreesRepository,
   ) {}
 
   @get('/planter/count', {
@@ -69,6 +72,26 @@ export class PlanterController {
   })
   async findById(@param.path.number('id') id: number): Promise<Planter> {
     return await this.planterRepository.findById(id);
+  }
+
+  @get('/planter/{id}/selfies', {
+    responses: {
+      '200': {
+        description: 'Array of Trees model instances',
+        content: { 'application/json': { schema: { 'x-ts-type': Trees } } },
+      },
+    },
+  })
+  async findSelfiesById(
+    @param.path.number('id') id: number,
+    @param.query.object('filter', getFilterSchemaFor(Trees))
+    filter?: TreesFilter,
+  ): Promise<Trees[]> {
+    filter = {
+      where: { planterId: id, planterPhotoUrl: { neq: null } },
+      ...filter,
+    };
+    return await this.treesRepository.find(filter);
   }
 
   @patch('/planter/{id}', {
