@@ -51,7 +51,6 @@ export class OrganizationController {
     @param.query.object('filter', getFilterSchemaFor(Organization))
     filter?: Filter<Organization>,
   ): Promise<Organization[]> {
-    console.log(filter, filter ? filter.where : null);
     return await this.organizationRepository.find(filter);
   }
 
