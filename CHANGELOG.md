@@ -1,3 +1,10 @@
+# [2.16.0](https://github.com/Greenstand/treetracker-admin/compare/v2.15.5...v2.16.0) (2021-05-10)
+
+
+### Features
+
+* make new api route for planter to get selfies from tree ([#558](https://github.com/Greenstand/treetracker-admin/issues/558)) ([0f118d0](https://github.com/Greenstand/treetracker-admin/commit/0f118d086bd55b07c355fc14d54aaacce10c9ec6))
+
 ## [2.15.5](https://github.com/Greenstand/treetracker-admin/compare/v2.15.4...v2.15.5) (2021-04-30)
 
 
