@@ -7,7 +7,7 @@ spec:
     origins:
       - https://admin.treetracker.org
       - https://d2swy6guhjfbkg.cloudfront.net
-    methods: GET, POST, PATCH, PUT, OPTIONS
+    methods: GET, POST, PATCH, PUT, OPTIONS, DELETE
     headers:
       - Content-Type
       - Authorization

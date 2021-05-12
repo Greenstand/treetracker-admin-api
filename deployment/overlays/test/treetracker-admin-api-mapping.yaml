@@ -5,9 +5,9 @@ metadata:
 spec:
   cors:
     origins:
-      - https://test.admin.treetracker.org
+      - https://test-admin.treetracker.org
       - https://d2s7z62c7yrbt1.cloudfront.net
-    methods: GET, POST, PATCH, PUT, OPTIONS
+    methods: GET, POST, PATCH, PUT, OPTIONS, DELETE
     headers:
       - Content-Type
       - Authorization
