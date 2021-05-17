@@ -1,3 +1,10 @@
+## [2.16.1](https://github.com/Greenstand/treetracker-admin/compare/v2.16.0...v2.16.1) (2021-05-17)
+
+
+### Bug Fixes
+
+* organization user unauthorized error for verify filter ([#562](https://github.com/Greenstand/treetracker-admin/issues/562)) ([39cda32](https://github.com/Greenstand/treetracker-admin/commit/39cda32ef32716bcb9e24adf5964d483f936d243))
+
 # [2.16.0](https://github.com/Greenstand/treetracker-admin/compare/v2.15.5...v2.16.0) (2021-05-10)
 
 
