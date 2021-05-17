@@ -161,11 +161,7 @@ helper.hasPermission = (
   allowedPolicyNames,
   requestedOrgId,
 ) => {
-  if (
-    userOrganization &&
-    requestedOrgId &&
-    requestedOrgId !== userOrganization.id
-  ) {
+  if (userOrganization && requestedOrgId !== userOrganization.id) {
     return false;
   }
 
@@ -194,7 +190,6 @@ router.post('/login', async function login(req, res, next) {
 
     //find the user to get the salt, validate if hashed password matches
     const users = await helper.getActiveAdminUser(userName);
-
     let userLogin;
     if (users.rows.length) {
       const user_entity = utils.convertCamel(users.rows[0]);
@@ -218,7 +213,7 @@ router.post('/login', async function login(req, res, next) {
     if (userLogin && userLogin.enabled) {
       const userDetails = await helper.loadUserPermissions(userLogin.id);
       userLogin = { ...userLogin, ...userDetails };
-
+      //TODO get user
       const token = await jwt.sign(userLogin, jwtSecret);
       const {
         id,
@@ -261,6 +256,7 @@ router.get('/test', async function login(req, res) {
 
 router.get('/admin_users/:userId', async (req, res) => {
   try {
+    //console.log(pool);
     let result = await pool.query(
       `select * from admin_user where id=${req.params.userId} and active = true`,
     );
@@ -479,8 +475,11 @@ const isAuth = async (req, res, next) => {
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
+    //inject the user extract from token to request object
     req.user = userSession;
+
     // VALIDATE USER DATA
+    // const roles = userSession.role;
     expect(userSession.policy).toBeInstanceOf(Object);
     const policies = userSession.policy.policies;
     expect(policies).toBeInstanceOf(Array);
@@ -541,30 +540,6 @@ const isAuth = async (req, res, next) => {
         return next();
       } else if (url.match(/\/api\/tree_tags.*/)) {
         return next();
-      }
-
-      matcher = url.match(/\/api\/organizations\.*/);
-      if (matcher) {
-        const requestedOrgId = matcher.length > 1 && parseInt(matcher[2], 10);
-        if (
-          helper.hasPermission(
-            policies,
-            organization,
-            [
-              POLICIES.SUPER_PERMISSION,
-              POLICIES.LIST_TREE,
-              POLICIES.APPROVE_TREE,
-            ],
-            requestedOrgId,
-          )
-        ) {
-          return next();
-        }
-
-        res.status(401).json({
-          error: new Error('No permission'),
-        });
-        return;
       }
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);

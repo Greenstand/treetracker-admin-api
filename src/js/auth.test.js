@@ -112,7 +112,7 @@ describe('auth', () => {
       );
       expect(hasPermission([{ name: 'test' }], null, ['test'], 1)).toBe(true);
       expect(hasPermission([{ name: 'test' }], { id: 1 }, ['test'], null)).toBe(
-        true,
+        false,
       );
       expect(hasPermission([{ name: 'test' }], null, ['other'], null)).toBe(
         false,

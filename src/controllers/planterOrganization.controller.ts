@@ -128,5 +128,13 @@ export class PlanterOrganizationController {
         'Organizational user has no permission to do this operation',
       );
     }
+    // const result = await this.planterRepository.findById(id);
+    // const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    // if (!entityIds.includes(result?.organizationId?.valueOf() || -1)) {
+    //   throw new HttpErrors.Unauthorized(
+    //     'Organizational user has no permission to do this operation',
+    //   );
+    // }
+    // await this.planterRepository.updateById(id, planter);
   }
 }
