@@ -190,12 +190,10 @@ router.post('/login', async function login(req, res, next) {
 
     //find the user to get the salt, validate if hashed password matches
     const users = await helper.getActiveAdminUser(userName);
-
     let userLogin;
     if (users.rows.length) {
       const user_entity = utils.convertCamel(users.rows[0]);
       const hash = helper.sha512(password, user_entity.salt);
-
       if (user_entity.passwordHash === hash) {
         userLogin = user_entity;
         //load role
@@ -530,7 +528,6 @@ const isAuth = async (req, res, next) => {
         next();
         return;
       } else {
-        console.log('No permission');
         res.status(401).json({
           error: new Error('No permission'),
         });
