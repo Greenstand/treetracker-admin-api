@@ -1,3 +1,10 @@
+## [2.16.2](https://github.com/Greenstand/treetracker-admin/compare/v2.16.1...v2.16.2) (2021-05-21)
+
+
+### Bug Fixes
+
+* enable DELETE on API deployment ([#561](https://github.com/Greenstand/treetracker-admin/issues/561)) ([1758517](https://github.com/Greenstand/treetracker-admin/commit/17585176b957dd6054f1fd71a9fb367d9835468c))
+
 ## [2.16.1](https://github.com/Greenstand/treetracker-admin/compare/v2.16.0...v2.16.1) (2021-05-17)
 
 
