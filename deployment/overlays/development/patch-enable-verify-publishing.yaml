@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treetracker-admin-api
+  labels:
+    app: treetracker-admin-api
+spec:
+  template:
+    metadata:
+      labels:
+        app: treetracker-admin-api
+    spec:
+      containers:
+          env:
+            - name: ENABLE_VERIFY_PUBLISHING
+              value: 'true'
