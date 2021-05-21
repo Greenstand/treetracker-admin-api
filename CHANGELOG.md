@@ -1,3 +1,11 @@
+## [2.16.3](https://github.com/Greenstand/treetracker-admin/compare/v2.16.2...v2.16.3) (2021-05-21)
+
+
+### Bug Fixes
+
+* use dns name for rabbitmq in k8 ([80ecbeb](https://github.com/Greenstand/treetracker-admin/commit/80ecbeb1cb60228c534c18c774bd51617654a7c7))
+* use dns name for rabbitmq in k8 ([1f419d7](https://github.com/Greenstand/treetracker-admin/commit/1f419d70acc978d47438557a7dc11d16f0ff3d2b))
+
 ## [2.16.2](https://github.com/Greenstand/treetracker-admin/compare/v2.16.1...v2.16.2) (2021-05-21)
 
 
