@@ -5,7 +5,7 @@ metadata:
 spec:
   cors:
     origins: '*'
-    methods: GET, POST, PATCH, PUT, OPTIONS
+    methods: GET, POST, PATCH, PUT, OPTIONS, DELETE
     headers:
       - Content-Type
       - Authorization

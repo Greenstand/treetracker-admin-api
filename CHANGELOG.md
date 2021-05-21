@@ -1,3 +1,31 @@
+## [2.16.2](https://github.com/Greenstand/treetracker-admin/compare/v2.16.1...v2.16.2) (2021-05-21)
+
+
+### Bug Fixes
+
+* enable DELETE on API deployment ([#561](https://github.com/Greenstand/treetracker-admin/issues/561)) ([1758517](https://github.com/Greenstand/treetracker-admin/commit/17585176b957dd6054f1fd71a9fb367d9835468c))
+
+## [2.16.1](https://github.com/Greenstand/treetracker-admin/compare/v2.16.0...v2.16.1) (2021-05-17)
+
+
+### Bug Fixes
+
+* organization user unauthorized error for verify filter ([#562](https://github.com/Greenstand/treetracker-admin/issues/562)) ([39cda32](https://github.com/Greenstand/treetracker-admin/commit/39cda32ef32716bcb9e24adf5964d483f936d243))
+
+# [2.16.0](https://github.com/Greenstand/treetracker-admin/compare/v2.15.5...v2.16.0) (2021-05-10)
+
+
+### Features
+
+* make new api route for planter to get selfies from tree ([#558](https://github.com/Greenstand/treetracker-admin/issues/558)) ([0f118d0](https://github.com/Greenstand/treetracker-admin/commit/0f118d086bd55b07c355fc14d54aaacce10c9ec6))
+
+## [2.15.5](https://github.com/Greenstand/treetracker-admin/compare/v2.15.4...v2.15.5) (2021-04-30)
+
+
+### Bug Fixes
+
+* use local dns name for rabbitmq messaging system in k8 cluster ([#547](https://github.com/Greenstand/treetracker-admin/issues/547)) ([0239dff](https://github.com/Greenstand/treetracker-admin/commit/0239dff1b90d2a378b146d77f71e4edb98b87408))
+
 ## [2.15.4](https://github.com/Greenstand/treetracker-admin/compare/v2.15.3...v2.15.4) (2021-04-30)
 
 

@@ -28,7 +28,7 @@ import { Transaction } from 'loopback-connector';
 type TreesWhere =
   | (Where<Trees> & { tagId?: string; organizationId?: number })
   | undefined;
-type TreesFilter = Filter<Trees> & { where: TreesWhere };
+export type TreesFilter = Filter<Trees> & { where: TreesWhere };
 
 export class TreesController {
   constructor(

@@ -51,8 +51,36 @@ export class OrganizationController {
     @param.query.object('filter', getFilterSchemaFor(Organization))
     filter?: Filter<Organization>,
   ): Promise<Organization[]> {
-    console.log(filter, filter ? filter.where : null);
     return await this.organizationRepository.find(filter);
+  }
+
+  @get('/organization/{organizationId}/organizations', {
+    responses: {
+      '200': {
+        description: 'Array of Organization model instances by Org',
+        content: {
+          'application/json': {
+            schema: { type: 'array', items: { 'x-ts-type': Organization } },
+          },
+        },
+      },
+    },
+  })
+  async findByParentOrg(
+    @param.path.number('organizationId') organizationId: Number,
+    @param.query.object('filter', getFilterSchemaFor(Organization))
+    filter?: Filter<Organization>,
+  ): Promise<Organization[]> {
+    if (filter?.where) {
+      filter.where = await this.organizationRepository.applyOrganizationWhereClause(
+        filter.where,
+        organizationId.valueOf(),
+      );
+    }
+    // console.log('/organizations ?filter --> ', organizationId, filter, filter?.where);
+    const result = await this.organizationRepository.find(filter);
+    // console.log('/organizations res --> ', result);
+    return result;
   }
 
   @get('/organizations/{id}', {

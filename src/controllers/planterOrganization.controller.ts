@@ -108,7 +108,7 @@ export class PlanterOrganizationController {
         'Organizational user has no permission to do this operation',
       );
     }
-    return await this.planterRepository.findById(id);
+    return result;
   }
 
   @patch('/organization/{organizationId}/planter/{id}', {
@@ -123,18 +123,18 @@ export class PlanterOrganizationController {
     @param.path.number('id') id: Number,
     @requestBody() planter: Planter,
   ): Promise<void> {
-    throw new HttpErrors.Unauthorized(
-      'Organizational user has no permission to do this operation',
-    );
-    const result = await this.planterRepository.findById(id);
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId.valueOf(),
-    );
-    if (!entityIds.includes(result?.organizationId?.valueOf() || -1)) {
+    if (organizationId) {
       throw new HttpErrors.Unauthorized(
         'Organizational user has no permission to do this operation',
       );
     }
-    await this.planterRepository.updateById(id, planter);
+    // const result = await this.planterRepository.findById(id);
+    // const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    // if (!entityIds.includes(result?.organizationId?.valueOf() || -1)) {
+    //   throw new HttpErrors.Unauthorized(
+    //     'Organizational user has no permission to do this operation',
+    //   );
+    // }
+    // await this.planterRepository.updateById(id, planter);
   }
 }
