@@ -82,7 +82,7 @@ export class TreesController {
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
   ): Promise<Trees[]> {
-    console.log(filter, filter ? filter.where : null);
+    console.log('get /trees filter --> ', filter ? filter.where : null);
 
     const tagId = filter?.where?.tagId;
 
