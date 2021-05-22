@@ -171,7 +171,7 @@ export class TreesController {
     try {
       let verifyCaptureProcessed;
       let domainEvent;
-      if (config.enableVerificationPublishing) {
+      if (config.enableVerificationPublishing === 'true') {
         const storedTree = await this.treesRepository.findById(id);
         // Raise an event to indicate verification is processed
         // on both rejection and approval
