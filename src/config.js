@@ -12,7 +12,7 @@ dotenv.config({
 const config = {
   jwtSecret: process.env.JWT_SECRET,
   enableVerificationPublishing:
-    (process.env.ENABLE_VERIFY_PUBLISHING || 'false').toLowerCase() == 'true',
+    (process.env.ENABLE_VERIFY_PUBLISHING || 'false').toLowerCase() === 'true',
 };
 
 export { config };
