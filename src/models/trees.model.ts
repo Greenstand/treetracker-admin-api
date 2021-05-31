@@ -364,14 +364,24 @@ export class Trees extends Entity {
   plantingOrganizationId?: Number;
 
   @property({
-    type: Number,
+    type: String,
     required: false,
     postgresql: {
       columnName: 'planter_photo_url',
       dataType: 'character varying',
     },
   })
-  planterPhotoUrl?: Number;
+  planterPhotoUrl?: String;
+
+  @property({
+    type: String,
+    required: false,
+    postgresql: {
+      columnName: 'token_id',
+      dataType: 'character varying',
+    },
+  })
+  tokenId?: String;
 
   // Define well-known properties here
 
