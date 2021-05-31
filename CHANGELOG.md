@@ -1,3 +1,10 @@
+# [2.17.0](https://github.com/Greenstand/treetracker-admin/compare/v2.16.3...v2.17.0) (2021-05-31)
+
+
+### Features
+
+* add token_id to trees model ([#572](https://github.com/Greenstand/treetracker-admin/issues/572)) ([ec61bd9](https://github.com/Greenstand/treetracker-admin/commit/ec61bd949bd0855910bf004318706d719b32ed32))
+
 ## [2.16.3](https://github.com/Greenstand/treetracker-admin/compare/v2.16.2...v2.16.3) (2021-05-21)
 
 
