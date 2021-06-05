@@ -87,6 +87,7 @@ export class PlanterController {
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
   ): Promise<Trees[]> {
+    // console.log('/planter/{id}/selfies', id, filter);
     filter = {
       where: { planterId: id, planterPhotoUrl: { neq: null } },
       ...filter,

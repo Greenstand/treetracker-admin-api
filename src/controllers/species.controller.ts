@@ -60,7 +60,7 @@ export class SpeciesController {
     @param.query.object('filter', getFilterSchemaFor(Species))
     filter?: Filter<Species>,
   ): Promise<Species[]> {
-    console.log(filter, filter ? filter.where : null);
+    console.log('get /species filter --> ', filter ? filter.where : null);
     // Only include active species
     filter = { ...filter, where: { ...filter?.where, active: true } };
     return await this.speciesRepository.find(filter);

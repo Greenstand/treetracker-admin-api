@@ -29,7 +29,9 @@ export class PlanterRegistrationController {
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
     filter?: Filter<PlanterRegistration>,
   ): Promise<PlanterRegistration[]> {
-    const sql = `SELECT * FROM planter_registrations 
+    // console.log('/planter-registration', filter ? filter.where : null);
+
+    const sql = `SELECT * FROM planter_registrations
         LEFT JOIN (
         SELECT region.name AS country, region.geom FROM region, region_type
         WHERE region_type.type='country' AND region.type_id=region_type.id

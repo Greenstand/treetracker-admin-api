@@ -54,7 +54,7 @@ export class TagController {
   async find(
     @param.query.object('filter', getFilterSchemaFor(Tag)) filter?: Filter<Tag>,
   ): Promise<Tag[]> {
-    console.log(filter, filter ? filter.where : null);
+    console.log('get /tags --> ', filter ? filter.where : null);
     return await this.tagRepository.find(filter);
   }
 

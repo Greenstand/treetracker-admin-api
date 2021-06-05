@@ -56,7 +56,7 @@ export class TreeTagController {
     @param.query.object('filter', getFilterSchemaFor(TreeTag))
     filter?: Filter<TreeTag>,
   ): Promise<TreeTag[]> {
-    console.log(filter, filter ? filter.where : null);
+    console.log('get /tree_tags filter --> ', filter ? filter.where : null);
     return await this.treeTagRepository.find(filter);
   }
 
