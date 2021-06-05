@@ -1,3 +1,10 @@
+## [2.17.1](https://github.com/Greenstand/treetracker-admin/compare/v2.17.0...v2.17.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* add org id to planter endpoints ([#570](https://github.com/Greenstand/treetracker-admin/issues/570)) ([ed4b303](https://github.com/Greenstand/treetracker-admin/commit/ed4b3035b791705ee0e9dc6f687f4c36115570cc))
+
 # [2.17.0](https://github.com/Greenstand/treetracker-admin/compare/v2.16.3...v2.17.0) (2021-05-31)
 
 
