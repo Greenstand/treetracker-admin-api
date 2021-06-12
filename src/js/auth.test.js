@@ -314,7 +314,7 @@ describe('auth', () => {
       });
     });
 
-    describe('POST /validate', () => {
+    describe('POST /auth/validate', () => {
       it('Successfully', async () => {
         query.mockResolvedValue({ rows: [{}] });
         auth.helper.getActiveAdminUserRoles = jest.fn(() =>
@@ -374,6 +374,61 @@ describe('auth', () => {
     it('401 /auth/admin_users/ cuz no token', async () => {
       const response = await request(app).get('/auth/admin_users');
       expect(response.statusCode).toBe(401);
+    });
+
+    describe('POST /auth/validate', () => {
+      it('Successfully', async () => {
+        query.mockResolvedValue({ rows: [{}] });
+        auth.helper.getActiveAdminUserRoles = jest.fn(() =>
+          Promise.resolve({ rows: [] }),
+        );
+        auth.helper.sha512 = jest.fn(() => 'testHash');
+        const jwt = require('jsonwebtoken');
+        expectRuntime(jwt).property('verify').defined();
+        jwt.verify.mockReturnValueOnce({ passwordHash: 'testHash' });
+        const response = await request(app)
+          .post('/auth/validate')
+          .set('authorization', 'testToken');
+        expect(response.statusCode).toBe(200);
+      });
+    });
+
+    describe('PUT /auth/admin_users/:id/password', () => {
+      it('Successfully update password', async () => {
+        const jwt = require('jsonwebtoken');
+        jwt.verify.mockReturnValueOnce({
+          policy: { policies: [1] },
+          passwordHash: 'testHash',
+          userName: 'test',
+          id: 1,
+        });
+        query.mockResolvedValue({ rows: [{}] });
+        auth.helper.getActiveAdminUser = jest.fn(() =>
+          Promise.resolve({ rows: [{ passwordHash: 'testHash' }] }),
+        );
+        const response = await request(app)
+          .put('/auth/admin_users/1/password')
+          .send({ password: 'test' });
+        expect(response.statusCode).toBe(200);
+      });
+
+      it('Fail to update password', async () => {
+        const jwt = require('jsonwebtoken');
+        jwt.verify.mockReturnValueOnce({
+          policy: { policies: [1] },
+          passwordHash: 'testHash',
+          userName: 'test',
+          id: 1,
+        });
+        query.mockResolvedValue({ rows: [{}] });
+        auth.helper.getActiveAdminUser = jest.fn(() =>
+          Promise.resolve({ rows: [{ passwordHash: 'testHash' }] }),
+        );
+        const response = await request(app)
+          .put('/auth/admin_users/2/password')
+          .send({ password: 'test' });
+        expect(response.statusCode).toBe(401);
+      });
     });
 
     describe('GET /auth/check_session', () => {
