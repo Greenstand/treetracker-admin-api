@@ -58,12 +58,31 @@ export class SpeciesController {
   })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Species))
-    filter?: Filter<Species>,
-  ): Promise<Species[]> {
+    filter?: Filter<Species> & { fields?: { captureCount?: Boolean } },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<any[]> {
     console.log('get /species filter --> ', filter ? filter.where : null);
     // Only include active species
     filter = { ...filter, where: { ...filter?.where, active: true } };
-    return await this.speciesRepository.find(filter);
+
+    const captureCountStmt =
+      'SELECT species_id,COUNT(species_id) as count FROM trees WHERE species_id NOTNULL GROUP BY species_id';
+    // TODO: combine both queries in one query to minimise overhead
+    const [speciesList, captureCounts] = await Promise.all([
+      this.speciesRepository.find(filter),
+      this.treesRepository.execute(captureCountStmt, []),
+    ]);
+
+    // Merge the capture counts with the species list
+    return speciesList.map((species) => {
+      const match = captureCounts.find((item) => {
+        return item.species_id === species.id;
+      });
+      return {
+        ...species,
+        captureCount: match ? Number(match.count) : 0,
+      };
+    });
   }
 
   @get('/species/{id}', {
