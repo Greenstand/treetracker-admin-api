@@ -66,7 +66,8 @@ export class SpeciesController {
     filter = { ...filter, where: { ...filter?.where, active: true } };
 
     const captureCountStmt =
-      'SELECT species_id,COUNT(species_id) as count FROM trees WHERE species_id NOTNULL GROUP BY species_id';
+      `SELECT species_id,COUNT(species_id) as count FROM trees ` +
+      `WHERE species_id NOTNULL AND active=true GROUP BY species_id`;
     // TODO: combine both queries in one query to minimise overhead
     const [speciesList, captureCounts] = await Promise.all([
       this.speciesRepository.find(filter),
