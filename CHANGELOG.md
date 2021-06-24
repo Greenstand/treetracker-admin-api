@@ -1,3 +1,10 @@
+## [2.17.2](https://github.com/Greenstand/treetracker-admin/compare/v2.17.1...v2.17.2) (2021-06-24)
+
+
+### Bug Fixes
+
+* include capture count in species results ([#577](https://github.com/Greenstand/treetracker-admin/issues/577)) ([ee458b5](https://github.com/Greenstand/treetracker-admin/commit/ee458b575eeda428299accbfaf4004ba0f7804e4))
+
 ## [2.17.1](https://github.com/Greenstand/treetracker-admin/compare/v2.17.0...v2.17.1) (2021-06-05)
 
 
