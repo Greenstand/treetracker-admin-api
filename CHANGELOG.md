@@ -1,3 +1,10 @@
+## [2.17.3](https://github.com/Greenstand/treetracker-admin/compare/v2.17.2...v2.17.3) (2021-06-24)
+
+
+### Bug Fixes
+
+* allow all users to change their own passwords ([#576](https://github.com/Greenstand/treetracker-admin/issues/576)) ([e4e5692](https://github.com/Greenstand/treetracker-admin/commit/e4e5692d6af098a3f11fc1a64e45b8c66324f759))
+
 ## [2.17.2](https://github.com/Greenstand/treetracker-admin/compare/v2.17.1...v2.17.2) (2021-06-24)
 
 
