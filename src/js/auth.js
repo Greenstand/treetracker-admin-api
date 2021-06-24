@@ -466,7 +466,7 @@ router.post('/init', async (req, res) => {
 const isAuth = async (req, res, next) => {
   //white list
   const url = req.originalUrl;
-  if (url === '/auth/login' || url === '/auth/test' || url === '/auth/init') {
+  if (url.match(/\/auth\/(login|test|init|validate)/)) {
     next();
     return;
   }
@@ -523,7 +523,25 @@ const isAuth = async (req, res, next) => {
         }
       }
     }
-    if (url.match(/\/auth\/(?!login).*/)) {
+    const passwordMatcher = url.match(/\/auth\/admin_users\/(\d+)\/password/);
+    if (passwordMatcher && passwordMatcher.length > 1) {
+      if (policies.some((r) => r.name === POLICIES.SUPER_PERMISSION)) {
+        next();
+        return;
+      } else {
+        const reqUserId = passwordMatcher[1];
+        if (Number(reqUserId) === Number(userSession.id)) {
+          // User is changing their own password
+          next();
+          return;
+        } else {
+          res.status(401).json({
+            error: new Error('No permission'),
+          });
+          return;
+        }
+      }
+    } else if (url.match(/\/auth\/(?!login).*/)) {
       if (policies.some((r) => r.name === POLICIES.SUPER_PERMISSION)) {
         next();
         return;
