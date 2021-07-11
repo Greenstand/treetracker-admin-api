@@ -243,6 +243,13 @@ router.post('/login', async function login(req, res, next) {
       console.log('login failed:', userLogin);
     }
 
+    if (userLogin && !userLogin.enabled) {
+      return res.status(401).json({
+        errorMessage:
+          'Your account has been locked. Please contact your administrator for more information.',
+      });
+    }
+
     return res.status(401).json();
   } catch (err) {
     console.error(err);
