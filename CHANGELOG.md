@@ -1,3 +1,10 @@
+## [2.17.4](https://github.com/Greenstand/treetracker-admin/compare/v2.17.3...v2.17.4) (2021-07-11)
+
+
+### Bug Fixes
+
+* give disabled account a clear response ([#579](https://github.com/Greenstand/treetracker-admin/issues/579)) ([9d34d2f](https://github.com/Greenstand/treetracker-admin/commit/9d34d2fa6623f983c1546f0f0ce6b97539976725))
+
 ## [2.17.3](https://github.com/Greenstand/treetracker-admin/compare/v2.17.2...v2.17.3) (2021-06-24)
 
 
