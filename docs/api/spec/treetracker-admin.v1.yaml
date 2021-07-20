@@ -1,0 +1,2135 @@
+openapi: 3.0.0
+info:
+  title: Treetracker Admin API
+  version: 2.17.4
+paths:
+  '/organization/{organizationId}/organizations':
+    get:
+      x-controller-name: OrganizationController
+      x-operation-name: findByParentOrg
+      tags:
+        - OrganizationController
+      responses:
+        '200':
+          description: Array of Organization model instances by Org
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  name:
+                    type: boolean
+                  type:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: OrganizationController.findByParentOrg
+  '/organization/{organizationId}/planter/count':
+    get:
+      x-controller-name: PlanterOrganizationController
+      x-operation-name: count
+      tags:
+        - PlanterOrganizationController
+      responses:
+        '200':
+          description: Planter model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: PlanterOrganizationController.count
+  '/organization/{organizationId}/planter/{id}/selfies':
+    get:
+      x-controller-name: PlanterOrganizationController
+      x-operation-name: findSelfiesById
+      tags:
+        - PlanterOrganizationController
+      responses:
+        '200':
+          description: Array of Trees model instances
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  uuid:
+                    type: boolean
+                  timeCreated:
+                    type: boolean
+                  timeUpdated:
+                    type: boolean
+                  missing:
+                    type: boolean
+                  causeOfDeathId:
+                    type: boolean
+                  planterId:
+                    type: boolean
+                  imageUrl:
+                    type: boolean
+                  lat:
+                    type: boolean
+                  lon:
+                    type: boolean
+                  active:
+                    type: boolean
+                  planterIdentifier:
+                    type: boolean
+                  deviceId:
+                    type: boolean
+                  deviceIdentifier:
+                    type: boolean
+                  note:
+                    type: boolean
+                  verified:
+                    type: boolean
+                  approved:
+                    type: boolean
+                  status:
+                    type: boolean
+                  morphology:
+                    type: boolean
+                  age:
+                    type: boolean
+                  speciesId:
+                    type: boolean
+                  captureApprovalTag:
+                    type: boolean
+                  rejectionReason:
+                    type: boolean
+                  plantingOrganizationId:
+                    type: boolean
+                  planterPhotoUrl:
+                    type: boolean
+                  tokenId:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+              include:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relation:
+                      type: string
+                    scope:
+                      properties:
+                        where:
+                          type: object
+                          additionalProperties: true
+                        fields:
+                          type: object
+                          properties: {}
+                          additionalProperties: true
+                        offset:
+                          type: integer
+                          minimum: 0
+                        limit:
+                          type: integer
+                          minimum: 1
+                          examples:
+                            - 100
+                          example: 100
+                        skip:
+                          type: integer
+                          minimum: 0
+                        order:
+                          type: array
+                          items:
+                            type: string
+                      additionalProperties: false
+            additionalProperties: false
+      operationId: PlanterOrganizationController.findSelfiesById
+  '/organization/{organizationId}/planter/{id}':
+    patch:
+      x-controller-name: PlanterOrganizationController
+      x-operation-name: updateById
+      tags:
+        - PlanterOrganizationController
+      responses:
+        '204':
+          description: Planter PATCH success
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Planter'
+        x-parameter-index: 2
+      operationId: PlanterOrganizationController.updateById
+    get:
+      x-controller-name: PlanterOrganizationController
+      x-operation-name: findById
+      tags:
+        - PlanterOrganizationController
+      responses:
+        '200':
+          description: Planter model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Planter'
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: PlanterOrganizationController.findById
+  '/organization/{organizationId}/planter':
+    get:
+      x-controller-name: PlanterOrganizationController
+      x-operation-name: find
+      tags:
+        - PlanterOrganizationController
+      responses:
+        '200':
+          description: Array of Planter model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Planter'
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  firstName:
+                    type: boolean
+                  lastName:
+                    type: boolean
+                  email:
+                    type: boolean
+                  organization:
+                    type: boolean
+                  phone:
+                    type: boolean
+                  pwdResetRequired:
+                    type: boolean
+                  imageUrl:
+                    type: boolean
+                  personId:
+                    type: boolean
+                  organizationId:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: PlanterOrganizationController.find
+  '/organization/{organizationId}/planter-registration':
+    get:
+      x-controller-name: PlanterOrganizationController
+      x-operation-name: findPlanterRegistration
+      tags:
+        - PlanterOrganizationController
+      responses:
+        '200':
+          description: Array of PlanterRegistration model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanterRegistration'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  planterId:
+                    type: boolean
+                  createdAt:
+                    type: boolean
+                  lat:
+                    type: boolean
+                  lon:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: PlanterOrganizationController.findPlanterRegistration
+  '/organization/{organizationId}/trees/count':
+    get:
+      x-controller-name: TreesOrganizationController
+      x-operation-name: count
+      tags:
+        - TreesOrganizationController
+      responses:
+        '200':
+          description: Trees model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: TreesOrganizationController.count
+  '/organization/{organizationId}/trees/near':
+    get:
+      x-controller-name: TreesOrganizationController
+      x-operation-name: near
+      tags:
+        - TreesOrganizationController
+      responses:
+        '200':
+          description: Find trees near a lat/lon with a radius in meters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: lat
+          in: query
+          schema:
+            type: number
+        - name: lon
+          in: query
+          schema:
+            type: number
+        - name: radius
+          in: query
+          required: false
+          schema:
+            type: number
+          description: 'measured in meters (default: 100 meters)'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+          description: default is 100
+      operationId: TreesOrganizationController.near
+  '/organization/{organizationId}/trees/{id}':
+    patch:
+      x-controller-name: TreesOrganizationController
+      x-operation-name: updateById
+      tags:
+        - TreesOrganizationController
+      responses:
+        '204':
+          description: Trees PATCH success
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trees'
+        x-parameter-index: 2
+      operationId: TreesOrganizationController.updateById
+    get:
+      x-controller-name: TreesOrganizationController
+      x-operation-name: findById
+      tags:
+        - TreesOrganizationController
+      responses:
+        '200':
+          description: Trees model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: TreesOrganizationController.findById
+  '/organization/{organizationId}/trees':
+    get:
+      x-controller-name: TreesOrganizationController
+      x-operation-name: find
+      tags:
+        - TreesOrganizationController
+      responses:
+        '200':
+          description: Array of Trees model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  uuid:
+                    type: boolean
+                  timeCreated:
+                    type: boolean
+                  timeUpdated:
+                    type: boolean
+                  missing:
+                    type: boolean
+                  causeOfDeathId:
+                    type: boolean
+                  planterId:
+                    type: boolean
+                  imageUrl:
+                    type: boolean
+                  lat:
+                    type: boolean
+                  lon:
+                    type: boolean
+                  active:
+                    type: boolean
+                  planterIdentifier:
+                    type: boolean
+                  deviceId:
+                    type: boolean
+                  deviceIdentifier:
+                    type: boolean
+                  note:
+                    type: boolean
+                  verified:
+                    type: boolean
+                  approved:
+                    type: boolean
+                  status:
+                    type: boolean
+                  morphology:
+                    type: boolean
+                  age:
+                    type: boolean
+                  speciesId:
+                    type: boolean
+                  captureApprovalTag:
+                    type: boolean
+                  rejectionReason:
+                    type: boolean
+                  plantingOrganizationId:
+                    type: boolean
+                  planterPhotoUrl:
+                    type: boolean
+                  tokenId:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+              include:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relation:
+                      type: string
+                    scope:
+                      properties:
+                        where:
+                          type: object
+                          additionalProperties: true
+                        fields:
+                          type: object
+                          properties: {}
+                          additionalProperties: true
+                        offset:
+                          type: integer
+                          minimum: 0
+                        limit:
+                          type: integer
+                          minimum: 1
+                          examples:
+                            - 100
+                          example: 100
+                        skip:
+                          type: integer
+                          minimum: 0
+                        order:
+                          type: array
+                          items:
+                            type: string
+                      additionalProperties: false
+            additionalProperties: false
+      operationId: TreesOrganizationController.find
+  /organizations/count:
+    get:
+      x-controller-name: OrganizationController
+      x-operation-name: count
+      tags:
+        - OrganizationController
+      responses:
+        '200':
+          description: Organization model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: OrganizationController.count
+  '/organizations/{id}':
+    get:
+      x-controller-name: OrganizationController
+      x-operation-name: findById
+      tags:
+        - OrganizationController
+      responses:
+        '200':
+          description: Organization model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: OrganizationController.findById
+  /organizations:
+    get:
+      x-controller-name: OrganizationController
+      x-operation-name: find
+      tags:
+        - OrganizationController
+      responses:
+        '200':
+          description: Array of Organization model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  name:
+                    type: boolean
+                  type:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: OrganizationController.find
+  /ping:
+    get:
+      x-controller-name: PingController
+      x-operation-name: ping
+      tags:
+        - PingController
+      responses:
+        '200':
+          description: Ping Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  greeting:
+                    type: string
+                  date:
+                    type: string
+                  url:
+                    type: string
+                  headers:
+                    type: object
+                    properties:
+                      Content-Type:
+                        type: string
+                    additionalProperties: true
+      operationId: PingController.ping
+  /planter/count:
+    get:
+      x-controller-name: PlanterController
+      x-operation-name: count
+      tags:
+        - PlanterController
+      responses:
+        '200':
+          description: Planter model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: PlanterController.count
+  '/planter/{id}/selfies':
+    get:
+      x-controller-name: PlanterController
+      x-operation-name: findSelfiesById
+      tags:
+        - PlanterController
+      responses:
+        '200':
+          description: Array of Trees model instances
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  uuid:
+                    type: boolean
+                  timeCreated:
+                    type: boolean
+                  timeUpdated:
+                    type: boolean
+                  missing:
+                    type: boolean
+                  causeOfDeathId:
+                    type: boolean
+                  planterId:
+                    type: boolean
+                  imageUrl:
+                    type: boolean
+                  lat:
+                    type: boolean
+                  lon:
+                    type: boolean
+                  active:
+                    type: boolean
+                  planterIdentifier:
+                    type: boolean
+                  deviceId:
+                    type: boolean
+                  deviceIdentifier:
+                    type: boolean
+                  note:
+                    type: boolean
+                  verified:
+                    type: boolean
+                  approved:
+                    type: boolean
+                  status:
+                    type: boolean
+                  morphology:
+                    type: boolean
+                  age:
+                    type: boolean
+                  speciesId:
+                    type: boolean
+                  captureApprovalTag:
+                    type: boolean
+                  rejectionReason:
+                    type: boolean
+                  plantingOrganizationId:
+                    type: boolean
+                  planterPhotoUrl:
+                    type: boolean
+                  tokenId:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+              include:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relation:
+                      type: string
+                    scope:
+                      properties:
+                        where:
+                          type: object
+                          additionalProperties: true
+                        fields:
+                          type: object
+                          properties: {}
+                          additionalProperties: true
+                        offset:
+                          type: integer
+                          minimum: 0
+                        limit:
+                          type: integer
+                          minimum: 1
+                          examples:
+                            - 100
+                          example: 100
+                        skip:
+                          type: integer
+                          minimum: 0
+                        order:
+                          type: array
+                          items:
+                            type: string
+                      additionalProperties: false
+            additionalProperties: false
+      operationId: PlanterController.findSelfiesById
+  '/planter/{id}':
+    patch:
+      x-controller-name: PlanterController
+      x-operation-name: updateById
+      tags:
+        - PlanterController
+      responses:
+        '204':
+          description: Planter PATCH success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Planter'
+        x-parameter-index: 1
+      operationId: PlanterController.updateById
+    get:
+      x-controller-name: PlanterController
+      x-operation-name: findById
+      tags:
+        - PlanterController
+      responses:
+        '200':
+          description: Planter model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Planter'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: PlanterController.findById
+  /planter:
+    get:
+      x-controller-name: PlanterController
+      x-operation-name: find
+      tags:
+        - PlanterController
+      responses:
+        '200':
+          description: Array of Planter model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Planter'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  firstName:
+                    type: boolean
+                  lastName:
+                    type: boolean
+                  email:
+                    type: boolean
+                  organization:
+                    type: boolean
+                  phone:
+                    type: boolean
+                  pwdResetRequired:
+                    type: boolean
+                  imageUrl:
+                    type: boolean
+                  personId:
+                    type: boolean
+                  organizationId:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: PlanterController.find
+  '/planter-registration/{id}':
+    get:
+      x-controller-name: PlanterRegistrationController
+      x-operation-name: findById
+      tags:
+        - PlanterRegistrationController
+      responses:
+        '200':
+          description: PlanterRegistration model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanterRegistration'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: PlanterRegistrationController.findById
+  /planter-registration:
+    get:
+      x-controller-name: PlanterRegistrationController
+      x-operation-name: find
+      tags:
+        - PlanterRegistrationController
+      responses:
+        '200':
+          description: Array of PlanterRegistration model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanterRegistration'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  planterId:
+                    type: boolean
+                  createdAt:
+                    type: boolean
+                  lat:
+                    type: boolean
+                  lon:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: PlanterRegistrationController.find
+  /species/combine:
+    post:
+      x-controller-name: SpeciesController
+      x-operation-name: combine
+      tags:
+        - SpeciesController
+      responses:
+        '204':
+          description: Species POST success
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      operationId: SpeciesController.combine
+  /species/count:
+    get:
+      x-controller-name: SpeciesController
+      x-operation-name: count
+      tags:
+        - SpeciesController
+      responses:
+        '200':
+          description: Species model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: SpeciesController.count
+  '/species/{id}':
+    patch:
+      x-controller-name: SpeciesController
+      x-operation-name: updateById
+      tags:
+        - SpeciesController
+      responses:
+        '204':
+          description: Species PATCH success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Species'
+        x-parameter-index: 1
+      operationId: SpeciesController.updateById
+    get:
+      x-controller-name: SpeciesController
+      x-operation-name: findById
+      tags:
+        - SpeciesController
+      responses:
+        '200':
+          description: Species model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Species'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: SpeciesController.findById
+    delete:
+      x-controller-name: SpeciesController
+      x-operation-name: delete
+      tags:
+        - SpeciesController
+      responses:
+        '204':
+          description: Species delete success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: SpeciesController.delete
+  /species:
+    post:
+      x-controller-name: SpeciesController
+      x-operation-name: create
+      tags:
+        - SpeciesController
+      responses:
+        '204':
+          description: Species POST success
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Species'
+      operationId: SpeciesController.create
+    get:
+      x-controller-name: SpeciesController
+      x-operation-name: find
+      tags:
+        - SpeciesController
+      responses:
+        '200':
+          description: Array of Species model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Species'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  name:
+                    type: boolean
+                  desc:
+                    type: boolean
+                  active:
+                    type: boolean
+                  valueFactor:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: SpeciesController.find
+  /tags/count:
+    get:
+      x-controller-name: TagController
+      x-operation-name: count
+      tags:
+        - TagController
+      responses:
+        '200':
+          description: Tag model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: TagController.count
+  '/tags/{id}':
+    patch:
+      x-controller-name: TagController
+      x-operation-name: updateById
+      tags:
+        - TagController
+      responses:
+        '204':
+          description: Tag PATCH success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+        x-parameter-index: 1
+      operationId: TagController.updateById
+    get:
+      x-controller-name: TagController
+      x-operation-name: findById
+      tags:
+        - TagController
+      responses:
+        '200':
+          description: Tag model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: TagController.findById
+    delete:
+      x-controller-name: TagController
+      x-operation-name: delete
+      tags:
+        - TagController
+      responses:
+        '204':
+          description: Tag delete success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: TagController.delete
+  /tags:
+    post:
+      x-controller-name: TagController
+      x-operation-name: create
+      tags:
+        - TagController
+      responses:
+        '204':
+          description: Tag POST success
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      operationId: TagController.create
+    get:
+      x-controller-name: TagController
+      x-operation-name: find
+      tags:
+        - TagController
+      responses:
+        '200':
+          description: Array of Tag model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  tagName:
+                    type: boolean
+                  active:
+                    type: boolean
+                  public:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: TagController.find
+  /tree_tags/count:
+    get:
+      x-controller-name: TreeTagController
+      x-operation-name: count
+      tags:
+        - TreeTagController
+      responses:
+        '200':
+          description: TreeTag model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: TreeTagController.count
+  '/tree_tags/{id}':
+    patch:
+      x-controller-name: TreeTagController
+      x-operation-name: updateById
+      tags:
+        - TreeTagController
+      responses:
+        '204':
+          description: TreeTag PATCH success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TreeTag'
+        x-parameter-index: 1
+      operationId: TreeTagController.updateById
+    get:
+      x-controller-name: TreeTagController
+      x-operation-name: findById
+      tags:
+        - TreeTagController
+      responses:
+        '200':
+          description: TreeTag model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreeTag'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: TreeTagController.findById
+    delete:
+      x-controller-name: TreeTagController
+      x-operation-name: delete
+      tags:
+        - TreeTagController
+      responses:
+        '204':
+          description: TreeTag delete success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: TreeTagController.delete
+  /tree_tags:
+    post:
+      x-controller-name: TreeTagController
+      x-operation-name: create
+      tags:
+        - TreeTagController
+      responses:
+        '204':
+          description: TreeTag POST success
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TreeTag'
+      operationId: TreeTagController.create
+    get:
+      x-controller-name: TreeTagController
+      x-operation-name: find
+      tags:
+        - TreeTagController
+      responses:
+        '200':
+          description: Array of TreeTag model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreeTag'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  treeId:
+                    type: boolean
+                  tagId:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+            additionalProperties: false
+      operationId: TreeTagController.find
+  /trees/count:
+    get:
+      x-controller-name: TreesController
+      x-operation-name: count
+      tags:
+        - TreesController
+      responses:
+        '200':
+          description: Trees model count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: TreesController.count
+  /trees/near:
+    get:
+      x-controller-name: TreesController
+      x-operation-name: near
+      tags:
+        - TreesController
+      responses:
+        '200':
+          description: Find trees near a lat/lon with a radius in meters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: lat
+          in: query
+          schema:
+            type: number
+        - name: lon
+          in: query
+          schema:
+            type: number
+        - name: radius
+          in: query
+          required: false
+          schema:
+            type: number
+          description: 'measured in meters (default: 100 meters)'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+          description: default is 100
+      operationId: TreesController.near
+  '/trees/{id}/tree_tags':
+    post:
+      x-controller-name: TreesTreeTagController
+      x-operation-name: create
+      tags:
+        - TreesTreeTagController
+      responses:
+        '200':
+          description: Trees model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreeTag'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTreeTagInTrees'
+        x-parameter-index: 1
+      operationId: TreesTreeTagController.create
+    patch:
+      x-controller-name: TreesTreeTagController
+      x-operation-name: patch
+      tags:
+        - TreesTreeTagController
+      responses:
+        '200':
+          description: Trees.TreeTag PATCH success count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TreeTagPartial'
+        x-parameter-index: 1
+      operationId: TreesTreeTagController.patch
+    get:
+      x-controller-name: TreesTreeTagController
+      x-operation-name: find
+      tags:
+        - TreesTreeTagController
+      responses:
+        '200':
+          description: Array of Trees has many TreeTag
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreeTag'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: TreesTreeTagController.find
+    delete:
+      x-controller-name: TreesTreeTagController
+      x-operation-name: delete
+      tags:
+        - TreesTreeTagController
+      responses:
+        '200':
+          description: Trees.TreeTag DELETE success count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: where
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            additionalProperties: true
+      operationId: TreesTreeTagController.delete
+  '/trees/{id}':
+    patch:
+      x-controller-name: TreesController
+      x-operation-name: updateById
+      tags:
+        - TreesController
+      responses:
+        '204':
+          description: Trees PATCH success
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trees'
+        x-parameter-index: 1
+      operationId: TreesController.updateById
+    get:
+      x-controller-name: TreesController
+      x-operation-name: findById
+      tags:
+        - TreesController
+      responses:
+        '200':
+          description: Trees model instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: TreesController.findById
+  /trees:
+    get:
+      x-controller-name: TreesController
+      x-operation-name: find
+      tags:
+        - TreesController
+      responses:
+        '200':
+          description: Array of Trees model instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trees'
+      parameters:
+        - name: filter
+          in: query
+          style: deepObject
+          explode: true
+          schema:
+            type: object
+            properties:
+              where:
+                type: object
+                additionalProperties: true
+              fields:
+                type: object
+                properties:
+                  id:
+                    type: boolean
+                  uuid:
+                    type: boolean
+                  timeCreated:
+                    type: boolean
+                  timeUpdated:
+                    type: boolean
+                  missing:
+                    type: boolean
+                  causeOfDeathId:
+                    type: boolean
+                  planterId:
+                    type: boolean
+                  imageUrl:
+                    type: boolean
+                  lat:
+                    type: boolean
+                  lon:
+                    type: boolean
+                  active:
+                    type: boolean
+                  planterIdentifier:
+                    type: boolean
+                  deviceId:
+                    type: boolean
+                  deviceIdentifier:
+                    type: boolean
+                  note:
+                    type: boolean
+                  verified:
+                    type: boolean
+                  approved:
+                    type: boolean
+                  status:
+                    type: boolean
+                  morphology:
+                    type: boolean
+                  age:
+                    type: boolean
+                  speciesId:
+                    type: boolean
+                  captureApprovalTag:
+                    type: boolean
+                  rejectionReason:
+                    type: boolean
+                  plantingOrganizationId:
+                    type: boolean
+                  planterPhotoUrl:
+                    type: boolean
+                  tokenId:
+                    type: boolean
+                additionalProperties: false
+              offset:
+                type: integer
+                minimum: 0
+              limit:
+                type: integer
+                minimum: 1
+                examples:
+                  - 100
+                example: 100
+              skip:
+                type: integer
+                minimum: 0
+              order:
+                type: array
+                items:
+                  type: string
+              include:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relation:
+                      type: string
+                    scope:
+                      properties:
+                        where:
+                          type: object
+                          additionalProperties: true
+                        fields:
+                          type: object
+                          properties: {}
+                          additionalProperties: true
+                        offset:
+                          type: integer
+                          minimum: 0
+                        limit:
+                          type: integer
+                          minimum: 1
+                          examples:
+                            - 100
+                          example: 100
+                        skip:
+                          type: integer
+                          minimum: 0
+                        order:
+                          type: array
+                          items:
+                            type: string
+                      additionalProperties: false
+            additionalProperties: false
+      operationId: TreesController.find
+servers:
+  - url: 'http://localhost:3000/api'
+components:
+  schemas:
+    Organization:
+      title: Organization
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        type:
+          type: string
+      additionalProperties: false
+    Planter:
+      title: Planter
+      properties:
+        id:
+          type: number
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        organization:
+          type: string
+        phone:
+          type: string
+        pwdResetRequired:
+          type: boolean
+        imageUrl:
+          type: string
+        personId:
+          type: number
+        organizationId:
+          type: number
+          nullable: true
+      required:
+        - id
+      additionalProperties: false
+    Trees:
+      title: Trees
+      properties:
+        id:
+          type: number
+        uuid:
+          type: string
+        timeCreated:
+          type: string
+        timeUpdated:
+          type: string
+        missing:
+          type: boolean
+        causeOfDeathId:
+          type: number
+        planterId:
+          type: number
+        imageUrl:
+          type: string
+        lat:
+          type: number
+        lon:
+          type: number
+        active:
+          type: boolean
+        planterIdentifier:
+          type: string
+        deviceId:
+          type: number
+        deviceIdentifier:
+          type: string
+        note:
+          type: string
+        verified:
+          type: boolean
+        approved:
+          type: boolean
+        status:
+          type: string
+        morphology:
+          type: string
+        age:
+          type: string
+        speciesId:
+          type: number
+        captureApprovalTag:
+          type: string
+        rejectionReason:
+          type: string
+        plantingOrganizationId:
+          type: number
+        planterPhotoUrl:
+          type: string
+        tokenId:
+          type: string
+      additionalProperties: false
+    PlanterRegistration:
+      title: PlanterRegistration
+      properties:
+        id:
+          type: number
+        planterId:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        lat:
+          type: number
+        lon:
+          type: number
+      required:
+        - id
+        - createdAt
+      additionalProperties: false
+    Species:
+      title: Species
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        desc:
+          type: string
+        active:
+          type: boolean
+        valueFactor:
+          type: number
+      additionalProperties: false
+    Tag:
+      title: Tag
+      properties:
+        id:
+          type: number
+        tagName:
+          type: string
+        active:
+          type: boolean
+        public:
+          type: boolean
+      additionalProperties: false
+    TreeTag:
+      title: TreeTag
+      properties:
+        id:
+          type: number
+        treeId:
+          type: number
+        tagId:
+          type: number
+      additionalProperties: false
+    NewTreeTagInTrees:
+      title: NewTreeTagInTrees
+      description: "(Schema options: { title: 'NewTreeTagInTrees', exclude: [ 'id' ], optional: [ 'treeId' ] })"
+      properties:
+        treeId:
+          type: number
+        tagId:
+          type: number
+      additionalProperties: false
+    TreeTagPartial:
+      title: TreeTagPartial
+      description: '(Schema options: { partial: true })'
+      properties:
+        id:
+          type: number
+        treeId:
+          type: number
+        tagId:
+          type: number
+      additionalProperties: false
