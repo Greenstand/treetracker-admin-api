@@ -89,6 +89,17 @@ export class AdminUser extends Entity {
   })
   enabled?: Boolean;
 
+  @property({
+    type: String,
+    required: true,
+    postgresql: {
+      columnName: 'created_at',
+      dataType: 'timestamptz',
+      nullable: 'NO',
+    },
+  })
+  createdAt: String;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
