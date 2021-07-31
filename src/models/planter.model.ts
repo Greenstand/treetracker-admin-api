@@ -167,6 +167,22 @@ export class Planter extends Entity {
   })
   organizationId?: Number;
 
+  @property({
+    type: Number,
+    required: true,
+    default: 0,
+    scale: 0,
+    postgresql: {
+      columnName: 'image_rotation',
+      dataType: 'integer',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'YES',
+    },
+  })
+  imageRotation?: Number;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
