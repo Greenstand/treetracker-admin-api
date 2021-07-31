@@ -1,3 +1,10 @@
+# [2.19.0](https://github.com/Greenstand/treetracker-admin/compare/v2.18.0...v2.19.0) (2021-07-31)
+
+
+### Features
+
+* add image_rotation field in planter model ([#584](https://github.com/Greenstand/treetracker-admin/issues/584)) ([851ecd0](https://github.com/Greenstand/treetracker-admin/commit/851ecd0743215976918e88a531f5ec3f6e87bbd6))
+
 # [2.18.0](https://github.com/Greenstand/treetracker-admin/compare/v2.17.4...v2.18.0) (2021-07-31)
 
 
