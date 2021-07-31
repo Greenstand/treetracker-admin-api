@@ -224,6 +224,7 @@ router.post('/login', async function login(req, res, next) {
         role,
         policy,
         roleNames,
+        createdAt,
       } = userLogin;
       console.log('login success');
       return res.json({
@@ -237,6 +238,7 @@ router.post('/login', async function login(req, res, next) {
           role,
           policy,
           roleNames,
+          createdAt,
         },
       });
     } else {
