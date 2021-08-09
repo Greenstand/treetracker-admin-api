@@ -169,7 +169,7 @@ export class Planter extends Entity {
 
   @property({
     type: Number,
-    required: true,
+    required: false,
     default: 0,
     scale: 0,
     postgresql: {
