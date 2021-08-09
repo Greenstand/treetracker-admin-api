@@ -1,3 +1,10 @@
+## [2.19.1](https://github.com/Greenstand/treetracker-admin/compare/v2.19.0...v2.19.1) (2021-08-09)
+
+
+### Bug Fixes
+
+* make imageRotation optional ([#587](https://github.com/Greenstand/treetracker-admin/issues/587)) ([256a5d6](https://github.com/Greenstand/treetracker-admin/commit/256a5d6644d05b57ddc28a4c063fc2c6e8b811e4))
+
 # [2.19.0](https://github.com/Greenstand/treetracker-admin/compare/v2.18.0...v2.19.0) (2021-07-31)
 
 
