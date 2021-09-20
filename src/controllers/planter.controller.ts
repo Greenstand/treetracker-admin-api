@@ -21,6 +21,7 @@ import { TreesFilter } from './trees.controller';
 import { PlanterRepository, TreesRepository } from '../repositories';
 
 // Extend the LoopBack filter types for the Planter model to include organizationId
+// This is a workaround for the lack of proper join support in LoopBack
 type PlanterWhere = (Where<Planter> & { organizationId?: number }) | undefined;
 export type PlanterFilter = Filter<Planter> & { where: PlanterWhere };
 
