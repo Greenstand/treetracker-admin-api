@@ -20,6 +20,11 @@ import { Planter, Trees } from '../models';
 import { TreesFilter } from './trees.controller';
 import { PlanterRepository, TreesRepository } from '../repositories';
 
+// Extend the LoopBack filter types for the Planter model to include organizationId
+// This is a workaround for the lack of proper join support in LoopBack
+type PlanterWhere = (Where<Planter> & { organizationId?: number }) | undefined;
+export type PlanterFilter = Filter<Planter> & { where: PlanterWhere };
+
 export class PlanterController {
   constructor(
     @repository(PlanterRepository)
@@ -38,9 +43,19 @@ export class PlanterController {
   })
   async count(
     @param.query.object('where', getWhereSchemaFor(Planter))
-    where?: Where<Planter>,
+    where?: PlanterWhere,
   ): Promise<Count> {
-    return await this.planterRepository.count(where);
+    // Replace organizationId with full entity tree and planter
+    if (where) {
+      const { organizationId, ...whereWithoutOrganizationId } = where;
+      where = await this.planterRepository.applyOrganizationWhereClause(
+        whereWithoutOrganizationId,
+        organizationId,
+      );
+    }
+    // console.log('get /planter/count where -->', where);
+
+    return await this.planterRepository.countWithOrg(where);
   }
 
   @get('/planter', {
@@ -57,9 +72,18 @@ export class PlanterController {
   })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Planter))
-    filter?: Filter<Planter>,
+    filter?: PlanterFilter,
   ): Promise<Planter[]> {
-    return await this.planterRepository.find(filter);
+    // Replace organizationId with full entity tree and planter
+    if (filter?.where) {
+      const { organizationId, ...whereWithoutOrganizationId } = filter.where;
+      filter.where = await this.planterRepository.applyOrganizationWhereClause(
+        whereWithoutOrganizationId,
+        organizationId,
+      );
+    }
+
+    return await this.planterRepository.findWithOrg(filter);
   }
 
   @get('/planter/{id}', {

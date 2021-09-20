@@ -60,6 +60,8 @@ export class TreesController {
       );
     }
 
+    console.log('get /trees where --> ', where);
+
     return await this.treesRepository.countWithTagId(
       where as Where<Trees>,
       tagId,
@@ -82,8 +84,6 @@ export class TreesController {
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
   ): Promise<Trees[]> {
-    console.log('get /trees filter --> ', filter ? filter.where : null);
-
     const tagId = filter?.where?.tagId;
 
     // Replace organizationId with full entity tree and planter
@@ -95,6 +95,7 @@ export class TreesController {
       );
     }
 
+    console.log('get /trees filter --> ', filter);
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     return await this.treesRepository.findWithTagId(filter, tagId);
   }
