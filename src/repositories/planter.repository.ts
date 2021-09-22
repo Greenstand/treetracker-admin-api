@@ -69,11 +69,6 @@ export class PlanterRepository extends DefaultCrudRepository<
       );
       const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
 
-      // console.log(
-      //   'getOrganizationWhereClause: planterIds, entityIds --',
-      //   planterIds,
-      //   entityIds,
-      // );
       return {
         or: [
           { organizationId: { inq: entityIds } },
@@ -102,8 +97,6 @@ export class PlanterRepository extends DefaultCrudRepository<
   async findWithOrg(
     filter?: Filter<Planter>,
   ): Promise<(Planter & PlanterRelations)[]> {
-    console.log('findWithOrg ---', filter?.where);
-
     if (!filter) {
       return await this.find(filter);
     }
@@ -125,8 +118,6 @@ export class PlanterRepository extends DefaultCrudRepository<
 
         const query = buildFilterQuery(selectStmt, params);
 
-        console.log('final query', query);
-
         return <Promise<Planter[]>>await this.execute(query.sql, query.params);
       } else {
         throw 'Connector not defined';
@@ -138,8 +129,6 @@ export class PlanterRepository extends DefaultCrudRepository<
   }
 
   async countWithOrg(where?: Where<Planter>): Promise<Count> {
-    // console.log('countWithOrg ---', where);
-
     if (!where) {
       return await this.count(where);
     }
@@ -154,8 +143,6 @@ export class PlanterRepository extends DefaultCrudRepository<
       };
 
       const query = buildFilterQuery(selectStmt, params);
-
-      // console.log('final count query', query);
 
       return <Promise<Count>>await this.execute(query.sql, query.params).then(
         (res) => {

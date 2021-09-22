@@ -71,6 +71,7 @@ export class TreesRepository extends DefaultCrudRepository<
   }
 
   async getOrganizationWhereClause(organizationId: number): Promise<Object> {
+    // console.log('getOrganizationWhereClause orgId ---', organizationId);
     if (organizationId === null) {
       const planterIds = await this.getNonOrganizationPlanterIds();
       return {
@@ -85,11 +86,12 @@ export class TreesRepository extends DefaultCrudRepository<
       );
       const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
 
-      console.log(
-        'getOrganizationWhereClause: planterIds, entityIds --',
-        planterIds,
-        entityIds,
-      );
+      // console.log(
+      //   'getOrganizationWhereClause: planterIds, entityIds --',
+      //   planterIds,
+      //   entityIds,
+      // );
+
       return {
         or: [
           { plantingOrganizationId: { inq: entityIds } },
@@ -127,7 +129,6 @@ export class TreesRepository extends DefaultCrudRepository<
     tagId?: string,
     options?: Options,
   ): Promise<(Trees & TreesRelations)[]> {
-    console.log('trees filter ********', filter);
     if (!filter || tagId === undefined) {
       return await this.find(filter, options);
     }
@@ -150,8 +151,6 @@ export class TreesRepository extends DefaultCrudRepository<
         };
 
         const query = buildFilterQuery(selectStmt, params);
-
-        console.log('trees build filter query  ********', query);
 
         return <Promise<Trees[]>>await this.execute(
           query.sql,

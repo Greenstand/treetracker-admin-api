@@ -60,7 +60,7 @@ export class TreesController {
       );
     }
 
-    console.log('get /trees where --> ', where);
+    // console.log('get /trees/count where --> ', where);
 
     return await this.treesRepository.countWithTagId(
       where as Where<Trees>,
@@ -95,7 +95,7 @@ export class TreesController {
       );
     }
 
-    console.log('get /trees filter --> ', filter);
+    // console.log('get /trees filter --> ', filter?.where);
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     return await this.treesRepository.findWithTagId(filter, tagId);
   }
