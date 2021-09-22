@@ -86,20 +86,6 @@ export class TreesRepository extends DefaultCrudRepository<
       );
       const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
 
-<<<<<<< HEAD
-      // console.log(
-      //   'getOrganizationWhereClause: planterIds, entityIds --',
-      //   planterIds,
-      //   entityIds,
-      // );
-
-=======
-      console.log(
-        'getOrganizationWhereClause: planterIds, entityIds --',
-        planterIds,
-        entityIds,
-      );
->>>>>>> fix: planter filter to allow searching combined orgs by name and by org id
       return {
         or: [
           { plantingOrganizationId: { inq: entityIds } },
@@ -137,7 +123,6 @@ export class TreesRepository extends DefaultCrudRepository<
     tagId?: string,
     options?: Options,
   ): Promise<(Trees & TreesRelations)[]> {
-    console.log('trees filter ********', filter);
     if (!filter || tagId === undefined) {
       return await this.find(filter, options);
     }
@@ -160,8 +145,6 @@ export class TreesRepository extends DefaultCrudRepository<
         };
 
         const query = buildFilterQuery(selectStmt, params);
-
-        console.log('trees build filter query  ********', query);
 
         return <Promise<Trees[]>>await this.execute(
           query.sql,

@@ -60,12 +60,6 @@ export class TreesController {
       );
     }
 
-<<<<<<< HEAD
-    // console.log('get /trees/count where --> ', where);
-=======
-    console.log('get /trees where --> ', where);
->>>>>>> fix: planter filter to allow searching combined orgs by name and by org id
-
     return await this.treesRepository.countWithTagId(
       where as Where<Trees>,
       tagId,
@@ -99,11 +93,6 @@ export class TreesController {
       );
     }
 
-<<<<<<< HEAD
-    // console.log('get /trees filter --> ', filter?.where);
-=======
-    console.log('get /trees filter --> ', filter);
->>>>>>> fix: planter filter to allow searching combined orgs by name and by org id
     // In order to filter by tagId (treeTags relation), we need to bypass the LoopBack find()
     return await this.treesRepository.findWithTagId(filter, tagId);
   }
