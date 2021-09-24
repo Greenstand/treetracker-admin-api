@@ -357,6 +357,7 @@ router.get('/admin_users/', async (req, res) => {
 });
 
 router.post('/validate/', async (req, res) => {
+  console.log('validate');
   try {
     const { password } = req.body;
     const token = req.headers.authorization;
@@ -473,6 +474,7 @@ router.post('/init', async (req, res) => {
 });
 
 const isAuth = async (req, res, next) => {
+  console.log('isAuth...');
   //white list
   const url = req.originalUrl;
   if (url.match(/\/auth\/(login|test|init|validate)/)) {
@@ -484,11 +486,12 @@ const isAuth = async (req, res, next) => {
     const token = req.headers.authorization;
     const decodedToken = jwt.verify(token, jwtSecret);
     const userSession = decodedToken;
-    //inject the user extract from token to request object
     req.user = userSession;
 
+    // console.log('userSession', userSession);
+    console.log('url', url);
+
     // VALIDATE USER DATA
-    // const roles = userSession.role;
     expect(userSession.policy).toBeInstanceOf(Object);
     const policies = userSession.policy.policies;
     expect(policies).toBeInstanceOf(Array);
@@ -503,6 +506,7 @@ const isAuth = async (req, res, next) => {
     if (url.match(/\/auth\/check_session/)) {
       const user_id = req.query.id;
       const result = await helper.getActiveAdminUser(userSession.userName);
+      console.log('check_session user_id', user_id);
 
       if (result.rows.length) {
         const update_userSession = utils.convertCamel(result.rows[0]);

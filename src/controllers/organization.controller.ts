@@ -14,6 +14,11 @@ import {
 import { Organization } from '../models';
 import { OrganizationRepository } from '../repositories';
 
+// Extend the LoopBack filter types for the Planter model to include type
+type OrganizationWhere = (Where<Organization> & { type?: string }) | undefined;
+export type OrganizationFilter = Filter<Organization> & {
+  where: OrganizationWhere;
+};
 export class OrganizationController {
   constructor(
     @repository(OrganizationRepository)
@@ -69,18 +74,24 @@ export class OrganizationController {
   async findByParentOrg(
     @param.path.number('organizationId') organizationId: Number,
     @param.query.object('filter', getFilterSchemaFor(Organization))
-    filter?: Filter<Organization>,
+    filter?: OrganizationFilter,
   ): Promise<Organization[]> {
+    // if logged in as an org-account then filter for the sub-orgs
+    if (organizationId && filter?.where) {
+      filter.where = { ...filter.where, type: 'o' };
+    }
+
+    // create query to get all orgs and their planters
     if (filter?.where) {
       filter.where = await this.organizationRepository.applyOrganizationWhereClause(
         filter.where,
         organizationId.valueOf(),
       );
     }
-    // console.log('/organizations ?filter --> ', organizationId, filter, filter?.where);
-    const result = await this.organizationRepository.find(filter);
-    // console.log('/organizations res --> ', result);
-    return result;
+
+    const childOrgs = await this.organizationRepository.find(filter);
+
+    return childOrgs;
   }
 
   @get('/organizations/{id}', {

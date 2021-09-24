@@ -27,6 +27,10 @@ import {
 } from '../repositories';
 // import expect from "expect-runtime";
 
+// Extend the LoopBack filter types for the Planter model to include organizationId
+// This is a workaround for the lack of proper join support in LoopBack
+type PlanterWhere = (Where<Planter> & { organizationId?: number }) | undefined;
+export type PlanterFilter = Filter<Planter> & { where: PlanterWhere };
 export class PlanterOrganizationController {
   constructor(
     @repository(PlanterRepository)
@@ -48,17 +52,29 @@ export class PlanterOrganizationController {
   async count(
     @param.path.number('organizationId') organizationId: Number,
     @param.query.object('where', getWhereSchemaFor(Planter))
-    where?: Where<Planter>,
+    where?: PlanterWhere,
   ): Promise<Count> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId.valueOf(),
-    );
-    where = {
-      ...where,
-      organizationId: {
-        inq: entityIds,
-      },
-    };
+    //override organization id if a sub-org id is in filter AND it matches one of the organization's entityIds
+    let orgId = organizationId.valueOf();
+
+    if (where) {
+      const { organizationId, ...whereWithoutOrganizationId } = where;
+      const filterOrgId = organizationId;
+
+      if (filterOrgId && filterOrgId !== orgId) {
+        const entityIds = await this.planterRepository.getEntityIdsByOrganizationId(
+          orgId,
+        );
+        orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
+      }
+
+      // Replace organizationId with full entity tree and planter query
+      where = await this.planterRepository.applyOrganizationWhereClause(
+        whereWithoutOrganizationId,
+        orgId,
+      );
+    }
+
     return await this.planterRepository.count(where);
   }
 
@@ -77,21 +93,29 @@ export class PlanterOrganizationController {
   async find(
     @param.path.number('organizationId') organizationId: Number,
     @param.query.object('filter', getFilterSchemaFor(Planter))
-    filter?: Filter<Planter>,
+    filter?: PlanterFilter,
   ): Promise<Planter[]> {
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId?.valueOf() || -1,
-    );
-    if (filter) {
-      //filter should be to deal with the organization, but here is just for
-      //demonstration
-      filter.where = {
-        ...filter.where,
-        organizationId: {
-          inq: entityIds,
-        },
-      };
+    //override organization id if a sub-org id is in filter AND it matches one of the organization's entityIds
+    let orgId = organizationId.valueOf();
+
+    if (filter?.where) {
+      const { organizationId, ...whereWithoutOrganizationId } = filter.where;
+      const filterOrgId = organizationId;
+
+      if (filterOrgId && filterOrgId !== orgId) {
+        const entityIds = await this.planterRepository.getEntityIdsByOrganizationId(
+          orgId,
+        );
+        orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
+      }
+
+      // Replace organizationId with full entity tree and planter query
+      filter.where = await this.planterRepository.applyOrganizationWhereClause(
+        whereWithoutOrganizationId,
+        orgId,
+      );
     }
+
     return await this.planterRepository.find(filter);
   }
 

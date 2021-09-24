@@ -71,6 +71,7 @@ export class TreesRepository extends DefaultCrudRepository<
   }
 
   async getOrganizationWhereClause(organizationId: number): Promise<Object> {
+    // console.log('getOrganizationWhereClause orgId ---', organizationId);
     if (organizationId === null) {
       const planterIds = await this.getNonOrganizationPlanterIds();
       return {
@@ -84,6 +85,13 @@ export class TreesRepository extends DefaultCrudRepository<
         organizationId,
       );
       const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
+
+      // console.log(
+      //   'getOrganizationWhereClause: planterIds, entityIds --',
+      //   planterIds,
+      //   entityIds,
+      // );
+
       return {
         or: [
           { plantingOrganizationId: { inq: entityIds } },

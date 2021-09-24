@@ -45,12 +45,26 @@ export class TreesOrganizationController {
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
-    const orgWhere = await this.treesRepository.applyOrganizationWhereClause(
-      where,
-      organizationId,
-    );
     const tagId = where?.tagId;
-    return await this.treesRepository.countWithTagId(orgWhere, tagId);
+    //override organization id if a sub-org id is in filter
+    let orgId = organizationId.valueOf();
+
+    if (where) {
+      const { organizationId, ...whereWithoutOrganizationId } = where;
+      const filterOrgId = organizationId;
+
+      if (filterOrgId && filterOrgId !== orgId) {
+        orgId = filterOrgId;
+      }
+
+      // Replace organizationId with full entity tree and planter query
+      where = await this.treesRepository.applyOrganizationWhereClause(
+        whereWithoutOrganizationId,
+        orgId,
+      );
+    }
+
+    return await this.treesRepository.countWithTagId(where, tagId);
   }
 
   @get('/organization/{organizationId}/trees', {
@@ -71,12 +85,26 @@ export class TreesOrganizationController {
     filter?: TreesFilter,
   ): Promise<Trees[]> {
     const tagId = filter?.where?.tagId;
+    //override organization id if a sub-org id is in filter
+    let orgId = organizationId.valueOf();
+
     if (filter?.where) {
+      const { organizationId, ...whereWithoutOrganizationId } = filter.where;
+      const filterOrgId = organizationId;
+
+      if (filterOrgId && filterOrgId !== orgId) {
+        orgId = filterOrgId;
+      }
+
+      // Replace organizationId with full entity tree and planter query
       filter.where = await this.treesRepository.applyOrganizationWhereClause(
-        filter.where,
-        organizationId,
+        whereWithoutOrganizationId,
+        orgId,
       );
     }
+
+    // console.log('treesOrganization filter ---', filter?.where);
+
     return await this.treesRepository.findWithTagId(filter, tagId);
   }
 
