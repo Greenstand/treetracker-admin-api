@@ -62,6 +62,20 @@ export class PlanterRegistration extends Entity {
   })
   lon: number;
 
+  @property({
+    type: String,
+    required: false,
+    postgresql: {
+      columnName: 'device_identifier',
+      dataType: 'character varying',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: null,
+      nullable: 'YES',
+    },
+  })
+  deviceIdentifier?: Number;
+
   // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
