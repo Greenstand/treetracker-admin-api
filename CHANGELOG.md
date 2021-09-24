@@ -1,3 +1,10 @@
+## [2.19.2](https://github.com/Greenstand/treetracker-admin/compare/v2.19.1...v2.19.2) (2021-09-24)
+
+
+### Bug Fixes
+
+* planter filter to allow filtering parent orgs by name and all orgs by id ([#589](https://github.com/Greenstand/treetracker-admin/issues/589)) ([692fdec](https://github.com/Greenstand/treetracker-admin/commit/692fdeca3583e489d62adbbfd6939917780b562f))
+
 ## [2.19.1](https://github.com/Greenstand/treetracker-admin/compare/v2.19.0...v2.19.1) (2021-08-09)
 
 
