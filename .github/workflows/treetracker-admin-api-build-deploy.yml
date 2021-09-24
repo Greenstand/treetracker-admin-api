@@ -55,7 +55,7 @@ jobs:
           ref: ${{ github.event.inputs.tag }}
       - uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: '14.x'
       - run: npm i -g semantic-release @semantic-release/{git,exec,changelog}
       - run: semantic-release
         env:
