@@ -1,3 +1,10 @@
+# [2.20.0](https://github.com/Greenstand/treetracker-admin/compare/v2.19.2...v2.20.0) (2021-09-25)
+
+
+### Features
+
+* add device_identifier to planter_registration model ([#592](https://github.com/Greenstand/treetracker-admin/issues/592)) ([e886bfd](https://github.com/Greenstand/treetracker-admin/commit/e886bfdb5853eff9fdf6df1ca0515605f6743aee))
+
 ## [2.19.2](https://github.com/Greenstand/treetracker-admin/compare/v2.19.1...v2.19.2) (2021-09-24)
 
 
