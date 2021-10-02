@@ -3,7 +3,7 @@ name: Deploy Admin API to Prod Env
 on:
   workflow_dispatch:
     inputs:
-      environment:
+      tag:
         description: 'git-tag'
         required: true
 
@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.git-tag }}
+          ref: ${{ github.event.inputs.tag }}
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
