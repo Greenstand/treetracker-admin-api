@@ -9,6 +9,7 @@ import { TreetrackerDataSource } from '../datasources';
 import { inject } from '@loopback/core';
 import expect from 'expect-runtime';
 import { buildFilterQuery } from '../js/buildFilterQuery';
+import { utils } from '../js/utils';
 
 export class PlanterRepository extends DefaultCrudRepository<
   Planter,
@@ -118,7 +119,8 @@ export class PlanterRepository extends DefaultCrudRepository<
 
         const query = buildFilterQuery(selectStmt, params);
 
-        return <Promise<Planter[]>>await this.execute(query.sql, query.params);
+        const result = await this.execute(query.sql, query.params);
+        return <Planter[]>result.map((planter) => utils.convertCamel(planter));
       } else {
         throw 'Connector not defined';
       }
