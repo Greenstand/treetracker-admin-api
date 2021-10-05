@@ -1,3 +1,10 @@
+## [2.20.1](https://github.com/Greenstand/treetracker-admin/compare/v2.20.0...v2.20.1) (2021-10-05)
+
+
+### Bug Fixes
+
+* convert planter attributes to camel case ([#594](https://github.com/Greenstand/treetracker-admin/issues/594)) ([27d67c4](https://github.com/Greenstand/treetracker-admin/commit/27d67c40a3b947e1a950d9de56130c09d173f8fb))
+
 # [2.20.0](https://github.com/Greenstand/treetracker-admin/compare/v2.19.2...v2.20.0) (2021-09-25)
 
 
