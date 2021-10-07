@@ -50,13 +50,14 @@
     "!*/__tests__"
   ],
   "dependencies": {
-    "@loopback/boot": "^1.4.3",
-    "@loopback/context": "^1.20.1",
-    "@loopback/core": "^1.8.4",
-    "@loopback/openapi-v3": "^1.6.4",
-    "@loopback/repository": "^1.8.1",
-    "@loopback/rest": "^1.16.2",
-    "@loopback/rest-explorer": "^1.2.4",
+    "@loopback/boot": "^3.4.3",
+    "@loopback/context": "^3.17.2",
+    "@loopback/core": "^2.17.0",
+    "@loopback/openapi-v3": "^6.0.1",
+    "@loopback/repository": "^3.7.2",
+    "@loopback/rest": "^10.0.1",
+    "@loopback/rest-explorer": "^3.3.3",
+    "amqplib": "^0.8.0",
     "assert": "^2.0.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
@@ -66,8 +67,8 @@
     "generate-password": "^1.5.1",
     "jsonwebtoken": "^8.5.1",
     "loglevel": "^1.6.8",
-    "loopback-connector-postgresql": "^3.6.1",
-    "amqplib": "^0.6.0",
+    "loopback-connector-postgresql": "^5.4.0",
+    "pg": "^8.7.1",
     "rascal": "^12.0.1"
   },
   "devDependencies": {
@@ -77,9 +78,9 @@
     "@babel/preset-typescript": "^7.10.4",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@loopback/build": "^2.0.2",
-    "@loopback/eslint-config": "^1.1.2",
-    "@loopback/testlab": "^1.6.2",
+    "@loopback/build": "^7.0.1",
+    "@loopback/eslint-config": "^11.0.1",
+    "@loopback/testlab": "^3.4.3",
     "@types/jest": "^26.0.7",
     "@types/node": "^10.14.9",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
@@ -97,8 +98,8 @@
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
     "supertest": "^4.0.2",
-    "ts-jest": "^26.1.4",
-    "typescript": "^3.9.7"
+    "ts-jest": "^26.5.6",
+    "typescript": "~4.3.5"
   },
   "nodemonConfig": {
     "watch": [
@@ -108,6 +109,6 @@
     "exec": "npm start"
   },
   "engines": {
-    "node": ">= 12 < 13"
+    "node": ">= 16 < 17"
   }
 }

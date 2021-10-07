@@ -59,10 +59,7 @@ export class PlanterRepository extends DefaultCrudRepository<
     if (organizationId === null) {
       const planterIds = await this.getNonOrganizationPlanterIds();
       return {
-        and: [
-          { plantingOrganizationId: null },
-          { planterId: { inq: planterIds } },
-        ],
+        and: [{ organizationId: null }, { id: { inq: planterIds } }],
       };
     } else {
       const planterIds = await this.getPlanterIdsByOrganizationId(
