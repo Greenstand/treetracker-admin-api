@@ -54,6 +54,7 @@ export class PlanterController {
       where = await this.planterRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         organizationId,
+        'planter',
       );
     }
     // console.log('get /planter/count where -->', where);
@@ -85,6 +86,7 @@ export class PlanterController {
       filter.where = await this.planterRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         organizationId,
+        'planter',
       );
     }
 

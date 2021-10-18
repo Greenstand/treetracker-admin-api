@@ -62,9 +62,8 @@ export class PlanterOrganizationController {
       const filterOrgId = organizationId;
 
       if (filterOrgId && filterOrgId !== orgId) {
-        const entityIds = await this.planterRepository.getEntityIdsByOrganizationId(
-          orgId,
-        );
+        const entityIds =
+          await this.planterRepository.getEntityIdsByOrganizationId(orgId);
         orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
       }
 
@@ -72,6 +71,7 @@ export class PlanterOrganizationController {
       where = await this.planterRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         orgId,
+        'planter',
       );
     }
 
@@ -103,9 +103,8 @@ export class PlanterOrganizationController {
       const filterOrgId = organizationId;
 
       if (filterOrgId && filterOrgId !== orgId) {
-        const entityIds = await this.planterRepository.getEntityIdsByOrganizationId(
-          orgId,
-        );
+        const entityIds =
+          await this.planterRepository.getEntityIdsByOrganizationId(orgId);
         orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
       }
 
@@ -113,6 +112,7 @@ export class PlanterOrganizationController {
       filter.where = await this.planterRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         orgId,
+        'planter',
       );
     }
 
