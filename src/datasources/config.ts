@@ -1,3 +1,5 @@
+import pg from 'pg';
+pg.defaults.ssl = { rejectUnauthorized: false };
 export interface DatasourceConfig {
   name: string;
   connector: string;

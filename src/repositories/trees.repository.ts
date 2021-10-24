@@ -86,12 +86,6 @@ export class TreesRepository extends DefaultCrudRepository<
       );
       const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
 
-      // console.log(
-      //   'getOrganizationWhereClause: planterIds, entityIds --',
-      //   planterIds,
-      //   entityIds,
-      // );
-
       return {
         or: [
           { plantingOrganizationId: { inq: entityIds } },

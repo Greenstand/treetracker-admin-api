@@ -190,6 +190,7 @@ router.post('/login', async function login(req, res, next) {
 
     //find the user to get the salt, validate if hashed password matches
     const users = await helper.getActiveAdminUser(userName);
+
     let userLogin;
     if (users.rows.length) {
       const user_entity = utils.convertCamel(users.rows[0]);
@@ -205,7 +206,7 @@ router.post('/login', async function login(req, res, next) {
         console.log('checking password failed');
       }
     } else {
-      console.log('can not find user by ', userName);
+      console.log('can not find user by', userName);
     }
 
     // If user exists in db AND user is active
