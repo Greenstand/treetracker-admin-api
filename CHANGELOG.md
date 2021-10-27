@@ -1,3 +1,10 @@
+## [2.20.2](https://github.com/Greenstand/treetracker-admin/compare/v2.20.1...v2.20.2) (2021-10-27)
+
+
+### Bug Fixes
+
+* update sealed secret ([abff2b8](https://github.com/Greenstand/treetracker-admin/commit/abff2b8bb80a8e168b5104853d94f80f5f618ce2))
+
 ## [2.20.1](https://github.com/Greenstand/treetracker-admin/compare/v2.20.0...v2.20.1) (2021-10-05)
 
 
