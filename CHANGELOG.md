@@ -1,3 +1,10 @@
+## [2.20.3](https://github.com/Greenstand/treetracker-admin/compare/v2.20.2...v2.20.3) (2021-10-27)
+
+
+### Bug Fixes
+
+* add ssl=no-verify to test and prod secrets for node 16 compatibility ([f1b2c53](https://github.com/Greenstand/treetracker-admin/commit/f1b2c53e5c5bf73e5592790961959de8c4605d21))
+
 ## [2.20.2](https://github.com/Greenstand/treetracker-admin/compare/v2.20.1...v2.20.2) (2021-10-27)
 
 
