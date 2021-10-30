@@ -20,8 +20,10 @@ import { Planter, Trees } from '../models';
 import { TreesFilter } from './trees.controller';
 import { PlanterRepository, TreesRepository } from '../repositories';
 
-// Extend the LoopBack filter types for the Planter model to include organizationId
-type PlanterWhere = (Where<Planter> & { organizationId?: number }) | undefined;
+// Extend the LoopBack filter types for the Planter model to include organizationId and deviceIdentifier
+type PlanterWhere =
+  | (Where<Planter> & { deviceIdentifier?: string; organizationId?: number })
+  | undefined;
 export type PlanterFilter = Filter<Planter> & { where: PlanterWhere };
 
 export class PlanterController {
@@ -44,6 +46,8 @@ export class PlanterController {
     @param.query.object('where', getWhereSchemaFor(Planter))
     where?: PlanterWhere,
   ): Promise<Count> {
+    const deviceIdentifier = where?.deviceIdentifier;
+
     // Replace organizationId with full entity tree and planter
     if (where) {
       const { organizationId, ...whereWithoutOrganizationId } = where;
@@ -54,7 +58,7 @@ export class PlanterController {
     }
     // console.log('get /planter/count where -->', where);
 
-    return await this.planterRepository.countWithOrg(where);
+    return await this.planterRepository.countWithOrg(where, deviceIdentifier);
   }
 
   @get('/planter', {
@@ -73,6 +77,8 @@ export class PlanterController {
     @param.query.object('filter', getFilterSchemaFor(Planter))
     filter?: PlanterFilter,
   ): Promise<Planter[]> {
+    const deviceIdentifier = filter?.where?.deviceIdentifier;
+
     // Replace organizationId with full entity tree and planter
     if (filter?.where) {
       const { organizationId, ...whereWithoutOrganizationId } = filter.where;
@@ -82,7 +88,7 @@ export class PlanterController {
       );
     }
 
-    return await this.planterRepository.findWithOrg(filter);
+    return await this.planterRepository.findWithOrg(filter, deviceIdentifier);
   }
 
   @get('/planter/{id}', {
