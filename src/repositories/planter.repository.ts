@@ -1,12 +1,16 @@
 import {
   DefaultCrudRepository,
+  repository,
+  HasManyRepositoryFactory,
   Filter,
+  Options,
   Where,
   Count,
 } from '@loopback/repository';
-import { Planter, PlanterRelations } from '../models';
+import { Planter, PlanterRelations, PlanterRegistration } from '../models';
 import { TreetrackerDataSource } from '../datasources';
-import { inject } from '@loopback/core';
+import { inject, Getter } from '@loopback/core';
+import { PlanterRegistrationRepository } from './planterRegistration.repository';
 import expect from 'expect-runtime';
 import { buildFilterQuery } from '../js/buildFilterQuery';
 import { utils } from '../js/utils';
@@ -16,10 +20,24 @@ export class PlanterRepository extends DefaultCrudRepository<
   typeof Planter.prototype.id,
   PlanterRelations
 > {
+  public readonly planterRegs: HasManyRepositoryFactory<
+    PlanterRegistration,
+    typeof Planter.prototype.id
+  >;
   constructor(
     @inject('datasources.treetracker') dataSource: TreetrackerDataSource,
+    @repository.getter('PlanterRegistrationRepository')
+    protected planterRegistrationRepositoryGetter: Getter<PlanterRegistrationRepository>,
   ) {
     super(Planter, dataSource);
+    this.planterRegs = this.createHasManyRepositoryFactoryFor(
+      'planterRegs',
+      planterRegistrationRepositoryGetter,
+    );
+    this.registerInclusionResolver(
+      'planterRegs',
+      this.planterRegs.inclusionResolver,
+    );
   }
 
   async getEntityIdsByOrganizationId(
@@ -91,12 +109,27 @@ export class PlanterRepository extends DefaultCrudRepository<
     };
   }
 
+  getPlanterRegistrationJoinClause(deviceIdentifier: string): string {
+    if (deviceIdentifier === null) {
+      return `LEFT JOIN planter_registrations
+        ON planter.id=planter_registrations.planter_id
+        WHERE (planter_registrations.device_identifier ISNULL)
+        GROUP BY planter.id`;
+    }
+    return `JOIN planter_registrations
+      ON planter.id=planter_registrations.planter_id
+      WHERE (planter_registrations.device_identifier='${deviceIdentifier}')
+      GROUP BY planter.id`;
+  }
+
   // loopback .find() wasn't applying the org filters
   async findWithOrg(
     filter?: Filter<Planter>,
+    deviceIdentifier?: string,
+    options?: Options,
   ): Promise<(Planter & PlanterRelations)[]> {
-    if (!filter) {
-      return await this.find(filter);
+    if (!filter || deviceIdentifier === null) {
+      return await this.find(filter, options);
     }
 
     try {
@@ -106,7 +139,14 @@ export class PlanterRepository extends DefaultCrudRepository<
           filter,
         );
 
-        const selectStmt = `SELECT ${columnNames} FROM planter `;
+        let selectStmt;
+        if (deviceIdentifier) {
+          selectStmt = `SELECT planter.* FROM planter ${this.getPlanterRegistrationJoinClause(
+            deviceIdentifier,
+          )}`;
+        } else {
+          selectStmt = `SELECT ${columnNames} FROM planter`;
+        }
 
         const params = {
           filter,
@@ -115,25 +155,37 @@ export class PlanterRepository extends DefaultCrudRepository<
         };
 
         const query = buildFilterQuery(selectStmt, params);
+        // console.log('query ---------', query);
 
-        const result = await this.execute(query.sql, query.params);
+        const result = await this.execute(query.sql, query.params, options);
         return <Planter[]>result.map((planter) => utils.convertCamel(planter));
       } else {
         throw 'Connector not defined';
       }
     } catch (e) {
       console.log(e);
-      return await this.find(filter);
+      return await this.find(filter, options);
     }
   }
 
-  async countWithOrg(where?: Where<Planter>): Promise<Count> {
-    if (!where) {
-      return await this.count(where);
+  async countWithOrg(
+    where?: Where<Planter>,
+    deviceIdentifier?: string,
+    options?: Options,
+  ): Promise<Count> {
+    if (!where || deviceIdentifier === null) {
+      return await this.count(where, options);
     }
 
     try {
-      const selectStmt = `SELECT COUNT(*) FROM planter `;
+      let selectStmt;
+      if (deviceIdentifier) {
+        selectStmt = `SELECT COUNT(*) FROM planter ${this.getPlanterRegistrationJoinClause(
+          deviceIdentifier,
+        )}`;
+      } else {
+        selectStmt = `SELECT COUNT(*) FROM planter`;
+      }
 
       const params = {
         filter: { where },

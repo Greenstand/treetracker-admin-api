@@ -1,4 +1,5 @@
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, model, property, hasMany } from '@loopback/repository';
+import { PlanterRegistration } from './planterRegistration.model';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
@@ -182,6 +183,9 @@ export class Planter extends Entity {
     },
   })
   imageRotation?: Number;
+
+  @hasMany(() => PlanterRegistration, { keyTo: 'planterId' })
+  planterRegs: PlanterRegistration[];
 
   // Define well-known properties here
 
