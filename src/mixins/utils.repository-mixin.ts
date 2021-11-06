@@ -1,14 +1,14 @@
 import { MixinTarget } from '@loopback/core';
 import { CrudRepository, Model } from '@loopback/repository';
 import expect from 'expect-runtime';
-import { buildFilterQuery } from '../js/buildFilterQuery';
-import { utils } from '../js/utils';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function UtilsRepositoryMixin<
   M extends Model,
   R extends MixinTarget<CrudRepository<M>>,
 >(superClass: R) {
   return class extends superClass {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [x: string]: any;
     // put the shared code here
     async getEntityIdsByOrganizationId(
@@ -80,13 +80,11 @@ export function UtilsRepositoryMixin<
         const planterIds = await this.getNonOrganizationPlanterIds();
         // if planter repository request
         if (model === 'planter') {
-          return {
-            or: [{ organizationId: null }, { id: { inq: planterIds } }],
-          };
+          return { id: { inq: planterIds } };
         } else {
           // if trees or other repository request
           return {
-            or: [
+            and: [
               { plantingOrganizationId: null },
               { planterId: { inq: planterIds } },
             ],
