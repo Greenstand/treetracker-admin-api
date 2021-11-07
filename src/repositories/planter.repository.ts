@@ -77,7 +77,7 @@ export class PlanterRepository extends DefaultCrudRepository<
     if (organizationId === null) {
       const planterIds = await this.getNonOrganizationPlanterIds();
       return {
-        and: [{ organizationId: null }, { id: { inq: planterIds } }],
+        and: [{ organizationId: null }, { 'planter.id': { inq: planterIds } }],
       };
     } else {
       const planterIds = await this.getPlanterIdsByOrganizationId(
@@ -88,7 +88,7 @@ export class PlanterRepository extends DefaultCrudRepository<
       return {
         or: [
           { organizationId: { inq: entityIds } },
-          { id: { inq: planterIds } },
+          { 'planter.id': { inq: planterIds } },
         ],
       };
     }
@@ -113,13 +113,11 @@ export class PlanterRepository extends DefaultCrudRepository<
     if (deviceIdentifier === null) {
       return `LEFT JOIN planter_registrations
         ON planter.id=planter_registrations.planter_id
-        WHERE (planter_registrations.device_identifier ISNULL)
-        GROUP BY planter.id`;
+        WHERE (planter_registrations.device_identifier ISNULL)`;
     }
     return `JOIN planter_registrations
       ON planter.id=planter_registrations.planter_id
-      WHERE (planter_registrations.device_identifier='${deviceIdentifier}')
-      GROUP BY planter.id`;
+      WHERE (planter_registrations.device_identifier='${deviceIdentifier}')`;
   }
 
   // loopback .find() wasn't applying the org filters
@@ -134,10 +132,9 @@ export class PlanterRepository extends DefaultCrudRepository<
 
     try {
       if (this.dataSource.connector) {
-        const columnNames = this.dataSource.connector.buildColumnNames(
-          'Planter',
-          filter,
-        );
+        const columnNames = this.dataSource.connector
+          .buildColumnNames('Planter', filter)
+          .replace('"id"', 'planter.id as "id"');
 
         let selectStmt;
         if (deviceIdentifier) {
