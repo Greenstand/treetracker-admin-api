@@ -1,3 +1,10 @@
+## [2.21.1](https://github.com/Greenstand/treetracker-admin/compare/v2.21.0...v2.21.1) (2021-11-10)
+
+
+### Bug Fixes
+
+* bugs when filtering by device identifier and org ([a1cd7d6](https://github.com/Greenstand/treetracker-admin/commit/a1cd7d6492be2be41b9c272734296d93c83b96d3))
+
 # [2.21.0](https://github.com/Greenstand/treetracker-admin/compare/v2.20.3...v2.21.0) (2021-11-06)
 
 
