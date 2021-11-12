@@ -28,6 +28,20 @@ export function buildFilterQuery(selectStmt, params) {
 
         const whereObjClause = connector._buildWhere(modelName, safeWhere);
 
+        //add the modelName to each requested field to avoid ambiguity in more complex queries
+        console.log('whereObjClause.sql -------> ', whereObjClause.sql);
+
+        const tableName =
+          modelName.toLowerCase() === 'planterregistration'
+            ? 'planter_registrations'
+            : modelName.toLowerCase();
+        const newQueryFields = whereObjClause.sql
+          .replace(/"/, `"${tableName}.`)
+          .replace(/AND "/gi, `AND "${tableName}.`)
+          .replace(/"/g, '');
+
+        whereObjClause.sql = newQueryFields;
+
         if (whereObjClause.sql) {
           const hasWhere = /WHERE(?![^(]*\))/i.test(selectStmt);
           query.sql += ` ${hasWhere ? 'AND' : 'WHERE'} ${whereObjClause.sql}`;

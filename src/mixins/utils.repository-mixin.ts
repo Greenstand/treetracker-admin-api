@@ -80,6 +80,13 @@ export function UtilsRepositoryMixin<
         const planterIds = await this.getNonOrganizationPlanterIds();
         // if planter repository request
         if (model === 'planter') {
+          // return {
+          //   and: [
+          //     { organizationId: null },
+          //     { 'planter.id': { inq: planterIds } },
+          //   ],
+          // };
+          // could just do this if we didn't need to use 'planter.id' to avoid errors with adding other filters
           return { id: { inq: planterIds } };
         } else {
           // if trees or other repository request
@@ -102,7 +109,7 @@ export function UtilsRepositoryMixin<
           return {
             or: [
               { organizationId: { inq: entityIds } },
-              { id: { inq: planterIds } },
+              { 'planter.id': { inq: planterIds } },
             ],
           };
         } else {
