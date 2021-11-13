@@ -47,5 +47,7 @@ export function buildFilterQuery(selectStmt, params) {
     }
   }
 
+  // console.log('QUERY ---------', query);
+
   return query;
 }
