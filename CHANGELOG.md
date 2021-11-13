@@ -1,3 +1,10 @@
+# [2.22.0](https://github.com/Greenstand/treetracker-admin/compare/v2.21.1...v2.22.0) (2021-11-13)
+
+
+### Features
+
+* **grower-detail:** display device manufacturer with device id ([#600](https://github.com/Greenstand/treetracker-admin/issues/600)) ([7136c9a](https://github.com/Greenstand/treetracker-admin/commit/7136c9ad1335596b778c8a4ad26638b3da695ae3))
+
 ## [2.21.1](https://github.com/Greenstand/treetracker-admin/compare/v2.21.0...v2.21.1) (2021-11-10)
 
 
