@@ -31,7 +31,8 @@ export class PlanterRegistrationController {
   ): Promise<PlanterRegistration[]> {
     // console.log('/planter-registration', filter ? filter.where : null);
 
-    const sql = `SELECT * FROM planter_registrations
+    const sql = `SELECT planter_registrations.*, devices.manufacturer FROM planter_registrations
+        JOIN devices ON devices.android_id=planter_registrations.device_identifier
         LEFT JOIN (
           SELECT
             region.name AS country,
