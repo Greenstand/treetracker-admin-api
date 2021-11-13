@@ -12,7 +12,6 @@ import { Planter, PlanterRelations, PlanterRegistration } from '../models';
 import { TreetrackerDataSource } from '../datasources';
 import { PlanterRegistrationRepository } from './planterRegistration.repository';
 import { UtilsRepositoryMixin } from '../mixins/utils.repository-mixin';
-// import expect from 'expect-runtime';
 import { buildFilterQuery } from '../js/buildFilterQuery';
 import { utils } from '../js/utils';
 
@@ -70,15 +69,6 @@ export class PlanterRepository extends UtilsRepositoryMixin<
 
     try {
       if (this.dataSource.connector) {
-        // const columnNames = this.dataSource.connector
-        //   .buildColumnNames('Planter', filter)
-        //   .replace('"id"', 'planter.id as "id"')
-        //   .replace('"first_name"', 'planter.first_name as "first_name"')
-        //   .replace('"last_name"', 'planter.last_name as "last_name"')
-        //   .replace('"email"', 'planter.email as "email"')
-        //   .replace('"organization"', 'planter.organization as "organization"')
-        //   .replace('"phone"', 'planter.phone as "phone"');
-
         let selectStmt;
         if (deviceIdentifier) {
           selectStmt = `SELECT planter.* FROM planter ${this.getPlanterRegistrationJoinClause(
