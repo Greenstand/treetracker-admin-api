@@ -11,6 +11,7 @@ import {
 import auth from './js/auth.js';
 import { auditMiddleware } from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
+import stakeholders from './stakeholders';
 
 //TODO import better
 //const express = require('express').default;
@@ -38,6 +39,19 @@ export class ExpressServer {
     this.app.use('/api', this.lbApp.requestHandler);
     //the auth: login...
     this.app.use('/auth', auth.router);
+
+    this.app.get('/stakeholders', (req, res) => {
+      console.log('requested stakeholders');
+      res.send(stakeholders);
+    });
+
+    this.app.get('/stakeholders/:id', (req, res) => {
+      console.log(req.method);
+      const { id } = req.params;
+      console.log('requested stakeholders', id);
+      if (req.method.toLowerCase() === 'get') res.send(stakeholders[0]);
+      if (req.method.toLowerCase() === 'patch') res.send(req.body);
+    });
 
     // Custom Express routes
     this.app.get('/', function (_req: Request, res: Response) {
