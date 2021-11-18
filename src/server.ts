@@ -11,7 +11,7 @@ import {
 import auth from './js/auth.js';
 import { auditMiddleware } from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
-import capture_match_data from './captureMatching.js';
+import { capturesData, candidatesData } from './captureMatching.js';
 
 //TODO import better
 //const express = require('express').default;
@@ -41,13 +41,12 @@ export class ExpressServer {
     this.app.use('/auth', auth.router);
 
     //mocking data for the capture matching tool
-    this.app.get('/captures', (req, res) => {
-      res.json(capture_match_data);
+    this.app.get('/captures/:captureId/potential_trees', (req, res) => {
+      res.json(candidatesData);
     });
 
-    this.app.get('/captures/:captureId/potential_trees', (req, res) => {
-      console.log('request received');
-      res.json(capture_match_data);
+    this.app.get('/captures', (req, res) => {
+      res.json(capturesData);
     });
 
     // Custom Express routes
