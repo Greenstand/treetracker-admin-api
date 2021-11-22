@@ -1,3 +1,10 @@
+## [2.22.1](https://github.com/Greenstand/treetracker-admin/compare/v2.22.0...v2.22.1) (2021-11-22)
+
+
+### Bug Fixes
+
+* update database sealed secret for production with ssl=no-verify ([3a6958c](https://github.com/Greenstand/treetracker-admin/commit/3a6958c023aaf59d5f72c3d45e9e320b85bedcfa))
+
 # [2.22.0](https://github.com/Greenstand/treetracker-admin/compare/v2.21.1...v2.22.0) (2021-11-13)
 
 
