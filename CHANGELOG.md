@@ -1,3 +1,10 @@
+## [2.22.2](https://github.com/Greenstand/treetracker-admin/compare/v2.22.1...v2.22.2) (2021-11-23)
+
+
+### Bug Fixes
+
+* **planter-registration-repo:** change selector back to * so that country info would be retrieved ([#605](https://github.com/Greenstand/treetracker-admin/issues/605)) ([2d612a9](https://github.com/Greenstand/treetracker-admin/commit/2d612a9813ef4e0dc08c59f67afca13361b4181a))
+
 ## [2.22.1](https://github.com/Greenstand/treetracker-admin/compare/v2.22.0...v2.22.1) (2021-11-22)
 
 
