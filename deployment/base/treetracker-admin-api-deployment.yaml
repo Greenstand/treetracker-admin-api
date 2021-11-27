@@ -18,11 +18,11 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: doks.digitalocean.com/node-pool
-                operator: In
-                values:
-                - microservices-node-pool
+              - matchExpressions:
+                  - key: doks.digitalocean.com/node-pool
+                    operator: In
+                    values:
+                      - microservices-node-pool
       containers:
         - name: treetracker-admin-api
           image: greenstand/treetracker-admin-api:VERSION
@@ -46,3 +46,5 @@ spec:
                   key: messageQueue
             - name: ENABLE_VERIFY_PUBLISHING
               value: 'false'
+      imagePullSecrets:
+        - name: greenstand-docker-secret

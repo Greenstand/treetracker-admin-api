@@ -1,4 +1,5 @@
 resources:
+  - greenstand-docker-pull-sealed-secret.yaml
   - treetracker-admin-api-deployment.yaml
   - treetracker-admin-api-mapping.yaml
   - treetracker-admin-api-service.yaml
