@@ -113,6 +113,8 @@ export class TreesRepository extends DefaultCrudRepository<
   getTreeTagJoinClause(tagId: string): string {
     if (tagId === null) {
       return `LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id ISNULL)`;
+    } else if (tagId === "0") {
+      return `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`;
     }
     return `JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id=${tagId})`;
   }
