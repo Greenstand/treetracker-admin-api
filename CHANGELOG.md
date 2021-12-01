@@ -1,3 +1,10 @@
+# [2.23.0](https://github.com/Greenstand/treetracker-admin/compare/v2.22.2...v2.23.0) (2021-12-01)
+
+
+### Features
+
+* add join clause for trees with any tagid ([#608](https://github.com/Greenstand/treetracker-admin/issues/608)) ([c436501](https://github.com/Greenstand/treetracker-admin/commit/c4365016924783fdee1b92939bd0c7a2f05a2adb))
+
 ## [2.22.2](https://github.com/Greenstand/treetracker-admin/compare/v2.22.1...v2.22.2) (2021-11-23)
 
 
