@@ -1,3 +1,10 @@
+## [2.23.1](https://github.com/Greenstand/treetracker-admin/compare/v2.23.0...v2.23.1) (2021-12-17)
+
+
+### Bug Fixes
+
+* allow CORS from staging ([2c15ee2](https://github.com/Greenstand/treetracker-admin/commit/2c15ee2580837d9da6d27aea306d9c19c9eab417))
+
 # [2.23.0](https://github.com/Greenstand/treetracker-admin/compare/v2.22.2...v2.23.0) (2021-12-01)
 
 
