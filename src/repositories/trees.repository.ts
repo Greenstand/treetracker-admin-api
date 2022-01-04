@@ -136,7 +136,7 @@ export class TreesRepository extends DefaultCrudRepository<
           .buildColumnNames('Trees', filter)
           .replace('"id"', 'trees.id as "id"');
 
-        const selectStmt = `SELECT DISTINCT ${columnNames} from trees ${this.getTreeTagJoinClause(
+        const selectStmt = `SELECT ${columnNames} from trees ${this.getTreeTagJoinClause(
           tagId,
         )}`;
 
@@ -177,7 +177,7 @@ export class TreesRepository extends DefaultCrudRepository<
     }
 
     try {
-      const selectStmt = `SELECT COUNT(DISTINCT *) FROM trees ${this.getTreeTagJoinClause(
+      const selectStmt = `SELECT COUNT(*) FROM trees ${this.getTreeTagJoinClause(
         tagId,
       )}`;
 
