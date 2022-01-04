@@ -1,3 +1,10 @@
+## [2.23.3](https://github.com/Greenstand/treetracker-admin/compare/v2.23.2...v2.23.3) (2022-01-04)
+
+
+### Reverts
+
+* Revert "fix: add DISTINCT clause to ensure no duplicates (#611)" (#612) ([623d1d0](https://github.com/Greenstand/treetracker-admin/commit/623d1d0cc7451dd6a94ba895e8c582a305bd5605)), closes [#611](https://github.com/Greenstand/treetracker-admin/issues/611) [#612](https://github.com/Greenstand/treetracker-admin/issues/612)
+
 ## [2.23.2](https://github.com/Greenstand/treetracker-admin/compare/v2.23.1...v2.23.2) (2022-01-04)
 
 
