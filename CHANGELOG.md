@@ -1,3 +1,10 @@
+## [2.23.2](https://github.com/Greenstand/treetracker-admin/compare/v2.23.1...v2.23.2) (2022-01-04)
+
+
+### Bug Fixes
+
+* add DISTINCT clause to ensure no duplicates ([#611](https://github.com/Greenstand/treetracker-admin/issues/611)) ([464619c](https://github.com/Greenstand/treetracker-admin/commit/464619c74e0e0371d5c2288ab5e685bccf038c9a))
+
 ## [2.23.1](https://github.com/Greenstand/treetracker-admin/compare/v2.23.0...v2.23.1) (2021-12-17)
 
 
