@@ -29,8 +29,6 @@ export class PlanterRegistrationController {
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
     filter?: Filter<PlanterRegistration>,
   ): Promise<PlanterRegistration[]> {
-    // console.log('/planter-registration', filter ? filter.where : null);
-
     const sql = `SELECT *, devices.manufacturer FROM planter_registrations
         JOIN devices ON devices.android_id=planter_registrations.device_identifier
         LEFT JOIN (
