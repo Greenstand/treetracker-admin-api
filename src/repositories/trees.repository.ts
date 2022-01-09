@@ -1,3 +1,4 @@
+import { Constructor, inject, Getter } from '@loopback/core';
 import {
   DefaultCrudRepository,
   repository,
@@ -7,18 +8,19 @@ import {
   Where,
   Count,
 } from '@loopback/repository';
-import { Trees, TreesRelations, TreeTag } from '../models';
 import { TreetrackerDataSource } from '../datasources';
-import { inject, Getter } from '@loopback/core';
+import { UtilsRepositoryMixin } from '../mixins/utils.repository-mixin';
 import { TreeTagRepository } from './treeTag.repository';
+import { Trees, TreesRelations, TreeTag } from '../models';
 import expect from 'expect-runtime';
 import { buildFilterQuery } from '../js/buildFilterQuery';
 
-export class TreesRepository extends DefaultCrudRepository<
+export class TreesRepository extends UtilsRepositoryMixin<
   Trees,
-  typeof Trees.prototype.id,
-  TreesRelations
-> {
+  Constructor<
+    DefaultCrudRepository<Trees, typeof Trees.prototype.id, TreesRelations>
+  >
+>(DefaultCrudRepository) {
   public readonly treeTags: HasManyRepositoryFactory<
     TreeTag,
     typeof Trees.prototype.id
@@ -47,67 +49,6 @@ export class TreesRepository extends DefaultCrudRepository<
       [],
     );
     return result.map((e) => e.entity_id);
-  }
-
-  async getPlanterIdsByOrganizationId(
-    organizationId: number,
-  ): Promise<Array<number>> {
-    expect(organizationId).number();
-    const result = await this.execute(
-      `select * from planter where organization_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`,
-      [],
-    );
-    expect(result).match([{ id: expect.any(Number) }]);
-    return result.map((e) => e.id);
-  }
-
-  async getNonOrganizationPlanterIds(): Promise<Array<number>> {
-    const result = await this.execute(
-      `select * from planter where organization_id isnull`,
-      [],
-    );
-    expect(result).match([{ id: expect.any(Number) }]);
-    return result.map((e) => e.id);
-  }
-
-  async getOrganizationWhereClause(organizationId: number): Promise<Object> {
-    // console.log('getOrganizationWhereClause orgId ---', organizationId);
-    if (organizationId === null) {
-      const planterIds = await this.getNonOrganizationPlanterIds();
-      return {
-        and: [
-          { plantingOrganizationId: null },
-          { planterId: { inq: planterIds } },
-        ],
-      };
-    } else {
-      const planterIds = await this.getPlanterIdsByOrganizationId(
-        organizationId,
-      );
-      const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
-
-      return {
-        or: [
-          { plantingOrganizationId: { inq: entityIds } },
-          { planterId: { inq: planterIds } },
-        ],
-      };
-    }
-  }
-
-  async applyOrganizationWhereClause(
-    where: Object | undefined,
-    organizationId: number | undefined,
-  ): Promise<Object | undefined> {
-    if (!where || organizationId === undefined) {
-      return Promise.resolve(where);
-    }
-    const organizationWhereClause = await this.getOrganizationWhereClause(
-      organizationId,
-    );
-    return {
-      and: [where, organizationWhereClause],
-    };
   }
 
   getTreeTagJoinClause(tagId: string): string {

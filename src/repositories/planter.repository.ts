@@ -1,3 +1,4 @@
+import { Constructor, inject, Getter } from '@loopback/core';
 import {
   DefaultCrudRepository,
   repository,
@@ -9,17 +10,21 @@ import {
 } from '@loopback/repository';
 import { Planter, PlanterRelations, PlanterRegistration } from '../models';
 import { TreetrackerDataSource } from '../datasources';
-import { inject, Getter } from '@loopback/core';
 import { PlanterRegistrationRepository } from './planterRegistration.repository';
-import expect from 'expect-runtime';
+import { UtilsRepositoryMixin } from '../mixins/utils.repository-mixin';
 import { buildFilterQuery } from '../js/buildFilterQuery';
 import { utils } from '../js/utils';
 
-export class PlanterRepository extends DefaultCrudRepository<
+export class PlanterRepository extends UtilsRepositoryMixin<
   Planter,
-  typeof Planter.prototype.id,
-  PlanterRelations
-> {
+  Constructor<
+    DefaultCrudRepository<
+      Planter,
+      typeof Planter.prototype.id,
+      PlanterRelations
+    >
+  >
+>(DefaultCrudRepository) {
   public readonly planterRegs: HasManyRepositoryFactory<
     PlanterRegistration,
     typeof Planter.prototype.id
@@ -40,75 +45,6 @@ export class PlanterRepository extends DefaultCrudRepository<
     );
   }
 
-  async getEntityIdsByOrganizationId(
-    organizationId: number,
-  ): Promise<Array<number>> {
-    expect(organizationId).number();
-    expect(this).property('execute').defined();
-    const result = await this.execute(
-      `select * from getEntityRelationshipChildren(${organizationId})`,
-      [],
-    );
-    return result.map((e) => e.entity_id);
-  }
-
-  async getPlanterIdsByOrganizationId(
-    organizationId: number,
-  ): Promise<Array<number>> {
-    expect(organizationId).number();
-    const result = await this.execute(
-      `select * from planter where organization_id in (select entity_id from getEntityRelationshipChildren(${organizationId}))`,
-      [],
-    );
-    expect(result).match([{ id: expect.any(Number) }]);
-    return result.map((e) => e.id);
-  }
-
-  async getNonOrganizationPlanterIds(): Promise<Array<number>> {
-    const result = await this.execute(
-      `select * from planter where organization_id isnull`,
-      [],
-    );
-    expect(result).match([{ id: expect.any(Number) }]);
-    return result.map((e) => e.id);
-  }
-
-  async getOrganizationWhereClause(organizationId: number): Promise<Object> {
-    if (organizationId === null) {
-      const planterIds = await this.getNonOrganizationPlanterIds();
-      return {
-        and: [{ organizationId: null }, { 'planter.id': { inq: planterIds } }],
-      };
-    } else {
-      const planterIds = await this.getPlanterIdsByOrganizationId(
-        organizationId,
-      );
-      const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
-
-      return {
-        or: [
-          { organizationId: { inq: entityIds } },
-          { 'planter.id': { inq: planterIds } },
-        ],
-      };
-    }
-  }
-
-  async applyOrganizationWhereClause(
-    where: Object | undefined,
-    organizationId: number | undefined,
-  ): Promise<Object | undefined> {
-    if (!where || organizationId === undefined) {
-      return Promise.resolve(where);
-    }
-    const organizationWhereClause = await this.getOrganizationWhereClause(
-      organizationId,
-    );
-    return {
-      and: [where, organizationWhereClause],
-    };
-  }
-
   getPlanterRegistrationJoinClause(deviceIdentifier: string): string {
     if (deviceIdentifier === null) {
       return `LEFT JOIN planter_registrations
@@ -120,7 +56,8 @@ export class PlanterRepository extends DefaultCrudRepository<
       WHERE (planter_registrations.device_identifier='${deviceIdentifier}')`;
   }
 
-  // loopback .find() wasn't applying the org filters
+  // default .find() wasn't applying the org filters
+
   async findWithOrg(
     filter?: Filter<Planter>,
     deviceIdentifier?: string,
@@ -132,17 +69,13 @@ export class PlanterRepository extends DefaultCrudRepository<
 
     try {
       if (this.dataSource.connector) {
-        const columnNames = this.dataSource.connector
-          .buildColumnNames('Planter', filter)
-          .replace('"id"', 'planter.id as "id"');
-
         let selectStmt;
         if (deviceIdentifier) {
           selectStmt = `SELECT planter.* FROM planter ${this.getPlanterRegistrationJoinClause(
             deviceIdentifier,
           )}`;
         } else {
-          selectStmt = `SELECT ${columnNames} FROM planter`;
+          selectStmt = `SELECT planter.* FROM planter`;
         }
 
         const params = {
@@ -152,7 +85,6 @@ export class PlanterRepository extends DefaultCrudRepository<
         };
 
         const query = buildFilterQuery(selectStmt, params);
-        // console.log('query ---------', query);
 
         const result = await this.execute(query.sql, query.params, options);
         return <Planter[]>result.map((planter) => utils.convertCamel(planter));
@@ -194,7 +126,6 @@ export class PlanterRepository extends DefaultCrudRepository<
 
       return <Promise<Count>>await this.execute(query.sql, query.params).then(
         (res) => {
-          // responds with count value as a string
           return (res && res[0]) || { count: 0 };
         },
       );

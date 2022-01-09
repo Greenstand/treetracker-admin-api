@@ -1,42 +1,22 @@
+import { Constructor, inject } from '@loopback/core';
 import { DefaultCrudRepository } from '@loopback/repository';
-import { Organization, OrganizationRelations } from '../models';
 import { TreetrackerDataSource } from '../datasources';
-import { inject } from '@loopback/core';
-import expect from 'expect-runtime';
+import { UtilsRepositoryMixin } from '../mixins/utils.repository-mixin';
+import { Organization, OrganizationRelations } from '../models';
 
-export class OrganizationRepository extends DefaultCrudRepository<
+export class OrganizationRepository extends UtilsRepositoryMixin<
   Organization,
-  typeof Organization.prototype.id,
-  OrganizationRelations
-> {
+  Constructor<
+    DefaultCrudRepository<
+      Organization,
+      typeof Organization.prototype.id,
+      OrganizationRelations
+    >
+  >
+>(DefaultCrudRepository) {
   constructor(
     @inject('datasources.treetracker') dataSource: TreetrackerDataSource,
   ) {
     super(Organization, dataSource);
-  }
-
-  async getEntityIdsByOrganizationId(
-    organizationId: number,
-  ): Promise<Array<number>> {
-    expect(organizationId).number();
-    expect(this).property('execute').defined();
-    const result = await this.execute(
-      `select * from getEntityRelationshipChildren(${organizationId})`,
-      [],
-    );
-    return result.map((e) => e.entity_id);
-  }
-
-  async applyOrganizationWhereClause(
-    where: Object | undefined,
-    organizationId: number | undefined,
-  ): Promise<Object | undefined> {
-    if (!where || organizationId === undefined) {
-      return Promise.resolve(where);
-    }
-    const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
-    return {
-      and: [where, { id: { inq: entityIds } }],
-    };
   }
 }

@@ -57,6 +57,7 @@ export class TreesController {
       where = await this.treesRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         organizationId,
+        'trees',
       );
     }
 
@@ -90,6 +91,7 @@ export class TreesController {
       filter.where = await this.treesRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         organizationId,
+        'trees',
       );
     }
 

@@ -83,10 +83,12 @@ export class OrganizationController {
 
     // create query to get all orgs and their planters
     if (filter?.where) {
-      filter.where = await this.organizationRepository.applyOrganizationWhereClause(
-        filter.where,
-        organizationId.valueOf(),
-      );
+      filter.where =
+        await this.organizationRepository.applyOrganizationWhereClause(
+          filter.where,
+          organizationId.valueOf(),
+          'orgs',
+        );
     }
 
     const childOrgs = await this.organizationRepository.find(filter);
