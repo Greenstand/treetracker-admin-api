@@ -556,7 +556,14 @@ const isAuth = async (req, res, next) => {
         }
       }
     } else if (url.match(/\/auth\/(?!login).*/)) {
-      if (policies.some((r) => r.name === POLICIES.SUPER_PERMISSION)) {
+      if (
+        policies.some(
+          (r) =>
+            r.name === POLICIES.SUPER_PERMISSION ||
+            r.name === POLICIES.MANAGER_USER ||
+            r.name === POLICIES.LIST_USER,
+        )
+      ) {
         next();
         return;
       } else {
@@ -631,6 +638,8 @@ const isAuth = async (req, res, next) => {
             organization,
             [
               POLICIES.SUPER_PERMISSION,
+              POLICIES.MANAGER_USER,
+              POLICIES.LIST_USER,
               POLICIES.LIST_TREE,
               POLICIES.APPROVE_TREE,
               POLICIES.MANAGE_PLANTER,
