@@ -1,3 +1,10 @@
+# [2.24.0](https://github.com/Greenstand/treetracker-admin/compare/v2.23.3...v2.24.0) (2022-01-10)
+
+
+### Features
+
+* add device manufacturer to planter registration data for both admin and org accounts ([74c919b](https://github.com/Greenstand/treetracker-admin/commit/74c919ba9c8a8bb9077fed70ea2fbb05e778d4a9))
+
 ## [2.23.3](https://github.com/Greenstand/treetracker-admin/compare/v2.23.2...v2.23.3) (2022-01-04)
 
 
