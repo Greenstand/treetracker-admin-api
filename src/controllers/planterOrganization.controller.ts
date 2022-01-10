@@ -6,14 +6,11 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  // post,
   param,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
   patch,
-  // put,
-  // del,
   requestBody,
   HttpErrors,
 } from '@loopback/rest';
@@ -62,9 +59,8 @@ export class PlanterOrganizationController {
       const filterOrgId = organizationId;
 
       if (filterOrgId && filterOrgId !== orgId) {
-        const entityIds = await this.planterRepository.getEntityIdsByOrganizationId(
-          orgId,
-        );
+        const entityIds =
+          await this.planterRepository.getEntityIdsByOrganizationId(orgId);
         orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
       }
 
@@ -103,9 +99,8 @@ export class PlanterOrganizationController {
       const filterOrgId = organizationId;
 
       if (filterOrgId && filterOrgId !== orgId) {
-        const entityIds = await this.planterRepository.getEntityIdsByOrganizationId(
-          orgId,
-        );
+        const entityIds =
+          await this.planterRepository.getEntityIdsByOrganizationId(orgId);
         orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
       }
 
@@ -138,13 +133,16 @@ export class PlanterOrganizationController {
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
     filter?: Filter<PlanterRegistration>,
   ): Promise<PlanterRegistration[]> {
-    // console.log('/organization/{organizationId}/planter-registration');
-
-    const sql = `SELECT * FROM planter_registrations
+    const sql = `SELECT *, devices.manufacturer FROM planter_registrations
+        JOIN devices ON devices.android_id=planter_registrations.device_identifier
         LEFT JOIN (
-        SELECT region.name AS country, region.geom FROM region, region_type
-        WHERE region_type.type='country' AND region.type_id=region_type.id
-    ) AS region ON ST_DWithin(region.geom, planter_registrations.geom, 0.01)`;
+          SELECT
+            region.name AS country,
+            region.geom FROM region, region_type
+          WHERE region_type.type='country'
+          AND region.type_id=region_type.id
+        ) AS region
+        ON ST_DWithin(region.geom, planter_registrations.geom, 0.01)`;
 
     const params = {
       filter,
@@ -221,7 +219,6 @@ export class PlanterOrganizationController {
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
   ): Promise<Trees[]> {
-    // console.log('/organization/{organizationId}/planter/{id}/selfies', id, filter);
     filter = {
       where: { planterId: id, planterPhotoUrl: { neq: null } },
       ...filter,
