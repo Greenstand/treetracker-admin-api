@@ -1,3 +1,10 @@
+## [2.24.1](https://github.com/Greenstand/treetracker-admin/compare/v2.24.0...v2.24.1) (2022-01-16)
+
+
+### Bug Fixes
+
+* don't change org type for children ([840e6b9](https://github.com/Greenstand/treetracker-admin/commit/840e6b997031a27f8416f4f72f56a34cbe7f6e95))
+
 # [2.24.0](https://github.com/Greenstand/treetracker-admin/compare/v2.23.3...v2.24.0) (2022-01-10)
 
 
