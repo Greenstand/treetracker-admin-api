@@ -76,17 +76,13 @@ export class OrganizationController {
     @param.query.object('filter', getFilterSchemaFor(Organization))
     filter?: OrganizationFilter,
   ): Promise<Organization[]> {
-    // if logged in as an org-account then filter for the sub-orgs
-    if (organizationId && filter?.where) {
-      filter.where = { ...filter.where, type: 'o' };
-    }
-
     // create query to get all orgs and their planters
     if (filter?.where) {
-      filter.where = await this.organizationRepository.applyOrganizationWhereClause(
-        filter.where,
-        organizationId.valueOf(),
-      );
+      filter.where =
+        await this.organizationRepository.applyOrganizationWhereClause(
+          filter.where,
+          organizationId.valueOf(),
+        );
     }
 
     const childOrgs = await this.organizationRepository.find(filter);
