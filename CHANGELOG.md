@@ -1,3 +1,10 @@
+## [2.24.2](https://github.com/Greenstand/treetracker-admin/compare/v2.24.1...v2.24.2) (2022-01-26)
+
+
+### Bug Fixes
+
+* allow manager_user and list_user policies to access user manager ([#614](https://github.com/Greenstand/treetracker-admin/issues/614)) ([0d23f81](https://github.com/Greenstand/treetracker-admin/commit/0d23f81a623c54c817292c1b31db199698fd0fb0))
+
 ## [2.24.1](https://github.com/Greenstand/treetracker-admin/compare/v2.24.0...v2.24.1) (2022-01-16)
 
 
