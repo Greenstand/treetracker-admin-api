@@ -37,6 +37,15 @@ export class Organization extends Entity {
   })
   type: String;
 
+  @property({
+    type: String,
+    postgresql: {
+      dataType: 'uuid',
+      dbDefault: 'uuid_generate_v4()',
+    },
+  })
+  stakeholder_uuid: String;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
