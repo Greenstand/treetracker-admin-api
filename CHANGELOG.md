@@ -1,3 +1,10 @@
+# [2.25.0](https://github.com/Greenstand/treetracker-admin/compare/v2.24.2...v2.25.0) (2022-02-11)
+
+
+### Features
+
+* add stakeholder-uuid ([38d5010](https://github.com/Greenstand/treetracker-admin/commit/38d5010f68deb1b82574ae33413556191aa50b0b))
+
 ## [2.24.2](https://github.com/Greenstand/treetracker-admin/compare/v2.24.1...v2.24.2) (2022-01-26)
 
 
