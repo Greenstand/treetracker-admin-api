@@ -28,6 +28,15 @@ export class Planter extends Entity {
 
   @property({
     type: String,
+    postgresql: {
+      dataType: 'uuid',
+      dbDefault: 'uuid_generate_v4()',
+    },
+  })
+  grower_account_uuid: String;
+
+  @property({
+    type: String,
     required: false,
     length: 30,
     postgresql: {
