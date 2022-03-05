@@ -1,3 +1,10 @@
+## [2.25.1](https://github.com/Greenstand/treetracker-admin/compare/v2.25.0...v2.25.1) (2022-03-05)
+
+
+### Bug Fixes
+
+* disable API timeout ([#622](https://github.com/Greenstand/treetracker-admin/issues/622)) ([b1c2173](https://github.com/Greenstand/treetracker-admin/commit/b1c2173fb08bec8ecb31e65bbdff7c84c928f024))
+
 # [2.25.0](https://github.com/Greenstand/treetracker-admin/compare/v2.24.2...v2.25.0) (2022-02-11)
 
 
