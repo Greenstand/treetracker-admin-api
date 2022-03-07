@@ -1,3 +1,10 @@
+## [2.25.2](https://github.com/Greenstand/treetracker-admin/compare/v2.25.1...v2.25.2) (2022-03-07)
+
+
+### Bug Fixes
+
+* hide grower_account_id field from planet until api is planned ([#623](https://github.com/Greenstand/treetracker-admin/issues/623)) ([1c90e2b](https://github.com/Greenstand/treetracker-admin/commit/1c90e2b14f7d949801ab654cc7c571f0d9a6227f))
+
 ## [2.25.1](https://github.com/Greenstand/treetracker-admin/compare/v2.25.0...v2.25.1) (2022-03-05)
 
 
