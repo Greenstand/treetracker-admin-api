@@ -1,3 +1,10 @@
+## [2.25.3](https://github.com/Greenstand/treetracker-admin/compare/v2.25.2...v2.25.3) (2022-03-12)
+
+
+### Bug Fixes
+
+* return planter registrations where device identifier is null ([#625](https://github.com/Greenstand/treetracker-admin/issues/625)) ([5fbb81a](https://github.com/Greenstand/treetracker-admin/commit/5fbb81a8ab3e8ca4a8076f06d656d8b7fbbba5d0))
+
 ## [2.25.2](https://github.com/Greenstand/treetracker-admin/compare/v2.25.1...v2.25.2) (2022-03-07)
 
 
