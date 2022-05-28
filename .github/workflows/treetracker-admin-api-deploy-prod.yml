@@ -15,26 +15,19 @@ jobs:
     name: Deploy latest to prod environment, requires approval
     runs-on: ubuntu-latest
     if: |
-      github.repository == 'Greenstand/treetracker-admin-api'
+      github.repository == "Greenstand/${{ github.event.repository.name }}"
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.tag }}
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
-        with:
-          path: ${{ env.project-directory }}
       - name: Install kustomize
-        run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-        working-directory: ${{ env.project-directory }}
+        run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
       - name: Run kustomize
-        run: (cd deployment/base && ../../kustomize edit set image greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }} )
-      - name: Install doctl for kubernetes
-        uses: digitalocean/action-doctl@v2
+        run: (cd deployment/overlays/production && ../../../kustomize edit set image greenstand/treetracker-admin-api:${{ github.event.inputs.environment }})
+      - name: Commit production kustomization file with new app version
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "chore: bump docker image tag ${{ steps.export_bumped_version.outputs.bumped_version }} [skip ci]"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          token: ${{ secrets.DIGITALOCEAN_PRODUCTION_TOKEN }}
-      - name: Save DigitalOcean kubeconfig
-        run: doctl kubernetes cluster kubeconfig save ${{ secrets.PRODUCTION_CLUSTER_NAME }}
-      - name: Update kubernetes resources
-        run: kustomize build deployment/overlays/production | kubectl apply -n admin-api --wait -f -
+          github_token: ${{ secrets.GITHUB_TOKEN }}
