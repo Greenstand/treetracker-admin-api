@@ -46,5 +46,3 @@ spec:
                   key: messageQueue
             - name: ENABLE_VERIFY_PUBLISHING
               value: 'false'
-      imagePullSecrets:
-        - name: greenstand-docker-secret
