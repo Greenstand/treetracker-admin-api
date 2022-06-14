@@ -1,12 +1,11 @@
-bases:
-  - ../../base
 patchesStrategicMerge:
-  - treetracker-admin-api-mapping.yaml
-  - database-connection-sealed-secret.yaml
-  - treetracker-admin-api-jwt-sealed-secret.yaml
-  - rabbitmq-sealedsecret.yaml
+- treetracker-admin-api-mapping.yaml
+- database-connection-sealed-secret.yaml
+- treetracker-admin-api-jwt-sealed-secret.yaml
+- rabbitmq-sealedsecret.yaml
 images:
-  - name: greenstand/treetracker-admin-api
-    newTag: 2.25.3
+- name: greenstand/treetracker-admin-api
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+resources:
+- ../../base
