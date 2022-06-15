@@ -113,7 +113,7 @@ export class TreesRepository extends DefaultCrudRepository<
   getTreeTagJoinClause(tagId: string): string {
     if (tagId === null) {
       return `LEFT JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id ISNULL)`;
-    } else if (tagId === "0") {
+    } else if (tagId === '0') {
       return `INNER JOIN tree_tag ON trees.id=tree_tag.tree_id`;
     }
     return `JOIN tree_tag ON trees.id=tree_tag.tree_id WHERE (tree_tag.tag_id=${tagId})`;
@@ -134,9 +134,9 @@ export class TreesRepository extends DefaultCrudRepository<
         // If included, replace 'id' with 'tree_id as id' to avoid ambiguity
         const columnNames = this.dataSource.connector
           .buildColumnNames('Trees', filter)
-          .replace('"id"', 'trees.id as "id"');
+          .replace('"id",', '');
 
-        const selectStmt = `SELECT ${columnNames} from trees ${this.getTreeTagJoinClause(
+        const selectStmt = `SELECT DISTINCT trees.id as "id",${columnNames} from trees ${this.getTreeTagJoinClause(
           tagId,
         )}`;
 
@@ -177,7 +177,7 @@ export class TreesRepository extends DefaultCrudRepository<
     }
 
     try {
-      const selectStmt = `SELECT COUNT(*) FROM trees ${this.getTreeTagJoinClause(
+      const selectStmt = `SELECT COUNT(DISTINCT trees.id) FROM trees ${this.getTreeTagJoinClause(
         tagId,
       )}`;
 
