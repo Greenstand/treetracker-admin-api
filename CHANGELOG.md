@@ -1,3 +1,10 @@
+## [2.25.4](https://github.com/Greenstand/treetracker-admin/compare/v2.25.3...v2.25.4) (2022-06-15)
+
+
+### Bug Fixes
+
+* remove duplicates when filtering with tags ([#641](https://github.com/Greenstand/treetracker-admin/issues/641)) ([cbc6c46](https://github.com/Greenstand/treetracker-admin/commit/cbc6c462a0314b8f76aeadf4310b72f4a4c93c37))
+
 ## [2.25.3](https://github.com/Greenstand/treetracker-admin/compare/v2.25.2...v2.25.3) (2022-03-12)
 
 
