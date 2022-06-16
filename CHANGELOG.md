@@ -1,3 +1,10 @@
+## [2.25.5](https://github.com/Greenstand/treetracker-admin/compare/v2.25.4...v2.25.5) (2022-06-16)
+
+
+### Bug Fixes
+
+* updated npm packages that had security issues ([#642](https://github.com/Greenstand/treetracker-admin/issues/642)) ([5ff9f0c](https://github.com/Greenstand/treetracker-admin/commit/5ff9f0ca274916755f5d4140b6dbf80e89e0a0d0))
+
 ## [2.25.4](https://github.com/Greenstand/treetracker-admin/compare/v2.25.3...v2.25.4) (2022-06-15)
 
 
