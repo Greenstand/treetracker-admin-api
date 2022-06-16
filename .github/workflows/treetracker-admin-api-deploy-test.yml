@@ -3,7 +3,7 @@ name: Deploy Admin Panel API to Test Env
 on:
   workflow_dispatch:
     inputs:
-      tag:
+      environment:
         description: 'git-tag'
         required: true
 
@@ -26,7 +26,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -am "chore: bump docker image tag ${{ steps.export_bumped_version.outputs.bumped_version }} [skip ci]"
+          git commit -am "chore: bump docker image tag ${{ github.event.inputs.environment }} [skip ci]"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
