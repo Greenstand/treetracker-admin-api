@@ -20,10 +20,7 @@ import {
 import { Request, RestBindings } from '@loopback/rest';
 import { Species } from '../models';
 import { SpeciesRepository, TreesRepository } from '../repositories';
-enum allowedRoles {
-  Admin = 'Admin',
-  SpeciesManager = 'Species Manager',
-}
+const allowedRoles = ['Admin', 'Species Manager'];
 
 export class SpeciesController {
   constructor(
@@ -75,10 +72,10 @@ export class SpeciesController {
 
     if (this.requestHasUser(this.request)) {
       //CheckUserAccess
-      let userRoles: any[] = this.request.user.roleNames;
-      let isAdminUser = userRoles.some((x) => {
-        return x == allowedRoles.Admin || x == allowedRoles.SpeciesManager;
-      });
+      const userRoles: string[] = this.request.user.roleNames;
+      const isAdminUser = userRoles.some((userRole) =>
+        allowedRoles.some((allowedRole) => allowedRole == userRole),
+      );
       if (isAdminUser) {
         return this.captureCountForEachSpecies(speciesList);
       }
@@ -91,7 +88,7 @@ export class SpeciesController {
     return 'user' in request;
   }
 
-  async captureCountForEachSpecies(speciesList: Species[]) {
+  async captureCountForEachSpecies(speciesList: Species[]): Promise<any[]> {
     const captureCountStmt =
       `SELECT species_id,COUNT(species_id) as count FROM trees ` +
       `WHERE species_id NOTNULL AND active=true GROUP BY species_id`;
