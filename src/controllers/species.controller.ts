@@ -1,3 +1,4 @@
+import { inject } from '@loopback/context';
 import {
   Count,
   CountSchema,
@@ -16,8 +17,13 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
+import { Request, RestBindings } from '@loopback/rest';
 import { Species } from '../models';
 import { SpeciesRepository, TreesRepository } from '../repositories';
+enum allowedRoles {
+  Admin = 'Admin',
+  SpeciesManager = 'Species Manager',
+}
 
 export class SpeciesController {
   constructor(
@@ -25,6 +31,8 @@ export class SpeciesController {
     public speciesRepository: SpeciesRepository,
     @repository(TreesRepository)
     public treesRepository: TreesRepository,
+    @inject(RestBindings.Http.REQUEST)
+    private request: Request,
   ) {}
 
   @get('/species/count', {
@@ -61,23 +69,40 @@ export class SpeciesController {
     filter?: Filter<Species> & { fields?: { captureCount?: Boolean } },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any[]> {
-    console.log('get /species filter --> ', filter ? filter.where : null);
     // Only include active species
     filter = { ...filter, where: { ...filter?.where, active: true } };
+    const speciesList = await this.speciesRepository.find(filter);
 
+    if (this.requestHasUser(this.request)) {
+      //CheckUserAccess
+      let userRoles: any[] = this.request.user.roleNames;
+      let isAdminUser = userRoles.some((x) => {
+        return x == allowedRoles.Admin || x == allowedRoles.SpeciesManager;
+      });
+      if (isAdminUser) {
+        return this.captureCountForEachSpecies(speciesList);
+      }
+    }
+    return speciesList;
+    // TODO: combine both queries in one query to minimise overhead
+  }
+
+  requestHasUser(request: Request): request is Request & { user: any } {
+    return 'user' in request;
+  }
+
+  async captureCountForEachSpecies(speciesList: Species[]) {
     const captureCountStmt =
       `SELECT species_id,COUNT(species_id) as count FROM trees ` +
       `WHERE species_id NOTNULL AND active=true GROUP BY species_id`;
-    // TODO: combine both queries in one query to minimise overhead
-    const [speciesList, captureCounts] = await Promise.all([
-      this.speciesRepository.find(filter),
-      this.treesRepository.execute(captureCountStmt, []),
-    ]);
-
+    const captureCounts = await this.treesRepository.execute(
+      captureCountStmt,
+      [],
+    );
     // Merge the capture counts with the species list
     return speciesList.map((species) => {
       const match = captureCounts.find((item) => {
-        return item.species_id === species.id;
+        return item.species_id == species.id;
       });
       return {
         ...species,
