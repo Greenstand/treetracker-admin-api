@@ -20,7 +20,7 @@ import {
 import { Request, RestBindings } from '@loopback/rest';
 import { Species } from '../models';
 import { SpeciesRepository, TreesRepository } from '../repositories';
-const allowedRoles = ['Admin', 'Species Manager'];
+const ALLOWED_POLICIES = ['super_permission'];
 
 export class SpeciesController {
   constructor(
@@ -71,12 +71,13 @@ export class SpeciesController {
     const speciesList = await this.speciesRepository.find(filter);
 
     if (this.requestHasUser(this.request)) {
-      //CheckUserAccess
-      const userRoles: string[] = this.request.user.roleNames;
-      const isAdminUser = userRoles.some((userRole) =>
-        allowedRoles.some((allowedRole) => allowedRole == userRole),
+      const userPolicies: any[] = this.request.user.policy.policies;
+      const isAllowedUser = userPolicies.some((userPolicy) =>
+        ALLOWED_POLICIES.some(
+          (allowedPolicy) => allowedPolicy == userPolicy.name,
+        ),
       );
-      if (isAdminUser) {
+      if (isAllowedUser) {
         return this.captureCountForEachSpecies(speciesList);
       }
     }
@@ -99,7 +100,7 @@ export class SpeciesController {
     // Merge the capture counts with the species list
     return speciesList.map((species) => {
       const match = captureCounts.find((item) => {
-        return item.species_id == species.id;
+        return item.species_id === species.id;
       });
       return {
         ...species,
