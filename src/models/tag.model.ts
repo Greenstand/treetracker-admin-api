@@ -27,6 +27,20 @@ export class Tag extends Entity {
 
   @property({
     type: String,
+    required: true,
+    postgresql: {
+      columnName: 'uuid',
+      dataType: 'varchar',
+      dataLength: null,
+      dataPrecision: null,
+      dataScale: 0,
+      nullable: 'NO',
+    },
+  })
+  uuid: String;
+
+  @property({
+    type: String,
     required: false,
     postgresql: {
       columnName: 'tag_name',
