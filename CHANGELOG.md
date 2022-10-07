@@ -1,3 +1,10 @@
+# [2.26.0](https://github.com/Greenstand/treetracker-admin/compare/v2.25.5...v2.26.0) (2022-10-07)
+
+
+### Features
+
+* add uuid to species and tag models ([#647](https://github.com/Greenstand/treetracker-admin/issues/647)) ([91fffae](https://github.com/Greenstand/treetracker-admin/commit/91fffaebafb3cf732e9ec2b82045f8ca2bdbf8c4))
+
 ## [2.25.5](https://github.com/Greenstand/treetracker-admin/compare/v2.25.4...v2.25.5) (2022-06-16)
 
 
