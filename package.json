@@ -56,7 +56,7 @@
     "@loopback/openapi-v3": "^6.0.1",
     "@loopback/repository": "^3.7.2",
     "@loopback/rest": "^10.0.1",
-    "@loopback/rest-explorer": "^3.3.3",
+    "@loopback/rest-explorer": "^5.0.3",
     "amqplib": "^0.8.0",
     "assert": "^2.0.0",
     "body-parser": "^1.19.0",
