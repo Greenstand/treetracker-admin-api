@@ -1,3 +1,10 @@
+## [2.26.2](https://github.com/Greenstand/treetracker-admin/compare/v2.26.1...v2.26.2) (2022-11-01)
+
+
+### Bug Fixes
+
+* allow deployment unless commit message starts with chore ([c358530](https://github.com/Greenstand/treetracker-admin/commit/c3585301fbbab5d38bc4372f204a17bc84a71c8c))
+
 ## [2.26.1](https://github.com/Greenstand/treetracker-admin/compare/v2.26.0...v2.26.1) (2022-11-01)
 
 
