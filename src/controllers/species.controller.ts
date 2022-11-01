@@ -1,4 +1,5 @@
 import { inject } from '@loopback/context';
+import { v4 as uuid } from 'uuid';
 import {
   Count,
   CountSchema,
@@ -71,6 +72,7 @@ export class SpeciesController {
     const speciesList = await this.speciesRepository.find(filter);
 
     if (this.requestHasUser(this.request)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const userPolicies: any[] = this.request.user.policy.policies;
       const isAllowedUser = userPolicies.some((userPolicy) =>
         ALLOWED_POLICIES.some(
@@ -85,10 +87,12 @@ export class SpeciesController {
     // TODO: combine both queries in one query to minimise overhead
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   requestHasUser(request: Request): request is Request & { user: any } {
     return 'user' in request;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async captureCountForEachSpecies(speciesList: Species[]): Promise<any[]> {
     const captureCountStmt =
       `SELECT species_id,COUNT(species_id) as count FROM trees ` +
@@ -145,7 +149,10 @@ export class SpeciesController {
   async combine(
     @requestBody() request: { combine: number[]; species: Species },
   ): Promise<void> {
-    const newSpecies = await this.speciesRepository.create(request.species);
+    const newSpecies = await this.speciesRepository.create({
+      ...request.species,
+      uuid: uuid(),
+    });
 
     const updateQuery = `UPDATE trees SET species_id=${
       newSpecies.id
@@ -167,7 +174,10 @@ export class SpeciesController {
     },
   })
   async create(@requestBody() species: Species): Promise<Species> {
-    return await this.speciesRepository.create(species);
+    return await this.speciesRepository.create({
+      ...species,
+      uuid: uuid(),
+    });
   }
 
   @del('/species/{id}', {
