@@ -1,4 +1,5 @@
 import { inject } from '@loopback/context';
+import { v4 as uuid } from 'uuid';
 import {
   Count,
   CountSchema,
@@ -145,7 +146,10 @@ export class SpeciesController {
   async combine(
     @requestBody() request: { combine: number[]; species: Species },
   ): Promise<void> {
-    const newSpecies = await this.speciesRepository.create(request.species);
+    const newSpecies = await this.speciesRepository.create({
+      ...request.species,
+      uuid: uuid(),
+    });
 
     const updateQuery = `UPDATE trees SET species_id=${
       newSpecies.id
@@ -167,7 +171,10 @@ export class SpeciesController {
     },
   })
   async create(@requestBody() species: Species): Promise<Species> {
-    return await this.speciesRepository.create(species);
+    return await this.speciesRepository.create({
+      ...species,
+      uuid: uuid(),
+    });
   }
 
   @del('/species/{id}', {

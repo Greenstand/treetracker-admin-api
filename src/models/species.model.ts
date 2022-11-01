@@ -27,7 +27,7 @@ export class Species extends Entity {
 
   @property({
     type: String,
-    required: true,
+    required: false,
     postgresql: {
       columnName: 'uuid',
       dataType: 'varchar',
