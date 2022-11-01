@@ -95,7 +95,7 @@ jobs:
 
       - name: Commit dev kustomization file with new app version
         if: |
-          !contains(github.event.head_commit.message, 'chore')
+          !startsWith(github.event.head_commit.message, 'chore')
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
