@@ -1,3 +1,10 @@
+## [2.26.1](https://github.com/Greenstand/treetracker-admin/compare/v2.26.0...v2.26.1) (2022-11-01)
+
+
+### Bug Fixes
+
+* create UUID for new and combined species ([#651](https://github.com/Greenstand/treetracker-admin/issues/651)) ([04626f6](https://github.com/Greenstand/treetracker-admin/commit/04626f653d79e178a5335f767cdcfba30581e6d5))
+
 # [2.26.0](https://github.com/Greenstand/treetracker-admin/compare/v2.25.5...v2.26.0) (2022-10-07)
 
 
