@@ -1,3 +1,10 @@
+## [2.26.3](https://github.com/Greenstand/treetracker-admin/compare/v2.26.2...v2.26.3) (2022-11-01)
+
+
+### Bug Fixes
+
+* allow DB to create species UUID ([0322686](https://github.com/Greenstand/treetracker-admin/commit/03226868660d49cd2b76191340557050c713fd87))
+
 ## [2.26.2](https://github.com/Greenstand/treetracker-admin/compare/v2.26.1...v2.26.2) (2022-11-01)
 
 
