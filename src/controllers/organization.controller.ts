@@ -8,17 +8,24 @@ import {
 import {
   param,
   get,
+  post,
+  requestBody,
   getFilterSchemaFor,
   getWhereSchemaFor,
 } from '@loopback/rest';
 import { Organization } from '../models';
-import { OrganizationRepository } from '../repositories';
+import {
+  CreateOrganizationData,
+  OrganizationRepository,
+} from '../repositories';
+import { ORGANIZATION_REQUEST_SCHEMA } from '../dto/organization-dto';
 
 // Extend the LoopBack filter types for the Planter model to include type
 type OrganizationWhere = (Where<Organization> & { type?: string }) | undefined;
 export type OrganizationFilter = Filter<Organization> & {
   where: OrganizationWhere;
 };
+
 export class OrganizationController {
   constructor(
     @repository(OrganizationRepository)
@@ -57,6 +64,31 @@ export class OrganizationController {
     filter?: Filter<Organization>,
   ): Promise<Organization[]> {
     return await this.organizationRepository.find(filter);
+  }
+
+  @post('/organizations', {
+    responses: {
+      '200': {
+        description: 'Organization POST success',
+        content: {
+          'application/json': {
+            schema: { type: 'object', additionalProperties: true },
+          },
+        },
+      },
+    },
+  })
+  async create(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: ORGANIZATION_REQUEST_SCHEMA,
+        },
+      },
+    })
+    organization: CreateOrganizationData,
+  ): Promise<Organization> {
+    return await this.organizationRepository.createOrganization(organization);
   }
 
   @get('/organization/{organizationId}/organizations', {
