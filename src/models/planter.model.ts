@@ -194,6 +194,18 @@ export class Planter extends Entity {
   })
   imageRotation?: Number;
 
+  @property({
+    type: Boolean,
+    required: true,
+    default: false,
+    postgresql: {
+      columnName: 'show_in_map',
+      dataType: 'boolean',
+      nullable: 'NO',
+    },
+  })
+  show_in_map: boolean;
+
   @hasMany(() => PlanterRegistration, { keyTo: 'planterId' })
   planterRegs: PlanterRegistration[];
 
