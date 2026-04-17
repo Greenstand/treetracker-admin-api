@@ -68,7 +68,7 @@ export class PlanterRegistration extends Entity {
     postgresql: {
       columnName: 'device_identifier',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',
