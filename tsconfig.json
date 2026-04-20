@@ -6,9 +6,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "esModuleInterop": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "types": ["node", "jest"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

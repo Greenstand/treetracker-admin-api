@@ -65,6 +65,7 @@
     "expect-runtime": "^0.7.0",
     "express-list-endpoints": "^5.0.0",
     "generate-password": "^1.5.1",
+    "jose": "^6.2.2",
     "jsonwebtoken": "^9.0.0",
     "loglevel": "^1.6.8",
     "loopback-connector-postgresql": "^5.5.1",

@@ -1,4 +1,4 @@
-import { DefaultCrudRepository } from '@loopback/repository';
+import { DefaultCrudRepository, Options } from '@loopback/repository';
 import { Organization, OrganizationRelations } from '../models';
 import { TreetrackerDataSource } from '../datasources';
 import { inject } from '@loopback/core';
@@ -61,8 +61,8 @@ export class OrganizationRepository extends DefaultCrudRepository<
 
   async createOrganization(
     organization: CreateOrganizationData,
+    options?: Options,
   ): Promise<Organization> {
-    console.log('organization', organization);
     const dbOrganization = utils.convertDB({
       type: 'o',
       name: normalizeRequiredValue(organization.name),
@@ -81,16 +81,9 @@ export class OrganizationRepository extends DefaultCrudRepository<
     const query = `insert into entity (${columns.join(
       ', ',
     )}) values (${placeholders.join(', ')}) returning *`;
-    console.log('query', query, values);
-    let result: Array<Record<string, unknown>> | undefined;
-    try {
-      result = (await this.execute(query, values)) as
-        | Array<Record<string, unknown>>
-        | undefined;
-    } catch (e) {
-      console.log('error while creating organization', e);
-      throw e;
-    }
+    const result = (await this.execute(query, values, options)) as
+      | Array<Record<string, unknown>>
+      | undefined;
 
     if (!result?.length) {
       throw new Error('Organization was not created');

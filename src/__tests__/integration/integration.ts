@@ -1,6 +1,11 @@
 /*
  * To test organizational user, like login, permission, and so on
  */
+jest.mock('jose', () => ({
+  createRemoteJWKSet: jest.fn(() => jest.fn()),
+  jwtVerify: jest.fn(),
+}));
+
 import { ExpressServer } from '../../server';
 
 import request from 'supertest';

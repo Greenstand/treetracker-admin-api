@@ -22,6 +22,8 @@ import { publishMessage } from '../messaging/RabbitMQMessaging.js';
 import { config } from '../config.js';
 import { v4 as uuid } from 'uuid';
 import { Transaction } from 'loopback-connector';
+import { Role } from '../types/roles';
+import { requireRole } from '../interceptors/requireRole.interceptor';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
@@ -159,6 +161,7 @@ export class TreesController {
       },
     },
   })
+  @requireRole(Role.ORGANIZATION)
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() trees: Trees,

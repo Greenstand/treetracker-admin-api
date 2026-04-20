@@ -43,6 +43,7 @@ describe('OrganizationRepository', () => {
         'https://fcc.example.com/logo.png',
         'freetown',
       ],
+      undefined,
     );
     expect(result).toMatchObject({
       id: 178,

@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import { Trees } from '../models';
 import { TreesRepository } from '../repositories';
+import { requireRole } from '../interceptors/requireRole.interceptor';
+import { Role } from '../types/roles';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
@@ -189,6 +191,7 @@ export class TreesOrganizationController {
       },
     },
   })
+  @requireRole(Role.ORGANIZATION)
   async updateById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,

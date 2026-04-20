@@ -484,10 +484,16 @@ const isAuth = async (req, res, next) => {
   }
 
   try {
-    const token = req.headers.authorization;
-    const decodedToken = jwt.verify(token, jwtSecret);
-    const userSession = decodedToken;
-    req.user = userSession;
+    let userSession;
+    if (req.user) {
+      // Already authenticated by Keycloak middleware — skip JWT verification
+      userSession = req.user;
+    } else {
+      const token = req.headers.authorization;
+      const decodedToken = jwt.verify(token, jwtSecret);
+      userSession = decodedToken;
+      req.user = userSession;
+    }
 
     // console.log('userSession', userSession);
     console.log('url', url);
@@ -663,7 +669,7 @@ const isAuth = async (req, res, next) => {
     });
     //res.status(200).json([user]);
   } catch (e) {
-    console.warn(e);
+    console.warn('error verify', e);
     res.status(401).json({
       error: new Error('Invalid request!'),
     });

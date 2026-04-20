@@ -7,10 +7,21 @@ import { Pool } from 'pg';
 // import log from 'loglevel';
 // import {strict as assert} from 'assert';
 import getDatasource from '../datasources/config';
-import jwt from 'jsonwebtoken';
-import { config } from '../config';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 
-const jwtSecret = config.jwtSecret;
+// Lazily initialized — only created when KEYCLOAK_URL is set
+let JWKS;
+function getJWKS() {
+  if (!JWKS) {
+    JWKS = createRemoteJWKSet(
+      new URL(
+        `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/certs`,
+      ),
+    );
+  }
+  return JWKS;
+}
+
 const operations = {
   login: {
     type: 'login',
@@ -31,8 +42,15 @@ export const auditMiddleware = (request, response, next) => {
         //assert(response.statusCode);
         const token = request.headers.authorization || '';
         if (token) {
-          const user = jwt.verify(token, jwtSecret);
-          request.user = user;
+          const rawToken = token.startsWith('Bearer ') ? token.slice(7) : token;
+          const issuer = `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}`;
+          const { payload } = await jwtVerify(rawToken, getJWKS(), {
+            issuer,
+          });
+          request.user = {
+            id: payload.sub,
+            userName: payload.preferred_username,
+          };
         }
 
         if (/2\d\d/.test(response.statusCode)) {
