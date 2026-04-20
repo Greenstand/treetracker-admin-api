@@ -18,7 +18,6 @@ export function requireRole(...roles: string[]): ReturnType<typeof intercept> {
       { optional: true },
     );
 
-    console.log('requser', request?.user?.policy.policies);
     if (!request?.user) {
       throw new HttpErrors.Unauthorized('Missing authenticated user');
     }
@@ -26,8 +25,6 @@ export function requireRole(...roles: string[]): ReturnType<typeof intercept> {
     if (!hasRequiredRole(request, roles)) {
       throw new HttpErrors.Forbidden('Insufficient permissions');
     }
-
-    console.log('requ passed');
 
     return next();
   });

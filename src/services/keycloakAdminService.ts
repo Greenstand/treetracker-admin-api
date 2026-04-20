@@ -1,6 +1,4 @@
-import * as https from 'https';
-import * as http from 'http';
-import { URL } from 'url';
+import fetch from 'node-fetch';
 import { Role } from '../types/roles';
 
 interface KeycloakRole {
@@ -17,42 +15,6 @@ interface KeycloakUserRepresentation {
 
 // Cached after first fetch — role IDs are stable for the lifetime of the realm
 let cachedOrganizationRole: KeycloakRole | undefined;
-
-function request(
-  url: string,
-  options: { method: string; headers: Record<string, string>; body?: string },
-): Promise<{ status: number; body: string }> {
-  return new Promise((resolve, reject) => {
-    const parsed = new URL(url);
-    const transport = parsed.protocol === 'https:' ? https : http;
-
-    const req = transport.request(
-      {
-        hostname: parsed.hostname,
-        port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
-        path: parsed.pathname + parsed.search,
-        method: options.method,
-        headers: {
-          ...options.headers,
-          ...(options.body
-            ? { 'Content-Length': Buffer.byteLength(options.body) }
-            : {}),
-        },
-      },
-      (res) => {
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('end', () =>
-          resolve({ status: res.statusCode ?? 0, body: data }),
-        );
-      },
-    );
-
-    req.on('error', reject);
-    if (options.body) req.write(options.body);
-    req.end();
-  });
-}
 
 /**
  * Obtains a short-lived admin access token using the backend client's
@@ -102,20 +64,22 @@ async function getAdminToken(): Promise<string> {
     client_secret: process.env.KEYCLOAK_ADMIN_CLIENT_SECRET ?? '',
   }).toString();
 
-  const { status, body: responseBody } = await request(url, {
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
   });
 
-  if (status !== 200) {
+  if (res.status !== 200) {
     throw new Error(
-      `Failed to obtain Keycloak admin token: HTTP ${status} — ${responseBody}`,
+      `Failed to obtain Keycloak admin token: HTTP ${
+        res.status
+      } — ${await res.text()}`,
     );
   }
 
-  const parsed = JSON.parse(responseBody);
-  return parsed.access_token as string;
+  const parsed = (await res.json()) as { access_token: string };
+  return parsed.access_token;
 }
 
 async function getRealmRole(
@@ -124,19 +88,21 @@ async function getRealmRole(
 ): Promise<KeycloakRole> {
   const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/roles/${roleName}`;
 
-  const { status, body } = await request(url, {
+  const res = await fetch(url, {
     method: 'GET',
     headers: { Authorization: `Bearer ${adminToken}` },
   });
 
-  if (status !== 200) {
+  if (res.status !== 200) {
     throw new Error(
-      `Failed to fetch Keycloak role "${roleName}": HTTP ${status} — ${body}`,
+      `Failed to fetch Keycloak role "${roleName}": HTTP ${
+        res.status
+      } — ${await res.text()}`,
     );
   }
 
-  const role = JSON.parse(body);
-  return { id: role.id as string, name: role.name as string };
+  const role = (await res.json()) as KeycloakRole;
+  return { id: role.id, name: role.name };
 }
 
 async function assignRoleToUser(
@@ -145,21 +111,22 @@ async function assignRoleToUser(
   role: KeycloakRole,
 ): Promise<void> {
   const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}/role-mappings/realm`;
-  const body = JSON.stringify([{ id: role.id, name: role.name }]);
 
-  const { status, body: responseBody } = await request(url, {
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${adminToken}`,
       'Content-Type': 'application/json',
     },
-    body,
+    body: JSON.stringify([{ id: role.id, name: role.name }]),
   });
 
   // 204 No Content is the success response for role assignment
-  if (status !== 204) {
+  if (res.status !== 204) {
     throw new Error(
-      `Failed to assign role "${role.name}" to user "${userId}": HTTP ${status} — ${responseBody}`,
+      `Failed to assign role "${role.name}" to user "${userId}": HTTP ${
+        res.status
+      } — ${await res.text()}`,
     );
   }
 }
@@ -170,18 +137,20 @@ async function getUserRepresentation(
 ): Promise<KeycloakUserRepresentation> {
   const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`;
 
-  const { status, body } = await request(url, {
+  const res = await fetch(url, {
     method: 'GET',
     headers: { Authorization: `Bearer ${adminToken}` },
   });
 
-  if (status !== 200) {
+  if (res.status !== 200) {
     throw new Error(
-      `Failed to fetch Keycloak user "${userId}": HTTP ${status} — ${body}`,
+      `Failed to fetch Keycloak user "${userId}": HTTP ${
+        res.status
+      } — ${await res.text()}`,
     );
   }
 
-  return JSON.parse(body) as KeycloakUserRepresentation;
+  return res.json() as Promise<KeycloakUserRepresentation>;
 }
 
 async function updateUserRepresentation(
@@ -190,22 +159,21 @@ async function updateUserRepresentation(
   user: KeycloakUserRepresentation,
 ): Promise<void> {
   const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`;
-  const body = JSON.stringify(user);
 
-  const { status, body: responseBody } = await request(url, {
+  const res = await fetch(url, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${adminToken}`,
       'Content-Type': 'application/json',
     },
-    body,
+    body: JSON.stringify(user),
   });
 
-  console.log('status user claim', status, body);
-
-  if (status !== 204) {
+  if (res.status !== 204) {
     throw new Error(
-      `Failed to update Keycloak user "${userId}": HTTP ${status} — ${responseBody}`,
+      `Failed to update Keycloak user "${userId}": HTTP ${
+        res.status
+      } — ${await res.text()}`,
     );
   }
 }
