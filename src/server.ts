@@ -9,6 +9,7 @@ import {
   TreetrackerAdminApiApplication,
 } from './application';
 import auth from './js/auth.js';
+import { keycloakAuth } from './middleware/keycloakMiddleware';
 import { auditMiddleware } from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
 
@@ -28,9 +29,13 @@ export class ExpressServer {
     this.app.use(express.json());
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
-    // Expose the front-end assets via Express, not as LB4 route
-    this.app.use('/api', auth.isAuth);
-    this.app.use('/auth', auth.isAuth);
+    // Authenticate API requests with Keycloak bearer tokens.
+    if (process.env.KEYCLOAK_URL) {
+      this.app.use('/api', keycloakAuth);
+    }
+
+    // Keep legacy auth middleware for legacy /auth routes only.
+    // this.app.use('/auth', auth.isAuth);
 
     //audit
     this.app.use(auditMiddleware);

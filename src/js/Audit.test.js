@@ -3,6 +3,11 @@
 import request from 'supertest';
 import express from 'express';
 
+jest.mock('jose', () => ({
+  createRemoteJWKSet: jest.fn(() => jest.fn()),
+  jwtVerify: jest.fn(),
+}));
+
 import { Pool } from 'pg';
 jest.mock('pg');
 

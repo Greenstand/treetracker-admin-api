@@ -1,15 +1,19 @@
-import pg from 'pg';
-pg.defaults.ssl = { rejectUnauthorized: false };
 export interface DatasourceConfig {
   name: string;
   connector: string;
   url: string;
+  ssl: {
+    rejectUnauthorized: boolean;
+  };
 }
 
 const config: DatasourceConfig = {
   name: 'treetracker_dev',
   connector: 'postgresql',
   url: process.env.DATABASE_URL || '',
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
 
 if (!config.url) {

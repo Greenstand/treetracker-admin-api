@@ -78,6 +78,204 @@ npm start
 
 ### Step 7: Start developing!
 
+## Keycloak Setup For Organization Onboarding
+
+The organization onboarding flow now relies on Keycloak for:
+
+- authenticating `/api` requests with bearer tokens
+- assigning the `org` realm role after organization creation
+- exposing the created organization id in the token as `organization_id`
+
+This setup uses two different Keycloak clients:
+
+1. Frontend browser client
+   - `treetracker-admin-client-fe`
+   - used by `treetracker-admin-client`
+   - issues the access token the frontend sends to the API
+2. Backend admin/service client
+   - `treetracker-admin-client-be`
+   - used by `treetracker-admin-api`
+   - uses service-account credentials to update user attributes and assign roles
+
+### Keycloak Role
+
+Create or confirm the existence of this realm role in the `treetracker` realm:
+
+- `org`
+
+This role is granted to a user after they successfully create an organization.
+
+### Frontend Keycloak Client
+
+Client name:
+
+- `treetracker-admin-client-fe`
+
+Recommended settings used by the current implementation:
+
+- `Client authentication`: Off
+- `Standard flow`: On
+- `Direct access grants`: Off
+- `Implicit flow`: Off
+- `Service accounts roles`: Off
+
+For local development, valid redirect URIs should include:
+
+- `http://localhost:3001/*`
+- `http://localhost:3001/auth/callback`
+
+Web origins should include:
+
+- `http://localhost:3001`
+
+The frontend environment values currently used are:
+
+```env
+REACT_APP_KEYCLOAK_URL=https://dev-k8s.treetracker.org/keycloak
+REACT_APP_KEYCLOAK_REALM=treetracker
+REACT_APP_KEYCLOAK_CLIENT_ID=treetracker-admin-client-fe
+```
+
+### Backend Keycloak Admin Client
+
+Client name:
+
+- `treetracker-admin-client-be`
+
+Recommended settings used by the current implementation:
+
+- `Client authentication`: On
+- `Service accounts roles`: On
+- `Standard flow`: Off
+- `Direct access grants`: Off
+
+The backend uses this client to call the Keycloak Admin API.
+
+The backend environment values currently used are:
+
+```env
+KEYCLOAK_URL=https://dev-k8s.treetracker.org/keycloak
+KEYCLOAK_REALM=treetracker
+KEYCLOAK_CLIENT_ID=treetracker-admin-client-be
+KEYCLOAK_ADMIN_ID=treetracker-admin-client-be
+KEYCLOAK_CLIENT_EXPECTED_CLIENT_ID=treetracker-admin-client-fe
+KEYCLOAK_ADMIN_CLIENT_SECRET=<backend-client-secret>
+```
+
+Notes:
+
+- `KEYCLOAK_CLIENT_EXPECTED_CLIENT_ID` is the frontend client id expected in the token `azp` claim.
+- `KEYCLOAK_ADMIN_ID` is the service-account client used by the API for admin calls.
+- Do not use the frontend client for backend admin role assignment.
+
+### Backend Service Account Permissions
+
+For `treetracker-admin-client-be`, assign the required `realm-management` roles to the service account so the API can:
+
+- read realm roles
+- update users
+- assign realm roles to users
+
+Admin Console steps:
+
+1. Open the `treetracker` realm in the Keycloak Admin Console.
+2. Go to `Clients`.
+3. Select `treetracker-admin-client-be`.
+4. Confirm these settings are enabled on the client:
+   - `Client authentication`: On
+   - `Service accounts roles`: On
+5. Open the `Service account roles` tab for `treetracker-admin-client-be`.
+6. In the client-role selector, choose `realm-management`.
+7. Add the required roles to the service account.
+
+At minimum, review and grant the needed permissions for:
+
+- `manage-users`
+- `view-realm`
+
+If role fetch/assignment still fails with `403`, also review:
+
+- `query-users`
+- `query-roles`
+
+After saving the roles, the backend service account should be able to:
+
+- fetch the `org` realm role
+- update a user’s `organization_id` attribute
+- assign the `org` realm role to the user
+
+### Add The `organization_id` Claim To Frontend Tokens
+
+The backend stores the created organization id as a Keycloak user attribute:
+
+- `organization_id`
+
+To expose that value in the frontend access token, add a mapper on the frontend client's dedicated scope.
+
+Client:
+
+- `treetracker-admin-client-fe`
+
+Dedicated scope:
+
+- `treetracker-admin-client-fe-dedicated`
+
+Admin Console steps:
+
+1. Open the `treetracker` realm in the Keycloak Admin Console.
+2. Go to `Clients`.
+3. Select `treetracker-admin-client-fe`.
+4. Open `Dedicated scopes`.
+5. Select `treetracker-admin-client-fe-dedicated`.
+6. Open the `Mappers` tab.
+7. Click `Add mapper`.
+8. Choose `By configuration`.
+9. Choose `User Attribute`.
+
+Create a mapper with these exact values:
+
+- `Mapper Type`: `User Attribute`
+- `Name`: `organization_id`
+- `User Attribute`: `organization_id`
+- `Token Claim Name`: `organization_id`
+- `Claim JSON Type`: `String`
+- `Add to access token`: On
+- `Add to ID token`: Optional
+- `Multivalued`: Off
+
+Notes:
+
+- The user attribute name must match exactly: `organization_id`
+- The token claim name must match exactly: `organization_id`
+- The frontend currently reads the claim from the refreshed access token, so `Add to access token` must be enabled
+
+```
+
+To verify the mapper is working:
+
+1. Confirm the Keycloak user has the `organization_id` attribute set in the user profile.
+2. Log out of the frontend application.
+3. Log back in so a new token is issued.
+4. Decode the refreshed access token and confirm it contains:
+   - `realm_access.roles` including `org`
+   - `organization_id`
+
+### Backend Organization Creation Flow
+
+When a user creates an organization through the API, the backend now does the following:
+
+1. creates the organization row in the database
+2. sets the Keycloak user attribute:
+   - `organization_id`
+3. assigns the `org` realm role to the user
+
+
+### Troubleshooting
+
+- If the frontend token contains `org` but not `organization_id`, verify the frontend client mapper.
+- If organization creation succeeds but claim/role assignment fails with `403`, verify the backend service-account permissions in Keycloak.
+- The API currently verifies Keycloak bearer tokens using `jose`, not `keycloak-connect`.
+
 ## Commit Message and PR Title Format
 
 We use automatic semantic versioning, which looks at commit messages to determine how to increment the version number for deployment.
@@ -85,7 +283,9 @@ We use automatic semantic versioning, which looks at commit messages to determin
 Your commit messages will need to follow the [Conventional Commits](https://www.conventionalcommits.org/) format, for example:
 
 ```
+
 feat: add new button
+
 ```
 
 Since we squash commits on merging PRs into `master`, this applies to PR titles as well.
@@ -95,16 +295,20 @@ Since we squash commits on merging PRs into `master`, this applies to PR titles 
 Your forked repo won't automatically stay in sync with Greenstand, so you'll need to occassionally sync manually (typically before starting work on a new feature).
 
 ```
+
 git pull upstream master --rebase
 git push origin master
+
 ```
 
 You might also need to sync and merge `master` into your feature branch before submitting a PR to resolve any conflicts.
 
 ```
+
 git checkout <feature_branch>
 git merge master
-```
+
+````
 
 ## Code style guide
 
@@ -126,7 +330,7 @@ You can also manually run `npm run prettier`. Configuration files are already in
 
 ```js
 const foo = 'bar';
-```
+````
 
 **Braces** Opening braces go on the same line as the statement
 

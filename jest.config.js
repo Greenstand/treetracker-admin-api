@@ -6,7 +6,7 @@ module.exports = {
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
   globals: {
     'ts-jest': {
-      tsConfig: {
+      tsconfig: {
         allowJs: true,
       },
     },

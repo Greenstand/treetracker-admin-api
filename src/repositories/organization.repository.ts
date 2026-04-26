@@ -1,8 +1,27 @@
-import { DefaultCrudRepository } from '@loopback/repository';
+import { DefaultCrudRepository, Options } from '@loopback/repository';
 import { Organization, OrganizationRelations } from '../models';
 import { TreetrackerDataSource } from '../datasources';
 import { inject } from '@loopback/core';
 import expect from 'expect-runtime';
+import { utils } from '../js/utils';
+
+export type CreateOrganizationData = {
+  name: string;
+  email: string;
+  phone?: string;
+  website?: string;
+  logoUrl?: string;
+  mapName?: string;
+};
+
+function normalizeRequiredValue(value: string): string {
+  return value.trim();
+}
+
+function normalizeOptionalValue(value?: string): string | null {
+  const normalizedValue = value?.trim();
+  return normalizedValue ? normalizedValue : null;
+}
 
 export class OrganizationRepository extends DefaultCrudRepository<
   Organization,
@@ -38,5 +57,38 @@ export class OrganizationRepository extends DefaultCrudRepository<
     return {
       and: [where, { id: { inq: entityIds } }],
     };
+  }
+
+  async createOrganization(
+    organization: CreateOrganizationData,
+    options?: Options,
+  ): Promise<Organization> {
+    const dbOrganization = utils.convertDB({
+      type: 'o',
+      name: normalizeRequiredValue(organization.name),
+      email: normalizeRequiredValue(organization.email),
+      phone: normalizeOptionalValue(organization.phone),
+      pwdResetRequired: false,
+      website: normalizeOptionalValue(organization.website),
+      logoUrl: normalizeOptionalValue(organization.logoUrl),
+      mapName: normalizeOptionalValue(organization.mapName),
+    });
+
+    const dbEntries = Object.entries(dbOrganization);
+    const columns = dbEntries.map(([key]) => key);
+    const values = dbEntries.map(([, value]) => value);
+    const placeholders = values.map((_, index) => `$${index + 1}`);
+    const query = `insert into entity (${columns.join(
+      ', ',
+    )}) values (${placeholders.join(', ')}) returning *`;
+    const result = (await this.execute(query, values, options)) as
+      | Array<Record<string, unknown>>
+      | undefined;
+
+    if (!result?.length) {
+      throw new Error('Organization was not created');
+    }
+
+    return utils.convertCamel(result[0]) as Organization;
   }
 }
