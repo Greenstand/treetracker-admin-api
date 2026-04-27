@@ -24,6 +24,7 @@ export class Organization extends Entity {
     postgresql: {
       columnName: 'name',
       dataType: 'character varying',
+      dataLength: 255,
     },
   })
   name: String;
@@ -33,6 +34,7 @@ export class Organization extends Entity {
     postgresql: {
       columnName: 'type',
       dataType: 'character varying',
+      dataLength: 255,
     },
   })
   type: String;

@@ -72,7 +72,7 @@ export class Planter extends Entity {
     postgresql: {
       columnName: 'email',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',
@@ -86,7 +86,7 @@ export class Planter extends Entity {
     postgresql: {
       columnName: 'organization',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',
@@ -135,7 +135,7 @@ export class Planter extends Entity {
     postgresql: {
       columnName: 'image_url',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',

@@ -1,5 +1,13 @@
 import pg from 'pg';
-pg.defaults.ssl = { rejectUnauthorized: false };
+if (
+  process.env.DATABASE_URL &&
+  (process.env.DATABASE_URL.includes('ssl=false') ||
+    process.env.DATABASE_URL.includes('sslmode=disable'))
+) {
+  pg.defaults.ssl = false;
+} else {
+  pg.defaults.ssl = { rejectUnauthorized: false };
+}
 export interface DatasourceConfig {
   name: string;
   connector: string;
