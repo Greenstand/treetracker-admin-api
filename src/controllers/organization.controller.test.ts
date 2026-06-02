@@ -93,6 +93,33 @@ describe('OrganizationController', () => {
     expect(transaction.rollback).not.toHaveBeenCalled();
   });
 
+  it('returns paginated organizations with a total for the same where filter', async () => {
+    const organizations = [
+      { id: 1, type: 'O', name: 'Alpha' },
+      { id: 2, type: 'O', name: 'Beta' },
+    ];
+    const find = jest.fn().mockResolvedValue(organizations);
+    const count = jest.fn().mockResolvedValue({ count: 7 });
+    const controller = new OrganizationController({
+      find,
+      count,
+    } as never);
+
+    const filter = {
+      where: { type: 'O' },
+      order: ['name ASC'],
+      skip: 0,
+      limit: 2,
+    };
+
+    const result = await controller.findPaginated(filter as never);
+
+    // List honours the full filter; count uses only the `where` clause.
+    expect(find).toHaveBeenCalledWith(filter);
+    expect(count).toHaveBeenCalledWith(filter.where);
+    expect(result).toEqual({ organizations, total: 7 });
+  });
+
   it('rejects users who already have the organization role', async () => {
     const createOrganization = jest.fn();
     const controller = new OrganizationController(
