@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- treetracker-admin-api-deployment.yaml
+- treetracker-admin-api-service.yaml
+- treetracker-admin-api-mapping.yaml
+
+images:
+- name: greenstand/treetracker-admin-api
+  newName: greenstand/treetracker-admin-api
+  newTag: keycloak-2.26.3

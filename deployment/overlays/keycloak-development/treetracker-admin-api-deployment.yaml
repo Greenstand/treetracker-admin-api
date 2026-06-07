@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-treetracker-admin-api
+  namespace: admin-api
+  labels:
+    app: keycloak-treetracker-admin-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-treetracker-admin-api
+  template:
+    metadata:
+      labels:
+        app: keycloak-treetracker-admin-api
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: doks.digitalocean.com/node-pool
+                    operator: In
+                    values:
+                      - microservices-node-pool
+      containers:
+        - name: treetracker-admin-api
+          image: greenstand/treetracker-admin-api
+          ports:
+            - containerPort: 80
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: treetracker-api-jwt
+                  key: jwt
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-connection
+                  key: db
+            - name: RABBIT_MQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: treetracker-rabbitmq-connection
+                  key: messageQueue
+            - name: ENABLE_VERIFY_PUBLISHING
+              value: 'true'

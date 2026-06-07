@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: treetracker-admin-api-keycloak-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Greenstand/treetracker-admin-api
+    targetRevision: keycloak
+    path: deployment/overlays/keycloak-development
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: admin-api
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
