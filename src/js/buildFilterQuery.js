@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { ParameterizedSQL } from 'loopback-connector';
 
 export function getConnector(repo) {

@@ -47,9 +47,9 @@ export class OrganizationRepository extends DefaultCrudRepository<
   }
 
   async applyOrganizationWhereClause(
-    where: Object | undefined,
+    where: object | undefined,
     organizationId: number | undefined,
-  ): Promise<Object | undefined> {
+  ): Promise<object | undefined> {
     if (!where || organizationId === undefined) {
       return Promise.resolve(where);
     }

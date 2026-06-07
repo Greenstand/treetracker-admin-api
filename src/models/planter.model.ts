@@ -1,8 +1,6 @@
 import { Entity, model, property, hasMany } from '@loopback/repository';
 import { PlanterRegistration } from './planterRegistration.model';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -24,7 +22,7 @@ export class Planter extends Entity {
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: number;
 
   // @property({
   //   type: String,
@@ -49,7 +47,7 @@ export class Planter extends Entity {
       nullable: 'NO',
     },
   })
-  firstName: String;
+  firstName: string;
 
   @property({
     type: String,
@@ -64,7 +62,7 @@ export class Planter extends Entity {
       nullable: 'NO',
     },
   })
-  lastName: String;
+  lastName: string;
 
   @property({
     type: String,
@@ -78,7 +76,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  email?: String;
+  email?: string;
 
   @property({
     type: String,
@@ -92,7 +90,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  organization?: String;
+  organization?: string;
 
   @property({
     type: String,
@@ -106,7 +104,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  phone?: String;
+  phone?: string;
 
   @property({
     type: Boolean,
@@ -120,7 +118,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  pwdResetRequired?: Boolean;
+  pwdResetRequired?: boolean;
 
   // @property({
   //   type: String,
@@ -141,7 +139,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  imageUrl?: String;
+  imageUrl?: string;
 
   //added person_id
   //Sat May 23 09:56:55 CST 2020
@@ -158,7 +156,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  personId?: Number;
+  personId?: number;
 
   @property({
     type: Number,
@@ -176,7 +174,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  organizationId?: Number;
+  organizationId?: number;
 
   @property({
     type: Number,
@@ -192,7 +190,7 @@ export class Planter extends Entity {
       nullable: 'YES',
     },
   })
-  imageRotation?: Number;
+  imageRotation?: number;
 
   @hasMany(() => PlanterRegistration, { keyTo: 'planterId' })
   planterRegs: PlanterRegistration[];
@@ -208,6 +206,7 @@ export class Planter extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PlanterRelations {
   // describe navigational properties here
 }

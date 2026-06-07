@@ -1,8 +1,6 @@
 import { Entity, model, property, hasMany } from '@loopback/repository';
 import { TreeTag } from './treeTag.model';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -24,7 +22,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: number;
 
   @property({
     type: String,
@@ -38,7 +36,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  uuid: String;
+  uuid: string;
 
   @property({
     type: String,
@@ -52,7 +50,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  timeCreated: String;
+  timeCreated: string;
 
   @property({
     type: String,
@@ -66,7 +64,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  timeUpdated: String;
+  timeUpdated: string;
 
   @property({
     type: Boolean,
@@ -80,7 +78,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  missing?: Boolean;
+  missing?: boolean;
 
   @property({
     type: Number,
@@ -95,7 +93,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  causeOfDeathId?: Number;
+  causeOfDeathId?: number;
 
   //Sun Dec  8 16:09:12 CST 2019
   //change from user_id to planter_id
@@ -112,7 +110,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  planterId?: Number;
+  planterId?: number;
 
   @property({
     type: String,
@@ -126,7 +124,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  imageUrl?: String;
+  imageUrl?: string;
 
   @property({
     type: Number,
@@ -140,7 +138,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  lat?: Number;
+  lat?: number;
 
   @property({
     type: Number,
@@ -154,7 +152,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  lon?: Number;
+  lon?: number;
 
   @property({
     type: Boolean,
@@ -168,7 +166,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  active?: Boolean;
+  active?: boolean;
 
   @property({
     type: String,
@@ -182,7 +180,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  planterIdentifier?: String;
+  planterIdentifier?: string;
 
   @property({
     type: Number,
@@ -197,7 +195,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  deviceId?: Number;
+  deviceId?: number;
 
   @property({
     type: String,
@@ -211,7 +209,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  deviceIdentifier?: Number;
+  deviceIdentifier?: number;
 
   @property({
     type: String,
@@ -225,7 +223,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  note?: String;
+  note?: string;
 
   @property({
     type: Boolean,
@@ -239,7 +237,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  verified: Boolean;
+  verified: boolean;
 
   @property({
     type: Boolean,
@@ -253,7 +251,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  approved: Boolean;
+  approved: boolean;
 
   @property({
     type: String,
@@ -268,7 +266,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  status?: String;
+  status?: string;
 
   @property({
     type: String,
@@ -283,7 +281,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  morphology?: String;
+  morphology?: string;
 
   @property({
     type: String,
@@ -298,7 +296,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  age?: String;
+  age?: string;
 
   @property({
     type: Number,
@@ -313,7 +311,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  speciesId?: Number;
+  speciesId?: number;
 
   @hasMany(() => TreeTag, { keyTo: 'treeId' })
   treeTags: TreeTag[];
@@ -331,7 +329,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  captureApprovalTag?: String;
+  captureApprovalTag?: string;
 
   @property({
     type: String,
@@ -346,7 +344,7 @@ export class Trees extends Entity {
       nullable: 'NO',
     },
   })
-  rejectionReason?: String;
+  rejectionReason?: string;
 
   @property({
     type: Number,
@@ -361,7 +359,7 @@ export class Trees extends Entity {
       nullable: 'YES',
     },
   })
-  plantingOrganizationId?: Number;
+  plantingOrganizationId?: number;
 
   @property({
     type: String,
@@ -371,7 +369,7 @@ export class Trees extends Entity {
       dataType: 'character varying',
     },
   })
-  planterPhotoUrl?: String;
+  planterPhotoUrl?: string;
 
   @property({
     type: String,
@@ -381,7 +379,7 @@ export class Trees extends Entity {
       dataType: 'character varying',
     },
   })
-  tokenId?: String;
+  tokenId?: string;
 
   // Define well-known properties here
 
@@ -394,6 +392,7 @@ export class Trees extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface TreesRelations {
   // describe navigational properties here
 }

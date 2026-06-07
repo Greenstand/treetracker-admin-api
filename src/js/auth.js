@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-
 import express from 'express';
 const router = express.Router();
 import jwt from 'jsonwebtoken';
 import generator from 'generate-password';
 import Crypto from 'crypto';
-import bodyParser from 'body-parser';
 import { config } from '../config';
 import { Pool } from 'pg';
 import { utils } from './utils';
@@ -13,7 +10,6 @@ import getDatasource from '../datasources/config';
 import policy from '../policy.json';
 import expect from 'expect';
 
-const app = express();
 const pool = new Pool({ connectionString: getDatasource().url });
 const jwtSecret = config.jwtSecret;
 
@@ -57,8 +53,7 @@ const generateSalt = function () {
   return generated;
 };
 
-const jsonParser = app.use(bodyParser.urlencoded({ extended: false })); // parse application/json
-// const urlencodedParser = app.use(bodyParser.json());/// parse application/x-www-form-urlencoded
+const urlencodedParser = express.urlencoded({ extended: false });
 
 function isIdValid(id) {
   // an ID is valid if it is not null or undefined
@@ -290,19 +285,23 @@ router.get('/admin_users/:userId', async (req, res) => {
   }
 });
 
-router.put('/admin_users/:userId/password', jsonParser, async (req, res) => {
-  try {
-    const salt = generateSalt();
-    const hash = helper.sha512(req.body.password, salt);
-    await pool.query(
-      `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
-    );
-    res.status(200).json();
-  } catch (e) {
-    console.error(e);
-    res.status(500).json();
-  }
-});
+router.put(
+  '/admin_users/:userId/password',
+  urlencodedParser,
+  async (req, res) => {
+    try {
+      const salt = generateSalt();
+      const hash = helper.sha512(req.body.password, salt);
+      await pool.query(
+        `update admin_user set password_hash = '${hash}', salt = '${salt}' where id = ${req.params.userId}`,
+      );
+      res.status(200).json();
+    } catch (e) {
+      console.error(e);
+      res.status(500).json();
+    }
+  },
+);
 
 router.patch('/admin_users/:userId', async (req, res) => {
   try {
@@ -503,11 +502,12 @@ const isAuth = async (req, res, next) => {
     const policies = userSession.policy.policies;
     expect(policies).toBeInstanceOf(Array);
     const organization = userSession.policy.organization;
-    organization &&
+    if (organization) {
       expect(organization).toMatchObject({
         name: expect.any(String),
         id: expect.any(Number),
       });
+    }
 
     let matcher;
     if (url.match(/\/auth\/check_session/)) {

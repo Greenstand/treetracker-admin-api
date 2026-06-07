@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { BrokerAsPromised as Broker } from 'rascal';
 import { config } from './config';
 

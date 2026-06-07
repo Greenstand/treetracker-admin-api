@@ -1,7 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -23,7 +21,7 @@ export class Tag extends Entity {
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: number;
 
   @property({
     type: String,
@@ -37,7 +35,7 @@ export class Tag extends Entity {
       nullable: 'NO',
     },
   })
-  uuid: String;
+  uuid: string;
 
   @property({
     type: String,
@@ -51,7 +49,7 @@ export class Tag extends Entity {
       nullable: 'NO',
     },
   })
-  tagName: String;
+  tagName: string;
 
   @property({
     type: Boolean,
@@ -65,7 +63,7 @@ export class Tag extends Entity {
       nullable: 'NO',
     },
   })
-  active: String;
+  active: string;
 
   @property({
     type: Boolean,
@@ -79,7 +77,7 @@ export class Tag extends Entity {
       nullable: 'NO',
     },
   })
-  public: String;
+  public: string;
 
   // Define well-known properties here
 
@@ -92,6 +90,7 @@ export class Tag extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface TagRelations {
   // describe navigational properties here
 }

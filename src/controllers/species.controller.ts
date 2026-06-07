@@ -63,7 +63,7 @@ export class SpeciesController {
   })
   async find(
     @param.query.object('filter', getFilterSchemaFor(Species))
-    filter?: Filter<Species> & { fields?: { captureCount?: Boolean } },
+    filter?: Filter<Species> & { fields?: { captureCount?: boolean } },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any[]> {
     // Only include active species

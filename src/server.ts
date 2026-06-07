@@ -8,7 +8,7 @@ import {
   ApplicationConfig,
   TreetrackerAdminApiApplication,
 } from './application';
-import auth from './js/auth.js';
+// import auth from './js/auth.js';
 import { keycloakAuth } from './middleware/keycloakMiddleware';
 import { auditMiddleware } from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
