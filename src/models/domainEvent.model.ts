@@ -1,7 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -19,7 +17,7 @@ export class DomainEvent extends Entity {
       nullable: 'NO',
     },
   })
-  id: String;
+  id: string;
 
   @property({
     type: 'object',
@@ -41,7 +39,7 @@ export class DomainEvent extends Entity {
       nullable: 'NO',
     },
   })
-  status: String;
+  status: string;
 
   @property({
     type: String,
@@ -52,7 +50,7 @@ export class DomainEvent extends Entity {
       nullable: 'NO',
     },
   })
-  createdAt: String;
+  createdAt: string;
 
   @property({
     type: String,
@@ -63,9 +61,10 @@ export class DomainEvent extends Entity {
       nullable: 'NO',
     },
   })
-  updatedAt: String;
+  updatedAt: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DomainEventRelations {
   // describe navigational properties here
 }

@@ -36,7 +36,7 @@ export class TreesTreeTagController {
     },
   })
   async find(
-    @param.path.number('id') id: Number,
+    @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<TreeTag>,
   ): Promise<TreeTag[]> {
     return this.treesRepository.treeTags(id).find(filter);
@@ -77,7 +77,7 @@ export class TreesTreeTagController {
     },
   })
   async patch(
-    @param.path.number('id') id: Number,
+    @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
@@ -101,7 +101,7 @@ export class TreesTreeTagController {
     },
   })
   async delete(
-    @param.path.number('id') id: Number,
+    @param.path.number('id') id: number,
     @param.query.object('where', getWhereSchemaFor(TreeTag))
     where?: Where<TreeTag>,
   ): Promise<Count> {

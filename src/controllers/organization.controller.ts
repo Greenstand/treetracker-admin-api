@@ -188,7 +188,7 @@ export class OrganizationController {
     },
   })
   async findByParentOrg(
-    @param.path.number('organizationId') organizationId: Number,
+    @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Organization))
     filter?: OrganizationFilter,
   ): Promise<Organization[]> {

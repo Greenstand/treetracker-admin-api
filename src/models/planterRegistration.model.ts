@@ -1,7 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -21,7 +19,7 @@ export class PlanterRegistration extends Entity {
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: number;
 
   @property({
     type: 'number',
@@ -74,7 +72,7 @@ export class PlanterRegistration extends Entity {
       nullable: 'YES',
     },
   })
-  deviceIdentifier?: String;
+  deviceIdentifier?: string;
 
   // Indexer property to allow additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,6 +83,7 @@ export class PlanterRegistration extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PlanterRegistrationRelations {
   // describe navigational properties here
 }

@@ -1,7 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -23,7 +21,7 @@ export class AdminUser extends Entity {
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: number;
 
   @property({
     type: String,
@@ -38,7 +36,7 @@ export class AdminUser extends Entity {
       nullable: 'NO',
     },
   })
-  username: String;
+  username: string;
 
   @property({
     type: String,
@@ -53,7 +51,7 @@ export class AdminUser extends Entity {
       nullable: 'NO',
     },
   })
-  hasswordHash: String;
+  hasswordHash: string;
 
   @property({
     type: String,
@@ -67,7 +65,7 @@ export class AdminUser extends Entity {
       nullable: 'YES',
     },
   })
-  email?: String;
+  email?: string;
 
   @property({
     type: Boolean,
@@ -77,7 +75,7 @@ export class AdminUser extends Entity {
       dataType: 'boolean',
     },
   })
-  active?: Boolean;
+  active?: boolean;
 
   @property({
     type: Boolean,
@@ -87,7 +85,7 @@ export class AdminUser extends Entity {
       dataType: 'boolean',
     },
   })
-  enabled?: Boolean;
+  enabled?: boolean;
 
   @property({
     type: String,
@@ -98,7 +96,7 @@ export class AdminUser extends Entity {
       nullable: 'NO',
     },
   })
-  createdAt: String;
+  createdAt: string;
 
   // Define well-known properties here
 
@@ -111,6 +109,7 @@ export class AdminUser extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface AdminUserRelations {
   // describe navigational properties here
 }

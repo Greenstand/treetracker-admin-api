@@ -1,7 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -23,7 +21,7 @@ export class Species extends Entity {
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: number;
 
   @property({
     type: String,
@@ -37,7 +35,7 @@ export class Species extends Entity {
       nullable: 'NO',
     },
   })
-  uuid: String;
+  uuid: string;
 
   @property({
     type: String,
@@ -52,7 +50,7 @@ export class Species extends Entity {
       nullable: 'NO',
     },
   })
-  name: String;
+  name: string;
 
   @property({
     type: String,
@@ -67,7 +65,7 @@ export class Species extends Entity {
       nullable: 'NO',
     },
   })
-  desc: String;
+  desc: string;
 
   @property({
     type: Boolean,
@@ -81,7 +79,7 @@ export class Species extends Entity {
       nullable: 'YES',
     },
   })
-  active: Number;
+  active: number;
 
   @property({
     type: Number,
@@ -96,7 +94,7 @@ export class Species extends Entity {
       nullable: 'YES',
     },
   })
-  valueFactor?: Number;
+  valueFactor?: number;
 
   // Define well-known properties here
 
@@ -109,6 +107,7 @@ export class Species extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SpeciesRelations {
   // describe navigational properties here
 }

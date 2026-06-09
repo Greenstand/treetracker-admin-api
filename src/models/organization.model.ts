@@ -1,7 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -17,7 +15,7 @@ export class Organization extends Entity {
       dataType: 'integer',
     },
   })
-  id: Number;
+  id: number;
 
   @property({
     type: String,
@@ -26,7 +24,7 @@ export class Organization extends Entity {
       dataType: 'character varying',
     },
   })
-  name: String;
+  name: string;
 
   @property({
     type: String,
@@ -35,7 +33,7 @@ export class Organization extends Entity {
       dataType: 'character varying',
     },
   })
-  type: String;
+  type: string;
 
   @property({
     type: String,
@@ -44,7 +42,7 @@ export class Organization extends Entity {
       dbDefault: 'uuid_generate_v4()',
     },
   })
-  stakeholder_uuid: String;
+  stakeholder_uuid: string;
 
   // Define well-known properties here
 
@@ -57,6 +55,7 @@ export class Organization extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface OrganizationRelations {
   // describe navigational properties here
 }

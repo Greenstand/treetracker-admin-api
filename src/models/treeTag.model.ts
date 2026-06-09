@@ -1,7 +1,5 @@
 import { Entity, model, property } from '@loopback/repository';
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 @model({
   settings: {
     idInjection: false,
@@ -23,7 +21,7 @@ export class TreeTag extends Entity {
       nullable: 'NO',
     },
   })
-  id: Number;
+  id: number;
 
   @property({
     type: Number,
@@ -38,7 +36,7 @@ export class TreeTag extends Entity {
       nullable: 'NO',
     },
   })
-  treeId: Number;
+  treeId: number;
 
   @property({
     type: Number,
@@ -53,7 +51,7 @@ export class TreeTag extends Entity {
       nullable: 'NO',
     },
   })
-  tagId: Number;
+  tagId: number;
 
   // Define well-known properties here
 
@@ -66,6 +64,7 @@ export class TreeTag extends Entity {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface TreeTagRelations {
   // describe navigational properties here
 }

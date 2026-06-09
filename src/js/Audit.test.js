@@ -47,7 +47,9 @@ describe('Audit', () => {
 
   describe('Login', () => {
     beforeEach(async () => {
-      const res = await request(app).get('/auth/login');
+      const res = await request(app)
+        .get('/auth/login')
+        .set('User-Agent', 'node-superagent/test');
       expect(res.statusCode).toBe(200);
     });
 

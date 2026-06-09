@@ -47,7 +47,7 @@ export class PlanterOrganizationController {
     },
   })
   async count(
-    @param.path.number('organizationId') organizationId: Number,
+    @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Planter))
     where?: PlanterWhere,
   ): Promise<Count> {
@@ -87,7 +87,7 @@ export class PlanterOrganizationController {
     },
   })
   async find(
-    @param.path.number('organizationId') organizationId: Number,
+    @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Planter))
     filter?: PlanterFilter,
   ): Promise<Planter[]> {
@@ -166,8 +166,8 @@ export class PlanterOrganizationController {
     },
   })
   async findById(
-    @param.path.number('organizationId') organizationId: Number,
-    @param.path.number('id') id: Number,
+    @param.path.number('organizationId') organizationId: number,
+    @param.path.number('id') id: number,
   ): Promise<Planter> {
     const result = await this.planterRepository.findById(id);
     const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
@@ -189,8 +189,8 @@ export class PlanterOrganizationController {
     },
   })
   async updateById(
-    @param.path.number('organizationId') organizationId: Number,
-    @param.path.number('id') id: Number,
+    @param.path.number('organizationId') organizationId: number,
+    @param.path.number('id') id: number,
     @requestBody() planter: Planter,
   ): Promise<void> {
     const result = await this.planterRepository.findById(id);

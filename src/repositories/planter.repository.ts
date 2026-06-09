@@ -73,16 +73,15 @@ export class PlanterRepository extends DefaultCrudRepository<
     return result.map((e) => e.id);
   }
 
-  async getOrganizationWhereClause(organizationId: number): Promise<Object> {
+  async getOrganizationWhereClause(organizationId: number): Promise<object> {
     if (organizationId === null) {
       const planterIds = await this.getNonOrganizationPlanterIds();
       return {
         and: [{ organizationId: null }, { 'planter.id': { inq: planterIds } }],
       };
     } else {
-      const planterIds = await this.getPlanterIdsByOrganizationId(
-        organizationId,
-      );
+      const planterIds =
+        await this.getPlanterIdsByOrganizationId(organizationId);
       const entityIds = await this.getEntityIdsByOrganizationId(organizationId);
 
       return {
@@ -95,15 +94,14 @@ export class PlanterRepository extends DefaultCrudRepository<
   }
 
   async applyOrganizationWhereClause(
-    where: Object | undefined,
+    where: object | undefined,
     organizationId: number | undefined,
-  ): Promise<Object | undefined> {
+  ): Promise<object | undefined> {
     if (!where || organizationId === undefined) {
       return Promise.resolve(where);
     }
-    const organizationWhereClause = await this.getOrganizationWhereClause(
-      organizationId,
-    );
+    const organizationWhereClause =
+      await this.getOrganizationWhereClause(organizationId);
     return {
       and: [where, organizationWhereClause],
     };

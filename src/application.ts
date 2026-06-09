@@ -23,6 +23,7 @@ export class TreetrackerAdminApiApplication extends BootMixin(
       validation: {
         ajvErrors: {},
         ajvErrorTransformer: (errors) =>
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           errors.map(({ params, ...error }) => error) as typeof errors,
       },
     });

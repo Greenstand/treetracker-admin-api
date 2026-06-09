@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-
 /*
  * To record operation on the system
  */
 import { Pool } from 'pg';
-// import log from 'loglevel';
 // import {strict as assert} from 'assert';
 import getDatasource from '../datasources/config';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
