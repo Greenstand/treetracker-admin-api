@@ -7,6 +7,7 @@
  */
 export enum Role {
   ORGANIZATION = 'org',
+  ADMIN = 'greenstand-admin',
   APPROVE_TREE = 'approve_tree',
   SUPER_PERMISSION = 'super_permission',
   MANAGER_USER = 'manager_user',

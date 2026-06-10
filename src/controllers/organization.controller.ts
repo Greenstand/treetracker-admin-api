@@ -30,6 +30,7 @@ import { KeycloakRequest } from '../middleware/keycloakMiddleware';
 import { ErrorCode } from '../types/error-codes';
 import { Role } from '../types/roles';
 import { Transaction } from 'loopback-connector';
+import { requireRole } from '../interceptors/requireRole.interceptor';
 
 // Extend the LoopBack filter types for the Planter model to include type
 type OrganizationWhere = (Where<Organization> & { type?: string }) | undefined;
@@ -77,6 +78,47 @@ export class OrganizationController {
     filter?: Filter<Organization>,
   ): Promise<Organization[]> {
     return await this.organizationRepository.find(filter);
+  }
+
+  // Dedicated paginated endpoint instead of adding pagination to GET /organizations.
+  // Reason: AppContext in treetracker-admin-client calls GET /organizations on every
+  // login to populate the global org dropdown (orgList). Changing that response shape
+  // would break all consumers of orgList across the app.
+  // TODO: once AppContext is refactored to no longer call GET /organizations,
+  // move pagination directly onto that endpoint and remove this one.
+  @get('/organizations/paginated', {
+    responses: {
+      '200': {
+        description:
+          'Paginated Organization model instances with total count for the same filter',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                organizations: {
+                  type: 'array',
+                  items: { 'x-ts-type': Organization },
+                },
+                total: { type: 'number' },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @requireRole(Role.ADMIN)
+  async findPaginated(
+    @param.query.object('filter', getFilterSchemaFor(Organization))
+    filter?: Filter<Organization>,
+  ): Promise<{ organizations: Organization[]; total: number }> {
+    const [organizations, { count }] = await Promise.all([
+      this.organizationRepository.find(filter),
+      this.organizationRepository.count(filter?.where),
+    ]);
+
+    return { organizations, total: count };
   }
 
   @post('/organizations', {

@@ -30,6 +30,8 @@ export class ExpressServer {
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
     // Authenticate API requests with Keycloak bearer tokens.
+    // Per-endpoint authorization is handled by the `requireRole` interceptor
+    // on the relevant controller methods (see src/interceptors).
     if (process.env.KEYCLOAK_URL) {
       this.app.use('/api', keycloakAuth);
     }
@@ -42,7 +44,7 @@ export class ExpressServer {
 
     this.app.use('/api', this.lbApp.requestHandler);
     //the auth: login...
-    this.app.use('/auth', auth.router);
+    // this.app.use('/auth', auth.router);
 
     // Custom Express routes
     this.app.get('/', function (_req: Request, res: Response) {
