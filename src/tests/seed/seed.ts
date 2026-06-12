@@ -73,7 +73,7 @@ const roles = {
 const entities = [
   {
     id: 1,
-    type: 'o',
+    type: 'O',
     name: 'freetown',
   },
   {
