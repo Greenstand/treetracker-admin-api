@@ -47,3 +47,18 @@ spec:
                   key: messageQueue
             - name: ENABLE_VERIFY_PUBLISHING
               value: 'true'
+            - name: KEYCLOAK_URL
+              value: 'https://dev-k8s.treetracker.org/keycloak'
+            - name: KEYCLOAK_REALM
+              value: 'treetracker'
+            - name: KEYCLOAK_CLIENT_ID
+              value: 'treetracker-admin-client-be'
+            - name: KEYCLOAK_ADMIN_ID
+              value: 'treetracker-admin-client-be'
+            - name: KEYCLOAK_CLIENT_EXPECTED_CLIENT_ID
+              value: 'treetracker-admin-client-fe'
+            - name: KEYCLOAK_ADMIN_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-client-secret
+                  key: client-secret
