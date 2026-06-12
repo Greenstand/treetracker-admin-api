@@ -5,7 +5,7 @@ describe('OrganizationRepository', () => {
     const execute = jest.fn().mockResolvedValue([
       {
         id: 178,
-        type: 'o',
+        type: 'O',
         name: 'FCC',
         email: 'fcc@example.com',
         phone: '+232 123 4567',
@@ -34,7 +34,7 @@ describe('OrganizationRepository', () => {
     expect(execute).toHaveBeenCalledWith(
       'insert into entity (type, name, email, phone, pwd_reset_required, website, logo_url, map_name) values ($1, $2, $3, $4, $5, $6, $7, $8) returning *',
       [
-        'o',
+        'O',
         'FCC',
         'fcc@example.com',
         '+232 123 4567',
@@ -47,7 +47,7 @@ describe('OrganizationRepository', () => {
     );
     expect(result).toMatchObject({
       id: 178,
-      type: 'o',
+      type: 'O',
       name: 'FCC',
       email: 'fcc@example.com',
       phone: '+232 123 4567',

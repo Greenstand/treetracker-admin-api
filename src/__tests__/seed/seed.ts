@@ -56,7 +56,7 @@ describe.skip('Seed data into DB', () => {
 
   it('Should have an entity, it is an organization', async () => {
     const r = await pool.query({
-      text: `select * from entity where type = 'o' `,
+      text: `select * from entity where type = 'O' `,
       values: [],
     });
     expect(r.rows.length).toBeGreaterThan(0);

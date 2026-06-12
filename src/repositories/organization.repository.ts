@@ -13,7 +13,6 @@ export type CreateOrganizationData = {
   logoUrl?: string;
   mapName?: string;
 };
-
 function normalizeRequiredValue(value: string): string {
   return value.trim();
 }
@@ -64,7 +63,7 @@ export class OrganizationRepository extends DefaultCrudRepository<
     options?: Options,
   ): Promise<Organization> {
     const dbOrganization = utils.convertDB({
-      type: 'o',
+      type: 'O',
       name: normalizeRequiredValue(organization.name),
       email: normalizeRequiredValue(organization.email),
       phone: normalizeOptionalValue(organization.phone),

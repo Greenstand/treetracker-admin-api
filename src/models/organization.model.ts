@@ -39,55 +39,55 @@ export class Organization extends Entity {
     type: String,
     postgresql: { columnName: 'first_name', dataType: 'character varying' },
   })
-  firstName: String;
+  firstName: string;
 
   @property({
     type: String,
     postgresql: { columnName: 'last_name', dataType: 'character varying' },
   })
-  lastName: String;
+  lastName: string;
 
   @property({
     type: String,
     postgresql: { columnName: 'email', dataType: 'character varying' },
   })
-  email: String;
+  email: string;
 
   @property({
     type: String,
     postgresql: { columnName: 'phone', dataType: 'character varying' },
   })
-  phone: String;
+  phone: string;
 
   @property({
     type: Boolean,
     postgresql: { columnName: 'pwd_reset_required', dataType: 'boolean' },
   })
-  pwdResetRequired: Boolean;
+  pwdResetRequired: boolean;
 
   @property({
     type: String,
     postgresql: { columnName: 'website', dataType: 'character varying' },
   })
-  website: String;
+  website: string;
 
   @property({
     type: String,
     postgresql: { columnName: 'wallet', dataType: 'character varying' },
   })
-  wallet: String;
+  wallet: string;
 
   @property({
     type: Number,
     postgresql: { columnName: 'active_contract_id', dataType: 'integer' },
   })
-  activeContractId: Number;
+  activeContractId: number;
 
   @property({
     type: Boolean,
     postgresql: { columnName: 'offering_pay_to_plant', dataType: 'boolean' },
   })
-  offeringPayToPlant: Boolean;
+  offeringPayToPlant: boolean;
 
   @property({
     type: Number,
@@ -96,19 +96,19 @@ export class Organization extends Entity {
       dataType: 'integer',
     },
   })
-  treeValidationContractId: Number;
+  treeValidationContractId: number;
 
   @property({
     type: String,
     postgresql: { columnName: 'logo_url', dataType: 'character varying' },
   })
-  logoUrl: String;
+  logoUrl: string;
 
   @property({
     type: String,
     postgresql: { columnName: 'map_name', dataType: 'character varying' },
   })
-  mapName: String;
+  mapName: string;
 
   // NOTE: the `password` and `salt` columns are intentionally NOT mapped here
   // so they are never serialized over the API.

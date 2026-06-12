@@ -36,7 +36,7 @@ describe('OrganizationController', () => {
   it('delegates organization creation to the repository', async () => {
     const createOrganization = jest.fn().mockResolvedValue({
       id: 178,
-      type: 'o',
+      type: 'O',
       name: 'FCC',
       email: 'fcc@example.com',
       phone: '+232 123 4567',
@@ -80,7 +80,7 @@ describe('OrganizationController', () => {
     );
     expect(result).toMatchObject({
       id: 178,
-      type: 'o',
+      type: 'O',
       name: 'FCC',
       email: 'fcc@example.com',
       phone: '+232 123 4567',
