@@ -1,0 +1,16 @@
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: keycloak-treetracker-admin-api
+  namespace: admin-api
+spec:
+  prefix: /api/keycloak-admin/
+  service: keycloak-treetracker-admin-api
+  rewrite: /
+  timeout_ms: 0
+  cors:
+    origins: '*'
+    methods: GET, POST, PATCH, PUT, OPTIONS, DELETE
+    headers:
+      - Content-Type
+      - Authorization
