@@ -12,9 +12,6 @@ interface KeycloakUserRepresentation {
   [key: string]: unknown;
 }
 
-// Cached after first fetch — role IDs are stable for the lifetime of the realm
-let cachedOrganizationRole: KeycloakRole | undefined;
-
 /**
  * Obtains a short-lived admin access token using the backend client's
  * service account (client_credentials grant).
@@ -197,9 +194,7 @@ export async function setOrganizationClaim(
 export async function assignOrganizationRole(userId: string): Promise<void> {
   const adminToken = await getAdminToken();
 
-  if (!cachedOrganizationRole) {
-    cachedOrganizationRole = await getRealmRole(adminToken, Role.ORGANIZATION);
-  }
+  const organizationRole = await getRealmRole(adminToken, Role.ORGANIZATION);
 
-  await assignRoleToUser(adminToken, userId, cachedOrganizationRole);
+  await assignRoleToUser(adminToken, userId, organizationRole);
 }
