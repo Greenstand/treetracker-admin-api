@@ -13,6 +13,12 @@ export type CreateOrganizationData = {
   logoUrl?: string;
   mapName?: string;
 };
+
+export type UpdateOrganizationData = Partial<CreateOrganizationData>;
+
+// Columns whose blank values should be stored as NULL rather than empty strings.
+const OPTIONAL_FIELDS = ['phone', 'website', 'logoUrl', 'mapName'] as const;
+
 function normalizeRequiredValue(value: string): string {
   return value.trim();
 }
@@ -89,5 +95,36 @@ export class OrganizationRepository extends DefaultCrudRepository<
     }
 
     return utils.convertCamel(result[0]) as Organization;
+  }
+
+  async updateOrganization(
+    id: number,
+    organization: UpdateOrganizationData,
+    options?: Options,
+  ): Promise<Organization | null> {
+    const data: Partial<Organization> = {};
+
+    for (const [field, value] of Object.entries(organization)) {
+      if (value === undefined) {
+        continue;
+      }
+
+      data[field] = (OPTIONAL_FIELDS as readonly string[]).includes(field)
+        ? normalizeOptionalValue(value as string)
+        : normalizeRequiredValue(value as string);
+    }
+
+    if (Object.keys(data).length === 0) {
+      throw new Error('No organization fields to update');
+    }
+
+    const { count } = await this.updateAll(data, { id, type: 'O' }, options);
+
+    if (count === 0) {
+      return null;
+    }
+
+    const updatedOrg = await this.findById(id, undefined, options);
+    return utils.convertCamel(updatedOrg) as typeof updatedOrg;
   }
 }

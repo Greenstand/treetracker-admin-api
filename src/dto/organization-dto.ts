@@ -34,39 +34,54 @@ function optionalPhoneProperty(fieldLabel: string): SchemaObject {
   } as SchemaObject;
 }
 
+const ORGANIZATION_PROPERTIES = {
+  name: {
+    type: 'string',
+    minLength: 1,
+    errorMessage: {
+      type: 'Name must be a string',
+      minLength: 'Name is required',
+    },
+  } as SchemaObject,
+  email: {
+    type: 'string',
+    minLength: 1,
+    format: 'email',
+    errorMessage: {
+      type: 'Email must be a string',
+      minLength: 'Email is required',
+      format: 'Email must be a valid email address',
+    },
+  } as SchemaObject,
+  phone: optionalPhoneProperty('Phone'),
+  website: optionalUrlProperty('Website'),
+  logoUrl: optionalUrlProperty('Logo URL'),
+  mapName: optionalStringProperty('Map name'),
+};
+
 export const ORGANIZATION_REQUEST_SCHEMA: SchemaObject = {
   type: 'object',
   required: ['name', 'email'],
   additionalProperties: false,
-  properties: {
-    name: {
-      type: 'string',
-      minLength: 1,
-      errorMessage: {
-        type: 'Name must be a string',
-        minLength: 'Name is required',
-      },
-    } as SchemaObject,
-    email: {
-      type: 'string',
-      minLength: 1,
-      format: 'email',
-      errorMessage: {
-        type: 'Email must be a string',
-        minLength: 'Email is required',
-        format: 'Email must be a valid email address',
-      },
-    } as SchemaObject,
-    phone: optionalPhoneProperty('Phone'),
-    website: optionalUrlProperty('Website'),
-    logoUrl: optionalUrlProperty('Logo URL'),
-    mapName: optionalStringProperty('Map name'),
-  },
+  properties: ORGANIZATION_PROPERTIES,
   errorMessage: {
     required: {
       name: 'Name is required',
       email: 'Email is required',
     },
+    additionalProperties: 'Only supported organization fields are allowed',
+  },
+};
+
+// PATCH allows partial updates, so no field is required, but the same
+// per-field validations and the closed field set still apply.
+export const ORGANIZATION_UPDATE_REQUEST_SCHEMA: SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  minProperties: 1,
+  properties: ORGANIZATION_PROPERTIES,
+  errorMessage: {
+    minProperties: 'At least one organization field is required',
     additionalProperties: 'Only supported organization fields are allowed',
   },
 };
