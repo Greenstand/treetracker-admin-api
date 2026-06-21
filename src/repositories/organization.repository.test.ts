@@ -95,14 +95,15 @@ describe('OrganizationRepository', () => {
       logoUrl: 'https://fcc.example.com/new-logo.png',
     });
 
-    // Trimmed values, scoped by id + type = 'O'. Column mapping is the model's job.
     expect(updateAll).toHaveBeenCalledWith(
       { name: 'FCC Renamed', logoUrl: 'https://fcc.example.com/new-logo.png' },
       { id: 178, type: 'O' },
       undefined,
     );
     expect(findById).toHaveBeenCalledWith(178, undefined, undefined);
-    expect(result).toBe(updatedRow);
+    // updateOrganization returns convertCamel(...), a new object — compare by
+    // value, not reference.
+    expect(result).toEqual(updatedRow);
   });
 
   it('stores blank optional fields as null', async () => {
