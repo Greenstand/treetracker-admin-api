@@ -9,6 +9,7 @@ import {
   param,
   get,
   post,
+  patch,
   HttpErrors,
   requestBody,
   getFilterSchemaFor,
@@ -19,9 +20,13 @@ import { inject } from '@loopback/context';
 import { Organization } from '../models';
 import {
   CreateOrganizationData,
+  UpdateOrganizationData,
   OrganizationRepository,
 } from '../repositories';
-import { ORGANIZATION_REQUEST_SCHEMA } from '../dto/organization-dto';
+import {
+  ORGANIZATION_REQUEST_SCHEMA,
+  ORGANIZATION_UPDATE_REQUEST_SCHEMA,
+} from '../dto/organization-dto';
 import {
   assignOrganizationRole,
   setOrganizationClaim,
@@ -37,6 +42,12 @@ type OrganizationWhere = (Where<Organization> & { type?: string }) | undefined;
 export type OrganizationFilter = Filter<Organization> & {
   where: OrganizationWhere;
 };
+
+// Escape LIKE/ILIKE wildcards (`%`, `_`, `\`) so user input is matched
+// literally — otherwise a user typing `%` would match every row.
+function escapeLikePattern(value: string): string {
+  return value.replace(/[\\%_]/g, '\\$&');
+}
 
 export class OrganizationController {
   constructor(
@@ -86,6 +97,8 @@ export class OrganizationController {
   // would break all consumers of orgList across the app.
   // TODO: once AppContext is refactored to no longer call GET /organizations,
   // move pagination directly onto that endpoint and remove this one.
+  // this is a list/offset based pagnization if org list gets huge then move to
+  // cursor based pagnization and update fe accordinly
   @get('/organizations/paginated', {
     responses: {
       '200': {
@@ -112,13 +125,40 @@ export class OrganizationController {
   async findPaginated(
     @param.query.object('filter', getFilterSchemaFor(Organization))
     filter?: Filter<Organization>,
+    @param.query.string('search') search?: string,
   ): Promise<{ organizations: Organization[]; total: number }> {
+    const effectiveFilter = this.applyOrganizationSearch(filter, search);
+
     const [organizations, { count }] = await Promise.all([
-      this.organizationRepository.find(filter),
-      this.organizationRepository.count(filter?.where),
+      this.organizationRepository.find(effectiveFilter),
+      this.organizationRepository.count(effectiveFilter?.where),
     ]);
 
     return { organizations, total: count };
+  }
+
+  // Merges a case-insensitive name/phone substring search into the filter's
+  // `where`, AND-ed with any existing clause (e.g. `type: 'O'`). Blank search
+  // is ignored. Wildcards in the term are escaped so they match literally.
+  private applyOrganizationSearch(
+    filter: Filter<Organization> | undefined,
+    search: string | undefined,
+  ): Filter<Organization> | undefined {
+    const term = search?.trim();
+    if (!term) {
+      return filter;
+    }
+
+    const pattern = `%${escapeLikePattern(term)}%`;
+    const searchWhere = {
+      or: [{ name: { ilike: pattern } }, { phone: { ilike: pattern } }],
+    } as Where<Organization>;
+
+    const where = filter?.where
+      ? { and: [filter.where, searchWhere] }
+      : searchWhere;
+
+    return { ...filter, where };
   }
 
   @post('/organizations', {
@@ -260,5 +300,39 @@ export class OrganizationController {
   })
   async findById(@param.path.number('id') id: number): Promise<Organization> {
     return await this.organizationRepository.findById(id);
+  }
+
+  @patch('/organizations/{id}', {
+    responses: {
+      '200': {
+        description: 'Organization PATCH success',
+        content: {
+          'application/json': { schema: { 'x-ts-type': Organization } },
+        },
+      },
+    },
+  })
+  @requireRole(Role.ADMIN)
+  async updateById(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: ORGANIZATION_UPDATE_REQUEST_SCHEMA,
+        },
+      },
+    })
+    organization: UpdateOrganizationData,
+  ): Promise<Organization> {
+    const updated = await this.organizationRepository.updateOrganization(
+      id,
+      organization,
+    );
+
+    if (!updated) {
+      throw new HttpErrors.NotFound(`Organization ${id} not found`);
+    }
+
+    return updated;
   }
 }

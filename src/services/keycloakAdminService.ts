@@ -1,200 +1,87 @@
+import KcAdminClient from '@keycloak/keycloak-admin-client';
 import { Role } from '../types/roles';
 
-interface KeycloakRole {
+export interface KeycloakRole {
   id: string;
   name: string;
 }
 
-interface KeycloakUserRepresentation {
-  id?: string;
-  username?: string;
-  attributes?: Record<string, string[] | string>;
-  [key: string]: unknown;
+export function assertKeycloakConfigured(): void {
+  if (
+    !process.env.KEYCLOAK_URL ||
+    !process.env.KEYCLOAK_REALM ||
+    !process.env.KEYCLOAK_ADMIN_ID ||
+    !process.env.KEYCLOAK_ADMIN_CLIENT_SECRET
+  ) {
+    throw new Error('Keycloak admin is not configured');
+  }
 }
 
-/**
- * Obtains a short-lived admin access token using the backend client's
- * service account (client_credentials grant).
- *
- * Requires the Keycloak client to have "Service Accounts Enabled" and
- * its service account must hold the `manage-users` role from realm-management.
- */
+async function getAuthedClient(): Promise<KcAdminClient> {
+  assertKeycloakConfigured();
 
-async function getAdminToken(): Promise<string> {
-  // u need to enable it first and this is how i enabled it
-  //   Step 1 — Go to the Settings tab (you should already be on it)
-  // Scroll down until you see a section called Capability config. You'll see a set of toggles. Enable this one:
-
-  // Service account roles    [ OFF → ON ]
-
-  // Click Save at the bottom.
-
-  // ---
-  // Step 2 — Assign the role to the service account
-
-  // After saving, a new tab called Service account roles will appear at the top. Click it.
-
-  // Then:
-  // 1. Click Assign role
-  // 2. Change the filter from Filter by realm roles → Filter by clients
-  // 3. Search for realm-management
-  // 4. Find manage-users in the list → tick it → click Assign
-
-  // ---
-  // Step 3 — Get the client secret
-
-  // Go to the Credentials tab (next to Service account roles).
-
-  // Copy the value under Client secret and paste it into your .env:
-
-  // KEYCLOAK_ADMIN_CLIENT_SECRET=<paste here>
-
-  // ---
-  // That's it. Once those three steps are done, getAdminToken() in keycloakAdminService.ts will be able to fetch an admin token automatically
-  // whenever a user creates an organization.
-
-  const url = `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
-  const body = new URLSearchParams({
-    grant_type: 'client_credentials',
-    client_id: process.env.KEYCLOAK_ADMIN_ID ?? '',
-    client_secret: process.env.KEYCLOAK_ADMIN_CLIENT_SECRET ?? '',
-  }).toString();
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
+  const client = new KcAdminClient({
+    baseUrl: process.env.KEYCLOAK_URL,
+    realmName: process.env.KEYCLOAK_REALM,
   });
 
-  if (res.status !== 200) {
-    throw new Error(
-      `Failed to obtain Keycloak admin token: HTTP ${
-        res.status
-      } — ${await res.text()}`,
-    );
-  }
+  await client.auth({
+    grantType: 'client_credentials',
+    clientId: process.env.KEYCLOAK_ADMIN_ID as string,
+    clientSecret: process.env.KEYCLOAK_ADMIN_CLIENT_SECRET,
+  });
 
-  const parsed = (await res.json()) as { access_token: string };
-  return parsed.access_token;
+  return client;
 }
 
 async function getRealmRole(
-  adminToken: string,
+  client: KcAdminClient,
   roleName: string,
 ): Promise<KeycloakRole> {
-  const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/roles/${roleName}`;
-
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${adminToken}` },
-  });
-
-  if (res.status !== 200) {
-    throw new Error(
-      `Failed to fetch Keycloak role "${roleName}": HTTP ${
-        res.status
-      } — ${await res.text()}`,
-    );
+  const role = await client.roles.findOneByName({ name: roleName });
+  if (!role?.id || !role.name) {
+    throw new Error(`Keycloak role "${roleName}" not found`);
   }
 
-  const role = (await res.json()) as KeycloakRole;
-  return { id: role.id, name: role.name };
-}
-
-async function assignRoleToUser(
-  adminToken: string,
-  userId: string,
-  role: KeycloakRole,
-): Promise<void> {
-  const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}/role-mappings/realm`;
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${adminToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify([{ id: role.id, name: role.name }]),
-  });
-
-  // 204 No Content is the success response for role assignment
-  if (res.status !== 204) {
-    throw new Error(
-      `Failed to assign role "${role.name}" to user "${userId}": HTTP ${
-        res.status
-      } — ${await res.text()}`,
-    );
-  }
-}
-
-async function getUserRepresentation(
-  adminToken: string,
-  userId: string,
-): Promise<KeycloakUserRepresentation> {
-  const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`;
-
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${adminToken}` },
-  });
-
-  if (res.status !== 200) {
-    throw new Error(
-      `Failed to fetch Keycloak user "${userId}": HTTP ${
-        res.status
-      } — ${await res.text()}`,
-    );
-  }
-
-  return res.json() as Promise<KeycloakUserRepresentation>;
-}
-
-async function updateUserRepresentation(
-  adminToken: string,
-  userId: string,
-  user: KeycloakUserRepresentation,
-): Promise<void> {
-  const url = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCLOAK_REALM}/users/${userId}`;
-
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${adminToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(user),
-  });
-
-  if (res.status !== 204) {
-    throw new Error(
-      `Failed to update Keycloak user "${userId}": HTTP ${
-        res.status
-      } — ${await res.text()}`,
-    );
-  }
+  const value = { id: role.id, name: role.name };
+  return value;
 }
 
 export async function setOrganizationClaim(
   userId: string,
   organizationId: number,
 ): Promise<void> {
-  const adminToken = await getAdminToken();
-  const user = await getUserRepresentation(adminToken, userId);
-  const currentAttributes = user.attributes || {};
+  const client = await getAuthedClient();
+  const user = await client.users.findOne({ id: userId });
+  if (!user) {
+    throw new Error(`Keycloak user "${userId}" not found`);
+  }
 
-  await updateUserRepresentation(adminToken, userId, {
-    ...user,
-    attributes: {
-      ...currentAttributes,
-      organization_id: [String(organizationId)],
+  await client.users.update(
+    { id: userId },
+    {
+      ...user,
+      attributes: {
+        ...(user.attributes ?? {}),
+        organization_id: [String(organizationId)],
+      },
     },
+  );
+}
+
+export async function assignRoleByName(
+  userId: string,
+  roleName: string,
+): Promise<void> {
+  const client = await getAuthedClient();
+  const role = await getRealmRole(client, roleName);
+
+  await client.users.addRealmRoleMappings({
+    id: userId,
+    roles: [{ id: role.id, name: role.name }],
   });
 }
 
 export async function assignOrganizationRole(userId: string): Promise<void> {
-  const adminToken = await getAdminToken();
-
-  const organizationRole = await getRealmRole(adminToken, Role.ORGANIZATION);
-
-  await assignRoleToUser(adminToken, userId, organizationRole);
+  await assignRoleByName(userId, Role.ORGANIZATION);
 }

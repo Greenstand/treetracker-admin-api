@@ -50,6 +50,7 @@
     "!*/__tests__"
   ],
   "dependencies": {
+    "@keycloak/keycloak-admin-client": "26.6.3",
     "@loopback/boot": "8.0.13",
     "@loopback/context": "8.0.12",
     "@loopback/core": "7.0.12",
@@ -99,6 +100,6 @@
     "exec": "npm start"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.19.0"
   }
 }
