@@ -1,0 +1,41 @@
+# Local (k3d) overlay for treetracker-admin-api. Reuses the base; swaps the 3 SealedSecrets for plain
+# local Secrets, drops the Ambassador Mapping, uses the :local image, 1 replica, no DO node-affinity.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: admin-api
+resources:
+  - ../../base
+  - namespace.yaml
+  - secrets.yaml
+images:
+  - name: greenstand/treetracker-admin-api
+    newName: treetracker-admin-api
+    newTag: local
+replicas:
+  - name: treetracker-admin-api
+    count: 1
+patches:
+  - patch: |-
+      $patch: delete
+      apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      metadata: { name: database-connection, namespace: admin-api }
+  - patch: |-
+      $patch: delete
+      apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      metadata: { name: treetracker-api-jwt }
+  - patch: |-
+      $patch: delete
+      apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      metadata: { name: treetracker-rabbitmq-connection, namespace: admin-api }
+  - patch: |-
+      $patch: delete
+      apiVersion: getambassador.io/v2
+      kind: Mapping
+      metadata: { name: treetracker-admin-api }
+  - target: { kind: Deployment, name: treetracker-admin-api }
+    patch: |-
+      - op: remove
+        path: /spec/template/spec/affinity
