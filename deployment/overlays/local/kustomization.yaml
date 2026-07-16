@@ -30,11 +30,7 @@ patches:
       apiVersion: bitnami.com/v1alpha1
       kind: SealedSecret
       metadata: { name: treetracker-rabbitmq-connection, namespace: admin-api }
-  - patch: |-
-      $patch: delete
-      apiVersion: getambassador.io/v2
-      kind: Mapping
-      metadata: { name: treetracker-admin-api }
+  # Ambassador Mapping KEPT (Emissary routes /api/admin/ → this service, rewrite /).
   - target: { kind: Deployment, name: treetracker-admin-api }
     patch: |-
       - op: remove
