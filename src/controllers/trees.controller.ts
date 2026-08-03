@@ -161,7 +161,10 @@ export class TreesController {
       },
     },
   })
-  @requireRole(Role.ORGANIZATION)
+  // This route is only reached when the caller has no organization_id claim,
+  // so the caller is a greenstand admin rather than an organizational user.
+  // Organizational users verify through /organization/{organizationId}/trees/{id}.
+  @requireRole(Role.ADMIN)
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() trees: Trees,
