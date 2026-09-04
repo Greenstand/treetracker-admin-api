@@ -44,8 +44,8 @@ describe('auth', () => {
 
   describe('getActiveAdminUserRoles', () => {
     it('success', async () => {
-      const getActiveAdminUserRoles = jest.requireActual('./auth').default
-        .helper.getActiveAdminUserRoles;
+      const getActiveAdminUserRoles =
+        jest.requireActual('./auth').default.helper.getActiveAdminUserRoles;
       await getActiveAdminUserRoles(1);
       expect(query).toHaveBeenCalledWith(
         expect.stringMatching(/admin_user_role/),
@@ -55,8 +55,8 @@ describe('auth', () => {
 
   describe('addAdminUserRole', () => {
     it('success', async () => {
-      const addAdminUserRole = jest.requireActual('./auth').default.helper
-        .addAdminUserRole;
+      const addAdminUserRole =
+        jest.requireActual('./auth').default.helper.addAdminUserRole;
       await addAdminUserRole(1, 1);
       expect(query).toHaveBeenCalledWith(
         expect.stringMatching(/insert.*admin_user_role/),
@@ -66,8 +66,8 @@ describe('auth', () => {
 
   describe('clearAdminUserRoles', () => {
     it('success', async () => {
-      const clearAdminUserRoles = jest.requireActual('./auth').default.helper
-        .clearAdminUserRoles;
+      const clearAdminUserRoles =
+        jest.requireActual('./auth').default.helper.clearAdminUserRoles;
       await clearAdminUserRoles(1, 1);
       expect(query).toHaveBeenCalledWith(
         expect.stringMatching(/update admin_user_role set active = false/),
@@ -77,8 +77,8 @@ describe('auth', () => {
 
   describe('getActiveAdminUser', () => {
     it('success', async () => {
-      const getActiveAdminUser = jest.requireActual('./auth').default.helper
-        .getActiveAdminUser;
+      const getActiveAdminUser =
+        jest.requireActual('./auth').default.helper.getActiveAdminUser;
       await getActiveAdminUser(1, 1);
       expect(query).toHaveBeenCalledWith(
         expect.stringMatching(/select \* from admin_user/),
@@ -88,8 +88,8 @@ describe('auth', () => {
 
   describe('deactivateAdminUser', () => {
     it('success', async () => {
-      const deactivateAdminUser = jest.requireActual('./auth').default.helper
-        .deactivateAdminUser;
+      const deactivateAdminUser =
+        jest.requireActual('./auth').default.helper.deactivateAdminUser;
       await deactivateAdminUser(1, 1);
       expect(query).toHaveBeenCalledWith(
         expect.stringMatching(/update admin_user set active = false/),
@@ -99,8 +99,8 @@ describe('auth', () => {
 
   describe('hasPermission', () => {
     it('success', async () => {
-      const hasPermission = jest.requireActual('./auth').default.helper
-        .hasPermission;
+      const hasPermission =
+        jest.requireActual('./auth').default.helper.hasPermission;
       expect(hasPermission([{ name: 'test' }], null, ['test'], null)).toBe(
         true,
       );
@@ -666,6 +666,111 @@ describe('auth', () => {
             '/api/organization/1/organizations',
           );
           expect(response.statusCode).toBe(200);
+        });
+      });
+      describe('organization species', () => {
+        it('/organization/1/species successfully with list_species', async () => {
+          const jwt = require('jsonwebtoken');
+          jwt.verify.mockReturnValueOnce({
+            policy: {
+              policies: [
+                {
+                  name: 'list_species',
+                },
+              ],
+              organization: {
+                id: 1,
+                name: 'test org',
+              },
+            },
+            passwordHash: 'testHash',
+            userName: 'test',
+          });
+          query.mockResolvedValue({ rows: [{}] });
+          auth.helper.getActiveAdminUserRoles = jest.fn(() =>
+            Promise.resolve({ rows: [{ passwordHasht: 'testHash' }] }),
+          );
+          const response = await request(app).get(
+            '/api/organization/1/species',
+          );
+          expect(response.statusCode).toBe(200);
+        });
+
+        it('/organization/1/species successfully with manage_org_species', async () => {
+          const jwt = require('jsonwebtoken');
+          jwt.verify.mockReturnValueOnce({
+            policy: {
+              policies: [
+                {
+                  name: 'manage_org_species',
+                },
+              ],
+              organization: {
+                id: 1,
+                name: 'test org',
+              },
+            },
+            passwordHash: 'testHash',
+            userName: 'test',
+          });
+          query.mockResolvedValue({ rows: [{}] });
+          auth.helper.getActiveAdminUserRoles = jest.fn(() =>
+            Promise.resolve({ rows: [{ passwordHasht: 'testHash' }] }),
+          );
+          const response = await request(app).get(
+            '/api/organization/1/species',
+          );
+          expect(response.statusCode).toBe(200);
+        });
+
+        it('/organization/1/species 401 no permission', async () => {
+          const jwt = require('jsonwebtoken');
+          jwt.verify.mockReturnValueOnce({
+            policy: {
+              policies: [{}],
+              organization: {
+                id: 1,
+                name: 'test org',
+              },
+            },
+            passwordHash: 'testHash',
+            userName: 'test',
+          });
+          query.mockResolvedValue({ rows: [{}] });
+          auth.helper.getActiveAdminUserRoles = jest.fn(() =>
+            Promise.resolve({ rows: [] }),
+          );
+          const response = await request(app).get(
+            '/api/organization/1/species',
+          );
+          expect(response.statusCode).toBe(401);
+        });
+
+        it('/organization/1/species 401 mismatched organization', async () => {
+          const jwt = require('jsonwebtoken');
+          jwt.verify.mockReturnValueOnce({
+            policy: {
+              policies: [
+                {
+                  name: 'list_species',
+                },
+              ],
+              organization: {
+                id: 2,
+                name: 'other org',
+              },
+            },
+            passwordHash: 'testHash',
+            userName: 'test',
+          });
+          query.mockResolvedValue({ rows: [{}] });
+          auth.helper.getActiveAdminUserRoles = jest.fn(() =>
+            Promise.resolve({ rows: [{ passwordHasht: 'testHash' }] }),
+          );
+          const response = await request(app).get(
+            '/api/organization/1/species',
+          );
+          expect(response.statusCode).toBe(401);
         });
       });
     });
