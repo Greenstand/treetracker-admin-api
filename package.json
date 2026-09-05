@@ -21,6 +21,7 @@
     "eslint:fix": "npm run eslint -- --fix",
     "posttest": "echo 'Finished running all tests.'",
     "migrate": "node ./dist/migrate",
+    "backfill:organization-species": "node ./dist/backfillOrganizationSpecies",
     "prestart": "npm run clean && npm run build",
     "start": "NODE_ENV=development node .",
     "start:debug": "NODE_ENV=development DEBUG=loopback:*,express:* node --inspect .",

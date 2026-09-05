@@ -6,3 +6,4 @@ export * from './tag.controller';
 export * from './treeTag.controller';
 export * from './treesTreeTag.controller';
 export * from './organization.controller';
+export * from './organizationSpecies.controller';
