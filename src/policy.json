@@ -27,6 +27,15 @@
     {
       "name": "manage_planter",
       "description": "Can modify planter information"
+    },
+    {
+    "name": "list_species",
+    "description": "Can view an organization's active species"
+    },
+    {
+    "name": "manage_org_species",
+    "description": "Can activate/deactivate species for an organization"
     }
+
   ]
 }

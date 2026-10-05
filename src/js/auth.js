@@ -29,6 +29,8 @@ const POLICIES = {
   APPROVE_TREE: 'approve_tree',
   LIST_PLANTER: 'list_planter',
   MANAGE_PLANTER: 'manage_planter',
+  LIST_SPECIES: 'list_species',
+  MANAGE_ORG_SPECIES: 'manage_org_species',
 };
 
 helper.needRoleUpdate = function (update_userSession, userSession) {
@@ -579,6 +581,30 @@ const isAuth = async (req, res, next) => {
         return next();
       } else if (url.match(/\/api\/tree_tags.*/)) {
         return next();
+      }
+
+      matcher = url.match(/\/api\/(organization\/(\d+)\/)?species.*/);
+      if (matcher) {
+        const requestedOrgId = matcher.length > 1 && parseInt(matcher[2], 10);
+        if (
+          helper.hasPermission(
+            policies,
+            organization,
+            [
+              POLICIES.SUPER_PERMISSION,
+              POLICIES.LIST_SPECIES,
+              POLICIES.MANAGE_ORG_SPECIES,
+            ],
+            requestedOrgId,
+          )
+        ) {
+          return next();
+        }
+
+        res.status(401).json({
+          error: new Error('No permission'),
+        });
+        return;
       }
 
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?trees.*/);

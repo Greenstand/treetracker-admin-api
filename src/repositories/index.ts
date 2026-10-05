@@ -7,3 +7,4 @@ export * from './treeTag.repository';
 export * from './planterRegistration.repository';
 export * from './organization.repository';
 export * from './domainEvent.repository';
+export * from './organizationSpecies.repository';
