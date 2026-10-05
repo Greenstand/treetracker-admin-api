@@ -61,7 +61,7 @@ export class AdminUser extends Entity {
     postgresql: {
       columnName: 'email',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',

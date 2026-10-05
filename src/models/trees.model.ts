@@ -47,7 +47,7 @@ export class Trees extends Entity {
       columnName: 'time_created',
       dataType: 'timestamp without time zone',
       dataLength: null,
-      dataPrecision: null,
+      dataPrecision: 6,
       dataScale: null,
       nullable: 'NO',
     },
@@ -61,7 +61,7 @@ export class Trees extends Entity {
       columnName: 'time_updated',
       dataType: 'timestamp without time zone',
       dataLength: null,
-      dataPrecision: null,
+      dataPrecision: 6,
       dataScale: null,
       nullable: 'NO',
     },
@@ -120,7 +120,7 @@ export class Trees extends Entity {
     postgresql: {
       columnName: 'image_url',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',
@@ -176,7 +176,7 @@ export class Trees extends Entity {
     postgresql: {
       columnName: 'planter_identifier',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',
@@ -205,7 +205,7 @@ export class Trees extends Entity {
     postgresql: {
       columnName: 'device_identifier',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',
@@ -219,7 +219,7 @@ export class Trees extends Entity {
     postgresql: {
       columnName: 'note',
       dataType: 'character varying',
-      dataLength: null,
+      dataLength: 255,
       dataPrecision: null,
       dataScale: null,
       nullable: 'YES',
@@ -369,6 +369,7 @@ export class Trees extends Entity {
     postgresql: {
       columnName: 'planter_photo_url',
       dataType: 'character varying',
+      dataLength: 255,
     },
   })
   planterPhotoUrl?: String;
@@ -379,6 +380,7 @@ export class Trees extends Entity {
     postgresql: {
       columnName: 'token_id',
       dataType: 'character varying',
+      dataLength: 255,
     },
   })
   tokenId?: String;
