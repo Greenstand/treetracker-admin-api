@@ -11,4 +11,5 @@ export enum Role {
   APPROVE_TREE = 'approve_tree',
   SUPER_PERMISSION = 'super_permission',
   MANAGER_USER = 'manager_user',
+  WALLET_ADMIN = 'wallet-admin',
 }
