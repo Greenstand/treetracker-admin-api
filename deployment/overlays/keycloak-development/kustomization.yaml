@@ -9,4 +9,4 @@ resources:
 
 images:
 - name: greenstand/treetracker-admin-api
-  newTag: keycloak-5c61911
+  newTag: keycloak-2addda0
