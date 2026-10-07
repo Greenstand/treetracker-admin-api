@@ -6,6 +6,14 @@ export interface KeycloakRole {
   name: string;
 }
 
+export interface KeycloakUser {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 export function assertKeycloakConfigured(): void {
   if (
     !process.env.KEYCLOAK_URL ||
@@ -84,4 +92,41 @@ export async function assignRoleByName(
 
 export async function assignOrganizationRole(userId: string): Promise<void> {
   await assignRoleByName(userId, Role.ORGANIZATION);
+}
+
+export async function searchUsers(
+  search: string,
+  max = 10,
+): Promise<KeycloakUser[]> {
+  const client = await getAuthedClient();
+  const users = await client.users.find({ search, max });
+
+  return users
+    .filter((user): user is typeof user & { id: string } => Boolean(user.id))
+    .map((user) => ({
+      id: user.id,
+      username: user.username ?? '',
+      email: user.email ?? '',
+      firstName: user.firstName ?? '',
+      lastName: user.lastName ?? '',
+    }));
+}
+
+export async function getUserById(
+  userId: string,
+): Promise<KeycloakUser | null> {
+  const client = await getAuthedClient();
+  const user = await client.users.findOne({ id: userId });
+
+  if (!user?.id) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    username: user.username ?? '',
+    email: user.email ?? '',
+    firstName: user.firstName ?? '',
+    lastName: user.lastName ?? '',
+  };
 }
