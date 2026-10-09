@@ -45,63 +45,84 @@ jobs:
     name: Release semantic version
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     if: |
       !contains(github.event.head_commit.message, 'skip-ci') &&
       github.event_name == 'push' &&
       github.repository == 'Greenstand/treetracker-admin-api'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag }}
-      - uses: actions/setup-node@v1
+          fetch-depth: 0
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v4
         with:
-          node-version: '14.x'
+          node-version: 'lts/*'
+
       - run: npm i -g semantic-release @semantic-release/{git,exec,changelog}
-      - run: semantic-release
+
+      - name: Run semantic-release
+        id: semantic-release
+        run: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@master
-        with:
-          path: ./
+
       - name: Set up QEMU
+        if: steps.semantic-release.outputs.new-release-published == 'true'
         uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
+        if: steps.semantic-release.outputs.new-release-published == 'true'
         uses: docker/setup-buildx-action@v1
+
       - name: Login to DockerHub
+        if: steps.semantic-release.outputs.new-release-published == 'true'
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build snapshot and push on merge
         id: docker_build_release
+        if: steps.semantic-release.outputs.new-release-published == 'true'
         uses: docker/build-push-action@v2
         with:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: greenstand/treetracker-admin-api:${{ steps.package-version.outputs.current-version }}
-      - id: export_bumped_version
-        run: |
-          export BUMPED_VERSION="${{ steps.package-version.outputs.current-version }}"
-          echo "::set-output name=bumped_version::${BUMPED_VERSION}"
+          tags: greenstand/treetracker-admin-api:${{ steps.semantic-release.outputs.new-release-version }}
 
       - name: Install kustomize
+        if: steps.semantic-release.outputs.new-release-published == 'true'
         run: curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
 
       - name: Run kustomize
-        run: (cd deployment/overlays/development && ../../../kustomize edit set image greenstand/treetracker-admin-api:${{ steps.export_bumped_version.outputs.bumped_version }} )
+        if: steps.semantic-release.outputs.new-release-published == 'true'
+        env:
+          IMAGE_NAME: greenstand/treetracker-admin-api
+          IMAGE_TAG: ${{ steps.semantic-release.outputs.new-release-version }}
+        run: |
+          cd deployment/overlays/development
+          ../../../kustomize edit set image "${IMAGE_NAME}:${IMAGE_TAG}"
 
       - name: Commit dev kustomization file with new app version
-        if: |
-          !startsWith(github.event.head_commit.message, 'chore')
+        id: commit-image-tag
+        if: steps.semantic-release.outputs.new-release-published == 'true'
+        env:
+          IMAGE_TAG: ${{ steps.semantic-release.outputs.new-release-version }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -am "chore: bump docker image tag ${{ steps.export_bumped_version.outputs.bumped_version }} [skip ci]"
+          git add deployment/overlays/development
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: bump docker image tag ${IMAGE_TAG} [skip ci]"
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.commit-image-tag.outputs.committed == 'true'
+        run: git push origin HEAD:master

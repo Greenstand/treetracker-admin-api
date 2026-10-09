@@ -1,11 +1,13 @@
 {
   "branches": ["master"],
   "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      ["@semantic-release/git", {
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/npm",
+    [
+      "@semantic-release/git",
+      {
         "assets": ["docs", "package.json", "CHANGELOG.md"],
         "message": "chore(release): ${nextRelease.version} [skip ci]",
         "successComment": false,
@@ -13,13 +15,23 @@
         "failTitle": false,
         "labels": false,
         "releasedLabels": false
-      }],
-      ["@semantic-release/github", {
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
         "successComment": false,
         "failComment": false,
         "failTitle": false,
         "labels": false,
         "releasedLabels": false
-      }]
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "successCmd": "if [ -n \"$GITHUB_OUTPUT\" ]; then printf '%s\\n' 'new-release-published=true' 'new-release-version=${nextRelease.version}' 'new-release-git-tag=${nextRelease.gitTag}' >> \"$GITHUB_OUTPUT\"; fi"
+      }
     ]
+  ]
 }
