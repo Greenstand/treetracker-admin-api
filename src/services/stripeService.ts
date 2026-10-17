@@ -18,7 +18,8 @@ function getStripe(): Stripe {
     throw new Error('env var STRIPE_SECRET_KEY not set');
   }
   if (!stripe) {
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    // The default is 80s; Home waits on this call, so fail fast instead.
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { timeout: 8000 });
   }
   return stripe;
 }
