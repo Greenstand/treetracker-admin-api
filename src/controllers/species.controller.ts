@@ -20,7 +20,14 @@ import {
 import { Request, RestBindings } from '@loopback/rest';
 import { Species } from '../models';
 import { SpeciesRepository, TreesRepository } from '../repositories';
-const ALLOWED_POLICIES = ['super_permission'];
+import { Role } from '../types/roles';
+// Every role the admin panel lets open the Species page, so the capture
+// count column is not blank for two of the three.
+const ALLOWED_POLICIES: string[] = [
+  Role.SUPER_PERMISSION,
+  Role.ADMIN,
+  Role.LIST_TREE,
+];
 
 export class SpeciesController {
   constructor(
