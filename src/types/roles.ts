@@ -10,6 +10,7 @@ export enum Role {
   ADMIN = 'greenstand-admin',
   APPROVE_TREE = 'approve_tree',
   SUPER_PERMISSION = 'super_permission',
+  LIST_TREE = 'list_tree',
   MANAGER_USER = 'manager_user',
   WALLET_ADMIN = 'wallet-admin',
 }

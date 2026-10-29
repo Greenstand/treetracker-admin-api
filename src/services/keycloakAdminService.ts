@@ -12,6 +12,8 @@ export interface KeycloakUser {
   email: string;
   firstName: string;
   lastName: string;
+  // Epoch milliseconds, as keycloak reports it.
+  createdTimestamp?: number;
 }
 
 export function assertKeycloakConfigured(): void {
@@ -128,6 +130,7 @@ export async function getUserById(
     email: user.email ?? '',
     firstName: user.firstName ?? '',
     lastName: user.lastName ?? '',
+    createdTimestamp: user.createdTimestamp,
   };
 }
 

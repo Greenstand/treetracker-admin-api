@@ -1,6 +1,8 @@
-import { get, param, HttpErrors } from '@loopback/rest';
+import { inject } from '@loopback/core';
+import { get, param, HttpErrors, RestBindings } from '@loopback/rest';
 
 import { requireRole } from '../interceptors/requireRole.interceptor';
+import { KeycloakRequest } from '../middleware/keycloakMiddleware';
 import {
   KeycloakUser,
   getUserById,
@@ -8,9 +10,39 @@ import {
 } from '../services/keycloakAdminService';
 import { Role } from '../types/roles';
 
-// Lets the admin panel find a keycloak account by email or username when
-// binding it to a legacy wallet, so nobody has to copy a uuid by hand.
 export class KeycloakUserController {
+  constructor(
+    @inject(RestBindings.Http.REQUEST)
+    private request: KeycloakRequest,
+  ) {}
+
+  // No role gate: the id comes from the verified token, never the caller.
+  @get('/keycloak-users/me', {
+    responses: {
+      '200': {
+        description: "The caller's own keycloak account",
+        content: { 'application/json': { schema: { type: 'object' } } },
+      },
+    },
+  })
+  async findMe(): Promise<KeycloakUser> {
+    const id = this.request.user?.id;
+
+    if (!id) {
+      throw new HttpErrors.Unauthorized('Missing authenticated user');
+    }
+
+    const user = await getUserById(id);
+
+    if (!user) {
+      throw new HttpErrors.NotFound(`Keycloak user "${id}" not found`);
+    }
+
+    return user;
+  }
+
+  // Lets the admin panel find a keycloak account by email or username when
+  // binding it to a legacy wallet, so nobody has to copy a uuid by hand.
   @get('/keycloak-users', {
     responses: {
       '200': {
