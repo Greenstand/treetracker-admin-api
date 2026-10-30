@@ -17,6 +17,8 @@ import {
 import { buildFilterQuery } from '../js/buildFilterQuery.js';
 import { Planter, Trees, PlanterRegistration } from '../models';
 import { TreesFilter } from './trees.controller';
+import { PLANTER_READ_ROLES } from '../types/roles';
+import { requireOrganizationAccess } from '../interceptors/organizationAccess.interceptor';
 import {
   PlanterRepository,
   TreesRepository,
@@ -46,6 +48,7 @@ export class PlanterOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...PLANTER_READ_ROLES)
   async count(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Planter))
@@ -53,23 +56,21 @@ export class PlanterOrganizationController {
   ): Promise<Count> {
     //override organization id if a sub-org id is in filter AND it matches one of the organization's entityIds
     let orgId = organizationId.valueOf();
+    // Always scope to the organization, even when the request has no where
+    const { organizationId: filterOrgId, ...whereWithoutOrganizationId } =
+      where ?? {};
 
-    if (where) {
-      const { organizationId, ...whereWithoutOrganizationId } = where;
-      const filterOrgId = organizationId;
-
-      if (filterOrgId && filterOrgId !== orgId) {
-        const entityIds =
-          await this.planterRepository.getEntityIdsByOrganizationId(orgId);
-        orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
-      }
-
-      // Replace organizationId with full entity tree and planter query
-      where = await this.planterRepository.applyOrganizationWhereClause(
-        whereWithoutOrganizationId,
-        orgId,
-      );
+    if (filterOrgId && filterOrgId !== orgId) {
+      const entityIds =
+        await this.planterRepository.getEntityIdsByOrganizationId(orgId);
+      orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
     }
+
+    // Replace organizationId with full entity tree and planter query
+    where = await this.planterRepository.applyOrganizationWhereClause(
+      whereWithoutOrganizationId,
+      orgId,
+    );
 
     return await this.planterRepository.count(where);
   }
@@ -86,6 +87,7 @@ export class PlanterOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...PLANTER_READ_ROLES)
   async find(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Planter))
@@ -93,23 +95,24 @@ export class PlanterOrganizationController {
   ): Promise<Planter[]> {
     //override organization id if a sub-org id is in filter AND it matches one of the organization's entityIds
     let orgId = organizationId.valueOf();
+    // Always scope to the organization, even when the request has no where
+    const { organizationId: filterOrgId, ...whereWithoutOrganizationId } =
+      filter?.where ?? {};
 
-    if (filter?.where) {
-      const { organizationId, ...whereWithoutOrganizationId } = filter.where;
-      const filterOrgId = organizationId;
+    if (filterOrgId && filterOrgId !== orgId) {
+      const entityIds =
+        await this.planterRepository.getEntityIdsByOrganizationId(orgId);
+      orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
+    }
 
-      if (filterOrgId && filterOrgId !== orgId) {
-        const entityIds =
-          await this.planterRepository.getEntityIdsByOrganizationId(orgId);
-        orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
-      }
-
-      // Replace organizationId with full entity tree and planter query
-      filter.where = await this.planterRepository.applyOrganizationWhereClause(
+    // Replace organizationId with full entity tree and planter query
+    filter = {
+      ...filter,
+      where: await this.planterRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         orgId,
-      );
-    }
+      ),
+    } as PlanterFilter;
 
     return await this.planterRepository.find(filter);
   }
@@ -129,7 +132,9 @@ export class PlanterOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...PLANTER_READ_ROLES)
   async findPlanterRegistration(
+    @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
     filter?: Filter<PlanterRegistration>,
   ): Promise<PlanterRegistration[]> {
@@ -144,8 +149,17 @@ export class PlanterOrganizationController {
         ) AS region
         ON ST_DWithin(region.geom, planter_registrations.geom, 0.01)`;
 
+    const planterIds =
+      await this.planterRepository.getPlanterIdsByOrganizationId(
+        organizationId,
+      );
     const params = {
-      filter,
+      filter: {
+        ...filter,
+        where: {
+          and: [filter?.where ?? {}, { planterId: { inq: planterIds } }],
+        },
+      },
       repo: this.planterRegistrationRepository,
       modelName: 'PlanterRegistration',
     };
@@ -165,6 +179,7 @@ export class PlanterOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...PLANTER_READ_ROLES)
   async findById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
@@ -214,14 +229,22 @@ export class PlanterOrganizationController {
     },
   })
   // NOTE: Selfies are saved on the Trees Table
+  @requireOrganizationAccess(...PLANTER_READ_ROLES)
   async findSelfiesById(
+    @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
   ): Promise<Trees[]> {
+    // Throws when the grower is not in this organization
+    await this.findById(organizationId, id);
     filter = {
-      where: { planterId: id, planterPhotoUrl: { neq: null } },
       ...filter,
+      where: {
+        ...filter?.where,
+        planterId: id,
+        planterPhotoUrl: { neq: null },
+      },
     };
     return await this.treesRepository.find(filter);
   }
