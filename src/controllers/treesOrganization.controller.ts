@@ -164,7 +164,6 @@ export class TreesOrganizationController {
   })
   @requireOrganizationAccess(...TREE_READ_ROLES)
   async near(
-    // Read by requireOrganizationAccess, which checks it against the token
     @param.path.number('organizationId') organizationId: number,
     @param.query.number('lat') lat: number,
     @param.query.number('lon') lon: number,
@@ -185,11 +184,19 @@ export class TreesOrganizationController {
     })
     limit: number,
   ): Promise<Trees[]> {
+    const entityIds =
+      await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    const planterIds =
+      await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
     const query = `SELECT * FROM Trees WHERE ST_DWithin(ST_MakePoint(lat,lon), ST_MakePoint(${lat}, ${lon}), ${
       radius ? radius : 100
-    }, false) LIMIT ${limit ? limit : 100}`;
+    }, false) AND (planting_organization_id = ANY($1) OR planter_id = ANY($2)) LIMIT ${
+      limit ? limit : 100
+    }`;
     console.log(`near query: ${query}`);
-    return <Promise<Trees[]>>await this.treesRepository.execute(query, []);
+    return <Promise<Trees[]>>(
+      await this.treesRepository.execute(query, [entityIds, planterIds])
+    );
   }
 
   @patch('/organization/{organizationId}/trees/{id}', {

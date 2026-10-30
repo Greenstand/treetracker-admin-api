@@ -114,3 +114,29 @@ describe('TreesOrganizationController GET /organization/{organizationId}/trees/c
     );
   });
 });
+
+describe('TreesOrganizationController GET /organization/{organizationId}/trees/near', () => {
+  it("limits nearby captures to the organization's entities and growers", async () => {
+    const treesRepository = {
+      getEntityIdsByOrganizationId: jest.fn().mockResolvedValue([OWN_ORG]),
+      getPlanterIdsByOrganizationId: jest.fn().mockResolvedValue([7]),
+      execute: jest.fn().mockResolvedValue([]),
+    };
+    const controller = new TreesOrganizationController(
+      treesRepository as never,
+    );
+
+    await invokeMethodWithInterceptors(
+      organizationUserContext(OWN_ORG),
+      controller,
+      'near',
+      [OWN_ORG, 1, 2, undefined, undefined],
+    );
+
+    const [sql, params] = treesRepository.execute.mock.calls[0];
+    expect(sql).toContain(
+      'planting_organization_id = ANY($1) OR planter_id = ANY($2)',
+    );
+    expect(params).toEqual([[OWN_ORG], [7]]);
+  });
+});

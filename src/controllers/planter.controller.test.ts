@@ -4,6 +4,11 @@ import { RestBindings, HttpErrors } from '@loopback/rest';
 import { PlanterController } from './planter.controller';
 import { PlanterOrganizationController } from './planterOrganization.controller';
 import { Role } from '../types/roles';
+import { buildFilterQuery } from '../js/buildFilterQuery.js';
+
+jest.mock('../js/buildFilterQuery.js', () => ({
+  buildFilterQuery: jest.fn().mockReturnValue({ sql: '', params: [] }),
+}));
 
 const OWN_ORG = 3483;
 const OTHER_ORG = 1;
@@ -119,5 +124,81 @@ describe('PlanterOrganizationController GET /organization/{organizationId}/plant
       {},
       OWN_ORG,
     );
+  });
+});
+
+describe('PlanterOrganizationController organization grower routes', () => {
+  it("limits planter registrations to the organization's growers", async () => {
+    const controller = new PlanterOrganizationController(
+      {
+        ...planterRepositoryStub(),
+        getPlanterIdsByOrganizationId: jest.fn().mockResolvedValue([7]),
+      } as never,
+      {} as never,
+      { execute: jest.fn().mockResolvedValue([]) } as never,
+    );
+
+    await invokeMethodWithInterceptors(
+      contextWithUser([Role.ORGANIZATION], OWN_ORG),
+      controller,
+      'findPlanterRegistration',
+      [OWN_ORG, { where: { planterId: 7 } }],
+    );
+
+    expect(jest.mocked(buildFilterQuery).mock.calls[0][1].filter).toEqual({
+      where: { and: [{ planterId: 7 }, { planterId: { inq: [7] } }] },
+    });
+  });
+
+  it('refuses selfies of a grower from another organization', async () => {
+    const treesRepository = {
+      getEntityIdsByOrganizationId: jest.fn().mockResolvedValue([OWN_ORG]),
+      find: jest.fn(),
+    };
+    const controller = new PlanterOrganizationController(
+      {
+        ...planterRepositoryStub(),
+        findById: jest.fn().mockResolvedValue({ organizationId: OTHER_ORG }),
+      } as never,
+      treesRepository as never,
+      {} as never,
+    );
+
+    await expect(
+      invokeMethodWithInterceptors(
+        contextWithUser([Role.ORGANIZATION], OWN_ORG),
+        controller,
+        'findSelfiesById',
+        [OWN_ORG, 5, undefined],
+      ),
+    ).rejects.toThrow(HttpErrors.Unauthorized);
+
+    expect(treesRepository.find).not.toHaveBeenCalled();
+  });
+
+  it('keeps the selfies filter on the grower when the request sends its own where', async () => {
+    const treesRepository = {
+      getEntityIdsByOrganizationId: jest.fn().mockResolvedValue([OWN_ORG]),
+      find: jest.fn().mockResolvedValue([]),
+    };
+    const controller = new PlanterOrganizationController(
+      {
+        ...planterRepositoryStub(),
+        findById: jest.fn().mockResolvedValue({ organizationId: OWN_ORG }),
+      } as never,
+      treesRepository as never,
+      {} as never,
+    );
+
+    await invokeMethodWithInterceptors(
+      contextWithUser([Role.ORGANIZATION], OWN_ORG),
+      controller,
+      'findSelfiesById',
+      [OWN_ORG, 5, { where: {} }],
+    );
+
+    expect(treesRepository.find).toHaveBeenCalledWith({
+      where: { planterId: 5, planterPhotoUrl: { neq: null } },
+    });
   });
 });

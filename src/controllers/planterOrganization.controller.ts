@@ -134,7 +134,6 @@ export class PlanterOrganizationController {
   })
   @requireOrganizationAccess(...PLANTER_READ_ROLES)
   async findPlanterRegistration(
-    // Read by requireOrganizationAccess, which checks it against the token
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
     filter?: Filter<PlanterRegistration>,
@@ -150,8 +149,17 @@ export class PlanterOrganizationController {
         ) AS region
         ON ST_DWithin(region.geom, planter_registrations.geom, 0.01)`;
 
+    const planterIds =
+      await this.planterRepository.getPlanterIdsByOrganizationId(
+        organizationId,
+      );
     const params = {
-      filter,
+      filter: {
+        ...filter,
+        where: {
+          and: [filter?.where ?? {}, { planterId: { inq: planterIds } }],
+        },
+      },
       repo: this.planterRegistrationRepository,
       modelName: 'PlanterRegistration',
     };
@@ -223,15 +231,20 @@ export class PlanterOrganizationController {
   // NOTE: Selfies are saved on the Trees Table
   @requireOrganizationAccess(...PLANTER_READ_ROLES)
   async findSelfiesById(
-    // Read by requireOrganizationAccess, which checks it against the token
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
   ): Promise<Trees[]> {
+    // Throws when the grower is not in this organization
+    await this.findById(organizationId, id);
     filter = {
-      where: { planterId: id, planterPhotoUrl: { neq: null } },
       ...filter,
+      where: {
+        ...filter?.where,
+        planterId: id,
+        planterPhotoUrl: { neq: null },
+      },
     };
     return await this.treesRepository.find(filter);
   }
