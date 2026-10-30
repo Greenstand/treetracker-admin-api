@@ -20,7 +20,8 @@ import {
 import { Trees } from '../models';
 import { TreesRepository } from '../repositories';
 import { requireRole } from '../interceptors/requireRole.interceptor';
-import { Role } from '../types/roles';
+import { Role, TREE_READ_ROLES } from '../types/roles';
+import { requireOrganizationAccess } from '../interceptors/organizationAccess.interceptor';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
@@ -43,6 +44,7 @@ export class TreesOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...TREE_READ_ROLES)
   async count(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
@@ -50,21 +52,21 @@ export class TreesOrganizationController {
     const tagId = where?.tagId;
     //override organization id if a sub-org id is in filter
     let orgId = organizationId.valueOf();
+    // Always scope to the organization, even when the request has no where
+    const { organizationId: filterOrgId, ...whereWithoutOrganizationId } =
+      where ?? {};
 
-    if (where) {
-      const { organizationId, ...whereWithoutOrganizationId } = where;
-      const filterOrgId = organizationId;
-
-      if (filterOrgId && filterOrgId !== orgId) {
-        orgId = filterOrgId;
-      }
-
-      // Replace organizationId with full entity tree and planter query
-      where = await this.treesRepository.applyOrganizationWhereClause(
-        whereWithoutOrganizationId,
-        orgId,
-      );
+    if (filterOrgId && filterOrgId !== orgId) {
+      const entityIds =
+        await this.treesRepository.getEntityIdsByOrganizationId(orgId);
+      orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
     }
+
+    // Replace organizationId with full entity tree and planter query
+    where = await this.treesRepository.applyOrganizationWhereClause(
+      whereWithoutOrganizationId,
+      orgId,
+    );
 
     return await this.treesRepository.countWithTagId(where, tagId);
   }
@@ -81,6 +83,7 @@ export class TreesOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...TREE_READ_ROLES)
   async find(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Trees))
@@ -89,21 +92,24 @@ export class TreesOrganizationController {
     const tagId = filter?.where?.tagId;
     //override organization id if a sub-org id is in filter
     let orgId = organizationId.valueOf();
+    // Always scope to the organization, even when the request has no where
+    const { organizationId: filterOrgId, ...whereWithoutOrganizationId } =
+      filter?.where ?? {};
 
-    if (filter?.where) {
-      const { organizationId, ...whereWithoutOrganizationId } = filter.where;
-      const filterOrgId = organizationId;
+    if (filterOrgId && filterOrgId !== orgId) {
+      const entityIds =
+        await this.treesRepository.getEntityIdsByOrganizationId(orgId);
+      orgId = entityIds.includes(filterOrgId) ? filterOrgId : orgId;
+    }
 
-      if (filterOrgId && filterOrgId !== orgId) {
-        orgId = filterOrgId;
-      }
-
-      // Replace organizationId with full entity tree and planter query
-      filter.where = await this.treesRepository.applyOrganizationWhereClause(
+    // Replace organizationId with full entity tree and planter query
+    filter = {
+      ...filter,
+      where: await this.treesRepository.applyOrganizationWhereClause(
         whereWithoutOrganizationId,
         orgId,
-      );
-    }
+      ),
+    } as TreesFilter;
 
     // console.log('treesOrganization filter ---', filter?.where);
 
@@ -118,6 +124,7 @@ export class TreesOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...TREE_READ_ROLES)
   async findById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
@@ -126,12 +133,10 @@ export class TreesOrganizationController {
       include: [{ relation: 'treeTags' }],
     });
 
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
-    );
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
-      organizationId,
-    );
+    const entityIds =
+      await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    const planterIds =
+      await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
     if (
       !entityIds.includes(result.plantingOrganizationId?.valueOf() || -1) &&
       !planterIds.includes(result.planterId?.valueOf() || -1)
@@ -157,7 +162,10 @@ export class TreesOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(...TREE_READ_ROLES)
   async near(
+    // Read by requireOrganizationAccess, which checks it against the token
+    @param.path.number('organizationId') organizationId: number,
     @param.query.number('lat') lat: number,
     @param.query.number('lon') lon: number,
     @param({
@@ -198,12 +206,10 @@ export class TreesOrganizationController {
     @requestBody() trees: Trees,
   ): Promise<void> {
     const result = await this.treesRepository.findById(id);
-    const entityIds = await this.treesRepository.getEntityIdsByOrganizationId(
-      organizationId,
-    );
-    const planterIds = await this.treesRepository.getPlanterIdsByOrganizationId(
-      organizationId,
-    );
+    const entityIds =
+      await this.treesRepository.getEntityIdsByOrganizationId(organizationId);
+    const planterIds =
+      await this.treesRepository.getPlanterIdsByOrganizationId(organizationId);
     if (
       !entityIds.includes(result.plantingOrganizationId?.valueOf() || -1) &&
       !planterIds.includes(result.planterId?.valueOf() || -1)

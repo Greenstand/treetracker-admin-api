@@ -19,6 +19,8 @@ import {
 import { Planter, Trees } from '../models';
 import { TreesFilter } from './trees.controller';
 import { PlanterRepository, TreesRepository } from '../repositories';
+import { PLANTER_READ_ROLES } from '../types/roles';
+import { requireStaffRole } from '../interceptors/organizationAccess.interceptor';
 
 // Extend the LoopBack filter types for the Planter model to include organizationId and deviceIdentifier
 type PlanterWhere =
@@ -42,6 +44,7 @@ export class PlanterController {
       },
     },
   })
+  @requireStaffRole(...PLANTER_READ_ROLES)
   async count(
     @param.query.object('where', getWhereSchemaFor(Planter))
     where?: PlanterWhere,
@@ -73,6 +76,7 @@ export class PlanterController {
       },
     },
   })
+  @requireStaffRole(...PLANTER_READ_ROLES)
   async find(
     @param.query.object('filter', getFilterSchemaFor(Planter))
     filter?: PlanterFilter,
@@ -99,6 +103,7 @@ export class PlanterController {
       },
     },
   })
+  @requireStaffRole(...PLANTER_READ_ROLES)
   async findById(@param.path.number('id') id: number): Promise<Planter> {
     return await this.planterRepository.findById(id);
   }
@@ -111,6 +116,7 @@ export class PlanterController {
       },
     },
   })
+  @requireStaffRole(...PLANTER_READ_ROLES)
   async findSelfiesById(
     @param.path.number('id') id: number,
     @param.query.object('filter', getFilterSchemaFor(Trees))
