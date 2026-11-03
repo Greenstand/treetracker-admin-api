@@ -20,7 +20,7 @@ import {
 import { Trees } from '../models';
 import { TreesRepository } from '../repositories';
 import { requireRole } from '../interceptors/requireRole.interceptor';
-import { Role, TREE_READ_ROLES } from '../types/roles';
+import { Role } from '../types/roles';
 import { requireOrganizationAccess } from '../interceptors/organizationAccess.interceptor';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
@@ -44,7 +44,7 @@ export class TreesOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...TREE_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async count(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
@@ -83,7 +83,7 @@ export class TreesOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...TREE_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async find(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Trees))
@@ -124,7 +124,7 @@ export class TreesOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...TREE_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async findById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
@@ -162,7 +162,7 @@ export class TreesOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...TREE_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async near(
     @param.path.number('organizationId') organizationId: number,
     @param.query.number('lat') lat: number,

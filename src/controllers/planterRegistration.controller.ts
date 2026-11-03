@@ -3,7 +3,7 @@ import { param, get, getFilterSchemaFor } from '@loopback/rest';
 import { PlanterRegistration } from '../models';
 import { PlanterRegistrationRepository } from '../repositories';
 import { buildFilterQuery } from '../js/buildFilterQuery.js';
-import { PLANTER_READ_ROLES } from '../types/roles';
+import { Role } from '../types/roles';
 import { requireStaffRole } from '../interceptors/organizationAccess.interceptor';
 
 export class PlanterRegistrationController {
@@ -27,7 +27,7 @@ export class PlanterRegistrationController {
       },
     },
   })
-  @requireStaffRole(...PLANTER_READ_ROLES)
+  @requireStaffRole(Role.ADMIN)
   async find(
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
     filter?: Filter<PlanterRegistration>,
@@ -67,7 +67,7 @@ export class PlanterRegistrationController {
       },
     },
   })
-  @requireStaffRole(...PLANTER_READ_ROLES)
+  @requireStaffRole(Role.ADMIN)
   async findById(
     @param.path.number('id') id: number,
   ): Promise<PlanterRegistration> {

@@ -8,12 +8,12 @@ import {
 import { Role } from '../types/roles';
 
 class TestController {
-  @requireStaffRole(Role.ADMIN, Role.LIST_TREE)
+  @requireStaffRole(Role.ADMIN)
   allOrganizations(): string {
     return 'ok';
   }
 
-  @requireOrganizationAccess(Role.ADMIN, Role.LIST_TREE)
+  @requireOrganizationAccess(Role.ADMIN)
   oneOrganization(organizationId: number): string {
     return `ok ${organizationId}`;
   }
@@ -54,7 +54,7 @@ function invoke(
 describe('requireStaffRole interceptor', () => {
   it('lets a staff member with an accepted role read every organization', async () => {
     await expect(
-      invoke(contextWithUser([Role.LIST_TREE]), 'allOrganizations'),
+      invoke(contextWithUser([Role.ADMIN]), 'allOrganizations'),
     ).resolves.toBe('ok');
   });
 
@@ -66,7 +66,7 @@ describe('requireStaffRole interceptor', () => {
 
   it('rejects a user who belongs to an organization even with an accepted role', async () => {
     await expect(
-      invoke(contextWithUser([Role.LIST_TREE], 3483), 'allOrganizations'),
+      invoke(contextWithUser([Role.ADMIN], 3483), 'allOrganizations'),
     ).rejects.toThrow(HttpErrors.Forbidden);
   });
 

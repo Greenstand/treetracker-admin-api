@@ -17,7 +17,7 @@ import {
 import { buildFilterQuery } from '../js/buildFilterQuery.js';
 import { Planter, Trees, PlanterRegistration } from '../models';
 import { TreesFilter } from './trees.controller';
-import { PLANTER_READ_ROLES } from '../types/roles';
+import { Role } from '../types/roles';
 import { requireOrganizationAccess } from '../interceptors/organizationAccess.interceptor';
 import {
   PlanterRepository,
@@ -48,7 +48,7 @@ export class PlanterOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...PLANTER_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async count(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('where', getWhereSchemaFor(Planter))
@@ -87,7 +87,7 @@ export class PlanterOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...PLANTER_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async find(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(Planter))
@@ -132,7 +132,7 @@ export class PlanterOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...PLANTER_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async findPlanterRegistration(
     @param.path.number('organizationId') organizationId: number,
     @param.query.object('filter', getFilterSchemaFor(PlanterRegistration))
@@ -179,7 +179,7 @@ export class PlanterOrganizationController {
       },
     },
   })
-  @requireOrganizationAccess(...PLANTER_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async findById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
@@ -229,7 +229,7 @@ export class PlanterOrganizationController {
     },
   })
   // NOTE: Selfies are saved on the Trees Table
-  @requireOrganizationAccess(...PLANTER_READ_ROLES)
+  @requireOrganizationAccess(Role.ADMIN)
   async findSelfiesById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
