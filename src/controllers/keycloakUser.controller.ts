@@ -55,7 +55,7 @@ export class KeycloakUserController {
       },
     },
   })
-  @requireRole(Role.WALLET_ADMIN)
+  @requireRole(Role.WALLET_ADMIN, Role.ADMIN)
   async find(
     @param.query.string('search') search?: string,
     @param.query.number('limit') limit?: number,
@@ -75,7 +75,7 @@ export class KeycloakUserController {
       },
     },
   })
-  @requireRole(Role.WALLET_ADMIN)
+  @requireRole(Role.WALLET_ADMIN, Role.ADMIN)
   async findById(@param.path.string('id') id: string): Promise<KeycloakUser> {
     const user = await getUserById(id);
 
