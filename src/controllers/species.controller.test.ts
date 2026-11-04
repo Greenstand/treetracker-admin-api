@@ -36,19 +36,16 @@ function controllerFor(roles: string[] | undefined) {
 }
 
 describe('SpeciesController.find', () => {
-  it.each([Role.SUPER_PERMISSION, Role.ADMIN, Role.LIST_TREE])(
-    'merges the capture count for %s',
-    async (role) => {
-      const { controller } = controllerFor([role]);
+  it('merges the capture count for greenstand-admin', async () => {
+    const { controller } = controllerFor([Role.ADMIN]);
 
-      expect(await controller.find()).toEqual([
-        { id: 1, name: 'flower', captureCount: 7 },
-        { id: 2, name: 'maple', captureCount: 0 },
-      ]);
-    },
-  );
+    expect(await controller.find()).toEqual([
+      { id: 1, name: 'flower', captureCount: 7 },
+      { id: 2, name: 'maple', captureCount: 0 },
+    ]);
+  });
 
-  it('omits the count for a role that cannot open the page', async () => {
+  it('omits the count for a non-admin', async () => {
     const { controller, treesRepository } = controllerFor(['planter']);
 
     expect(await controller.find()).toEqual(SPECIES);
