@@ -65,9 +65,8 @@ function getJWKS(): ReturnType<typeof createRemoteJWKSet> {
  *   req.user.policy.policies      – [{ name: string }, ...]  (realm + client roles)
  *   req.user.policy.organization  – { id: number, name: string } | undefined
  *
- * Keycloak role names must match the app's policy names
- * (super_permission, list_tree, approve_tree, list_planter, etc.)
- * so that the existing permission checks in auth.js continue to work.
+ * Keycloak role names must match the Role enum in src/types/roles.ts
+ * (org, greenstand-admin, wallet-admin).
  *
  * Returns 401 for missing, invalid, or expired tokens.
  */
