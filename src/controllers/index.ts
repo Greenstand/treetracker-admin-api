@@ -7,3 +7,4 @@ export * from './treeTag.controller';
 export * from './treesTreeTag.controller';
 export * from './organization.controller';
 export * from './keycloakUser.controller';
+export * from './subscription.controller';
