@@ -8,7 +8,6 @@ import {
   ApplicationConfig,
   TreetrackerAdminApiApplication,
 } from './application';
-// import auth from './js/auth.js';
 import { keycloakAuth } from './middleware/keycloakMiddleware';
 import { auditMiddleware } from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
@@ -36,15 +35,10 @@ export class ExpressServer {
       this.app.use('/api', keycloakAuth);
     }
 
-    // Keep legacy auth middleware for legacy /auth routes only.
-    // this.app.use('/auth', auth.isAuth);
-
     //audit
     this.app.use(auditMiddleware);
 
     this.app.use('/api', this.lbApp.requestHandler);
-    //the auth: login...
-    // this.app.use('/auth', auth.router);
 
     // Custom Express routes
     this.app.get('/', function (_req: Request, res: Response) {

@@ -21,13 +21,6 @@ import { Request, RestBindings } from '@loopback/rest';
 import { Species } from '../models';
 import { SpeciesRepository, TreesRepository } from '../repositories';
 import { Role } from '../types/roles';
-// Every role the admin panel lets open the Species page, so the capture
-// count column is not blank for two of the three.
-const ALLOWED_POLICIES: string[] = [
-  Role.SUPER_PERMISSION,
-  Role.ADMIN,
-  Role.LIST_TREE,
-];
 
 export class SpeciesController {
   constructor(
@@ -80,12 +73,10 @@ export class SpeciesController {
     if (this.requestHasUser(this.request)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const userPolicies: any[] = this.request.user.policy.policies;
-      const isAllowedUser = userPolicies.some((userPolicy) =>
-        ALLOWED_POLICIES.some(
-          (allowedPolicy) => allowedPolicy == userPolicy.name,
-        ),
+      const includeCaptureCount = userPolicies.some(
+        (userPolicy) => userPolicy.name === Role.ADMIN,
       );
-      if (isAllowedUser) {
+      if (includeCaptureCount) {
         return this.captureCountForEachSpecies(speciesList);
       }
     }
