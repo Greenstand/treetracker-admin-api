@@ -2,7 +2,7 @@ import { intercept, InvocationContext, Next } from '@loopback/context';
 import { HttpErrors, RestBindings } from '@loopback/rest';
 import { KeycloakRequest, PolicyEntry } from '../middleware/keycloakMiddleware';
 
-function hasRequiredRole(
+export function hasRequiredRole(
   request: KeycloakRequest | undefined,
   roles: string[],
 ): boolean {
