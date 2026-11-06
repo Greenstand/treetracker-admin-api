@@ -19,8 +19,8 @@ import {
 import { Planter, Trees } from '../models';
 import { TreesFilter } from './trees.controller';
 import { PlanterRepository, TreesRepository } from '../repositories';
-import { Role } from '../types/roles';
 import { requireStaffRole } from '../interceptors/organizationAccess.interceptor';
+import { Role } from '../types/roles';
 
 // Extend the LoopBack filter types for the Planter model to include organizationId and deviceIdentifier
 type PlanterWhere =
@@ -137,6 +137,7 @@ export class PlanterController {
       },
     },
   })
+  @requireStaffRole(Role.ADMIN)
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() planter: Planter,

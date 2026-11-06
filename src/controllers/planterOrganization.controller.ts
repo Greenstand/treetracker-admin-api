@@ -203,6 +203,7 @@ export class PlanterOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(Role.ADMIN)
   async updateById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
