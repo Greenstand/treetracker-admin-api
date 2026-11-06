@@ -22,6 +22,8 @@ import {
   TreesRepository,
   PlanterRegistrationRepository,
 } from '../repositories';
+import { requireOrganizationAccess } from '../interceptors/organizationAccess.interceptor';
+import { Role } from '../types/roles';
 // import expect from "expect-runtime";
 
 // Extend the LoopBack filter types for the Planter model to include organizationId
@@ -188,6 +190,7 @@ export class PlanterOrganizationController {
       },
     },
   })
+  @requireOrganizationAccess(Role.ADMIN)
   async updateById(
     @param.path.number('organizationId') organizationId: number,
     @param.path.number('id') id: number,
