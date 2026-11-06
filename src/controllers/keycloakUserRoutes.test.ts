@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { jwtVerify } from 'jose';
 
 import { ExpressServer } from '../server';
 import { KeycloakUserController } from './keycloakUser.controller';
@@ -66,7 +67,24 @@ describe('GET /api/keycloak-users/me', () => {
     expect(res.body.createdTimestamp).toBe(1700000000000);
   });
 
-  it('still gates /keycloak-users/{id} on wallet-admin', async () => {
+  it('allows /keycloak-users/{id} for greenstand-admin', async () => {
+    const res = await request(server.app)
+      .get('/api/keycloak-users/someone-else')
+      .set('Authorization', 'Bearer stub');
+
+    expect(res.status).toBe(200);
+    expect(getUserByIdMock).toHaveBeenCalledWith('someone-else');
+  });
+
+  it('still gates /keycloak-users/{id} on a role', async () => {
+    (jwtVerify as jest.Mock).mockResolvedValueOnce({
+      payload: {
+        sub: 'me-uuid',
+        azp: CLIENT_ID,
+        realm_access: { roles: [] },
+      },
+    });
+
     const res = await request(server.app)
       .get('/api/keycloak-users/someone-else')
       .set('Authorization', 'Bearer stub');

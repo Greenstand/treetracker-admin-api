@@ -120,7 +120,7 @@ describe('TreesController', () => {
 
       await expect(
         invokeMethodWithInterceptors(
-          contextWithRoles(['list_tree']),
+          contextWithRoles(['planter']),
           controller,
           'updateById',
           [3, APPROVED_CAPTURE],

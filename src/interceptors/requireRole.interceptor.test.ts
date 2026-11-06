@@ -10,8 +10,8 @@ class TestController {
     return 'ok';
   }
 
-  @requireRole(Role.ADMIN, Role.SUPER_PERMISSION)
-  adminOrSuper(): string {
+  @requireRole(Role.ADMIN, Role.WALLET_ADMIN)
+  adminOrWalletAdmin(): string {
     return 'ok';
   }
 }
@@ -42,7 +42,7 @@ describe('requireRole interceptor', () => {
 
   it('throws 403 Forbidden when the user lacks the required role', async () => {
     await expect(
-      invoke(contextWithRoles(['list_tree']), 'adminOnly'),
+      invoke(contextWithRoles(['planter']), 'adminOnly'),
     ).rejects.toThrow(HttpErrors.Forbidden);
   });
 
@@ -54,7 +54,7 @@ describe('requireRole interceptor', () => {
 
   it('allows access when the user has any one of several accepted roles', async () => {
     await expect(
-      invoke(contextWithRoles([Role.SUPER_PERMISSION]), 'adminOrSuper'),
+      invoke(contextWithRoles([Role.WALLET_ADMIN]), 'adminOrWalletAdmin'),
     ).resolves.toBe('ok');
   });
 });
