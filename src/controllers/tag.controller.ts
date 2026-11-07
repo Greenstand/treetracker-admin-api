@@ -18,6 +18,8 @@ import {
 } from '@loopback/rest';
 import { Tag } from '../models';
 import { TagRepository } from '../repositories';
+import { requireRole } from '../interceptors/requireRole.interceptor';
+import { Role } from '../types/roles';
 
 export class TagController {
   constructor(
@@ -77,6 +79,7 @@ export class TagController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() tag: Tag,
@@ -91,6 +94,7 @@ export class TagController {
       },
     },
   })
+  @requireRole(Role.ADMIN, Role.ORGANIZATION)
   async create(@requestBody() tag: Tag): Promise<Tag> {
     // Only create the tag if it doesn't already exist
     const match = await this.tagRepository.findOne({
@@ -109,6 +113,7 @@ export class TagController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async delete(@param.path.number('id') id: number): Promise<void> {
     await this.tagRepository.deleteById(id);
   }
