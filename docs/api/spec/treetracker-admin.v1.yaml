@@ -3,6 +3,138 @@ info:
   title: Treetracker Admin API
   version: 2.17.4
 paths:
+  '/organization/{organizationId}/planter/{growerId}/notes/{noteId}':
+    patch:
+      x-controller-name: GrowerNoteController
+      x-operation-name: updateById
+      tags:
+        - GrowerNoteController
+      responses:
+        '204':
+          description: Grower note updated
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: growerId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: noteId
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  pattern: \S
+        required: true
+        x-parameter-index: 3
+      operationId: GrowerNoteController.updateById
+    delete:
+      x-controller-name: GrowerNoteController
+      x-operation-name: deleteById
+      tags:
+        - GrowerNoteController
+      responses:
+        '204':
+          description: Grower note deleted
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: growerId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: noteId
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: GrowerNoteController.deleteById
+  '/organization/{organizationId}/planter/{growerId}/notes':
+    post:
+      x-controller-name: GrowerNoteController
+      x-operation-name: create
+      tags:
+        - GrowerNoteController
+      responses:
+        '201':
+          description: Grower note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrowerNote'
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: growerId
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  pattern: \S
+        required: true
+        x-parameter-index: 2
+      operationId: GrowerNoteController.create
+    get:
+      x-controller-name: GrowerNoteController
+      x-operation-name: find
+      tags:
+        - GrowerNoteController
+      responses:
+        '200':
+          description: 'Grower notes, newest first'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GrowerNote'
+      parameters:
+        - name: organizationId
+          in: path
+          schema:
+            type: number
+          required: true
+        - name: growerId
+          in: path
+          schema:
+            type: number
+          required: true
+      operationId: GrowerNoteController.find
   '/organization/{organizationId}/organizations':
     get:
       x-controller-name: OrganizationController
@@ -2132,4 +2264,34 @@ components:
           type: number
         tagId:
           type: number
+      additionalProperties: false
+    GrowerNote:
+      title: GrowerNote
+      type: object
+      properties:
+        id:
+          type: number
+        planterId:
+          type: number
+        content:
+          type: string
+          minLength: 1
+          pattern: \S
+        authorId:
+          type: number
+        authorName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - planterId
+        - content
+        - authorId
+        - authorName
+        - createdAt
+        - updatedAt
       additionalProperties: false

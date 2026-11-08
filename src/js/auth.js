@@ -608,15 +608,21 @@ const isAuth = async (req, res, next) => {
       matcher = url.match(/\/api\/(organization\/(\d+)\/)?planter.*/);
       if (matcher) {
         const requestedOrgId = matcher.length > 1 && parseInt(matcher[2], 10);
+        const isNoteWrite =
+          /\/planter\/\d+\/notes(?:\/\d+)?\/?(?:\?|$)/.test(url) &&
+          !['GET', 'HEAD'].includes(req.method);
+        const allowedPolicies = isNoteWrite
+          ? [POLICIES.SUPER_PERMISSION, POLICIES.MANAGE_PLANTER]
+          : [
+              POLICIES.SUPER_PERMISSION,
+              POLICIES.LIST_PLANTER,
+              POLICIES.MANAGE_PLANTER,
+            ];
         if (
           helper.hasPermission(
             policies,
             organization,
-            [
-              POLICIES.SUPER_PERMISSION,
-              POLICIES.LIST_PLANTER,
-              POLICIES.MANAGE_PLANTER,
-            ],
+            allowedPolicies,
             requestedOrgId,
           )
         ) {
