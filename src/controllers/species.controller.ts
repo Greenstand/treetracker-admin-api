@@ -21,6 +21,7 @@ import { Request, RestBindings } from '@loopback/rest';
 import { Species } from '../models';
 import { SpeciesRepository, TreesRepository } from '../repositories';
 import { Role } from '../types/roles';
+import { requireRole } from '../interceptors/requireRole.interceptor';
 
 export class SpeciesController {
   constructor(
@@ -129,6 +130,7 @@ export class SpeciesController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() species: Species,
@@ -143,6 +145,7 @@ export class SpeciesController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async combine(
     @requestBody() request: { combine: number[]; species: Species },
   ): Promise<void> {
@@ -167,6 +170,7 @@ export class SpeciesController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async create(@requestBody() species: Species): Promise<Species> {
     return await this.speciesRepository.create(species);
   }
@@ -178,6 +182,7 @@ export class SpeciesController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async delete(@param.path.number('id') id: number): Promise<void> {
     const deleteQuery = `UPDATE tree_species SET active=false WHERE id=${id}`;
     await this.speciesRepository.execute(deleteQuery, []);

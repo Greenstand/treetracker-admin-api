@@ -18,6 +18,8 @@ import {
 } from '@loopback/rest';
 import { TreeTag } from '../models';
 import { TreeTagRepository } from '../repositories';
+import { requireRole } from '../interceptors/requireRole.interceptor';
+import { Role } from '../types/roles';
 
 export class TreeTagController {
   constructor(
@@ -79,6 +81,7 @@ export class TreeTagController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async updateById(
     @param.path.number('id') id: number,
     @requestBody() tag: TreeTag,
@@ -93,6 +96,7 @@ export class TreeTagController {
       },
     },
   })
+  @requireRole(Role.ADMIN, Role.ORGANIZATION)
   async create(@requestBody() treeTag: TreeTag): Promise<TreeTag> {
     // Only create the tree tag if it doesn't already exist
     const match = await this.treeTagRepository.findOne({
@@ -111,6 +115,7 @@ export class TreeTagController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async delete(@param.path.number('id') id: number): Promise<void> {
     await this.treeTagRepository.deleteById(id);
   }

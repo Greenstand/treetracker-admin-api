@@ -17,6 +17,8 @@ import {
 } from '@loopback/rest';
 import { Trees, TreeTag } from '../models';
 import { TreesRepository } from '../repositories';
+import { requireRole } from '../interceptors/requireRole.interceptor';
+import { Role } from '../types/roles';
 
 export class TreesTreeTagController {
   constructor(
@@ -50,6 +52,7 @@ export class TreesTreeTagController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async create(
     @param.path.number('id') id: typeof Trees.prototype.id,
     @requestBody({
@@ -76,6 +79,7 @@ export class TreesTreeTagController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async patch(
     @param.path.number('id') id: number,
     @requestBody({
@@ -100,6 +104,7 @@ export class TreesTreeTagController {
       },
     },
   })
+  @requireRole(Role.ADMIN)
   async delete(
     @param.path.number('id') id: number,
     @param.query.object('where', getWhereSchemaFor(TreeTag))
