@@ -24,6 +24,7 @@ import { v4 as uuid } from 'uuid';
 import { Transaction } from 'loopback-connector';
 import { Role } from '../types/roles';
 import { requireRole } from '../interceptors/requireRole.interceptor';
+import { requireStaffRole } from '../interceptors/organizationAccess.interceptor';
 
 // Extend the LoopBack filter types for the Trees model to include tagId
 // This is a workaround for the lack of proper join support in LoopBack
@@ -48,6 +49,7 @@ export class TreesController {
       },
     },
   })
+  @requireStaffRole(Role.ADMIN)
   async count(
     @param.query.object('where', getWhereSchemaFor(Trees)) where?: TreesWhere,
   ): Promise<Count> {
@@ -80,6 +82,7 @@ export class TreesController {
       },
     },
   })
+  @requireStaffRole(Role.ADMIN)
   async find(
     @param.query.object('filter', getFilterSchemaFor(Trees))
     filter?: TreesFilter,
@@ -107,6 +110,7 @@ export class TreesController {
       },
     },
   })
+  @requireStaffRole(Role.ADMIN)
   async findById(@param.path.number('id') id: number): Promise<Trees> {
     return await this.treesRepository.findById(id, {
       include: [{ relation: 'treeTags' }],
@@ -127,6 +131,7 @@ export class TreesController {
       },
     },
   })
+  @requireStaffRole(Role.ADMIN)
   async near(
     @param.query.number('lat') lat: number,
     @param.query.number('lon') lon: number,

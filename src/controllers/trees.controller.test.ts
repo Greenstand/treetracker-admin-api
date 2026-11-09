@@ -146,4 +146,68 @@ describe('TreesController', () => {
       expect(treesRepository.updateById).not.toHaveBeenCalled();
     });
   });
+
+  /*
+   * GET /trees/count is unscoped: it counts captures across every
+   * organization, so only a greenstand admin may call it (issue #682).
+   */
+  describe('GET /trees/count', () => {
+    function countController() {
+      const treesRepository = {
+        countWithTagId: jest.fn().mockResolvedValue({ count: 7 }),
+      };
+      return {
+        controller: new TreesController(
+          treesRepository as never,
+          { create: jest.fn() } as never,
+        ),
+        treesRepository,
+      };
+    }
+
+    it('lets a greenstand admin count all captures', async () => {
+      const { controller, treesRepository } = countController();
+
+      await expect(
+        invokeMethodWithInterceptors(
+          contextWithRoles([Role.ADMIN]),
+          controller,
+          'count',
+          [undefined],
+        ),
+      ).resolves.toEqual({ count: 7 });
+
+      expect(treesRepository.countWithTagId).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects an organizational user with 403', async () => {
+      const { controller, treesRepository } = countController();
+
+      await expect(
+        invokeMethodWithInterceptors(
+          contextWithRoles([Role.ORGANIZATION]),
+          controller,
+          'count',
+          [undefined],
+        ),
+      ).rejects.toThrow(HttpErrors.Forbidden);
+
+      expect(treesRepository.countWithTagId).not.toHaveBeenCalled();
+    });
+
+    it('rejects a user without any role with 403', async () => {
+      const { controller, treesRepository } = countController();
+
+      await expect(
+        invokeMethodWithInterceptors(
+          contextWithRoles([]),
+          controller,
+          'count',
+          [undefined],
+        ),
+      ).rejects.toThrow(HttpErrors.Forbidden);
+
+      expect(treesRepository.countWithTagId).not.toHaveBeenCalled();
+    });
+  });
 });
