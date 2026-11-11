@@ -10,6 +10,19 @@ See [Wiki](https://github.com/Greenstand/treetracker-admin-api/wiki) for more in
 
 Please add any missing content to this readme.
 
+## `master` and `keycloak` branches
+
+This repository currently contains two authentication variants:
+
+| Branch     | Authentication                                                            | Intended use                                                              |
+| ---------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `master`   | Uses the API's legacy JWT authentication implemented in `src/js/auth.js`. | Legacy admin API integrations.                                            |
+| `keycloak` | Uses Keycloak bearer tokens verified through the realm's JWKS.            | The current Keycloak-based admin client and organization onboarding flow. |
+
+For new work related to the current admin client, use the `keycloak` branch and open pull requests against `keycloak`. Use `master` only for changes specifically intended for the legacy authentication flow.
+
+The two branches share the same repository and data model, so changes involving shared tables, models, or migrations should be reviewed for compatibility with both variants. The detailed Keycloak setup below documents the current onboarding configuration; a separate follow-up should document the complete runtime authentication and authorization flow.
+
 ## Development Environment Quick Start
 
 There are three main options for development in the Admin Panel:
