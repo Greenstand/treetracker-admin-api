@@ -35,8 +35,10 @@ Route-level authorization is applied after authentication:
 
 The current Keycloak role model is:
 
-- `greenstand-admin`: staff-wide access.
+- `greenstand-admin`: staff-wide access for routes that accept the admin role.
 - `org`: organization-scoped access.
+- `wallet-admin`: access to the specific Keycloak user-management routes that
+  explicitly require the wallet-admin role.
 
 For example, an organization-scoped route must receive the organization ID as its
 first controller argument so the interceptor can compare it with the token claim.
