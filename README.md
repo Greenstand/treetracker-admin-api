@@ -266,6 +266,9 @@ When a user creates an organization through the API, the backend now does the fo
    - `organization_id`
 3. assigns the `org` realm role to the user
 
+For the runtime authentication and authorization flow, see
+[Keycloak Authentication and Authorization](docs/keycloak-authentication-and-authorization.md).
+
 
 ### Troubleshooting
 
