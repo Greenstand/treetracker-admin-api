@@ -94,3 +94,5 @@ A first subscription opens Stripe Checkout with server-resolved organization met
 Configure STRIPE_RETURN_URL to the trusted panel subscription page. The key needs Customer read/write, Subscription read, Price read, Checkout Session read/write, and Billing Portal Session write. Configure the existing Stripe portal to permit the current tier products and prices. These operational settings have been deferred at the user's request. Live payment actions have not been exercised.
 
 A manually assigned subscriber_seed role is a Keycloak marker. The billing UI derives paid status from Stripe. The existing PHP webhook reconciles roles after actual subscription changes.
+
+The sanitized PHP provisioning prototype is versioned at examples/stripe-keycloak-webhook.php. It is deployed separately on the existing PHP host. Supply secrets through its environment or private host configuration. It is a reference for the existing webhook behavior and is independent of the Node API runtime.
