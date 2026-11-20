@@ -11,6 +11,8 @@ import {
 import { keycloakAuth } from './middleware/keycloakMiddleware';
 import { auditMiddleware } from './js/Audit';
 import listEndpoints from 'express-list-endpoints';
+import { createDomainRouter, createDomainPool } from './domain/router';
+import { AdminDomainService } from './domain/service';
 
 //TODO import better
 //const express = require('express').default;
@@ -21,10 +23,12 @@ export class ExpressServer {
   public readonly app: express.Application;
   public readonly lbApp: TreetrackerAdminApiApplication;
   private server?: http.Server;
+  private domainPool?: ReturnType<typeof createDomainPool>;
 
   constructor(options: ApplicationConfig = {}) {
     this.app = express();
     this.app.use(cors());
+    this.app.use('/api/admin-domain', express.json({ limit: '512kb' }));
     this.app.use(express.json());
     this.lbApp = new TreetrackerAdminApiApplication(options);
 
@@ -38,6 +42,11 @@ export class ExpressServer {
     //audit
     this.app.use(auditMiddleware);
 
+    this.domainPool = createDomainPool();
+    this.app.use(
+      '/api/admin-domain',
+      createDomainRouter(new AdminDomainService(this.domainPool)),
+    );
     this.app.use('/api', this.lbApp.requestHandler);
 
     // Custom Express routes
@@ -59,7 +68,7 @@ export class ExpressServer {
     await this.lbApp.start();
     const port = this.lbApp.restServer.config.port || 3000;
     //    const host = this.lbApp.restServer.config.host || '0.0.0.0';
-    const host = '0.0.0.0';
+    const host = process.env.HOST || '0.0.0.0';
     console.log(`Listening at: ${host}:${port}`);
     this.server = this.app.listen(port, host);
     //await once(this.server, 'listening');
@@ -70,6 +79,7 @@ export class ExpressServer {
     if (!this.server) return;
     //await this.lbApp.stop();
     this.server.close();
+    await this.domainPool?.end();
     //await once(this.server, 'close');
     this.server = undefined;
   }
