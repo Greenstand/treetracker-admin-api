@@ -96,3 +96,19 @@ Configure STRIPE_RETURN_URL to the trusted panel subscription page. The key need
 A manually assigned subscriber_seed role is a Keycloak marker. The billing UI derives paid status from Stripe. The existing PHP webhook reconciles roles after actual subscription changes.
 
 The sanitized PHP provisioning prototype is versioned at examples/stripe-keycloak-webhook.php. It is deployed separately on the existing PHP host. Supply secrets through its environment or private host configuration. It is a reference for the existing webhook behavior and is independent of the Node API runtime.
+
+## Species names and empty selections
+
+Organization-local names reuse herbarium.common_name and herbarium.organization_species. The global catalog excludes organization-linked name records; /species-selection returns a scoped localNames library. PUT accepts localNames as species_id/name entries and keeps one selected local_name per species and scope. Names are saved transactionally and cannot cross organization boundaries.
+
+The Herbarium migration 20261122090000-species-selection-options adds species_selection_scope so an explicitly empty custom list remains empty. New callers send inherit:false for custom lists, including empty ones; inherit:true restores the parent/default list. Older empty-array callers retain their previous inheritance behavior. No legacy public schema is extended.
+
+~~~mermaid
+erDiagram
+    HERBARIUM_SPECIES ||--o{ HERBARIUM_COMMON_NAME : names
+    HERBARIUM_COMMON_NAME ||--o{ HERBARIUM_ORGANIZATION_SPECIES : scopes
+    STAKEHOLDER_ORGANIZATION ||..o{ HERBARIUM_ORGANIZATION_SPECIES : owns
+    STAKEHOLDER_ORGANIZATION ||..o{ HERBARIUM_SPECIES_SELECTION_SCOPE : configures
+    STAKEHOLDER_PROJECT |o..o{ HERBARIUM_SPECIES_SELECTION_SCOPE : overrides
+    HERBARIUM_SPECIES ||--o{ HERBARIUM_SPECIES_SELECTION : selects
+~~~

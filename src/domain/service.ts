@@ -288,9 +288,9 @@ export class AdminDomainService {
     const result = await this.pool.query(
       `SELECT s.*,s.updated_at::text AS updated_at,
       (SELECT string_agg(c.common_name,', ' ORDER BY c.common_name) FROM herbarium.common_name c
-      WHERE c.species_id=s.id AND c.active IS TRUE) AS common_name
+      WHERE c.species_id=s.id AND c.active IS TRUE AND NOT EXISTS(SELECT 1 FROM herbarium.organization_species os WHERE os.common_name_id=c.id)) AS common_name
       FROM herbarium.species s WHERE ($1='' OR strpos(lower(s.scientific_name),$1)>0
-      OR EXISTS(SELECT 1 FROM herbarium.common_name c WHERE c.species_id=s.id AND c.active IS TRUE AND strpos(lower(c.common_name),$1)>0))
+      OR EXISTS(SELECT 1 FROM herbarium.common_name c WHERE c.species_id=s.id AND c.active IS TRUE AND NOT EXISTS(SELECT 1 FROM herbarium.organization_species os WHERE os.common_name_id=c.id) AND strpos(lower(c.common_name),$1)>0))
       AND ($2::boolean OR NOT s.is_hidden) ORDER BY s.scientific_name,s.id LIMIT $3 OFFSET $4`,
       [search, query.includeHidden === 'true', size + 1, offset],
     );
@@ -347,24 +347,41 @@ export class AdminDomainService {
       AND (ss.project_id=$2 OR ss.project_id IS NULL) ORDER BY s.scientific_name`,
       [organization, project],
     );
+    const scopes = await this.pool.query(
+      'SELECT project_id FROM herbarium.species_selection_scope WHERE organization_id=$1 AND (project_id=$2 OR project_id IS NULL)',
+      [organization, project],
+    );
+    const names = await this.pool.query(
+      `SELECT c.species_id,c.common_name AS name FROM herbarium.common_name c JOIN herbarium.organization_species os ON os.common_name_id=c.id WHERE os.organization_id=$1 AND os.active AND c.active ORDER BY c.common_name`,
+      [organization],
+    );
     const projectRows = result.rows.filter(
         (r) => project && r.project_id === project,
       ),
       orgRows = result.rows.filter((r) => r.project_id === null);
-    if (projectRows.length)
+    if (
+      project &&
+      (projectRows.length || scopes.rows.some((r) => r.project_id === project))
+    )
       return {
         source: 'Project',
-        rows: projectRows.filter((row) => !row.is_hidden),
+        rows: projectRows.filter((r) => !r.is_hidden),
+        localNames: names.rows,
       };
-    if (orgRows.length)
+    if (orgRows.length || scopes.rows.some((r) => r.project_id === null))
       return {
         source: 'Organization',
-        rows: orgRows.filter((row) => !row.is_hidden),
+        rows: orgRows.filter((r) => !r.is_hidden),
+        localNames: names.rows,
       };
     const defaults = await this.pool
       .query(`SELECT id AS species_id,scientific_name,NULL::text AS local_name
       FROM herbarium.species WHERE is_default AND NOT is_hidden ORDER BY scientific_name`);
-    return { source: 'Default catalog', rows: defaults.rows };
+    return {
+      source: 'Default catalog',
+      rows: defaults.rows,
+      localNames: names.rows,
+    };
   }
   async saveSpeciesSelection(request: KeycloakRequest, body: Query) {
     const { organization, project } = await this.selectionScope(request, body);
@@ -377,29 +394,77 @@ export class AdminDomainService {
     }));
     if (new Set(selections.map((s) => s.species_id)).size !== selections.length)
       throw new DomainError(400, 'Duplicate species');
+    const extras = body.localNames ?? [];
+    if (!Array.isArray(extras) || extras.length > 1000)
+      throw new DomainError(400, 'Choose at most 1000 local names');
+    const localNames = extras.map((entry: Record<string, unknown>) => ({
+      species_id: uuid(entry.species_id, 'Species'),
+      name: text(entry.name, 'Local name', true, 255),
+    }));
+    for (const entry of selections)
+      if (entry.local_name)
+        localNames.push({
+          species_id: entry.species_id,
+          name: entry.local_name,
+        });
+    // Older callers used an empty array to restore inheritance. New callers
+    // explicitly distinguish an empty custom list from inheriting the parent.
+    const inherit =
+      body.inherit === true ||
+      (body.inherit === undefined && !selections.length);
+    if (inherit && selections.length)
+      throw new DomainError(400, 'An inherited list cannot include selections');
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
       await client.query(
         'SELECT pg_advisory_xact_lock(hashtextextended($1,0))',
-        [organization + ':' + (project ?? 'organization')],
+        [organization + ':species'],
       );
+      const ids = [
+        ...new Set([...selections, ...localNames].map((s) => s.species_id)),
+      ];
       const valid = await client.query(
         'SELECT id FROM herbarium.species WHERE id=ANY($1::uuid[]) AND NOT is_hidden',
-        [selections.map((s) => s.species_id)],
+        [ids],
       );
-      if (valid.rowCount !== selections.length)
+      if (valid.rowCount !== ids.length)
         throw new DomainError(400, 'Selection contains unavailable species');
       await client.query(
         'DELETE FROM herbarium.species_selection WHERE organization_id=$1 AND project_id IS NOT DISTINCT FROM $2::uuid',
         [organization, project],
       );
-      for (const entry of selections)
+      await client.query(
+        'DELETE FROM herbarium.species_selection_scope WHERE organization_id=$1 AND project_id IS NOT DISTINCT FROM $2::uuid',
+        [organization, project],
+      );
+      if (!inherit) {
         await client.query(
-          `INSERT INTO herbarium.species_selection
-        (organization_id,project_id,species_id,local_name) VALUES($1,$2,$3,$4)`,
-          [organization, project, entry.species_id, entry.local_name],
+          'INSERT INTO herbarium.species_selection_scope(organization_id,project_id) VALUES($1,$2)',
+          [organization, project],
         );
+        await client.query(
+          `INSERT INTO herbarium.species_selection(organization_id,project_id,species_id,local_name)
+          SELECT $1::uuid,$2::uuid,species_id,local_name FROM jsonb_to_recordset($3::jsonb) AS x(species_id uuid,local_name text)`,
+          [organization, project, JSON.stringify(selections)],
+        );
+      }
+      // The existing NDM relation links organization-specific common names.
+      // Unlinked common names remain the global name library.
+      await client.query(
+        `WITH incoming AS (
+          SELECT DISTINCT ON (species_id,lower(name)) species_id,name FROM jsonb_to_recordset($2::jsonb) AS x(species_id uuid,name text)
+        ), created AS (
+          INSERT INTO herbarium.common_name(species_id,common_name)
+          SELECT i.species_id,i.name FROM incoming i WHERE NOT EXISTS (
+            SELECT 1 FROM herbarium.common_name c WHERE c.species_id=i.species_id AND lower(c.common_name)=lower(i.name) AND c.active
+            AND (NOT EXISTS(SELECT 1 FROM herbarium.organization_species os WHERE os.common_name_id=c.id)
+              OR EXISTS(SELECT 1 FROM herbarium.organization_species os WHERE os.common_name_id=c.id AND os.organization_id=$1 AND os.active)))
+          RETURNING id
+        ) INSERT INTO herbarium.organization_species(organization_id,common_name_id)
+          SELECT $1::uuid,id FROM created`,
+        [organization, JSON.stringify(localNames)],
+      );
       await client.query('COMMIT');
     } catch (error) {
       await client.query('ROLLBACK');

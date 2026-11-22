@@ -12,7 +12,7 @@ const orgUser = {
 } as KeycloakRequest;
 describe('Domain organization boundaries', () => {
   const query = jest.fn();
-  const service = new AdminDomainService({ query } as unknown as Pool);
+  const service = new AdminDomainService(({ query } as unknown) as Pool);
   beforeEach(() => {
     query.mockReset();
   });
@@ -61,7 +61,7 @@ describe('Domain organization boundaries', () => {
 });
 describe('Organization permission defaults', () => {
   const query = jest.fn();
-  const service = new AdminDomainService({ query } as unknown as Pool);
+  const service = new AdminDomainService(({ query } as unknown) as Pool);
   beforeEach(() => query.mockResolvedValue({ rows: [], rowCount: 0 }));
   it('defaults ordinary members to verification and denies project writes', async () => {
     expect(await service.permissions(orgUser, own)).toEqual([
@@ -123,14 +123,15 @@ describe('Species inheritance after catalog hiding', () => {
         },
       ],
     });
-    const service = new AdminDomainService({ query } as unknown as Pool);
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
     jest
       .spyOn(service, 'selectionScope')
       .mockResolvedValue({ organization: own, project: other });
     expect(await service.speciesSelection(orgUser, {})).toEqual({
       source: 'Project',
       rows: [],
+      localNames: expect.any(Array),
     });
-    expect(query).toHaveBeenCalledTimes(1);
+    expect(query).toHaveBeenCalledTimes(3);
   });
 });
