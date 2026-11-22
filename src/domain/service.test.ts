@@ -172,3 +172,73 @@ describe('New project species defaults', () => {
     expect(query.mock.calls[0][0]).not.toContain('species_selection_scope');
   });
 });
+
+describe('Session map organization boundaries', () => {
+  it('does not read geometry for a session outside the authorized organization', async () => {
+    const query = jest.fn().mockResolvedValue({ rows: [], rowCount: 0 });
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
+    jest.spyOn(service, 'organization').mockResolvedValue(own);
+    await expect(service.sessionMap(orgUser, other)).rejects.toMatchObject({
+      statusCode: 404,
+    });
+    expect(query).toHaveBeenCalledTimes(1);
+    expect(query.mock.calls[0][1]).toEqual([other, own]);
+  });
+  it('returns an envelope without transferring the individual capture records', async () => {
+    const geometry = {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [1, 1],
+          [2, 1],
+          [2, 2],
+          [1, 1],
+        ],
+      ],
+    };
+    const query = jest
+      .fn()
+      .mockResolvedValueOnce({ rowCount: 1, rows: [{ organization_id: own }] })
+      .mockResolvedValueOnce({ rows: [{ source: 'captures', geometry }] });
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
+    jest.spyOn(service, 'organization').mockResolvedValue(own);
+    expect(await service.sessionMap(orgUser, other)).toEqual({
+      source: 'captures',
+      geometry,
+      approximate: true,
+    });
+    expect(query.mock.calls[1][1]).toEqual([other, own]);
+    expect(query.mock.calls[1][0]).toContain('field_data.session_segment');
+    expect(query.mock.calls[1][0]).toContain('ST_ConvexHull');
+  });
+});
+
+describe('Grower account organization boundaries', () => {
+  it('does not load project or device details for an inaccessible grower', async () => {
+    const query = jest.fn().mockResolvedValue({ rows: [], rowCount: 0 });
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
+    jest.spyOn(service, 'organization').mockResolvedValue(own);
+    await expect(service.growerAccount(orgUser, other)).rejects.toMatchObject({
+      statusCode: 404,
+    });
+    expect(query).toHaveBeenCalledTimes(1);
+    expect(query.mock.calls[0][1]).toEqual([other, own]);
+  });
+  it('uses NDM assignments and session activity with scope applied to projects', async () => {
+    const query = jest
+      .fn()
+      .mockResolvedValueOnce({
+        rowCount: 1,
+        rows: [{ id: other, first_name: 'Fixture' }],
+      })
+      .mockResolvedValueOnce({ rows: [{ id: own, association: 'Assigned' }] })
+      .mockResolvedValueOnce({ rows: [{ app_version: 'fixture' }] });
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
+    jest.spyOn(service, 'organization').mockResolvedValue(own);
+    const r = await service.growerAccount(orgUser, other);
+    expect(r.projects).toHaveLength(1);
+    expect(query.mock.calls[1][0]).toContain('stakeholder.project_grower');
+    expect(query.mock.calls[1][1]).toEqual([other, own]);
+    expect(query.mock.calls[2][0]).toContain('field_data.device_configuration');
+  });
+});

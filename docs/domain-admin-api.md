@@ -114,3 +114,9 @@ erDiagram
 ~~~
 
 New projects created through this API atomically receive an empty project species scope. Species start unselected until explicitly allocated. Editing existing projects does not change their selections. Users can explicitly restore organization/default inheritance.
+
+## On-demand session map preview
+
+GET /api/admin-domain/sessions/:id/map checks the same organization ownership boundary as capture details. It returns only an approximate outer convex envelope as GeoJSON, using field_data.session_segment geometry first and valid raw_capture / treetracker.capture coordinates as fallback. Capture records and photos are not transferred. Point / line geometries are supported when too few distinct locations exist. Missing geometry returns null. This endpoint is read-only and adds no database fields.
+
+GET /api/admin-domain/growers/:id reads treetracker.grower_account with organization authorization, projects from stakeholder.project_grower or explicitly organization-linked session activity, and last-uploaded app version from field_data.device_configuration. Project results distinguish assignment from observed session activity, include ended assignments, and are capped at 100. No project memberships are inferred solely from organization membership. Unauthorized accounts return 404 before project/device queries.

@@ -36,17 +36,15 @@ export function createDomainRouter(service: AdminDomainService) {
       return next(new DomainError(403, 'Platform admin access is required'));
     next();
   };
-  const route =
-    (
-      handler: (request: KeycloakRequest) => Promise<unknown>,
-      created = false,
-    ) =>
-    (request: Request, response: Response, next: NextFunction) => {
-      Promise.resolve()
-        .then(() => handler(request))
-        .then((result) => response.status(created ? 201 : 200).json(result))
-        .catch(next);
-    };
+  const route = (
+    handler: (request: KeycloakRequest) => Promise<unknown>,
+    created = false,
+  ) => (request: Request, response: Response, next: NextFunction) => {
+    Promise.resolve()
+      .then(() => handler(request))
+      .then((result) => response.status(created ? 201 : 200).json(result))
+      .catch(next);
+  };
   router.get(
     '/context',
     route(async (req) => {
@@ -88,8 +86,16 @@ export function createDomainRouter(service: AdminDomainService) {
     route((req) => service.saveProject(req, req.params.id, req.body)),
   );
   router.get(
+    '/growers/:id',
+    route((req) => service.growerAccount(req, req.params.id)),
+  );
+  router.get(
     '/sessions',
     route((req) => service.sessions(req, req.query)),
+  );
+  router.get(
+    '/sessions/:id/map',
+    route((req) => service.sessionMap(req, req.params.id)),
   );
   router.get(
     '/sessions/:id/captures',

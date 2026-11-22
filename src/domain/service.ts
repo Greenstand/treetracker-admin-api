@@ -199,7 +199,7 @@ export class AdminDomainService {
     const direction = query.direction === 'asc' ? 'ASC' : 'DESC';
     const result = await this.pool.query(
       `SELECT s.id,s.project_id,s.start_time,s.created_at AS uploaded_at,s.processed_at,
-      o.id AS organization_id,o.org_name AS organization_name,p.name AS project_name,
+      o.id AS organization_id,o.org_name AS organization_name,p.name AS project_name,g.id AS grower_account_id,
       nullif(trim(concat_ws(' ',g.first_name,g.last_name)),'') AS grower_name,
       m.*,a.area_sq_m,a.area_sq_m/4046.8564224 AS area_acres,
       CASE WHEN m.capture_count=0 THEN 'No captures' WHEN m.unknown>0 THEN 'Review unavailable' WHEN m.pending=0 THEN 'Reviewed' ELSE 'Awaiting review' END AS review_status
@@ -229,6 +229,83 @@ export class AdminDomainService {
       [scope, search, size + 1, offset],
     );
     return this.page(result.rows, size);
+  }
+  async growerAccount(request: KeycloakRequest, id: string) {
+    const scope = await this.organization(request);
+    const account = await this.pool.query(
+      `SELECT g.id,g.first_name,g.last_name,g.email,g.phone,g.wallet,
+      g.image_url,g.image_rotation,g.status,g.about,g.first_registration_at,g.created_at,g.updated_at,g.lat,g.lon,
+      o.org_name AS organization_name
+      FROM treetracker.grower_account g LEFT JOIN stakeholder.stakeholder o ON o.id=g.organization_id
+      WHERE g.id=$1 AND ($2::uuid IS NULL OR g.organization_id=$2
+        OR EXISTS(SELECT 1 FROM stakeholder.project_grower pg JOIN stakeholder.project p ON p.id=pg.project_id
+          WHERE pg.grower_account_id=g.id AND p.organization_id=$2 AND pg.left_at IS NULL)
+        OR EXISTS(SELECT 1 FROM field_data.wallet_registration w JOIN field_data.session s ON s.originating_wallet_registration_id=w.id
+          JOIN stakeholder.stakeholder so ON so.id=$2 AND (so.id::text=s.organization_id OR so.entity_id::text=s.organization_id)
+          WHERE w.grower_account_id=g.id))`,
+      [uuid(id), scope],
+    );
+    if (!account.rowCount)
+      throw new DomainError(404, 'Grower account not found');
+    const projects = await this.pool.query(
+      `SELECT p.id,p.name,p.code,p.country,p.status,
+      o.org_name AS organization_name,pg.joined_at,pg.left_at,
+      CASE WHEN pg.grower_account_id IS NOT NULL THEN 'Assigned' ELSE 'Session activity' END AS association
+      FROM stakeholder.project p JOIN stakeholder.stakeholder o ON o.id=p.organization_id
+      LEFT JOIN stakeholder.project_grower pg ON pg.project_id=p.id AND pg.grower_account_id=$1
+      WHERE ($2::uuid IS NULL OR p.organization_id=$2) AND (pg.grower_account_id IS NOT NULL
+        OR EXISTS(SELECT 1 FROM field_data.session s JOIN field_data.wallet_registration w ON w.id=s.originating_wallet_registration_id
+          WHERE s.project_id=p.id AND w.grower_account_id=$1 AND (s.organization_id=o.id::text OR s.organization_id=o.entity_id::text)))
+      ORDER BY p.name,p.id LIMIT 101`,
+      [id, scope],
+    );
+    const app = await this.pool.query(
+      `SELECT d.app_version,s.created_at AS last_upload_at
+      FROM field_data.session s JOIN field_data.wallet_registration w ON w.id=s.originating_wallet_registration_id
+      LEFT JOIN field_data.device_configuration d ON d.id=s.device_configuration_id
+      WHERE w.grower_account_id=$1 AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM stakeholder.stakeholder o
+        WHERE o.id=$2 AND (s.organization_id=o.id::text OR s.organization_id=o.entity_id::text)))
+      ORDER BY s.created_at DESC,s.id LIMIT 1`,
+      [id, scope],
+    );
+    return {
+      ...account.rows[0],
+      ...app.rows[0],
+      projects: projects.rows.slice(0, 100),
+      projectsLimited: projects.rows.length > 100,
+    };
+  }
+  async sessionMap(request: KeycloakRequest, id: string) {
+    const scope = await this.organization(request);
+    const session = await this.pool.query(
+      `SELECT o.id AS organization_id FROM field_data.session s JOIN stakeholder.stakeholder o
+       ON lower(o.type)='organization' AND (o.id::text=s.organization_id OR o.entity_id::text=s.organization_id)
+       WHERE s.id=$1 AND ($2::uuid IS NULL OR o.id=$2)`,
+      [uuid(id), scope],
+    );
+    if (!session.rowCount) throw new DomainError(404, 'Session not found');
+    const result = await this.pool.query(
+      `
+      WITH segments AS (
+        SELECT public.ST_ConvexHull(public.ST_Collect(public.ST_MakeValid(convex_hull))) AS geom
+        FROM field_data.session_segment WHERE session_id=$1 AND convex_hull IS NOT NULL
+      ), points AS (
+        SELECT lat,lon FROM field_data.raw_capture WHERE session_id=$1
+        UNION ALL SELECT lat,lon FROM treetracker.capture WHERE session_id=$1 AND status='active'
+          AND (planting_organization_id IS NULL OR planting_organization_id=$2)
+      ), fallback AS (
+        SELECT public.ST_ConvexHull(public.ST_Collect(public.ST_SetSRID(public.ST_MakePoint(lon,lat),4326))) AS geom
+        FROM points WHERE (SELECT geom IS NULL FROM segments)
+          AND lat BETWEEN -90 AND 90 AND lon BETWEEN -180 AND 180
+      ), boundary AS (
+        SELECT COALESCE(s.geom,f.geom) AS geom,CASE WHEN s.geom IS NOT NULL THEN 'segments' ELSE 'captures' END AS source
+        FROM segments s CROSS JOIN fallback f
+      )
+      SELECT source, public.ST_AsGeoJSON(public.ST_Force2D(geom),6)::json AS geometry
+      FROM boundary`,
+      [id, session.rows[0].organization_id],
+    );
+    return { ...result.rows[0], approximate: true };
   }
   async sessionDetail(request: KeycloakRequest, id: string) {
     const scope = await this.organization(request);
