@@ -86,6 +86,10 @@ export function createDomainRouter(service: AdminDomainService) {
     route((req) => service.saveProject(req, req.params.id, req.body)),
   );
   router.get(
+    '/growers',
+    route((req) => service.growers(req, req.query)),
+  );
+  router.get(
     '/growers/:id',
     route((req) => service.growerAccount(req, req.params.id)),
   );

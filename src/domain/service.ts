@@ -224,8 +224,62 @@ export class AdminDomainService {
         public.ST_CollectionExtract(public.ST_MakeValid(convex_hull),3))::public.geography),0) AS area_sq_m
         FROM field_data.session_segment WHERE session_id=s.id) a
       WHERE ($1::uuid IS NULL OR o.id=$1)
+        AND ($5::uuid IS NULL OR g.id=$5)
         AND ($2='' OR strpos(lower(concat_ws(' ',g.first_name,g.last_name,o.org_name,p.name,s.id::text)),$2)>0)
       ORDER BY ${sort} ${direction} NULLS LAST,s.id LIMIT $3 OFFSET $4`,
+      [
+        scope,
+        search,
+        size + 1,
+        offset,
+        query.growerId ? uuid(query.growerId, 'Grower') : null,
+      ],
+    );
+    return this.page(result.rows, size);
+  }
+  async growers(request: KeycloakRequest, query: Query) {
+    const scope = await this.organization(request, query.organizationId);
+    const { size, offset } = paging(query);
+    const search = (
+      text(query.search, 'Search', false, 160) ?? ''
+    ).toLowerCase();
+    const sort =
+      {
+        name: 'g.first_name',
+        organization_name: 'o.org_name',
+        registered_at: 'COALESCE(g.first_registration_at,g.created_at)',
+        status: 'g.status',
+      }[String(query.sort)] ?? 'g.created_at';
+    const direction = query.direction === 'asc' ? 'ASC' : 'DESC';
+    const result = await this.pool.query(
+      `WITH chosen AS MATERIALIZED (
+      SELECT g.id,g.first_name,g.last_name,g.phone,g.email,g.image_url,g.status,
+        row_number() OVER (ORDER BY ${sort} ${direction} NULLS LAST,g.id) AS sort_position,
+        COALESCE(g.first_registration_at,g.created_at) AS registered_at,o.org_name AS organization_name
+      FROM treetracker.grower_account g LEFT JOIN stakeholder.stakeholder o ON o.id=g.organization_id
+      WHERE ($1::uuid IS NULL OR g.organization_id=$1
+        OR EXISTS(SELECT 1 FROM stakeholder.project_grower pg JOIN stakeholder.project p ON p.id=pg.project_id
+          WHERE pg.grower_account_id=g.id AND p.organization_id=$1 AND pg.left_at IS NULL)
+        OR EXISTS(SELECT 1 FROM field_data.wallet_registration w JOIN field_data.session s ON s.originating_wallet_registration_id=w.id
+          JOIN stakeholder.stakeholder so ON so.id=$1 AND (so.id::text=s.organization_id OR so.entity_id::text=s.organization_id)
+          WHERE w.grower_account_id=g.id))
+        AND ($2='' OR strpos(lower(concat_ws(' ',g.first_name,g.last_name,g.phone,g.email,g.wallet,o.org_name)),$2)>0)
+      ORDER BY ${sort} ${direction} NULLS LAST,g.id LIMIT $3 OFFSET $4
+    ) SELECT g.*,m.* FROM chosen g CROSS JOIN LATERAL (
+      SELECT count(*) AS capture_count,count(*) FILTER(WHERE status='approved') AS approved,
+        count(*) FILTER(WHERE status='rejected') AS rejected,
+        count(*) FILTER(WHERE status IS NOT NULL AND status NOT IN('approved','rejected')) AS pending,
+        count(*) FILTER(WHERE status IS NULL) AS review_unavailable
+      FROM (
+        SELECT r.id,r.status FROM field_data.raw_capture r JOIN field_data.session s ON s.id=r.session_id
+          JOIN field_data.wallet_registration w ON w.id=s.originating_wallet_registration_id
+          WHERE w.grower_account_id=g.id AND ($1::uuid IS NULL OR EXISTS(SELECT 1 FROM stakeholder.stakeholder o
+            WHERE o.id=$1 AND (s.organization_id=o.id::text OR s.organization_id=o.entity_id::text)))
+        UNION ALL SELECT c.id,NULL::text AS status FROM treetracker.capture c WHERE c.grower_account_id=g.id AND c.status='active'
+          AND ($1::uuid IS NULL OR c.planting_organization_id=$1)
+          AND NOT EXISTS(SELECT 1 FROM field_data.raw_capture r WHERE r.id=c.id)
+      ) captures
+    ) m ORDER BY g.sort_position`,
       [scope, search, size + 1, offset],
     );
     return this.page(result.rows, size);
