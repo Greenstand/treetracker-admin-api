@@ -14,6 +14,7 @@ import {
   projectGrowerHistory,
   changeProjectGrower,
 } from './projectGrowers';
+import { subscriptionUsage } from './subscriptionUsage';
 import { captureTags } from './captureTags';
 import { sessionProject, changeSessionProject } from './sessionProject';
 import { growerTransfers, transferGrower } from './growerTransfer';
@@ -227,6 +228,10 @@ export function createDomainRouter(service: AdminDomainService) {
   router.put(
     '/organization-users/:id',
     route((req) => saveMember(service, req, req.params.id, req.body)),
+  );
+  router.get(
+    '/subscription-usage',
+    route((req) => subscriptionUsage(service, req, req.query)),
   );
   router.get(
     '/subscription-plans',

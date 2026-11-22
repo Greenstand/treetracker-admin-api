@@ -180,3 +180,15 @@ NDM verification does not offer legacy leaf/tree classification categories or re
 Verification locks/version-checks the entire selected batch, checks processed IDs/references once, bulk-inserts approved captures, resolves tag names once per organization, bulk-links tags, writes matching events and review audits in bulk, and updates raw status in one statement. Timestamp values are preserved in SQL. It retains all-or-nothing rollback, real reviewer IDs and payload-hash replay protection. No legacy public/tag/tree writes and no automatic matching publication.
 
 Measured in dev on disposable fixtures (25 captures, two tags): 258 transaction statements / 74.49 seconds before; 13 / 4.12 seconds after. New lookup indexes are in Treetracker migration `20261122140000-scoped-capture-tag-lookups`. Ownership already exists in `tag.owner_id`; no new ownership columns are needed. Scoped API and writer enforce ownership. Legacy `/tags` reads `public.tag`; remaining legacy callers require separate migration to this scoped endpoint before they can meet these visibility rules. No blanket copying of unowned global names.
+
+## Subscription resource usage
+
+`GET /subscription-usage` requires an active, resolved organization, including for platform administrators. It returns numeric `projects`, `captures`, `growers`, `organizationId`, and `asOf`. It is read-only and independent of Stripe availability; no migration or new quota fields are required.
+
+- Projects: all organization projects, including archived projects.
+- Captures: total managed raw captures in organization sessions plus active NDM captures owned by the organization; UUID union counts raw/approved copies once. Pending and rejected captures are included. This is not a monthly upload counter.
+- Growers: unique existing grower accounts visible through primary organization ownership, current project enrollment, or organization-session wallet registration, matching the Growers list.
+
+Subscription plans combine these counts with the current Stripe-resolved tier and the configured plan catalog. Usage strictly above a limit is over quota; exactly at it is at quota. Unknown subscription/failed usage reads do not invent zero values or enforce an unknown quota. This adds usage presentation and upgrade guidance; server-side quota enforcement remains separate work.
+
+Dev disposable fixtures verified pending/rejected capture accounting, deduplication after approval, archived project counts, grower-link deduplication, and organization boundaries. No Stripe subscription was changed by the tests.
