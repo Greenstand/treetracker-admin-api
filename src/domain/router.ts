@@ -14,6 +14,7 @@ import {
   projectGrowerHistory,
   changeProjectGrower,
 } from './projectGrowers';
+import { captureTags } from './captureTags';
 import { sessionProject, changeSessionProject } from './sessionProject';
 import { growerTransfers, transferGrower } from './growerTransfer';
 
@@ -114,6 +115,10 @@ export function createDomainRouter(service: AdminDomainService) {
         req.body,
       ),
     ),
+  );
+  router.get(
+    '/capture-tags',
+    route((req) => captureTags(service, req, req.query)),
   );
   router.get(
     '/verification',

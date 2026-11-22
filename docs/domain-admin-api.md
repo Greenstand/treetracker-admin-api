@@ -172,3 +172,11 @@ erDiagram
 ```
 
 NDM verification does not offer legacy leaf/tree classification categories or remembered form choices. New submissions send only explicitly entered optional text tags; no classification tag is added automatically. The form resets after successful review.
+
+## Batched verification and scoped capture-tag dictionary
+
+`GET /capture-tags` requires a resolved organization and verification permission. There is no all-organization dictionary for platform callers. Active `treetracker.tag` rows owned by the Stakeholder UUID are offered; a legacy unowned public name is offered only with proven usage on that organization's active NDM captures. Another organization's tag is never offered, even if marked public. Optional `projectId` must belong to the organization and narrows results to usage on the project's session captures. Names are searched and reused case-insensitively. New tags are organization-owned/private. `treetracker.capture_tag` remains the link table; project usage follows `capture.session_id → session.project_id`.
+
+Verification locks/version-checks the entire selected batch, checks processed IDs/references once, bulk-inserts approved captures, resolves tag names once per organization, bulk-links tags, writes matching events and review audits in bulk, and updates raw status in one statement. Timestamp values are preserved in SQL. It retains all-or-nothing rollback, real reviewer IDs and payload-hash replay protection. No legacy public/tag/tree writes and no automatic matching publication.
+
+Measured in dev on disposable fixtures (25 captures, two tags): 258 transaction statements / 74.49 seconds before; 13 / 4.12 seconds after. New lookup indexes are in Treetracker migration `20261122140000-scoped-capture-tag-lookups`. Ownership already exists in `tag.owner_id`; no new ownership columns are needed. Scoped API and writer enforce ownership. Legacy `/tags` reads `public.tag`; remaining legacy callers require separate migration to this scoped endpoint before they can meet these visibility rules. No blanket copying of unowned global names.

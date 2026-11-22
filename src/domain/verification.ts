@@ -58,7 +58,14 @@ export function verificationInput(body: Input) {
       morphology,
       age: body.age ?? null,
       species_id: body.species_id ? uuid(body.species_id, 'Species') : null,
-      tags: [...new Set(tags.map((value) => text(value, 'Tag', true, 100)!))],
+      tags: [
+        ...new Map(
+          tags.map((value) => {
+            const name = text(value, 'Tag', true, 100)!;
+            return [name.toLowerCase(), name];
+          }),
+        ).values(),
+      ],
     },
   };
 }
@@ -141,17 +148,42 @@ export async function verifyCaptures(
       };
     }
     const rows = await c.query(
-      `SELECT r.*,r.updated_at::text AS version,s.device_configuration_id,w.grower_account_id,o.id AS organization_id
-      FROM field_data.raw_capture r JOIN field_data.session s ON s.id=r.session_id
+      `SELECT r.*,r.updated_at::text AS version,
+      (r.updated_at IS NOT DISTINCT FROM wanted.updated_at) AS version_matches,
+      s.device_configuration_id,w.grower_account_id,o.id AS organization_id
+      FROM jsonb_to_recordset($1::jsonb) AS wanted(id uuid,updated_at timestamptz)
+      JOIN field_data.raw_capture r ON r.id=wanted.id JOIN field_data.session s ON s.id=r.session_id
       JOIN stakeholder.stakeholder o ON lower(o.type)='organization' AND (s.organization_id=o.id::text OR s.organization_id=o.entity_id::text)
       LEFT JOIN field_data.wallet_registration w ON w.id=s.originating_wallet_registration_id
-      WHERE r.id=ANY($1::uuid[]) AND ($2::uuid IS NULL OR o.id=$2) ORDER BY r.id FOR UPDATE OF r`,
-      [input.captures.map((x) => x.id), scope],
+      WHERE ($2::uuid IS NULL OR o.id=$2) ORDER BY r.id FOR UPDATE OF r`,
+      [JSON.stringify(input.captures), scope],
     );
     if (rows.rowCount !== input.captures.length)
       throw new DomainError(
         404,
         'One or more captures are outside this organization or unavailable',
+      );
+    if (
+      rows.rows.some(
+        (row) => !row.version_matches || row.status !== 'unprocessed',
+      )
+    )
+      throw new DomainError(
+        409,
+        'A selected capture was already reviewed or changed. Refresh the queue.',
+      );
+    const ids = rows.rows.map((row) => row.id);
+    if (
+      (
+        await c.query(
+          'SELECT id FROM treetracker.capture WHERE id=ANY($1::uuid[]) OR reference_id=ANY($2::bigint[]) LIMIT 1',
+          [ids, rows.rows.map((row) => row.reference_id)],
+        )
+      ).rowCount
+    )
+      throw new DomainError(
+        409,
+        'A selected capture is already processed and needs reconciliation',
       );
     if (
       input.annotations.species_id &&
@@ -163,142 +195,132 @@ export async function verifyCaptures(
       ).rowCount
     )
       throw new DomainError(400, 'Species is unavailable');
-    for (const org of [
-      ...new Set(rows.rows.map((x) => x.organization_id)),
-    ].sort())
-      await c.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))', [
-        'verify-org:' + org,
-      ]);
-    for (const row of rows.rows) {
-      const supplied = input.captures.find((x) => x.id === row.id)!;
-      const fresh = await c.query(
-        'SELECT 1 FROM field_data.raw_capture WHERE id=$1 AND updated_at=$2::timestamptz',
-        [row.id, supplied.updated_at],
-      );
-      if (!fresh.rowCount || row.status !== 'unprocessed')
-        throw new DomainError(
-          409,
-          'A selected capture was already reviewed or changed. Refresh the queue.',
-        );
-      if (
-        (
-          await c.query(
-            'SELECT id FROM treetracker.capture WHERE id=$1 OR reference_id=$2',
-            [row.id, row.reference_id],
-          )
-        ).rowCount
-      )
-        throw new DomainError(
-          409,
-          'A selected capture is already processed and needs reconciliation',
-        );
-      if (input.decision === 'approved') {
+    if (input.decision === 'approved') {
+      for (const row of rows.rows) {
         if (
           !row.grower_account_id ||
           !row.device_configuration_id ||
+          row.lat == null ||
+          row.lon == null ||
+          !Number.isFinite(Number(row.lat)) ||
+          !Number.isFinite(Number(row.lon)) ||
           Number(row.lat) < -90 ||
           Number(row.lat) > 90 ||
           Number(row.lon) < -180 ||
           Number(row.lon) > 180 ||
           (row.gps_accuracy != null &&
-            (Number(row.gps_accuracy) < 0 || Number(row.gps_accuracy) > 32767))
+            (!Number.isFinite(Number(row.gps_accuracy)) ||
+              Number(row.gps_accuracy) < 0 ||
+              Number(row.gps_accuracy) > 32767))
         )
           throw new DomainError(
             400,
             'Approval requires a linked grower, device and valid capture coordinates / GPS accuracy',
           );
-        await c.query(
-          `INSERT INTO treetracker.capture(id,reference_id,image_url,lat,lon,gps_accuracy,note,attributes,
-          estimated_geometric_location,estimated_geographic_location,device_configuration_id,session_id,grower_account_id,
-          planting_organization_id,species_id,morphology,age,captured_at,updated_at)
-          VALUES($1,$2,$3,$4,$5,$6,$7,$8,public.ST_SetSRID(public.ST_MakePoint($5::numeric::double precision,$4::numeric::double precision),4326),
-          public.ST_SetSRID(public.ST_MakePoint($5::numeric::double precision,$4::numeric::double precision),4326)::public.geography,$9,$10,$11,$12,$13,$14,$15,$16,clock_timestamp())`,
-          [
-            row.id,
-            row.reference_id,
-            row.image_url,
-            row.lat,
-            row.lon,
-            row.gps_accuracy == null
-              ? null
-              : Math.round(Number(row.gps_accuracy)),
-            row.note,
-            row.extra_attributes,
-            row.device_configuration_id,
-            row.session_id,
-            row.grower_account_id,
-            row.organization_id,
-            input.annotations.species_id,
-            input.annotations.morphology,
-            input.annotations.age,
-            row.captured_at,
-          ],
-        );
-        for (const name of input.annotations.tags) {
-          let tag = (
-            await c.query(
-              'SELECT id FROM treetracker.tag WHERE lower(name)=lower($1) AND status=\'active\' AND (owner_id=$2 OR "isPublic") ORDER BY (owner_id=$2) DESC NULLS LAST,id LIMIT 1',
-              [name, row.organization_id],
-            )
-          ).rows[0];
-          if (!tag)
-            tag = (
-              await c.query(
-                'INSERT INTO treetracker.tag(name,"isPublic",owner_id) VALUES($1,false,$2) RETURNING id',
-                [name, row.organization_id],
-              )
-            ).rows[0];
-          await c.query(
-            'INSERT INTO treetracker.capture_tag(capture_id,tag_id) VALUES($1,$2)',
-            [row.id, tag.id],
-          );
-        }
         if (!Number.isSafeInteger(Number(row.reference_id)))
           throw new DomainError(
             400,
             'Capture reference cannot be represented safely by the downstream event contract',
           );
-        const event = {
-          id: row.id,
-          reference_id: Number(row.reference_id),
-          approved: true,
-          type: 'CaptureCreated',
-          lat: Number(row.lat),
-          lon: Number(row.lon),
-          grower_account_id: row.grower_account_id,
-          attributes: row.extra_attributes,
-          captured_at: row.captured_at,
-        };
+      }
+    }
+    const metadata = JSON.stringify(
+      rows.rows.map((row) => ({
+        id: row.id,
+        organization_id: row.organization_id,
+        device_configuration_id: row.device_configuration_id,
+        grower_account_id: row.grower_account_id,
+        version: row.version,
+        audit_id: randomUUID(),
+        event_id: randomUUID(),
+      })),
+    );
+    if (input.decision === 'approved') {
+      await c.query(
+        `INSERT INTO treetracker.capture(id,reference_id,image_url,lat,lon,gps_accuracy,note,attributes,
+        estimated_geometric_location,estimated_geographic_location,device_configuration_id,session_id,grower_account_id,
+        planting_organization_id,species_id,morphology,age,captured_at,updated_at)
+        SELECT r.id,r.reference_id,r.image_url,r.lat,r.lon,round(r.gps_accuracy)::smallint,r.note,r.extra_attributes,
+        public.ST_SetSRID(public.ST_MakePoint(r.lon::double precision,r.lat::double precision),4326),
+        public.ST_SetSRID(public.ST_MakePoint(r.lon::double precision,r.lat::double precision),4326)::public.geography,
+        m.device_configuration_id,r.session_id,m.grower_account_id,m.organization_id,$2::uuid,$3,$4::integer,r.captured_at,clock_timestamp()
+        FROM jsonb_to_recordset($1::jsonb) AS m(id uuid,organization_id uuid,device_configuration_id uuid,grower_account_id uuid)
+        JOIN field_data.raw_capture r ON r.id=m.id`,
+        [
+          metadata,
+          input.annotations.species_id,
+          input.annotations.morphology,
+          input.annotations.age,
+        ],
+      );
+      if (input.annotations.tags.length) {
+        // The same names are resolved once per organization, never once per capture.
+        const orgs = [
+          ...new Set<string>(rows.rows.map((row) => row.organization_id)),
+        ].sort();
+        for (const org of orgs)
+          await c.query(
+            'SELECT pg_advisory_xact_lock(hashtextextended($1,0))',
+            ['verify-org:' + org],
+          );
+        const desired = JSON.stringify(
+          orgs.flatMap((owner_id) =>
+            input.annotations.tags.map((name) => ({
+              id: randomUUID(),
+              owner_id,
+              name,
+            })),
+          ),
+        );
         await c.query(
-          "INSERT INTO treetracker.domain_event(id,payload,status,created_at,updated_at) VALUES($1,$2,'raised',now(),now())",
-          [randomUUID(), event],
+          `INSERT INTO treetracker.tag(id,name,"isPublic",owner_id)
+          SELECT d.id,d.name,false,d.owner_id FROM jsonb_to_recordset($1::jsonb) AS d(id uuid,owner_id text,name text)
+          WHERE NOT EXISTS(SELECT 1 FROM treetracker.tag t WHERE t.owner_id=d.owner_id AND lower(t.name)=lower(d.name) AND t.status='active')
+          ON CONFLICT(name,owner_id) DO UPDATE SET status='active',"isPublic"=false,updated_at=clock_timestamp()`,
+          [desired],
+        );
+        await c.query(
+          `WITH available AS (
+          SELECT DISTINCT ON (t.owner_id,lower(t.name)) t.id,t.owner_id FROM treetracker.tag t
+          JOIN jsonb_to_recordset($2::jsonb) AS d(owner_id text,name text) ON t.owner_id=d.owner_id AND lower(t.name)=lower(d.name)
+          WHERE t.status='active' ORDER BY t.owner_id,lower(t.name),t.id)
+          INSERT INTO treetracker.capture_tag(capture_id,tag_id)
+          SELECT m.id,t.id FROM jsonb_to_recordset($1::jsonb) AS m(id uuid,organization_id uuid)
+          JOIN available t ON t.owner_id=m.organization_id::text`,
+          [metadata, desired],
         );
       }
       await c.query(
-        'UPDATE field_data.raw_capture SET status=$2,rejection_reason=$3,updated_at=clock_timestamp() WHERE id=$1',
-        [
-          row.id,
-          input.decision,
-          input.decision === 'rejected' ? input.reason : null,
-        ],
-      );
-      await c.query(
-        `INSERT INTO field_data.capture_verification(id,request_id,request_hash,capture_id,organization_id,reviewer_id,decision,rejection_reason,annotations,previous_updated_at)
-        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-        [
-          randomUUID(),
-          input.requestId,
-          hash,
-          row.id,
-          row.organization_id,
-          actor,
-          input.decision,
-          input.reason,
-          input.annotations,
-          row.version,
-        ],
+        `INSERT INTO treetracker.domain_event(id,payload,status,created_at,updated_at)
+        SELECT m.event_id,jsonb_build_object('id',c.id,'reference_id',c.reference_id,'approved',true,'type','CaptureCreated',
+          'lat',c.lat,'lon',c.lon,'grower_account_id',c.grower_account_id,'attributes',c.attributes,'captured_at',c.captured_at),
+          'raised',now(),now() FROM jsonb_to_recordset($1::jsonb) AS m(id uuid,event_id uuid)
+          JOIN treetracker.capture c ON c.id=m.id`,
+        [metadata],
       );
     }
+    await c.query(
+      'UPDATE field_data.raw_capture SET status=$2,rejection_reason=$3,updated_at=clock_timestamp() WHERE id=ANY($1::uuid[])',
+      [
+        ids,
+        input.decision,
+        input.decision === 'rejected' ? input.reason : null,
+      ],
+    );
+    await c.query(
+      `INSERT INTO field_data.capture_verification(id,request_id,request_hash,capture_id,organization_id,reviewer_id,decision,rejection_reason,annotations,previous_updated_at)
+      SELECT m.audit_id,$2::uuid,$3,m.id,m.organization_id,$4::uuid,$5,$6,$7::jsonb,m.version
+      FROM jsonb_to_recordset($1::jsonb) AS m(id uuid,organization_id uuid,audit_id uuid,version timestamptz)`,
+      [
+        metadata,
+        input.requestId,
+        hash,
+        actor,
+        input.decision,
+        input.reason,
+        JSON.stringify(input.annotations),
+      ],
+    );
     await c.query('COMMIT');
     return {
       reviewed: rows.rowCount,

@@ -39,8 +39,10 @@ describe('NDM verification input', () => {
   });
   it('normalizes tags without accepting arbitrary payload objects', () => {
     expect(
-      verificationInput({ ...base, tags: [' Mango ', 'Mango'] }).annotations
-        .tags,
+      verificationInput({
+        ...base,
+        tags: [' Mango ', 'Mango', 'mango', 'Mango'],
+      }).annotations.tags,
     ).toEqual(['Mango']);
     expect(() => verificationInput({ ...base, tags: [{}] })).toThrow(
       'Invalid Tag',
