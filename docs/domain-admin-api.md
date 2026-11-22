@@ -154,3 +154,21 @@ erDiagram
 ```
 
 Keycloak directory access uses server-only service-account credentials; human `greenstand-admin` grants app access but does not automatically grant the backend Keycloak Admin API permissions. Directory failures return an explicit service error, not an empty user list.
+
+## Session project allocation corrections
+
+`GET /sessions/:id/project` returns the session's actual NDM project allocation, latest allocation-event UUID and paged correction history (`page`, `size`). `POST` on the same URL accepts nullable `project_id`, `expected_project_id`, `expected_event_id`, a required `reason` and `requestId`. Requires `manage_projects` in the session organization. Assign/reassign accepts only active projects in that organization; null clears the allocation. The session is locked, current allocation and event version checked, and the update/audit insert committed atomically. Retries with the same request replay safely; a stale change—including a project changed away and back—is rejected.
+
+The existing `field_data.session.project_id` is the canonical allocation for the entire session. Capture project reporting derives from its session. These corrections do not change grower project enrollment, capture review status or tree associations. The first correction stores the previous app/initial value; the initial actor is not fabricated. `field_data.session_project_event` stores previous/new project UUID, actor UUID/name, time, reason, organization and request hash. Apply migration `20261122130000-session-project-audit` before enabling these routes, plus session project column migration in Field Data #121.
+
+**App integration gap:** the current Field Data `sessionPostSchema` rejects unknown fields and does not accept `project_id`; `SessionModel` also omits it from responses. Automatic app allocation needs an explicit selected project in the upload contract and validation against the session organization. A grower may have multiple projects, so enrollment alone cannot determine the session project. Upload retries must preserve existing admin corrections. The admin correction feature is implemented independently of that mobile/ingestion work.
+
+```mermaid
+erDiagram
+    stakeholder_project |o..o{ field_data_session : allocated_to
+    field_data_session ||--o{ session_project_event : correction_history
+    field_data_session ||--o{ field_data_raw_capture : contains
+    field_data_session ||--o{ treetracker_capture : contains
+```
+
+NDM verification does not offer legacy leaf/tree classification categories or remembered form choices. New submissions send only explicitly entered optional text tags; no classification tag is added automatically. The form resets after successful review.

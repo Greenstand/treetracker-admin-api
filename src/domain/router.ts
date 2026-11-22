@@ -14,6 +14,7 @@ import {
   projectGrowerHistory,
   changeProjectGrower,
 } from './projectGrowers';
+import { sessionProject, changeSessionProject } from './sessionProject';
 import { growerTransfers, transferGrower } from './growerTransfer';
 
 export function createDomainRouter(service: AdminDomainService) {
@@ -143,6 +144,14 @@ export function createDomainRouter(service: AdminDomainService) {
   router.get(
     '/sessions',
     route((req) => service.sessions(req, req.query)),
+  );
+  router.get(
+    '/sessions/:id/project',
+    route((req) => sessionProject(service, req, req.params.id, req.query)),
+  );
+  router.post(
+    '/sessions/:id/project',
+    route((req) => changeSessionProject(service, req, req.params.id, req.body)),
   );
   router.get(
     '/sessions/:id/map',
