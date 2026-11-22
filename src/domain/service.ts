@@ -166,9 +166,14 @@ export class AdminDomainService {
           [...values, uuid(id), organization, this.version(body)],
         )
       : await this.pool.query(
-          `INSERT INTO stakeholder.project
+          `WITH new_project AS (
+        INSERT INTO stakeholder.project
         (name,code,status,description,country,region,starts_on,ends_on,target_trees,target_captures,logo_url,hero_image_url,id,organization_id)
-        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *`,
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *
+        ), species_scope AS (
+          INSERT INTO herbarium.species_selection_scope(organization_id,project_id)
+          SELECT organization_id,id FROM new_project RETURNING project_id
+        ) SELECT p.* FROM new_project p JOIN species_scope s ON s.project_id=p.id`,
           [...values, randomUUID(), organization],
         );
     if (!result.rowCount)

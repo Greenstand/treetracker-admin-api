@@ -112,3 +112,5 @@ erDiagram
     STAKEHOLDER_PROJECT |o..o{ HERBARIUM_SPECIES_SELECTION_SCOPE : overrides
     HERBARIUM_SPECIES ||--o{ HERBARIUM_SPECIES_SELECTION : selects
 ~~~
+
+New projects created through this API atomically receive an empty project species scope. Species start unselected until explicitly allocated. Editing existing projects does not change their selections. Users can explicitly restore organization/default inheritance.

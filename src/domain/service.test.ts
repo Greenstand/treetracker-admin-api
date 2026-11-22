@@ -135,3 +135,40 @@ describe('Species inheritance after catalog hiding', () => {
     expect(query).toHaveBeenCalledTimes(3);
   });
 });
+
+describe('New project species defaults', () => {
+  it('atomically creates an empty project scope rather than inheriting every species', async () => {
+    const query = jest
+      .fn()
+      .mockResolvedValue({ rowCount: 1, rows: [{ id: other }] });
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
+    jest.spyOn(service, 'organization').mockResolvedValue(own);
+    jest.spyOn(service, 'requirePermission').mockResolvedValue(undefined);
+    await service.saveProject(orgUser, undefined, {
+      name: 'New project',
+      code: 'NEW',
+    });
+    expect(query).toHaveBeenCalledTimes(1);
+    expect(query.mock.calls[0][0]).toContain('INSERT INTO stakeholder.project');
+    expect(query.mock.calls[0][0]).toContain(
+      'INSERT INTO herbarium.species_selection_scope',
+    );
+    expect(query.mock.calls[0][0]).toContain(
+      'SELECT organization_id,id FROM new_project',
+    );
+  });
+  it('preserves the existing species scope when editing a project', async () => {
+    const query = jest
+      .fn()
+      .mockResolvedValue({ rowCount: 1, rows: [{ id: other }] });
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
+    jest.spyOn(service, 'organization').mockResolvedValue(own);
+    jest.spyOn(service, 'requirePermission').mockResolvedValue(undefined);
+    await service.saveProject(orgUser, other, {
+      name: 'Existing',
+      code: 'OLD',
+      updated_at: null,
+    });
+    expect(query.mock.calls[0][0]).not.toContain('species_selection_scope');
+  });
+});
