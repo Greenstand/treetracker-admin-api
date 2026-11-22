@@ -4,6 +4,7 @@ import { KeycloakRequest } from '../middleware/keycloakMiddleware';
 import {
   DomainError,
   uuid,
+  speciesNames,
   text,
   paging,
   projectValues,
@@ -431,33 +432,40 @@ export class AdminDomainService {
       `SELECT s.*,s.updated_at::text AS updated_at,
       (SELECT string_agg(c.common_name,', ' ORDER BY c.common_name) FROM herbarium.common_name c
       WHERE c.species_id=s.id AND c.active IS TRUE AND NOT EXISTS(SELECT 1 FROM herbarium.organization_species os WHERE os.common_name_id=c.id)) AS common_name
-      FROM herbarium.species s WHERE ($1='' OR strpos(lower(s.scientific_name),$1)>0
+      FROM herbarium.species s WHERE ($1='' OR strpos(lower(concat_ws(' ',s.herbarium_name,s.scientific_name,s.legacy_catalogue_name)),$1)>0
       OR EXISTS(SELECT 1 FROM herbarium.common_name c WHERE c.species_id=s.id AND c.active IS TRUE AND NOT EXISTS(SELECT 1 FROM herbarium.organization_species os WHERE os.common_name_id=c.id) AND strpos(lower(c.common_name),$1)>0))
-      AND ($2::boolean OR NOT s.is_hidden) ORDER BY s.scientific_name,s.id LIMIT $3 OFFSET $4`,
+      AND ($2::boolean OR NOT s.is_hidden) ORDER BY coalesce(s.herbarium_name,s.scientific_name,s.legacy_catalogue_name),s.id LIMIT $3 OFFSET $4`,
       [search, query.includeHidden === 'true', size + 1, offset],
     );
     return this.page(result.rows, size);
   }
   async saveSpecies(id: string | undefined, body: Query) {
+    const names = speciesNames(body, !id);
     const values = [
-      text(body.scientific_name, 'Scientific name', true, 255),
+      names.scientific_name,
       text(body.description, 'Description', false, 10000) ?? '',
       text(body.morphology, 'Morphology', false, 255),
       imageUrl(body.reference_url),
       body.is_hidden === true,
       body.is_default !== false,
+      names.herbarium_name,
     ];
     const result = id
       ? await this.pool.query(
           `UPDATE herbarium.species SET scientific_name=$1,description=$2,morphology=$3,
-        reference_url=$4,is_hidden=$5,is_default=$6,updated_at=clock_timestamp()
-        WHERE id=$7 AND updated_at IS NOT DISTINCT FROM $8::timestamptz RETURNING *`,
-          [...values, uuid(id), this.version(body)],
+        reference_url=$4,is_hidden=$5,is_default=$6,herbarium_name=CASE WHEN $8::boolean THEN $7 ELSE herbarium_name END,updated_at=clock_timestamp()
+        WHERE id=$9 AND updated_at IS NOT DISTINCT FROM $10::timestamptz RETURNING *`,
+          [
+            ...values,
+            Object.prototype.hasOwnProperty.call(body, 'herbarium_name'),
+            uuid(id),
+            this.version(body),
+          ],
         )
       : await this.pool.query(
           `INSERT INTO herbarium.species
-        (scientific_name,description,morphology,reference_url,is_hidden,is_default,id)
-        VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        (scientific_name,description,morphology,reference_url,is_hidden,is_default,herbarium_name,id)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
           [...values, randomUUID()],
         );
     if (!result.rowCount)
@@ -484,7 +492,7 @@ export class AdminDomainService {
   async speciesSelection(request: KeycloakRequest, query: Query) {
     const { organization, project } = await this.selectionScope(request, query);
     const result = await this.pool.query(
-      `SELECT ss.*,s.scientific_name,s.is_hidden FROM herbarium.species_selection ss
+      `SELECT ss.*,s.herbarium_name,s.scientific_name,s.is_hidden FROM herbarium.species_selection ss
       JOIN herbarium.species s ON s.id=ss.species_id WHERE ss.organization_id=$1
       AND (ss.project_id=$2 OR ss.project_id IS NULL) ORDER BY s.scientific_name`,
       [organization, project],
@@ -517,7 +525,7 @@ export class AdminDomainService {
         localNames: names.rows,
       };
     const defaults = await this.pool
-      .query(`SELECT id AS species_id,scientific_name,NULL::text AS local_name
+      .query(`SELECT id AS species_id,herbarium_name,scientific_name,NULL::text AS local_name
       FROM herbarium.species WHERE is_default AND NOT is_hidden ORDER BY scientific_name`);
     return {
       source: 'Default catalog',

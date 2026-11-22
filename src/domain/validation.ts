@@ -99,3 +99,15 @@ export function projectValues(body: Record<string, unknown>) {
     imageUrl(body.hero_image_url),
   ];
 }
+
+export function speciesNames(body: Record<string, unknown>, creating = false) {
+  const scientific_name = text(body.scientific_name, 'Latin name', false, 255);
+  const herbarium_name =
+    text(body.herbarium_name, 'Herbarium name', false, 8)?.toUpperCase() ??
+    null;
+  if (herbarium_name && !/^[A-Z]{8}$/.test(herbarium_name))
+    throw new DomainError(400, 'Herbarium name must contain exactly 8 letters');
+  if (creating && !scientific_name && !herbarium_name)
+    throw new DomainError(400, 'Enter a herbarium name or Latin name');
+  return { scientific_name, herbarium_name };
+}

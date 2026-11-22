@@ -42,7 +42,7 @@ Project and species-selection writes enforce their capabilities. User-permission
 
 Lists return rows and hasNext and accept page and size, with sizes 25, 50 or 100. Search and sort fields are allowlisted. Organization filters are UUIDs. Timestamp versions retain database microsecond precision. Species-selection replacement is transactional and serialized per scope.
 
-An empty project selection inherits organization selections. An empty organization selection inherits visible default species. Hiding species retains historical references. Project media uses URLs; binary upload storage is separate integration work.
+Inheritance uses an explicit scope setting: project → organization → visible defaults. A custom empty list stays empty; new projects start with an empty custom list. Hiding species retains historical references. Project media uses URLs; binary upload storage is separate integration work.
 
 ## Existing Stripe tiers
 
@@ -192,3 +192,9 @@ Measured in dev on disposable fixtures (25 captures, two tags): 258 transaction 
 Subscription plans combine these counts with the current Stripe-resolved tier and the configured plan catalog. Usage strictly above a limit is over quota; exactly at it is at quota. Unknown subscription/failed usage reads do not invent zero values or enforce an unknown quota. This adds usage presentation and upgrade guidance; server-side quota enforcement remains separate work.
 
 Dev disposable fixtures verified pending/rejected capture accounting, deduplication after approval, archived project counts, grower-link deduplication, and organization boundaries. No Stripe subscription was changed by the tests.
+
+## Independent botanical names
+
+Catalogue and selection responses expose `herbarium_name` separately from Latin `scientific_name`. Eight-letter codes are uppercase and unique; Latin names may be unknown or shared by historical distinct UUIDs. Original imported labels are read-only provenance. Search covers both fields. Apply Herbarium migration `20261122150000-separate-species-names` before this API. Omitted codes on older PATCH requests are preserved; explicit null clears the code. Conflicting editor versions and duplicate codes are rejected.
+
+BDD acceptance coverage: [bdd.md](bdd.md). Authoritative name-split ERD and migration notes are in Herbarium API `docs/species-names.md`.
