@@ -65,7 +65,16 @@ export async function saasUsers(pool: Pool, query: Record<string, unknown>) {
   const { size, offset } = paging(query);
   if (query.search)
     throw new DomainError(400, 'Use page-level filtering for SaaS user search');
-  const users = await listSaasAdministrators(offset, size + 1);
+  const users = await (async () => {
+    try {
+      return await listSaasAdministrators(offset, size + 1);
+    } catch {
+      throw new DomainError(
+        503,
+        'Keycloak user directory is unavailable. Check the local service-account credentials and directory read permissions.',
+      );
+    }
+  })();
   const ids = [
     ...new Set(
       users
@@ -103,7 +112,7 @@ export async function saasUsers(pool: Pool, query: Record<string, unknown>) {
           ? new Date(user.createdTimestamp).toISOString()
           : null,
         subscription: id
-          ? (billing.get(id) ?? { status: 'Membership unresolved', plan: null })
+          ? billing.get(id) ?? { status: 'Membership unresolved', plan: null }
           : { status: 'No organization', plan: null },
       };
     }),

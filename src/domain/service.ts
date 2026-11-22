@@ -225,6 +225,7 @@ export class AdminDomainService {
         FROM field_data.session_segment WHERE session_id=s.id) a
       WHERE ($1::uuid IS NULL OR o.id=$1)
         AND ($5::uuid IS NULL OR g.id=$5)
+        AND ($6::uuid IS NULL OR s.id=$6)
         AND ($2='' OR strpos(lower(concat_ws(' ',g.first_name,g.last_name,o.org_name,p.name,s.id::text)),$2)>0)
       ORDER BY ${sort} ${direction} NULLS LAST,s.id LIMIT $3 OFFSET $4`,
       [
@@ -233,6 +234,7 @@ export class AdminDomainService {
         size + 1,
         offset,
         query.growerId ? uuid(query.growerId, 'Grower') : null,
+        query.sessionId ? uuid(query.sessionId, 'Session') : null,
       ],
     );
     return this.page(result.rows, size);
@@ -255,7 +257,11 @@ export class AdminDomainService {
       `WITH chosen AS MATERIALIZED (
       SELECT g.id,g.first_name,g.last_name,g.phone,g.email,g.image_url,g.status,
         row_number() OVER (ORDER BY ${sort} ${direction} NULLS LAST,g.id) AS sort_position,
-        COALESCE(g.first_registration_at,g.created_at) AS registered_at,o.org_name AS organization_name
+        COALESCE(g.first_registration_at,g.created_at) AS registered_at,o.org_name AS organization_name,
+        CASE WHEN $1::uuid IS NULL THEN NULL WHEN g.organization_id=$1 THEN 'Primary membership'
+          WHEN EXISTS(SELECT 1 FROM stakeholder.project_grower a JOIN stakeholder.project ap ON ap.id=a.project_id
+            WHERE a.grower_account_id=g.id AND ap.organization_id=$1 AND a.left_at IS NULL) THEN 'Project assignment'
+          ELSE 'Session link' END AS association
       FROM treetracker.grower_account g LEFT JOIN stakeholder.stakeholder o ON o.id=g.organization_id
       WHERE ($1::uuid IS NULL OR g.organization_id=$1
         OR EXISTS(SELECT 1 FROM stakeholder.project_grower pg JOIN stakeholder.project p ON p.id=pg.project_id
@@ -284,11 +290,11 @@ export class AdminDomainService {
     );
     return this.page(result.rows, size);
   }
-  async growerAccount(request: KeycloakRequest, id: string) {
-    const scope = await this.organization(request);
+  async growerAccount(request: KeycloakRequest, id: string, query: Query = {}) {
+    const scope = await this.organization(request, query.organizationId);
     const account = await this.pool.query(
       `SELECT g.id,g.first_name,g.last_name,g.email,g.phone,g.wallet,
-      g.image_url,g.image_rotation,g.status,g.about,g.first_registration_at,g.created_at,g.updated_at,g.lat,g.lon,
+      g.image_url,g.image_rotation,g.status,g.about,g.first_registration_at,g.created_at,g.updated_at::text AS updated_at,g.organization_id,g.lat,g.lon,
       o.org_name AS organization_name
       FROM treetracker.grower_account g LEFT JOIN stakeholder.stakeholder o ON o.id=g.organization_id
       WHERE g.id=$1 AND ($2::uuid IS NULL OR g.organization_id=$2

@@ -242,3 +242,19 @@ describe('Grower account organization boundaries', () => {
     expect(query.mock.calls[2][0]).toContain('field_data.device_configuration');
   });
 });
+
+describe('Exact session lookup for verification', () => {
+  it('keeps organization scope and validates a session UUID', async () => {
+    const query = jest.fn().mockResolvedValue({ rows: [] });
+    const service = new AdminDomainService(({ query } as unknown) as Pool);
+    jest.spyOn(service, 'organization').mockResolvedValue(own);
+    await service.sessions(orgUser, { sessionId: other });
+    expect(query.mock.calls[0][1][0]).toBe(own);
+    expect(query.mock.calls[0][1][5]).toBe(other);
+    query.mockClear();
+    await expect(
+      service.sessions(orgUser, { sessionId: 'invalid' }),
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(query).not.toHaveBeenCalled();
+  });
+});

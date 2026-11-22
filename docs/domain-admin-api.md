@@ -124,3 +124,33 @@ GET /api/admin-domain/growers/:id reads treetracker.grower_account with organiza
 ## Growers list migration
 
 GET /api/admin-domain/growers replaces the local panel's legacy planter list with treetracker.grower_account reads. Organization boundaries include the account's organization, active stakeholder.project_grower assignments and explicitly scoped field_data.session activity. Server-side search, whitelisted sorts and pagination are supported. Capture metrics combine linked raw verification states and active processed captures without double-counting capture IDs; unavailable review state is explicit. GET /sessions supports a UUID growerId filter for account session history. No public.planter/entity tables or schema extensions are used.
+
+## NDM verification and grower membership audit
+
+`GET /verification` reads `field_data.raw_capture` in its session's resolved Stakeholder organization. `POST /verification` checks `verify_captures`, locks the batch, checks exact capture versions, and records the authenticated reviewer in `field_data.capture_verification`. Approval creates `treetracker.capture` plus NDM tags and a raised `CaptureCreated` domain event. Rejection requires a reason. Requests are idempotent and a conflict rolls back the whole batch. No legacy tree writes occur.
+
+**Matching limitation:** the local integration records a raised event but does not publish it to the capture-created queue. Deployment still requires an outbox publisher/service integration. Approval alone does not set `tree_id` or create a tree.
+
+`GET /sessions?sessionId=<UUID>` returns exact, organization-scoped session statistics for the verification sidebar. Counts cover the entire session, independent of the queue's page and status filter; captures present in both raw and processed tables are counted once. Missing review status is reported separately. Capture span is the first-to-last capture interval; area comes from session segment geometry.
+
+`GET /projects/:id/growers` lists current/former project members and eligible organization growers. `POST /projects/:id/growers/:growerId` accepts `action` (`assign`/`remove`), `joined_at` (exact version or null for never assigned), `reason`, and `requestId`. Requires `manage_projects`; organization membership must be primary or an active `grower_account_org` link. A session-only association is insufficient. New assignments require an active project. Removing a grower sets `left_at`; reassignment starts a new membership interval. It never changes historical session/capture ownership or other project memberships.
+
+`GET /projects/:id/grower-history` pages the append-only application trail: actor UUID/name, timestamp, action, reason, previous membership dates, and source. Original memberships have no invented historical actor. The `stakeholder.project_grower_event` migration is required before enabling writes.
+
+Platform-only `POST /growers/:id/organization` changes current primary organization, maintains NDM organization links, closes active project memberships in the old primary organization, and writes both `treetracker.grower_organization_transfer` and per-project removal events. The real authenticated actor and mandatory reason are retained. Historical sessions, captures, contracts, payments, Keycloak users and Stripe associations are unchanged. Both membership operations lock the grower before membership rows so transfers and assignments serialize.
+
+Required schema migrations: Field Data `20261122100000-capture-verification-audit`, Treetracker `20261122110000-grower-organization-transfer-audit`, Stakeholder `20261122120000-project-grower-audit`. Applied and exercised with disposable fixtures in dev; no production migration has been run.
+
+```mermaid
+erDiagram
+    stakeholder_project ||--o{ project_grower : current_membership
+    treetracker_grower_account ||--o{ project_grower : participates
+    stakeholder_project ||--o{ project_grower_event : history
+    treetracker_grower_account ||--o{ project_grower_event : subject
+    treetracker_grower_account ||--o{ grower_organization_transfer : transfers
+    field_data_raw_capture ||--o{ capture_verification : review_history
+    field_data_session ||--o{ field_data_raw_capture : contains
+    field_data_raw_capture ||--o| treetracker_capture : approved_as
+```
+
+Keycloak directory access uses server-only service-account credentials; human `greenstand-admin` grants app access but does not automatically grant the backend Keycloak Admin API permissions. Directory failures return an explicit service error, not an empty user list.

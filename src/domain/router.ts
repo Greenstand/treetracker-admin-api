@@ -8,6 +8,13 @@ import { DomainError } from './validation';
 import { subscriptionPlanCatalog } from './plans';
 import { members, saveMember } from './members';
 import { billingStatus, openBilling } from './checkout';
+import { verificationQueue, verifyCaptures } from './verification';
+import {
+  projectGrowers,
+  projectGrowerHistory,
+  changeProjectGrower,
+} from './projectGrowers';
+import { growerTransfers, transferGrower } from './growerTransfer';
 
 export function createDomainRouter(service: AdminDomainService) {
   const router = express.Router();
@@ -86,12 +93,52 @@ export function createDomainRouter(service: AdminDomainService) {
     route((req) => service.saveProject(req, req.params.id, req.body)),
   );
   router.get(
+    '/projects/:id/growers',
+    route((req) => projectGrowers(service, req, req.params.id, req.query)),
+  );
+  router.get(
+    '/projects/:id/grower-history',
+    route((req) =>
+      projectGrowerHistory(service, req, req.params.id, req.query),
+    ),
+  );
+  router.post(
+    '/projects/:id/growers/:growerId',
+    route((req) =>
+      changeProjectGrower(
+        service,
+        req,
+        req.params.id,
+        req.params.growerId,
+        req.body,
+      ),
+    ),
+  );
+  router.get(
+    '/verification',
+    route((req) => verificationQueue(service, req, req.query)),
+  );
+  router.post(
+    '/verification',
+    route((req) => verifyCaptures(service, req, req.body)),
+  );
+  router.get(
+    '/growers/:id/organization-history',
+    platform,
+    route((req) => growerTransfers(service, req, req.params.id)),
+  );
+  router.post(
+    '/growers/:id/organization',
+    platform,
+    route((req) => transferGrower(service, req, req.params.id, req.body)),
+  );
+  router.get(
     '/growers',
     route((req) => service.growers(req, req.query)),
   );
   router.get(
     '/growers/:id',
-    route((req) => service.growerAccount(req, req.params.id)),
+    route((req) => service.growerAccount(req, req.params.id, req.query)),
   );
   router.get(
     '/sessions',
