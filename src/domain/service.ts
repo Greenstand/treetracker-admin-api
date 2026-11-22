@@ -1,3 +1,4 @@
+import { effectiveSpecies } from './speciesChoices';
 import { Pool } from 'pg';
 import { randomUUID } from 'crypto';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
@@ -424,6 +425,48 @@ export class AdminDomainService {
       [uuid(id), scope],
     );
     return { rows: result.rows };
+  }
+  async speciesChoices(request: KeycloakRequest, query: Query) {
+    const organization = await this.organization(
+      request,
+      query.organizationId,
+      true,
+    );
+    const projects = query.projectIds
+      ? String(query.projectIds)
+          .split(',')
+          .map((id) => (id === 'none' ? null : uuid(id, 'Project')))
+      : [null];
+    if (projects.length > 100)
+      throw new DomainError(400, 'Too many project scopes');
+    for (const projectId of new Set(projects)) {
+      if (projectId)
+        await this.selectionScope(request, {
+          organizationId: organization,
+          projectId,
+        });
+    }
+    const rows = await effectiveSpecies(
+      this.pool,
+      projects.map((project_id) => ({
+        organization_id: organization!,
+        project_id,
+      })),
+    );
+    const search = (
+      text(query.search, 'Search', false, 160) ?? ''
+    ).toLowerCase();
+    return {
+      rows: rows.filter(
+        (row) =>
+          !search ||
+          [row.herbarium_name, row.scientific_name]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase()
+            .includes(search),
+      ),
+    };
   }
   async species(query: Query) {
     const { size, offset } = paging(query),

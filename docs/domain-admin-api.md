@@ -198,3 +198,9 @@ Dev disposable fixtures verified pending/rejected capture accounting, deduplicat
 Catalogue and selection responses expose `herbarium_name` separately from Latin `scientific_name`. Eight-letter codes are uppercase and unique; Latin names may be unknown or shared by historical distinct UUIDs. Original imported labels are read-only provenance. Search covers both fields. Apply Herbarium migration `20261122150000-separate-species-names` before this API. Omitted codes on older PATCH requests are preserved; explicit null clears the code. Conflicting editor versions and duplicate codes are rejected.
 
 BDD acceptance coverage: [bdd.md](bdd.md). Authoritative name-split ERD and migration notes are in Herbarium API `docs/species-names.md`.
+
+## Effective species choices
+
+`GET /species-choices` resolves the caller's organization and validates all supplied project UUIDs (`projectIds` comma-separated; `none` means organization scope). It returns the intersection of effective project → organization → default allocations, preserving explicitly empty overrides. The global `/species` endpoint remains available for allocating catalogue species. Verification approvals resolve contexts from locked raw captures and sessions, then reject species outside any effective allocation. Client filtering alone is not the enforcement boundary. No schema changes are needed.
+
+Guarded dev transaction checks passed for defaults, empty organization scope, selected organization scope, inherited project, empty project override, project allocation and mixed-scope intersection. Fixtures were rolled back. Service tests cover missing context and foreign-project rejection; browser check confirmed ESEA's one permitted species.

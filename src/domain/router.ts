@@ -46,15 +46,17 @@ export function createDomainRouter(service: AdminDomainService) {
       return next(new DomainError(403, 'Platform admin access is required'));
     next();
   };
-  const route = (
-    handler: (request: KeycloakRequest) => Promise<unknown>,
-    created = false,
-  ) => (request: Request, response: Response, next: NextFunction) => {
-    Promise.resolve()
-      .then(() => handler(request))
-      .then((result) => response.status(created ? 201 : 200).json(result))
-      .catch(next);
-  };
+  const route =
+    (
+      handler: (request: KeycloakRequest) => Promise<unknown>,
+      created = false,
+    ) =>
+    (request: Request, response: Response, next: NextFunction) => {
+      Promise.resolve()
+        .then(() => handler(request))
+        .then((result) => response.status(created ? 201 : 200).json(result))
+        .catch(next);
+    };
   router.get(
     '/context',
     route(async (req) => {
@@ -174,6 +176,10 @@ export function createDomainRouter(service: AdminDomainService) {
   router.get(
     '/contracts/:id/documents',
     route((req) => service.contractDocuments(req, req.params.id)),
+  );
+  router.get(
+    '/species-choices',
+    route((req) => service.speciesChoices(req, req.query)),
   );
   router.get(
     '/species',

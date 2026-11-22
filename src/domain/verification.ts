@@ -1,3 +1,4 @@
+import { effectiveSpecies } from './speciesChoices';
 import { createHash, randomUUID } from 'crypto';
 import { AdminDomainService } from './service';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
@@ -150,7 +151,7 @@ export async function verifyCaptures(
     const rows = await c.query(
       `SELECT r.*,r.updated_at::text AS version,
       (r.updated_at IS NOT DISTINCT FROM wanted.updated_at) AS version_matches,
-      s.device_configuration_id,w.grower_account_id,o.id AS organization_id
+      s.device_configuration_id,s.project_id,w.grower_account_id,o.id AS organization_id
       FROM jsonb_to_recordset($1::jsonb) AS wanted(id uuid,updated_at timestamptz)
       JOIN field_data.raw_capture r ON r.id=wanted.id JOIN field_data.session s ON s.id=r.session_id
       JOIN stakeholder.stakeholder o ON lower(o.type)='organization' AND (s.organization_id=o.id::text OR s.organization_id=o.entity_id::text)
@@ -185,16 +186,20 @@ export async function verifyCaptures(
         409,
         'A selected capture is already processed and needs reconciliation',
       );
-    if (
-      input.annotations.species_id &&
-      !(
-        await c.query(
-          'SELECT id FROM herbarium.species WHERE id=$1 AND NOT is_hidden',
-          [input.annotations.species_id],
-        )
-      ).rowCount
-    )
-      throw new DomainError(400, 'Species is unavailable');
+    if (input.decision === 'approved' && input.annotations.species_id) {
+      const allowed = await effectiveSpecies(
+        c,
+        rows.rows.map((row) => ({
+          organization_id: row.organization_id,
+          project_id: row.project_id ?? null,
+        })),
+      );
+      if (!allowed.some((row) => row.id === input.annotations.species_id))
+        throw new DomainError(
+          400,
+          'Species is not selected for every capture organization/project',
+        );
+    }
     if (input.decision === 'approved') {
       for (const row of rows.rows) {
         if (
