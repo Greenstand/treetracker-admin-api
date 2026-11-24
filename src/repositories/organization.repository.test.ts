@@ -38,6 +38,7 @@ describe('OrganizationRepository', () => {
         website: 'https://fcc.example.com',
         logo_url: 'https://fcc.example.com/logo.png',
         map_name: 'freetown',
+        location: 'Sierra Leone',
       },
     ]);
     const repository = buildRepository(execute);
@@ -49,10 +50,11 @@ describe('OrganizationRepository', () => {
       website: 'https://fcc.example.com',
       logoUrl: 'https://fcc.example.com/logo.png',
       mapName: 'freetown',
+      location: 'Sierra Leone',
     });
 
     expect(execute).toHaveBeenCalledWith(
-      'insert into entity (type, name, email, phone, pwd_reset_required, website, logo_url, map_name) values ($1, $2, $3, $4, $5, $6, $7, $8) returning *',
+      'insert into entity (type, name, email, phone, pwd_reset_required, website, logo_url, map_name, location) values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning *',
       [
         'O',
         'FCC',
@@ -62,6 +64,7 @@ describe('OrganizationRepository', () => {
         'https://fcc.example.com',
         'https://fcc.example.com/logo.png',
         'freetown',
+        'Sierra Leone',
       ],
       undefined,
     );
@@ -75,6 +78,7 @@ describe('OrganizationRepository', () => {
       website: 'https://fcc.example.com',
       logoUrl: 'https://fcc.example.com/logo.png',
       mapName: 'freetown',
+      location: 'Sierra Leone',
     });
   });
 
@@ -101,7 +105,7 @@ describe('OrganizationRepository', () => {
       undefined,
     );
     expect(findById).toHaveBeenCalledWith(178, undefined, undefined);
-    // updateOrganization returns convertCamel(...), a new object — compare by
+    // updateOrganization returns convertCamel(...), a new object, so compare by
     // value, not reference.
     expect(result).toEqual(updatedRow);
   });
@@ -114,10 +118,11 @@ describe('OrganizationRepository', () => {
     await repository.updateOrganization(178, {
       phone: '',
       website: '   ',
+      location: '  ',
     });
 
     expect(updateAll).toHaveBeenCalledWith(
-      { phone: null, website: null },
+      { phone: null, website: null, location: null },
       { id: 178, type: 'O' },
       undefined,
     );

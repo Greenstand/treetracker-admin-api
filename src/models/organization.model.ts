@@ -110,6 +110,12 @@ export class Organization extends Entity {
   })
   mapName: string;
 
+  @property({
+    type: String,
+    postgresql: { columnName: 'location', dataType: 'text' },
+  })
+  location: string;
+
   // NOTE: the `password` and `salt` columns are intentionally NOT mapped here
   // so they are never serialized over the API.
 

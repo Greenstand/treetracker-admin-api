@@ -12,12 +12,19 @@ export type CreateOrganizationData = {
   website?: string;
   logoUrl?: string;
   mapName?: string;
+  location?: string;
 };
 
 export type UpdateOrganizationData = Partial<CreateOrganizationData>;
 
 // Columns whose blank values should be stored as NULL rather than empty strings.
-const OPTIONAL_FIELDS = ['phone', 'website', 'logoUrl', 'mapName'] as const;
+const OPTIONAL_FIELDS = [
+  'phone',
+  'website',
+  'logoUrl',
+  'mapName',
+  'location',
+] as const;
 
 function normalizeRequiredValue(value: string): string {
   return value.trim();
@@ -77,6 +84,7 @@ export class OrganizationRepository extends DefaultCrudRepository<
       website: normalizeOptionalValue(organization.website),
       logoUrl: normalizeOptionalValue(organization.logoUrl),
       mapName: normalizeOptionalValue(organization.mapName),
+      location: normalizeOptionalValue(organization.location),
     });
 
     const dbEntries = Object.entries(dbOrganization);
