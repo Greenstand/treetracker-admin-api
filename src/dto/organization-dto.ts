@@ -57,6 +57,7 @@ const ORGANIZATION_PROPERTIES = {
   website: optionalUrlProperty('Website'),
   logoUrl: optionalUrlProperty('Logo URL'),
   mapName: optionalStringProperty('Map name'),
+  location: optionalStringProperty('Location'),
 };
 
 export const ORGANIZATION_REQUEST_SCHEMA: SchemaObject = {

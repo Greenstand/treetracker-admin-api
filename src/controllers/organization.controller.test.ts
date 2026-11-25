@@ -459,11 +459,13 @@ describe('OrganizationController', () => {
           website: 'https://fcc.example.com',
           logoUrl: '',
           mapName: 'freetown',
+          location: 'Sierra Leone',
         }),
       ).resolves.toMatchObject({
         name: 'FCC',
         phone: '+232 123 4567',
         website: 'https://fcc.example.com',
+        location: 'Sierra Leone',
       });
     });
 
@@ -476,6 +478,7 @@ describe('OrganizationController', () => {
           website: '',
           logoUrl: '',
           mapName: '',
+          location: '',
         }),
       ).resolves.toMatchObject({
         name: 'FCC',
@@ -483,6 +486,7 @@ describe('OrganizationController', () => {
         website: '',
         logoUrl: '',
         mapName: '',
+        location: '',
       });
     });
 
