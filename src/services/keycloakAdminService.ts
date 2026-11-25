@@ -137,16 +137,31 @@ export async function getUserById(
 const BINDING_ORGANIZATION_ATTRIBUTE = 'organization_binding_request';
 const BINDING_STATUS_ATTRIBUTE = 'organization_binding_status';
 
+// Proposed values live on the request until approval writes them to the entity.
+const BINDING_FIELD_ATTRIBUTES = {
+  phone: 'organization_binding_phone',
+  email: 'organization_binding_email',
+  location: 'organization_binding_location',
+} as const;
+
+type BindingField = keyof typeof BINDING_FIELD_ATTRIBUTES;
+
+export type OrganizationBindingFields = Partial<Record<BindingField, string>>;
+
 export type BindingStatus = 'pending' | 'rejected';
 
 export interface OrganizationBinding {
   organizationId: number;
   status: BindingStatus;
+  proposed: OrganizationBindingFields;
 }
 
 export interface BindingRequest extends OrganizationBinding {
   userId: string;
   username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }
 
 // Keycloak replaces the whole attribute map on update, so read first and merge.
@@ -185,26 +200,54 @@ function readBinding(
     return null;
   }
 
-  return { organizationId, status };
+  const proposed: OrganizationBindingFields = {};
+  for (const [field, attribute] of Object.entries(BINDING_FIELD_ATTRIBUTES)) {
+    const value = (attributes?.[attribute] as string[])?.[0];
+    if (value) {
+      proposed[field as BindingField] = value;
+    }
+  }
+
+  return { organizationId, status, proposed };
 }
 
 export async function requestOrganizationBinding(
   userId: string,
   organizationId: number,
-): Promise<void> {
-  await updateAttributes(userId, {
+  proposed: OrganizationBindingFields = {},
+): Promise<OrganizationBinding> {
+  const changes: Record<string, string | null> = {
     [BINDING_ORGANIZATION_ATTRIBUTE]: String(organizationId),
     [BINDING_STATUS_ATTRIBUTE]: 'pending',
-  });
+  };
+  const expected: OrganizationBindingFields = {};
+
+  for (const [field, attribute] of Object.entries(BINDING_FIELD_ATTRIBUTES)) {
+    const value = proposed[field as BindingField]?.trim();
+    // Null also clears a value left by an earlier request.
+    changes[attribute] = value || null;
+    if (value) {
+      expected[field as BindingField] = value;
+    }
+  }
+
+  await updateAttributes(userId, changes);
 
   // A realm that disallows unmanaged attributes drops these without an error,
   // which would leave the user waiting on a request nothing recorded.
   const stored = await getOrganizationBinding(userId);
-  if (stored?.organizationId !== organizationId) {
+  const fieldsStored = Object.keys(BINDING_FIELD_ATTRIBUTES).every(
+    (field) =>
+      stored?.proposed[field as BindingField] ===
+      expected[field as BindingField],
+  );
+  if (!stored || stored.organizationId !== organizationId || !fieldsStored) {
     throw new Error(
       'Keycloak did not store the binding request; the realm user profile rejects unmanaged attributes',
     );
   }
+
+  return stored;
 }
 
 export async function getOrganizationBinding(
@@ -240,6 +283,9 @@ export async function listPendingBindings(
             ...binding,
             userId: user.id as string,
             username: user.username ?? '',
+            email: user.email ?? '',
+            firstName: user.firstName ?? '',
+            lastName: user.lastName ?? '',
           },
         ]
       : [];
@@ -248,13 +294,26 @@ export async function listPendingBindings(
   return { total, requests };
 }
 
+function clearedFields(): Record<string, null> {
+  return Object.fromEntries(
+    Object.values(BINDING_FIELD_ATTRIBUTES).map((attribute) => [
+      attribute,
+      null,
+    ]),
+  );
+}
+
 export async function clearOrganizationBinding(userId: string): Promise<void> {
   await updateAttributes(userId, {
     [BINDING_ORGANIZATION_ATTRIBUTE]: null,
     [BINDING_STATUS_ATTRIBUTE]: null,
+    ...clearedFields(),
   });
 }
 
 export async function rejectOrganizationBinding(userId: string): Promise<void> {
-  await updateAttributes(userId, { [BINDING_STATUS_ATTRIBUTE]: 'rejected' });
+  await updateAttributes(userId, {
+    [BINDING_STATUS_ATTRIBUTE]: 'rejected',
+    ...clearedFields(),
+  });
 }

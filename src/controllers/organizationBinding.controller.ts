@@ -1,13 +1,22 @@
-import { get, post, param, HttpErrors, RestBindings } from '@loopback/rest';
+import {
+  get,
+  post,
+  param,
+  requestBody,
+  HttpErrors,
+  RestBindings,
+} from '@loopback/rest';
 import { inject } from '@loopback/context';
 import { repository } from '@loopback/repository';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
 import { requireRole } from '../interceptors/requireRole.interceptor';
 import { Role } from '../types/roles';
 import { OrganizationRepository } from '../repositories';
+import { ORGANIZATION_BINDING_REQUEST_SCHEMA } from '../dto/organization-dto';
 import {
   BindingRequest,
   OrganizationBinding,
+  OrganizationBindingFields,
   assignOrganizationRole,
   clearOrganizationBinding,
   getOrganizationBinding,
@@ -52,6 +61,15 @@ export class OrganizationBindingController {
   })
   async create(
     @param.path.number('id') id: number,
+    @requestBody({
+      required: false,
+      content: {
+        'application/json': {
+          schema: ORGANIZATION_BINDING_REQUEST_SCHEMA,
+        },
+      },
+    })
+    proposed: OrganizationBindingFields = {},
   ): Promise<OrganizationBinding> {
     if (this.hasOrganization()) {
       throw new HttpErrors.Forbidden('User already belongs to an organization');
@@ -59,9 +77,8 @@ export class OrganizationBindingController {
 
     // Raises 404 when the organization does not exist.
     await this.organizationRepository.findById(id);
-    await requestOrganizationBinding(this.currentUserId(), id);
 
-    return { organizationId: id, status: 'pending' };
+    return requestOrganizationBinding(this.currentUserId(), id, proposed);
   }
 
   @get('/organizations/binding-requests/me', { responses: BINDING_RESPONSE })
@@ -88,6 +105,20 @@ export class OrganizationBindingController {
     const binding = await getOrganizationBinding(userId);
     if (binding?.status !== 'pending') {
       throw new HttpErrors.NotFound('No pending request for this user');
+    }
+
+    // Before the binding, so a failed write leaves the request pending.
+    if (Object.keys(binding.proposed).length > 0) {
+      const updated = await this.organizationRepository.updateOrganization(
+        binding.organizationId,
+        binding.proposed,
+      );
+
+      if (!updated) {
+        throw new HttpErrors.NotFound(
+          `Organization ${binding.organizationId} not found`,
+        );
+      }
     }
 
     await setOrganizationClaim(userId, binding.organizationId);
