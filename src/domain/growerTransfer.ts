@@ -83,7 +83,14 @@ export async function transferGrower(
       if (prior.rows[0].request_hash !== hash)
         throw new DomainError(409, 'Request ID was already used');
       await c.query('COMMIT');
-      return { id: prior.rows[0].id, replayed: true };
+      const allocation = prior.rows[0].capture_allocation;
+      return {
+        id: prior.rows[0].id,
+        replayed: true,
+        allocatedSessions: allocation?.sessions?.length || 0,
+        allocatedCaptures: allocation?.captures?.length || 0,
+        allocatedRawCaptures: allocation?.raw_captures || 0,
+      };
     }
     const locked = await c.query(
       'SELECT id,organization_id FROM treetracker.grower_account WHERE id=$1 FOR UPDATE',
@@ -198,6 +205,7 @@ export async function transferGrower(
       closedAssignments: closed.rows.length,
       allocatedSessions: captureAllocation?.sessions.length || 0,
       allocatedCaptures: captureAllocation?.captures.length || 0,
+      allocatedRawCaptures: captureAllocation?.raw_captures || 0,
     };
   } catch (error) {
     await c.query('ROLLBACK');

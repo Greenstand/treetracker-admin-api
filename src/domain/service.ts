@@ -201,13 +201,16 @@ export class AdminDomainService {
     const direction = query.direction === 'asc' ? 'ASC' : 'DESC';
     const result = await this.pool.query(
       `SELECT s.id,s.project_id,s.start_time,s.created_at AS uploaded_at,s.processed_at,
-      o.id AS organization_id,o.org_name AS organization_name,p.name AS project_name,g.id AS grower_account_id,
+      o.id AS organization_id,
+      CASE WHEN nullif(btrim(s.organization_id),'') IS NULL THEN 'Unassigned'
+        WHEN o.id IS NULL THEN 'Unresolved organization' ELSE o.org_name END AS organization_name,
+      p.name AS project_name,g.id AS grower_account_id,
       nullif(trim(concat_ws(' ',g.first_name,g.last_name)),'') AS grower_name,
       m.*,a.area_sq_m,a.area_sq_m/4046.8564224 AS area_acres,
       CASE WHEN m.capture_count=0 THEN 'No captures' WHEN m.unknown>0 THEN 'Review unavailable' WHEN m.pending=0 THEN 'Reviewed' ELSE 'Awaiting review' END AS review_status
-      FROM field_data.session s JOIN stakeholder.stakeholder o ON lower(o.type)='organization'
+      FROM field_data.session s LEFT JOIN stakeholder.stakeholder o ON lower(o.type)='organization'
         AND (o.id::text=s.organization_id OR o.entity_id::text=s.organization_id)
-      LEFT JOIN stakeholder.project p ON p.id=s.project_id AND p.organization_id=o.id
+      LEFT JOIN stakeholder.project p ON p.id=s.project_id AND (o.id IS NULL OR p.organization_id=o.id)
       LEFT JOIN field_data.wallet_registration w ON w.id=s.originating_wallet_registration_id
       LEFT JOIN treetracker.grower_account g ON g.id=w.grower_account_id
       CROSS JOIN LATERAL(SELECT count(*) AS capture_count,
@@ -340,7 +343,7 @@ export class AdminDomainService {
   async sessionMap(request: KeycloakRequest, id: string) {
     const scope = await this.organization(request);
     const session = await this.pool.query(
-      `SELECT o.id AS organization_id FROM field_data.session s JOIN stakeholder.stakeholder o
+      `SELECT o.id AS organization_id FROM field_data.session s LEFT JOIN stakeholder.stakeholder o
        ON lower(o.type)='organization' AND (o.id::text=s.organization_id OR o.entity_id::text=s.organization_id)
        WHERE s.id=$1 AND ($2::uuid IS NULL OR o.id=$2)`,
       [uuid(id), scope],
@@ -372,7 +375,7 @@ export class AdminDomainService {
   async sessionDetail(request: KeycloakRequest, id: string) {
     const scope = await this.organization(request);
     const session = await this.pool.query(
-      `SELECT s.id,o.id AS organization_id FROM field_data.session s JOIN stakeholder.stakeholder o
+      `SELECT s.id,o.id AS organization_id FROM field_data.session s LEFT JOIN stakeholder.stakeholder o
       ON lower(o.type)='organization' AND (o.id::text=s.organization_id OR o.entity_id::text=s.organization_id)
       WHERE s.id=$1 AND ($2::uuid IS NULL OR o.id=$2)`,
       [uuid(id), scope],

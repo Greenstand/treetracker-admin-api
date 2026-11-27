@@ -3,9 +3,9 @@ import { AdminDomainService } from './service';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
 import { DomainError, paging, text, uuid } from './validation';
 type Input = Record<string, unknown>;
-const sessionSql = `SELECT s.id,s.project_id,o.id AS organization_id,o.org_name AS organization_name,p.name AS project_name,
+const sessionSql = `SELECT s.id,s.project_id,o.id AS organization_id,COALESCE(o.org_name,'Unassigned / unresolved') AS organization_name,p.name AS project_name,
   (SELECT h.id FROM field_data.session_project_event h WHERE h.session_id=s.id ORDER BY h.created_at DESC,h.id DESC LIMIT 1) AS allocation_event_id
-  FROM field_data.session s JOIN stakeholder.stakeholder o ON lower(o.type)='organization'
+  FROM field_data.session s LEFT JOIN stakeholder.stakeholder o ON lower(o.type)='organization'
   AND (s.organization_id=o.id::text OR s.organization_id=o.entity_id::text)
   LEFT JOIN stakeholder.project p ON p.id=s.project_id AND p.organization_id=o.id
   WHERE s.id=$1 AND ($2::uuid IS NULL OR o.id=$2)`;
@@ -91,6 +91,11 @@ export async function changeSessionProject(
     ]);
     if (!locked.rowCount) throw new DomainError(404, 'Session not found');
     const row = locked.rows[0];
+    if (!row.organization_id)
+      throw new DomainError(
+        409,
+        'Allocate the session to an organization from the grower profile before choosing a project',
+      );
     await service.requirePermission(
       request,
       row.organization_id,
