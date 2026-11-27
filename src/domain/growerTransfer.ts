@@ -40,6 +40,12 @@ export async function transferGrower(
     target = uuid(body.organization_id, 'Organization'),
     requestId = uuid(body.requestId, 'Request');
   const allocate = body.allocate_unassigned === true;
+  const includeExisting = body.reallocate_existing === true;
+  if (includeExisting && !allocate)
+    throw new DomainError(
+      400,
+      'Confirm capture allocation before reassigning owned observations',
+    );
   const project = body.project_id ? uuid(body.project_id, 'Project') : null;
   if (project && !allocate)
     throw new DomainError(
@@ -59,6 +65,7 @@ export async function transferGrower(
         allocate,
         project,
         allocationVersion: body.expected_allocation,
+        includeExisting,
       }),
     )
     .digest('hex');
@@ -136,6 +143,7 @@ export async function transferGrower(
           target,
           project,
           body.expected_allocation,
+          includeExisting,
         )
       : null;
     if (
