@@ -24,6 +24,7 @@ jest.mock('../services/keycloakAdminService', () => ({
 describe('OrganizationBindingController', () => {
   const organizationRepository = {
     findById: jest.fn(),
+    updateOrganization: jest.fn(),
   } as unknown as OrganizationRepository;
 
   const controllerFor = (user: KeycloakRequest['user']) =>
@@ -40,13 +41,36 @@ describe('OrganizationBindingController', () => {
 
   it('records a pending request for a user without an organization', async () => {
     (organizationRepository.findById as jest.Mock).mockResolvedValue({ id: 7 });
+    const binding = { organizationId: 7, status: 'pending', proposed: {} };
+    (requestOrganizationBinding as jest.Mock).mockResolvedValue(binding);
 
     const result = await controllerFor(
       outsider as KeycloakRequest['user'],
     ).create(7);
 
-    expect(requestOrganizationBinding).toHaveBeenCalledWith('user-1', 7);
-    expect(result).toEqual({ organizationId: 7, status: 'pending' });
+    expect(requestOrganizationBinding).toHaveBeenCalledWith('user-1', 7, {});
+    expect(result).toEqual(binding);
+  });
+
+  it('passes the proposed organization fields through', async () => {
+    (organizationRepository.findById as jest.Mock).mockResolvedValue({ id: 7 });
+    const proposed = { phone: '+1 555 0100', location: 'Kenya' };
+    (requestOrganizationBinding as jest.Mock).mockResolvedValue({
+      organizationId: 7,
+      status: 'pending',
+      proposed,
+    });
+
+    await controllerFor(outsider as KeycloakRequest['user']).create(
+      7,
+      proposed,
+    );
+
+    expect(requestOrganizationBinding).toHaveBeenCalledWith(
+      'user-1',
+      7,
+      proposed,
+    );
   });
 
   it('rejects users who already belong to an organization', async () => {
@@ -60,6 +84,7 @@ describe('OrganizationBindingController', () => {
     (getOrganizationBinding as jest.Mock).mockResolvedValue({
       organizationId: 7,
       status: 'pending',
+      proposed: {},
     });
 
     await controllerFor(outsider as KeycloakRequest['user']).approve('user-2');
@@ -67,12 +92,51 @@ describe('OrganizationBindingController', () => {
     expect(setOrganizationClaim).toHaveBeenCalledWith('user-2', 7);
     expect(assignOrganizationRole).toHaveBeenCalledWith('user-2');
     expect(clearOrganizationBinding).toHaveBeenCalledWith('user-2');
+    expect(organizationRepository.updateOrganization).not.toHaveBeenCalled();
+  });
+
+  it('writes the proposed fields to the organization on approval', async () => {
+    const proposed = { phone: '+1 555 0100', location: 'Kenya' };
+    (getOrganizationBinding as jest.Mock).mockResolvedValue({
+      organizationId: 7,
+      status: 'pending',
+      proposed,
+    });
+    (organizationRepository.updateOrganization as jest.Mock).mockResolvedValue({
+      id: 7,
+    });
+
+    await controllerFor(outsider as KeycloakRequest['user']).approve('user-2');
+
+    expect(organizationRepository.updateOrganization).toHaveBeenCalledWith(
+      7,
+      proposed,
+    );
+    expect(setOrganizationClaim).toHaveBeenCalledWith('user-2', 7);
+  });
+
+  it('leaves the request pending when the organization write fails', async () => {
+    (getOrganizationBinding as jest.Mock).mockResolvedValue({
+      organizationId: 7,
+      status: 'pending',
+      proposed: { phone: '+1 555 0100' },
+    });
+    (organizationRepository.updateOrganization as jest.Mock).mockResolvedValue(
+      null,
+    );
+
+    await expect(
+      controllerFor(outsider as KeycloakRequest['user']).approve('user-2'),
+    ).rejects.toThrow('Organization 7 not found');
+    expect(setOrganizationClaim).not.toHaveBeenCalled();
+    expect(clearOrganizationBinding).not.toHaveBeenCalled();
   });
 
   it('leaves the role alone on rejection', async () => {
     (getOrganizationBinding as jest.Mock).mockResolvedValue({
       organizationId: 7,
       status: 'pending',
+      proposed: {},
     });
 
     await controllerFor(outsider as KeycloakRequest['user']).reject('user-2');
@@ -99,6 +163,10 @@ describe('OrganizationBindingController', () => {
           username: 'u2',
           organizationId: 7,
           status: 'pending',
+          proposed: { phone: '+1 555 0100' },
+          email: 'u2@example.org',
+          firstName: 'U',
+          lastName: 'Two',
         },
       ],
     };

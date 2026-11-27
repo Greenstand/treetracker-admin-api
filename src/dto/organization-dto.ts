@@ -60,6 +60,20 @@ const ORGANIZATION_PROPERTIES = {
   location: optionalStringProperty('Location'),
 };
 
+// An empty body means the request proposes no change.
+export const ORGANIZATION_BINDING_REQUEST_SCHEMA: SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    phone: ORGANIZATION_PROPERTIES.phone,
+    email: ORGANIZATION_PROPERTIES.email,
+    location: ORGANIZATION_PROPERTIES.location,
+  },
+  errorMessage: {
+    additionalProperties: 'Only supported organization fields are allowed',
+  },
+};
+
 export const ORGANIZATION_REQUEST_SCHEMA: SchemaObject = {
   type: 'object',
   required: ['name', 'email'],
