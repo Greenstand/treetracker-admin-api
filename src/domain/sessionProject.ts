@@ -41,6 +41,16 @@ export async function changeSessionProject(
   id: string,
   body: Input,
 ) {
+  // Session organization/project ownership is an existing allocation, even when project_id is null.
+  if (
+    !request.user?.policy.policies.some(
+      (role) => role.name === 'greenstand-admin',
+    )
+  )
+    throw new DomainError(
+      403,
+      'Only Greenstand administrators can change an existing session allocation',
+    );
   const scope = await service.organization(request, body.organizationId),
     session = uuid(id, 'Session'),
     actor = uuid(request.user?.id, 'Administrator'),

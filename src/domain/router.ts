@@ -17,6 +17,7 @@ import {
 import { subscriptionUsage } from './subscriptionUsage';
 import { captureTags } from './captureTags';
 import { sessionProject, changeSessionProject } from './sessionProject';
+import { allocationPreview } from './growerAllocation';
 import { growerTransfers, transferGrower } from './growerTransfer';
 
 export function createDomainRouter(service: AdminDomainService) {
@@ -130,6 +131,11 @@ export function createDomainRouter(service: AdminDomainService) {
   router.post(
     '/verification',
     route((req) => verifyCaptures(service, req, req.body)),
+  );
+  router.get(
+    '/growers/:id/allocation-preview',
+    platform,
+    route((req) => allocationPreview(service, req, req.params.id, req.query)),
   );
   router.get(
     '/growers/:id/organization-history',

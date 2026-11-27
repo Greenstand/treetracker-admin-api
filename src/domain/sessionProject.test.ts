@@ -4,11 +4,11 @@ import { AdminDomainService } from './service';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
 const id = '11111111-2222-4333-8444-555555555555';
 const request = {
-  user: { id, policy: { policies: [{ name: 'org' }] } },
+  user: { id, policy: { policies: [{ name: 'greenstand-admin' }] } },
 } as KeycloakRequest;
 it('hides sessions outside the resolved organization', async () => {
   const query = jest.fn().mockResolvedValue({ rows: [], rowCount: 0 });
-  const service = new AdminDomainService(({ query } as unknown) as Pool);
+  const service = new AdminDomainService({ query } as unknown as Pool);
   jest.spyOn(service, 'organization').mockResolvedValue(id);
   await expect(sessionProject(service, request, id, {})).rejects.toMatchObject({
     statusCode: 404,
@@ -18,7 +18,7 @@ it('hides sessions outside the resolved organization', async () => {
 });
 it('requires the allocation version and a reason before a write transaction', async () => {
   const connect = jest.fn();
-  const service = new AdminDomainService(({ connect } as unknown) as Pool);
+  const service = new AdminDomainService({ connect } as unknown as Pool);
   jest.spyOn(service, 'organization').mockResolvedValue(id);
   const base = {
     requestId: id,
@@ -39,16 +39,14 @@ it('requires the allocation version and a reason before a write transaction', as
   expect(connect).not.toHaveBeenCalled();
 });
 it('denies verification-only staff and rolls back before changing allocation', async () => {
-  const query = jest
-    .fn()
-    .mockResolvedValue({
-      rows: [{ organization_id: id, project_id: null }],
-      rowCount: 1,
-    });
+  const query = jest.fn().mockResolvedValue({
+    rows: [{ organization_id: id, project_id: null }],
+    rowCount: 1,
+  });
   const release = jest.fn();
-  const service = new AdminDomainService(({
+  const service = new AdminDomainService({
     connect: jest.fn().mockResolvedValue({ query, release }),
-  } as unknown) as Pool);
+  } as unknown as Pool);
   jest.spyOn(service, 'organization').mockResolvedValue(id);
   jest
     .spyOn(service, 'requirePermission')
@@ -67,4 +65,16 @@ it('denies verification-only staff and rolls back before changing allocation', a
     query.mock.calls.some((call) => String(call[0]).startsWith('UPDATE')),
   ).toBe(false);
   expect(release).toHaveBeenCalled();
+});
+
+it('denies organization project managers before opening a transaction', async () => {
+  const connect = jest.fn();
+  const service = new AdminDomainService({ connect } as unknown as Pool);
+  const member = {
+    user: { id, policy: { policies: [{ name: 'org-admin-saas' }] } },
+  } as KeycloakRequest;
+  await expect(
+    changeSessionProject(service, member, id, {}),
+  ).rejects.toMatchObject({ statusCode: 403 });
+  expect(connect).not.toHaveBeenCalled();
 });

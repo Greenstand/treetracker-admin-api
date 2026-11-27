@@ -1,3 +1,4 @@
+import { allocateUnassigned } from './growerAllocation';
 import { createHash, randomUUID } from 'crypto';
 import { AdminDomainService } from './service';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
@@ -14,6 +15,11 @@ export async function growerTransfers(
   platform(request);
   const r = await service.pool.query(
     `SELECT h.id,h.previous_organization_id,h.new_organization_id,h.administrator_id,h.administrator_name,h.reason,h.created_at,h.closed_project_ids,
+    CASE WHEN jsonb_typeof(h.capture_allocation)='object' THEN jsonb_build_object(
+      'project_id',h.capture_allocation->'project_id',
+      'session_count',jsonb_array_length(h.capture_allocation->'sessions'),
+      'capture_count',jsonb_array_length(h.capture_allocation->'captures'),
+      'raw_captures',h.capture_allocation->'raw_captures') ELSE NULL END AS capture_allocation,
     old.org_name AS previous_organization_name,target.org_name AS new_organization_name
     FROM treetracker.grower_organization_transfer h LEFT JOIN stakeholder.stakeholder old ON old.id=h.previous_organization_id
     LEFT JOIN stakeholder.stakeholder target ON target.id=h.new_organization_id
@@ -33,10 +39,28 @@ export async function transferGrower(
     grower = uuid(id, 'Grower'),
     target = uuid(body.organization_id, 'Organization'),
     requestId = uuid(body.requestId, 'Request');
+  const allocate = body.allocate_unassigned === true;
+  const project = body.project_id ? uuid(body.project_id, 'Project') : null;
+  if (project && !allocate)
+    throw new DomainError(
+      400,
+      'Confirm capture allocation before choosing a project',
+    );
   const reason = text(body.reason, 'Transfer reason', true, 1000),
     version = service.version(body);
   const hash = createHash('sha256')
-    .update(JSON.stringify({ actor, grower, target, reason, version }))
+    .update(
+      JSON.stringify({
+        actor,
+        grower,
+        target,
+        reason,
+        version,
+        allocate,
+        project,
+        allocationVersion: body.expected_allocation,
+      }),
+    )
     .digest('hex');
   const c = await service.pool.connect();
   try {
@@ -61,7 +85,7 @@ export async function transferGrower(
     if (!locked.rowCount)
       throw new DomainError(404, 'Grower account not found');
     const old = locked.rows[0].organization_id;
-    if (old === target)
+    if (old === target && !allocate)
       throw new DomainError(409, 'Grower already belongs to this organization');
     if (
       !(
@@ -78,7 +102,7 @@ export async function transferGrower(
     );
     if (!updated.rowCount)
       throw new DomainError(409, 'Grower changed. Refresh before moving them.');
-    if (old)
+    if (old && old !== target)
       await c.query(
         "UPDATE treetracker.grower_account_org SET status='deleted',updated_at=clock_timestamp() WHERE grower_account_id=$1 AND organization_id=$2 AND status='active'",
         [grower, old],
@@ -97,17 +121,36 @@ export async function transferGrower(
         'INSERT INTO treetracker.grower_account_org(grower_account_id,organization_id) VALUES($1,$2)',
         [grower, target],
       );
-    const closed = old
-      ? await c.query(
-          `UPDATE stakeholder.project_grower pg SET left_at=clock_timestamp() FROM stakeholder.project p
+    const closed =
+      old && old !== target
+        ? await c.query(
+            `UPDATE stakeholder.project_grower pg SET left_at=clock_timestamp() FROM stakeholder.project p
       WHERE pg.project_id=p.id AND pg.grower_account_id=$1 AND pg.left_at IS NULL AND p.organization_id=$2 RETURNING pg.project_id,pg.joined_at::text AS joined_at`,
-          [grower, old],
+            [grower, old],
+          )
+        : { rows: [] };
+    const captureAllocation = allocate
+      ? await allocateUnassigned(
+          c,
+          grower,
+          target,
+          project,
+          body.expected_allocation,
         )
-      : { rows: [] };
+      : null;
+    if (
+      old === target &&
+      !captureAllocation?.sessions.length &&
+      !captureAllocation?.captures.length
+    )
+      throw new DomainError(
+        409,
+        'No unassigned captures or sessions to allocate',
+      );
     const auditId = randomUUID();
     await c.query(
-      `INSERT INTO treetracker.grower_organization_transfer(id,request_id,request_hash,grower_account_id,previous_organization_id,new_organization_id,administrator_id,administrator_name,reason,closed_project_ids)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      `INSERT INTO treetracker.grower_organization_transfer(id,request_id,request_hash,grower_account_id,previous_organization_id,new_organization_id,administrator_id,administrator_name,reason,closed_project_ids,capture_allocation)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
       [
         auditId,
         requestId,
@@ -119,6 +162,7 @@ export async function transferGrower(
         request.user?.userName || request.user?.email || actor,
         reason,
         JSON.stringify(closed.rows.map((x) => x.project_id)),
+        JSON.stringify(captureAllocation),
       ],
     );
     for (const membership of closed.rows) {
@@ -144,6 +188,8 @@ export async function transferGrower(
       id: auditId,
       organization_id: target,
       closedAssignments: closed.rows.length,
+      allocatedSessions: captureAllocation?.sessions.length || 0,
+      allocatedCaptures: captureAllocation?.captures.length || 0,
     };
   } catch (error) {
     await c.query('ROLLBACK');
