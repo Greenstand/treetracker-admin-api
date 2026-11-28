@@ -1,5 +1,8 @@
 import {
   agreements,
+  agreementOptions,
+  saveAgreement,
+  agreementHistory,
   contractOptions,
   workerVerification,
   saveContract,
@@ -181,6 +184,22 @@ export function createDomainRouter(service: AdminDomainService) {
   router.get(
     '/sessions/:id/captures',
     route((req) => service.sessionDetail(req, req.params.id)),
+  );
+  router.get(
+    '/agreement-options',
+    route((req) => agreementOptions(service, req, req.query)),
+  );
+  router.post(
+    '/agreements',
+    route((req) => saveAgreement(service, req, undefined, req.body), true),
+  );
+  router.patch(
+    '/agreements/:id',
+    route((req) => saveAgreement(service, req, req.params.id, req.body)),
+  );
+  router.get(
+    '/agreements/:id/history',
+    route((req) => agreementHistory(service, req, req.params.id)),
   );
   router.get(
     '/agreements',

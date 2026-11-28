@@ -2,6 +2,7 @@ import { Pool } from 'pg';
 import { AdminDomainService } from './service';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
 import {
+  saveAgreement,
   contractTransition,
   saveContract,
   workerVerification,
@@ -73,4 +74,56 @@ it('rejects future-dated verification before connecting', async () => {
     }),
   ).rejects.toMatchObject({ statusCode: 400 });
   expect(connect).not.toHaveBeenCalled();
+});
+
+it('denies agreement creation to verification-only staff', async () => {
+  const connect = jest.fn(),
+    s = new AdminDomainService({ connect } as unknown as Pool);
+  const staff = {
+    user: { id, policy: { policies: [{ name: 'org' }] } },
+  } as KeycloakRequest;
+  await expect(saveAgreement(s, staff, undefined, {})).rejects.toMatchObject({
+    statusCode: 403,
+  });
+  expect(connect).not.toHaveBeenCalled();
+});
+it('rolls back agreement creation when its earnings rule is unauthorized', async () => {
+  const query = jest.fn().mockResolvedValue({ rows: [], rowCount: 0 }),
+    release = jest.fn(),
+    s = new AdminDomainService({
+      connect: jest.fn().mockResolvedValue({ query, release }),
+    } as unknown as Pool);
+  jest.spyOn(s, 'organization').mockResolvedValue(id);
+  await expect(
+    saveAgreement(s, admin, undefined, {
+      name: 'Terms',
+      funder_id: id,
+      consolidation_rule_id: id,
+      max_captures: 100,
+      capture_payment: '0.25',
+      capture_payment_currency: 'USD',
+      reason: 'Test',
+    }),
+  ).rejects.toThrow('authorized earnings');
+  expect(query.mock.calls.some(([sql]) => sql.includes('INSERT'))).toBe(false);
+  expect(query).toHaveBeenLastCalledWith('ROLLBACK');
+});
+it('refuses stale agreement status changes without writing an event', async () => {
+  const query = jest
+      .fn()
+      .mockResolvedValue({ rows: [{ id, status: 'closed' }], rowCount: 1 }),
+    release = jest.fn(),
+    s = new AdminDomainService({
+      connect: jest.fn().mockResolvedValue({ query, release }),
+    } as unknown as Pool);
+  jest.spyOn(s, 'organization').mockResolvedValue(id);
+  await expect(
+    saveAgreement(s, admin, id, {
+      expected_status: 'planning',
+      status: 'open',
+      reason: 'Test',
+    }),
+  ).rejects.toMatchObject({ statusCode: 409 });
+  expect(query.mock.calls.some(([sql]) => sql.includes('INSERT'))).toBe(false);
+  expect(query).toHaveBeenLastCalledWith('ROLLBACK');
 });
