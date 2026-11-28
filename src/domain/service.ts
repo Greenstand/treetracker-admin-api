@@ -402,15 +402,16 @@ export class AdminDomainService {
     const { size, offset } = paging(query),
       search = (text(query.search, 'Search', false, 160) ?? '').toLowerCase();
     const result = await this.pool.query(
-      `SELECT c.id,c.status,c.notes,c.signed_at,c.closed_at,c.created_at,
-      a.name AS agreement_name,a.description,a.capture_payment,a.capture_payment_currency,
+      `SELECT c.project_id,p.name AS project_name,c.grower_account_id,c.capture_quota,c.id,c.status,c.notes,c.signed_at,c.closed_at,c.created_at,
+      a.name AS agreement_name,a.description,a.capture_payment,a.capture_payment_currency,a.max_captures,
       a.growing_organization_id AS organization_id,o.org_name AS organization_name,
-      nullif(trim(concat_ws(' ',w.first_name,w.last_name,w.org_name)),'') AS worker_name
+      nullif(trim(concat_ws(' ',w.first_name,w.last_name)),'') AS worker_name
       FROM contracts.contract c JOIN contracts.agreement a ON a.id=c.agreement_id
       LEFT JOIN stakeholder.stakeholder o ON o.id=a.growing_organization_id
-      LEFT JOIN stakeholder.stakeholder w ON w.id=c.worker_id
+      LEFT JOIN treetracker.grower_account w ON w.id=c.grower_account_id
+      LEFT JOIN stakeholder.project p ON p.id=c.project_id
       WHERE c.listed IS TRUE AND ($1::uuid IS NULL OR a.growing_organization_id=$1 OR a.owner_id=$1)
-      AND ($2='' OR strpos(lower(concat_ws(' ',a.name,o.org_name,w.first_name,w.last_name,c.notes)),$2)>0)
+      AND ($2='' OR strpos(lower(concat_ws(' ',a.name,p.name,o.org_name,w.first_name,w.last_name,c.notes)),$2)>0)
       ORDER BY c.created_at DESC,c.id LIMIT $3 OFFSET $4`,
       [scope, search, size + 1, offset],
     );

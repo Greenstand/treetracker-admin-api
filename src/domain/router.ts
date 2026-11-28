@@ -1,3 +1,9 @@
+import {
+  contractOptions,
+  workerVerification,
+  saveContract,
+  contractHistory,
+} from './contracts';
 import express, { Request, Response, NextFunction } from 'express';
 import { Pool } from 'pg';
 import { readFileSync } from 'fs';
@@ -174,6 +180,35 @@ export function createDomainRouter(service: AdminDomainService) {
   router.get(
     '/sessions/:id/captures',
     route((req) => service.sessionDetail(req, req.params.id)),
+  );
+  router.get(
+    '/contract-options',
+    route((req) => contractOptions(service, req, req.query)),
+  );
+  router.post(
+    '/contracts',
+    route((req) => saveContract(service, req, undefined, req.body), true),
+  );
+  router.patch(
+    '/contracts/:id',
+    route((req) => saveContract(service, req, req.params.id, req.body)),
+  );
+  router.get(
+    '/contracts/:id/history',
+    route((req) => contractHistory(service, req, req.params.id)),
+  );
+  router.get(
+    '/growers/:id/worker-verification',
+    platform,
+    route((req) => workerVerification(service, req, req.params.id)),
+  );
+  router.post(
+    '/growers/:id/worker-verification',
+    platform,
+    route(
+      (req) => workerVerification(service, req, req.params.id, req.body),
+      true,
+    ),
   );
   router.get(
     '/contracts',
