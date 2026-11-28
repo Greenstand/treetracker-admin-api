@@ -317,3 +317,40 @@ export async function rejectOrganizationBinding(userId: string): Promise<void> {
     ...clearedFields(),
   });
 }
+
+export async function listSaasAdministrators(first = 0, max = 26) {
+  const client = await getAuthedClient();
+  return client.roles.findUsersWithRole({
+    name: 'org-admin-saas',
+    first,
+    max,
+    briefRepresentation: false,
+  });
+}
+
+export async function organizationMembers(
+  organizationId: number,
+  first: number,
+  max: number,
+) {
+  const client = await getAuthedClient();
+  return client.users.find({
+    q: 'organization_id:' + organizationId,
+    first,
+    max,
+    briefRepresentation: false,
+  });
+}
+
+export async function organizationMember(userId: string) {
+  const client = await getAuthedClient();
+  const user = await client.users.findOne({ id: userId });
+  if (!user?.id) return null;
+  const roles = await client.users.listCompositeRealmRoleMappings({
+    id: userId,
+  });
+  return {
+    user,
+    organizationAdmin: roles.some((role) => role.name === 'org-admin-saas'),
+  };
+}
