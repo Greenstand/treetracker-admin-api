@@ -280,3 +280,51 @@ export async function openBilling(
     lock.release();
   }
 }
+
+// Organization entitlements come from Stripe, never from a user's subscriber role.
+export async function contractAccess(
+  service: AdminDomainService,
+  request: KeycloakRequest,
+  query: Record<string, unknown>,
+) {
+  if (
+    request.user?.policy.policies.some(
+      (role) => role.name === 'greenstand-admin',
+    )
+  )
+    return { allowed: true, platform: true };
+  const organizationId = await service.organization(
+    request,
+    query.organizationId,
+    true,
+  );
+  const org = (
+    await service.pool.query(
+      'SELECT entity_id FROM stakeholder.stakeholder WHERE id=$1',
+      [organizationId],
+    )
+  ).rows[0];
+  if (!org?.entity_id) return { allowed: false, plan: null };
+  const customer = await existingCustomer(org.entity_id);
+  if (!customer) return { allowed: false, plan: null };
+  if (
+    customer.metadata.organization_uuid &&
+    customer.metadata.organization_uuid !== organizationId
+  )
+    throw new DomainError(
+      409,
+      'Subscription organization mapping needs reconciliation',
+    );
+  const current = (await subscriptions(customer.id)).filter((sub) =>
+    ['active', 'trialing', 'past_due'].includes(sub.status),
+  );
+  const eligible = subscriptionPlans.filter((tier) =>
+    current.some((sub) =>
+      sub.items.data.some(
+        (item) => item.quantity > 0 && item.price.id === tier.priceId,
+      ),
+    ),
+  );
+  const plan = eligible[eligible.length - 1]?.name || null;
+  return { allowed: ['Base', 'Crown'].includes(plan || ''), plan };
+}

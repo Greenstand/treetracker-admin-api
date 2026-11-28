@@ -7,6 +7,7 @@ export const subscriptionPlans = [
     growers: 10,
     projects: 1,
     wallet: false,
+    contracts: false,
     proposed: false,
   },
   {
@@ -17,6 +18,7 @@ export const subscriptionPlans = [
     growers: 100,
     projects: 5,
     wallet: false,
+    contracts: false,
     proposed: true,
   },
   {
@@ -27,6 +29,7 @@ export const subscriptionPlans = [
     growers: 1000,
     projects: 20,
     wallet: true,
+    contracts: true,
     proposed: true,
   },
   {
@@ -37,6 +40,7 @@ export const subscriptionPlans = [
     growers: 5000,
     projects: 100,
     wallet: true,
+    contracts: true,
     proposed: true,
   },
 ];

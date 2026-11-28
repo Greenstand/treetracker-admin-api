@@ -17,7 +17,7 @@ import { AdminDomainService } from './service';
 import { DomainError } from './validation';
 import { subscriptionPlanCatalog } from './plans';
 import { members, saveMember } from './members';
-import { billingStatus, openBilling } from './checkout';
+import { billingStatus, openBilling, contractAccess } from './checkout';
 import { verificationQueue, verifyCaptures } from './verification';
 import {
   projectGrowers,
@@ -68,6 +68,32 @@ export function createDomainRouter(service: AdminDomainService) {
         .then((result) => response.status(created ? 201 : 200).json(result))
         .catch(next);
     };
+  router.get(
+    '/contract-access',
+    route((req) => contractAccess(service, req, req.query)),
+  );
+  router.use((req: KeycloakRequest, _res: Response, next: NextFunction) => {
+    if (
+      !/^\/(?:contracts|agreements|contract-options|agreement-options)(?:\/|$)/.test(
+        req.path,
+      )
+    )
+      return next();
+    contractAccess(service, req, {
+      organizationId: req.body?.organizationId || req.query.organizationId,
+    })
+      .then((access) =>
+        access.allowed
+          ? next()
+          : next(
+              new DomainError(
+                403,
+                'Contracts and agreements require a Base or Crown subscription',
+              ),
+            ),
+      )
+      .catch(next);
+  });
   router.get(
     '/context',
     route(async (req) => {
