@@ -1,4 +1,5 @@
 import {
+  agreements,
   contractOptions,
   workerVerification,
   saveContract,
@@ -180,6 +181,10 @@ export function createDomainRouter(service: AdminDomainService) {
   router.get(
     '/sessions/:id/captures',
     route((req) => service.sessionDetail(req, req.params.id)),
+  );
+  router.get(
+    '/agreements',
+    route((req) => agreements(service, req, req.query)),
   );
   router.get(
     '/contract-options',

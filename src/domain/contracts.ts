@@ -1,6 +1,6 @@
 import { AdminDomainService } from './service';
 import { KeycloakRequest } from '../middleware/keycloakMiddleware';
-import { DomainError, uuid, text, count } from './validation';
+import { DomainError, uuid, text, count, paging } from './validation';
 const transitions: Record<string, string[]> = {
   unsigned: ['signed', 'aborted'],
   signed: ['completed', 'cancelled'],
@@ -240,4 +240,24 @@ export async function contractHistory(
       )
     ).rows,
   };
+}
+
+export async function agreements(
+  s: AdminDomainService,
+  req: KeycloakRequest,
+  q: Record<string, unknown>,
+) {
+  const org = await s.organization(req, q.organizationId);
+  await s.requirePermission(req, org, 'view_contracts');
+  const { size, offset } = paging(q),
+    search = (text(q.search, 'Search', false, 160) || '').toLowerCase();
+  return s.page(
+    (
+      await s.pool.query(
+        `SELECT a.id,a.name,a.description,a.type,a.status,a.max_captures,a.capture_payment,a.capture_payment_currency,a.opened_at,a.closed_at,a.growing_organization_id AS organization_id,o.org_name AS organization_name,r.name AS consolidation_rule_name,(SELECT count(*)::int FROM contracts.contract c WHERE c.agreement_id=a.id AND c.listed) AS contract_count FROM contracts.agreement a LEFT JOIN stakeholder.stakeholder o ON o.id=a.growing_organization_id LEFT JOIN contracts.consolidation_rule r ON r.id=a.consolidation_rule_id WHERE a.listed AND ($1::uuid IS NULL OR a.growing_organization_id=$1 OR a.owner_id=$1) AND ($2='' OR strpos(lower(concat_ws(' ',a.name,a.description,o.org_name)),$2)>0) ORDER BY a.created_at DESC,a.id LIMIT $3 OFFSET $4`,
+        [org, search, size + 1, offset],
+      )
+    ).rows,
+    size,
+  );
 }
